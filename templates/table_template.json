@@ -1,0 +1,61 @@
+{
+  "name": "table_import",
+  "description": "Template for importing table entities from CSV",
+  "type_name": "hive_table",
+  "qualified_name_template": "{database_name}.{table_name}@{cluster_name}",
+  "collection_name": "tables",
+  "default_attributes": {
+    "tableType": "MANAGED_TABLE"
+  },
+  "attribute_mappings": [
+    {
+      "csv_column": "table_name",
+      "purview_attribute": "name",
+      "data_type": "string",
+      "required": true
+    },
+    {
+      "csv_column": "database_name",
+      "purview_attribute": "db",
+      "data_type": "string",
+      "required": true
+    },
+    {
+      "csv_column": "cluster_name",
+      "purview_attribute": "cluster",
+      "data_type": "string",
+      "required": true
+    },
+    {
+      "csv_column": "description",
+      "purview_attribute": "comment",
+      "data_type": "string",
+      "required": false
+    },
+    {
+      "csv_column": "owner",
+      "purview_attribute": "owner",
+      "data_type": "string",
+      "required": false
+    },
+    {
+      "csv_column": "table_type",
+      "purview_attribute": "tableType",
+      "data_type": "string",
+      "required": false,
+      "default_value": "MANAGED_TABLE"
+    },
+    {
+      "csv_column": "location",
+      "purview_attribute": "location",
+      "data_type": "string",
+      "required": false
+    },
+    {
+      "csv_column": "parameters",
+      "purview_attribute": "parameters",
+      "data_type": "json",
+      "required": false
+    }
+  ]
+}

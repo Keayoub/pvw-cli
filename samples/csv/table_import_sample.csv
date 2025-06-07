@@ -1,0 +1,6 @@
+# Sample CSV for importing tables into Purview
+table_name,database_name,cluster_name,description,owner,table_type,location,parameters
+customers,retail_db,prod_cluster,Customer master table,data-team@company.com,MANAGED_TABLE,hdfs://cluster/warehouse/retail_db.db/customers,"{""format"":""parquet"",""compression"":""snappy""}"
+orders,retail_db,prod_cluster,Order transactions table,sales-team@company.com,MANAGED_TABLE,hdfs://cluster/warehouse/retail_db.db/orders,"{""format"":""parquet"",""partitioned_by"":[""order_date""]}"
+products,inventory_db,prod_cluster,Product catalog table,product-team@company.com,MANAGED_TABLE,hdfs://cluster/warehouse/inventory_db.db/products,"{""format"":""orc"",""bucketed_by"":[""product_id""]}"
+sales_summary,analytics_db,prod_cluster,Aggregated sales data,analytics-team@company.com,EXTERNAL_TABLE,s3://analytics-bucket/sales_summary/,"{""format"":""delta"",""external"":true}"

@@ -1,0 +1,14 @@
+{
+    "id": "datasources/Hive",
+    "kind": "Hive",
+    "name": "Hive",
+    "properties": {
+        "clusterUrl": "www",
+        "collection": {
+            "referenceName": "qaomdj",
+            "type": "CollectionReference"
+        },
+        "host": "www",
+        "parentCollection": null
+    }
+}

@@ -1,0 +1,5 @@
+# Sample CSV for importing datasets into Purview
+name,description,owner_email,source_system,schema_json,tags,location,format,size_bytes,record_count
+customer_data,Customer information dataset,data-owner@company.com,CRM,"{""columns"":[{""name"":""customer_id"",""type"":""int""},{""name"":""name"",""type"":""string""},{""name"":""email"",""type"":""string""}]}","PII,Customer",s3://data-lake/customers/,parquet,1024000,50000
+sales_transactions,Daily sales transaction data,finance@company.com,ERP,"{""columns"":[{""name"":""transaction_id"",""type"":""string""},{""name"":""amount"",""type"":""decimal""},{""name"":""date"",""type"":""date""}]}","Finance,Transactions",s3://data-lake/sales/,json,2048000,100000
+product_catalog,Product information and pricing,product@company.com,PIM,"{""columns"":[{""name"":""product_id"",""type"":""string""},{""name"":""name"",""type"":""string""},{""name"":""price"",""type"":""decimal""}]}","Product,Catalog",s3://data-lake/products/,csv,512000,25000

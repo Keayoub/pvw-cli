@@ -1,0 +1,13 @@
+{
+    "id": "datasources/SapEcc",
+    "kind": "SapEcc",
+    "name": "SapEcc",
+    "properties": {
+        "applicationServer": "application",
+        "collection": {
+            "referenceName": "qaomdj",
+            "type": "CollectionReference"
+        },
+        "systemNumber": "00"
+    }
+}

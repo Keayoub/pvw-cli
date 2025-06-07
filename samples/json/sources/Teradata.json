@@ -1,0 +1,13 @@
+{
+    "id": "datasources/Teradata",
+    "kind": "Teradata",
+    "name": "Teradata",
+    "properties": {
+        "collection": {
+            "referenceName": "qaomdj",
+            "type": "CollectionReference"
+        },
+        "host": "teradata.com",
+        "parentCollection": null
+    }
+}

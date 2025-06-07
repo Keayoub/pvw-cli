@@ -1,0 +1,73 @@
+{
+  "name": "dataset_import",
+  "description": "Template for importing dataset entities from CSV",
+  "type_name": "DataSet",
+  "qualified_name_template": "{name}@{source_system}.{account_name}",
+  "collection_name": "default",
+  "default_attributes": {
+    "owner": "data-team@company.com",
+    "source": "CSV Import"
+  },
+  "attribute_mappings": [
+    {
+      "csv_column": "name",
+      "purview_attribute": "name",
+      "data_type": "string",
+      "required": true
+    },
+    {
+      "csv_column": "description",
+      "purview_attribute": "description",
+      "data_type": "string",
+      "required": false
+    },
+    {
+      "csv_column": "owner_email",
+      "purview_attribute": "owner",
+      "data_type": "string",
+      "required": false
+    },
+    {
+      "csv_column": "source_system",
+      "purview_attribute": "sourceSystem",
+      "data_type": "string",
+      "required": true
+    },
+    {
+      "csv_column": "schema_json",
+      "purview_attribute": "schema",
+      "data_type": "json",
+      "required": false
+    },
+    {
+      "csv_column": "tags",
+      "purview_attribute": "userDefinedTags",
+      "data_type": "list",
+      "required": false
+    },
+    {
+      "csv_column": "location",
+      "purview_attribute": "location",
+      "data_type": "string",
+      "required": false
+    },
+    {
+      "csv_column": "format",
+      "purview_attribute": "format",
+      "data_type": "string",
+      "required": false
+    },
+    {
+      "csv_column": "size_bytes",
+      "purview_attribute": "sizeBytes",
+      "data_type": "int",
+      "required": false
+    },
+    {
+      "csv_column": "record_count",
+      "purview_attribute": "recordCount",
+      "data_type": "int",
+      "required": false
+    }
+  ]
+}

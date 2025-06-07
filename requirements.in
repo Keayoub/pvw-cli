@@ -1,0 +1,74 @@
+# Enhanced Purview CLI Requirements
+# Updated dependencies for comprehensive Purview automation
+
+# Core dependencies
+requests>=2.28.0
+docopt>=0.6.2
+azure-identity>=1.12.0
+azure-core>=1.26.0
+
+# Enhanced API client dependencies
+aiohttp>=3.8.0
+aiofiles>=22.1.0
+pandas>=1.5.0
+openpyxl>=3.0.10
+
+# CLI enhancements
+click>=8.1.0
+rich>=13.0.0
+typer>=0.7.0
+
+# Data processing
+pydantic>=1.10.0
+python-dateutil>=2.8.0
+jsonschema>=4.17.0
+
+# CSV and data manipulation
+csvkit>=1.0.7
+xlsxwriter>=3.0.0
+
+# Async support
+asyncio-throttle>=1.0.2
+
+# Authentication
+PyJWT>=2.6.0
+aiocsv>=1.2.0
+
+# Configuration and templating
+pyyaml>=6.0
+jinja2>=3.1.0
+python-dotenv>=0.19.0
+
+# Progress and logging
+tqdm>=4.64.0
+colorama>=0.4.6
+python-json-logger>=2.0.0
+
+# Machine Learning and Analytics (for ML integration module)
+scikit-learn>=1.2.0
+numpy>=1.21.0
+scipy>=1.9.0
+
+# Visualization and graph analysis (for lineage visualization)
+networkx>=2.8.0
+matplotlib>=3.6.0
+plotly>=5.12.0
+
+# Plugin system and dynamic imports
+importlib-metadata<8.7.0
+pluggy>=1.0.0
+
+# Memory profiling and performance monitoring
+psutil>=5.9.0
+memory-profiler>=0.60.0
+
+# Testing and development
+pytest>=7.2.0
+pytest-asyncio>=0.20.0
+pytest-mock>=3.10.0
+black>=22.12.0
+coverage>=7.0.0
+
+azure-mgmt-purview>=1.0.0
+azure-purview-catalog>=1.0.0
+azure-purview-scanning>=1.0.0

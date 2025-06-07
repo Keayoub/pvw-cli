@@ -1,0 +1,14 @@
+{
+    "id": "datasources/Oracle",
+    "kind": "Oracle",
+    "name": "Oracle",
+    "properties": {
+        "collection": {
+            "referenceName": "qaomdj",
+            "type": "CollectionReference"
+        },
+        "host": "www",
+        "port": "1234",
+        "service": "service"
+    }
+}

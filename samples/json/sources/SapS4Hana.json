@@ -1,0 +1,13 @@
+{
+    "id": "datasources/sap_s4_hana",
+    "kind": "SapS4Hana",
+    "name": "sap_s4_hana",
+    "properties": {
+        "applicationServer": "application",
+        "collection": {
+            "referenceName": "qaomdj",
+            "type": "CollectionReference"
+        },
+        "systemNumber": "00"
+    }
+}

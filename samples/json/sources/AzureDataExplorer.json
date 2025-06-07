@@ -1,0 +1,16 @@
+{
+    "id": "datasources/AzureDataExplorer",
+    "kind": "AzureDataExplorer",
+    "name": "AzureDataExplorer",
+    "properties": {
+        "collection": {
+            "referenceName": "qaomdj",
+            "type": "CollectionReference"
+        },
+        "endpoint": "https://something.com",
+        "location": null,
+        "resourceGroup": null,
+        "resourceName": null,
+        "subscriptionId": null
+    }
+}
