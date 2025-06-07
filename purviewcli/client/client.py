@@ -52,7 +52,7 @@ Please configure the PURVIEW_NAME environment variable. Setting environment vari
 
 Alternatively, an Azure Purview account name can be provided by appending --purviewName=<val> at the end of your command.
 """)
-                sys.exit()
+        sys.exit()
 
     def set_token(self, app):
         if self.azure_region is not None and self.azure_region.lower() == "china":
