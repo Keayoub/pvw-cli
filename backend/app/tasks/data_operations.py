@@ -15,7 +15,7 @@ from app.services.entities_service import EntitiesService
 from app.services.lineage_service import LineageService
 from app.services.governance_service import GovernanceService
 from app.services.cache_service import CacheService
-from app.database.connection import get_db_session
+from app.database.connection import get_db
 
 logger = get_logger(__name__)
 

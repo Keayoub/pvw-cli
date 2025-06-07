@@ -122,27 +122,6 @@ class RedisCache:
             logger.error(f"Error deleting cache key {key}: {e}")
             return False
             
-    async def delete_pattern(self, pattern: str) -> int:
-        """Delete all keys matching pattern"""
-        if not self.is_connected:
-            return 0
-            
-        try:
-            keys = await asyncio.get_event_loop().run_in_executor(
-                None, self.redis_client.keys, pattern
-            )
-            
-            if keys:
-                deleted = await asyncio.get_event_loop().run_in_executor(
-                    None, self.redis_client.delete, *keys
-                )
-                return deleted
-                
-        except Exception as e:
-            logger.error(f"Error deleting cache pattern {pattern}: {e}")
-            
-        return 0
-        
     async def exists(self, key: str) -> bool:
         """Check if key exists in cache"""
         if not self.is_connected:
@@ -157,6 +136,27 @@ class RedisCache:
         except Exception as e:
             logger.error(f"Error checking cache key existence {key}: {e}")
             return False
+            
+    async def clear_pattern(self, pattern: str) -> int:
+        """Clear all keys matching pattern"""
+        if not self.is_connected:
+            return 0
+            
+        try:
+            keys = await asyncio.get_event_loop().run_in_executor(
+                None, self.redis_client.keys, pattern
+            )
+            
+            if keys:
+                await asyncio.get_event_loop().run_in_executor(
+                    None, self.redis_client.delete, *keys
+                )
+                
+            return len(keys)
+            
+        except Exception as e:
+            logger.error(f"Error clearing cache pattern {pattern}: {e}")
+            return 0
             
     async def increment(self, key: str, amount: int = 1, ttl: int = None) -> Optional[int]:
         """Increment counter in cache"""
@@ -181,23 +181,29 @@ class RedisCache:
             logger.error(f"Error incrementing cache key {key}: {e}")
             return None
             
-    async def get_hash(self, key: str) -> Optional[Dict[str, str]]:
-        """Get hash from cache"""
+    async def get_hash(self, key: str, field: str = None) -> Optional[Any]:
+        """Get hash field value or entire hash"""
         if not self.is_connected:
             return None
             
         try:
-            hash_data = await asyncio.get_event_loop().run_in_executor(
-                None, self.redis_client.hgetall, key
-            )
-            return hash_data if hash_data else None
-            
+            if field:
+                value = await asyncio.get_event_loop().run_in_executor(
+                    None, self.redis_client.hget, key, field
+                )
+                return value
+            else:
+                hash_data = await asyncio.get_event_loop().run_in_executor(
+                    None, self.redis_client.hgetall, key
+                )
+                return hash_data if hash_data else None
+                
         except Exception as e:
             logger.error(f"Error getting hash {key}: {e}")
             return None
             
-    async def set_hash(self, key: str, hash_data: Dict[str, str], ttl: int = None) -> bool:
-        """Set hash in cache"""
+    async def set_hash(self, key: str, hash_data: Dict[str, Any], ttl: int = None) -> bool:
+        """Set hash data with optional TTL"""
         if not self.is_connected:
             return False
             
@@ -216,6 +222,55 @@ class RedisCache:
         except Exception as e:
             logger.error(f"Error setting hash {key}: {e}")
             return False
+
+
+class CacheService:
+    """Main cache service interface that provides high-level caching operations"""
+    
+    def __init__(self):
+        self.cache = RedisCache()
+        
+    async def initialize(self):
+        """Initialize the cache service"""
+        await self.cache.connect()
+        
+    async def shutdown(self):
+        """Shutdown the cache service"""
+        await self.cache.disconnect()
+        
+    async def get(self, key: str) -> Optional[Any]:
+        """Get value from cache"""
+        return await self.cache.get(key)
+        
+    async def set(self, key: str, value: Any, ttl: int = None) -> bool:
+        """Set value in cache with optional TTL"""
+        return await self.cache.set(key, value, ttl)
+        
+    async def delete(self, key: str) -> bool:
+        """Delete key from cache"""
+        return await self.cache.delete(key)
+        
+    async def exists(self, key: str) -> bool:
+        """Check if key exists in cache"""
+        return await self.cache.exists(key)
+        
+    async def clear_pattern(self, pattern: str) -> int:
+        """Clear all keys matching pattern"""
+        return await self.cache.clear_pattern(pattern)
+        
+    async def get_hash(self, key: str, field: str = None) -> Optional[Any]:
+        """Get hash field value or entire hash"""
+        return await self.cache.get_hash(key, field)
+        
+    async def set_hash(self, key: str, hash_data: Dict[str, Any], ttl: int = None) -> bool:
+        """Set hash data with optional TTL"""
+        return await self.cache.set_hash(key, hash_data, ttl)
+        
+    @property
+    def is_connected(self) -> bool:
+        """Check if cache is connected"""
+        return self.cache.is_connected
+
 
 # Create global cache instance
 cache = RedisCache()
@@ -253,10 +308,8 @@ def invalidate_cache_pattern(pattern: str):
         @wraps(func)
         async def wrapper(*args, **kwargs):
             result = await func(*args, **kwargs)
-            await cache.delete_pattern(pattern)
-            logger.debug(f"Invalidated cache pattern: {pattern}")
+            await cache.clear_pattern(pattern)
             return result
-            
         return wrapper
     return decorator
 
@@ -320,7 +373,7 @@ class CacheWarmer:
             await cache.set(
                 CacheKeys.classification_definitions(),
                 definitions,
-                ttl=3600  # Cache for 1 hour
+                ttl=3600  # 1 hour
             )
             
             logger.info("Warmed classification definitions cache")
@@ -329,25 +382,23 @@ class CacheWarmer:
             logger.error(f"Error warming classification definitions cache: {e}")
             
     @staticmethod
-    async def warm_user_sessions(active_users: List[str]):
-        """Pre-cache active user session data"""
+    async def warm_user_sessions():
+        """Pre-cache active user sessions"""
         try:
-            for user_id in active_users:
-                # This would typically fetch from database
-                user_data = {
-                    "user_id": user_id,
-                    "last_activity": datetime.utcnow().isoformat(),
-                    "permissions": ["read", "write"],
-                    "preferences": {}
-                }
-                
-                await cache.set(
-                    CacheKeys.user_profile(user_id),
-                    user_data,
-                    ttl=1800  # Cache for 30 minutes
-                )
-                
-            logger.info(f"Warmed user sessions cache for {len(active_users)} users")
+            # This would typically fetch from database or session store
+            # For now, using mock data
+            sessions = {
+                "active_users": 150,
+                "last_updated": datetime.now().isoformat()
+            }
+            
+            await cache.set(
+                "user:sessions:stats",
+                sessions,
+                ttl=300  # 5 minutes
+            )
+            
+            logger.info("Warmed user sessions cache")
             
         except Exception as e:
             logger.error(f"Error warming user sessions cache: {e}")

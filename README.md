@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Enhanced Purview CLI is a comprehensive command-line tool that leverages the latest Azure Purview REST API specifications to provide powerful automation capabilities for managing your data catalog, governance policies, and data estate operations.
+The Purview CLI is a comprehensive command-line tool that leverages the latest Azure Purview REST API specifications to provide powerful automation capabilities for managing your data catalog, governance policies, and data estate operations.
 
 ## Key Features
 

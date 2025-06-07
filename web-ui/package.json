@@ -1,5 +1,5 @@
 {
-  "name": "enhanced-purview-cli-web-ui",
+  "name": "purview-cli-web-ui",
   "version": "2.0.0",
   "description": "Modern web interface for Enhanced Purview CLI v2.0",
   "private": true,
@@ -22,7 +22,7 @@
     "react-dom": "^18.2.0",
     "react-redux": "^8.1.3",
     "react-router-dom": "^6.20.1",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^0.0.0",
     "recharts": "^2.8.0",
     "socket.io-client": "^4.7.4",
     "typescript": "^5.3.3",
