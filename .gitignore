@@ -18,3 +18,12 @@ doc/boilerplate/temp
 __pycache__
 AzuriteConfig
 __azurite_db_table__.json
+web-ui/node_modules/
+web-ui/dist/
+web-ui/.cache/
+web-ui/.env
+web-ui/.vscode/
+web-ui/.idea/
+web-ui/.DS_Store
+web-ui/.gitignore
+web-ui/.eslintcache

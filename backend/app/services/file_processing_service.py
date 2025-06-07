@@ -25,16 +25,7 @@ from app.services.cache_service import CacheService, cache_result
 # Note: EntitiesService imported dynamically to avoid circular imports
 from app.services.analytics_service import AnalyticsService
 from app.services.governance_service import GovernanceService
-from app.tasks.file_processing import (
-    process_file_async,
-    import_entities_task,
-    bulk_classification_task,
-    data_quality_check_task,
-    lineage_discovery_task,
-    metadata_extraction_task,
-    compliance_scan_task,
-    data_profiling_task
-)
+# Import tasks dynamically to avoid circular imports
 
 logger = get_logger(__name__)
 
