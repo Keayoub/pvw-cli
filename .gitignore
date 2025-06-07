@@ -27,3 +27,5 @@ web-ui/.idea/
 web-ui/.DS_Store
 web-ui/.gitignore
 web-ui/.eslintcache
+
+backend/.env
