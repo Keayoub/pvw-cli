@@ -29,3 +29,5 @@ web-ui/.gitignore
 web-ui/.eslintcache
 
 backend/.env
+pv.exe
+pv.spec

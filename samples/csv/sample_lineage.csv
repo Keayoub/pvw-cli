@@ -1,0 +1,6 @@
+source_entity_guid,target_entity_guid,source_entity_name,target_entity_name,relationship_type,process_name,process_guid,confidence_score,metadata
+src-001,tgt-001,raw_customers,clean_customers,DataFlow,Customer Data Cleaning,proc-001,0.95,"{""pipeline"": ""data_quality"", ""owner"": ""data_team""}"
+src-002,tgt-002,raw_orders,processed_orders,DataFlow,Order Processing ETL,proc-002,0.90,"{""pipeline"": ""order_processing"", ""schedule"": ""daily""}"
+src-003,tgt-003,customer_orders,customer_summary,Process,Customer Analytics,proc-003,0.85,"{""algorithm"": ""aggregation"", ""frequency"": ""hourly""}"
+src-004,tgt-004,sales_data,sales_report,Derivation,Sales Reporting,proc-004,0.92,"{""report_type"": ""daily"", ""format"": ""excel""}"
+col-001,col-002,customers.email,notifications.recipient_email,ColumnMapping,Email Notification System,proc-005,0.98,"{""mapping_type"": ""direct"", ""validation"": ""email_format""}"
