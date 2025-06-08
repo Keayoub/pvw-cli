@@ -365,7 +365,7 @@ class MigrationManager:
             # Create admin user
             admin_user = await auth_service.create_user(
                 username="admin",
-                email="admin@purview-cli.local",
+                email="admin@pvw-cli.local",
                 password="admin123",  # Should be changed after first login
                 full_name="System Administrator",
                 role="admin"

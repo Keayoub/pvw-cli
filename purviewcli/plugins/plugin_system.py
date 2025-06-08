@@ -510,7 +510,7 @@ class PluginRegistry:
     
     def __init__(self):
         self.console = Console()
-        self.registry_url = "https://purview-cli-plugins.registry.example.com"  # Example URL
+        self.registry_url = "https://pvw-cli-plugins.registry.example.com"  # Example URL
     
     def search_plugins(self, query: str, plugin_type: Optional[PluginType] = None) -> List[Dict]:
         """Search for plugins in the registry"""

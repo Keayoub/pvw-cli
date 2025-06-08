@@ -42,7 +42,7 @@ class DeploymentManager:
         """Get default deployment configuration"""
         return {
             "app": {
-                "name": "enhanced-purview-cli",
+                "name": "enhanced-pvw-cli",
                 "version": "2.0.0",
                 "port": 8000,
                 "workers": 4
@@ -63,9 +63,8 @@ class DeploymentManager:
                 "ssl_port": 443
             },
             "ssl": {
-                "enabled": False,
-                "cert_path": "/etc/ssl/certs/purview-cli.crt",
-                "key_path": "/etc/ssl/private/purview-cli.key"
+                "enabled": False,                "cert_path": "/etc/ssl/certs/pvw-cli.crt",
+                "key_path": "/etc/ssl/private/pvw-cli.key"
             },
             "monitoring": {
                 "enabled": True,
@@ -110,13 +109,12 @@ class DeploymentManager:
     def setup_environment(self):
         """Setup deployment environment"""
         logger.info("Setting up deployment environment...")
-        
-        # Create necessary directories
+          # Create necessary directories
         directories = [
-            "/var/log/purview-cli",
-            "/var/lib/purview-cli",
-            "/etc/purview-cli",
-            self.deployment_config.get("app", {}).get("upload_dir", "/var/uploads/purview-cli")
+            "/var/log/pvw-cli",
+            "/var/lib/pvw-cli",
+            "/etc/pvw-cli",
+            self.deployment_config.get("app", {}).get("upload_dir", "/var/uploads/pvw-cli")
         ]
         
         for directory in directories:
@@ -142,14 +140,14 @@ class DeploymentManager:
         # Create production .env file
         env_content = self._generate_env_file()
         
-        env_path = Path("/etc/purview-cli/.env")
+        env_path = Path("/etc/pvw-cli/.env")
         try:
             with open(env_path, 'w') as f:
                 f.write(env_content)
             os.chmod(env_path, 0o600)  # Secure permissions
             logger.info(f"Created environment file: {env_path}")
         except PermissionError:
-            logger.warning("Could not create /etc/purview-cli/.env - using local .env")
+            logger.warning("Could not create /etc/pvw-cli/.env - using local .env")
             local_env = self.project_root / ".env.production"
             with open(local_env, 'w') as f:
                 f.write(env_content)
@@ -181,7 +179,7 @@ class DeploymentManager:
             "RATE_LIMIT_PER_MINUTE": "100",
             "RATE_LIMIT_BURST": "10",
             "MAX_UPLOAD_SIZE": str(100 * 1024 * 1024),  # 100MB
-            "UPLOAD_DIR": config.get("app", {}).get("upload_dir", "/var/uploads/purview-cli")
+            "UPLOAD_DIR": config.get("app", {}).get("upload_dir", "/var/uploads/pvw-cli")
         }
         
         return "\n".join([f"{key}={value}" for key, value in env_vars.items()])
@@ -207,14 +205,13 @@ class DeploymentManager:
         """Generate secure secret key"""
         import secrets
         return secrets.token_urlsafe(32)
-    
-    def _setup_nginx_config(self):
+      def _setup_nginx_config(self):
         """Setup Nginx configuration"""
         logger.info("Setting up Nginx configuration...")
         
         nginx_config_source = self.project_root / "nginx" / "nginx.conf"
-        nginx_config_dest = Path("/etc/nginx/sites-available/purview-cli")
-        nginx_enabled_dest = Path("/etc/nginx/sites-enabled/purview-cli")
+        nginx_config_dest = Path("/etc/nginx/sites-available/pvw-cli")
+        nginx_enabled_dest = Path("/etc/nginx/sites-enabled/pvw-cli")
         
         try:
             if nginx_config_source.exists():
@@ -255,13 +252,12 @@ User=www-data
 Group=www-data
 WorkingDirectory={self.project_root}
 Environment=PATH={self.project_root}/venv/bin
-EnvironmentFile=/etc/purview-cli/.env
+EnvironmentFile=/etc/pvw-cli/.env
 ExecStart={self.project_root}/venv/bin/gunicorn app.main:app \\
     --workers {self.deployment_config["app"]["workers"]} \\
     --worker-class uvicorn.workers.UvicornWorker \\
-    --bind 0.0.0.0:{self.deployment_config["app"]["port"]} \\
-    --access-logfile /var/log/purview-cli/access.log \\
-    --error-logfile /var/log/purview-cli/error.log \\
+    --bind 0.0.0.0:{self.deployment_config["app"]["port"]} \\    --access-logfile /var/log/pvw-cli/access.log \\
+    --error-logfile /var/log/pvw-cli/error.log \\
     --log-level info
 ExecReload=/bin/kill -s HUP $MAINPID
 Restart=always
@@ -271,7 +267,7 @@ RestartSec=3
 WantedBy=multi-user.target
 """
         
-        service_path = Path("/etc/systemd/system/purview-cli.service")
+        service_path = Path("/etc/systemd/system/pvw-cli.service")
         
         try:
             with open(service_path, 'w') as f:
@@ -279,7 +275,7 @@ WantedBy=multi-user.target
             
             # Reload systemd and enable service
             subprocess.run(["sudo", "systemctl", "daemon-reload"], check=True)
-            subprocess.run(["sudo", "systemctl", "enable", "purview-cli"], check=True)
+            subprocess.run(["sudo", "systemctl", "enable", "pvw-cli"], check=True)
             
             logger.info("Systemd service created and enabled")
             
@@ -351,7 +347,7 @@ WantedBy=multi-user.target
         
         # Set environment variables
         env = os.environ.copy()
-        env_file = Path("/etc/purview-cli/.env")
+        env_file = Path("/etc/pvw-cli/.env")
         if env_file.exists():
             with open(env_file) as f:
                 for line in f:
@@ -390,12 +386,11 @@ WantedBy=multi-user.target
             logger.error(f"Deployment failed: {e}")
             self._rollback()
             raise
-    
-    def _stop_services(self):
+      def _stop_services(self):
         """Stop running services"""
         logger.info("Stopping services...")
         
-        services = ["purview-cli", "nginx"]
+        services = ["pvw-cli", "nginx"]
         
         for service in services:
             try:
@@ -422,15 +417,14 @@ WantedBy=multi-user.target
     def _create_backup(self):
         """Create backup of current deployment"""
         logger.info("Creating deployment backup...")
-        
-        backup_dir = Path(f"/var/backups/purview-cli/{int(time.time())}")
+          backup_dir = Path(f"/var/backups/pvw-cli/{int(time.time())}")
         backup_dir.mkdir(parents=True, exist_ok=True)
         
         # Backup database
         self._backup_database(backup_dir)
         
         # Backup uploaded files
-        upload_dir = Path(self.deployment_config.get("app", {}).get("upload_dir", "/var/uploads/purview-cli"))
+        upload_dir = Path(self.deployment_config.get("app", {}).get("upload_dir", "/var/uploads/pvw-cli"))
         if upload_dir.exists():
             subprocess.run([
                 "cp", "-r", str(upload_dir), str(backup_dir / "uploads")
@@ -455,12 +449,11 @@ WantedBy=multi-user.target
             ], check=True)
             
             logger.info("Database backup created")
-    
-    def _start_services(self):
+      def _start_services(self):
         """Start services"""
         logger.info("Starting services...")
         
-        services = ["purview-cli", "nginx"]
+        services = ["pvw-cli", "nginx"]
         
         for service in services:
             try:
@@ -477,13 +470,12 @@ WantedBy=multi-user.target
             except subprocess.CalledProcessError as e:
                 logger.error(f"Failed to start {service}: {e}")
                 raise
-    
-    def _verify_deployment(self):
+      def _verify_deployment(self):
         """Verify deployment is working"""
         logger.info("Verifying deployment...")
         
         # Check service status
-        services = ["purview-cli", "nginx"]
+        services = ["pvw-cli", "nginx"]
         
         for service in services:
             result = subprocess.run([
@@ -514,9 +506,8 @@ WantedBy=multi-user.target
     def _rollback(self):
         """Rollback to previous deployment"""
         logger.info("Rolling back deployment...")
-        
-        # Find latest backup
-        backup_root = Path("/var/backups/purview-cli")
+          # Find latest backup
+        backup_root = Path("/var/backups/pvw-cli")
         if backup_root.exists():
             backups = sorted(backup_root.glob("*"), key=lambda p: p.name, reverse=True)
             if backups:
@@ -529,9 +520,8 @@ WantedBy=multi-user.target
     def status(self):
         """Check deployment status"""
         logger.info("Checking deployment status...")
-        
-        # Check services
-        services = ["purview-cli", "nginx", "postgresql", "redis"]
+          # Check services
+        services = ["pvw-cli", "nginx", "postgresql", "redis"]
         
         for service in services:
             result = subprocess.run([

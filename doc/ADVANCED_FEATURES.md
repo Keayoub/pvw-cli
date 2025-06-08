@@ -35,22 +35,22 @@ cd Purview_cli
 pip install -r requirements_enhanced.txt
 
 # Configure Azure credentials
-purview-cli config create --profile production
+pvw config create --profile production
 ```
 
 ### Basic Usage
 ```bash
 # Test connection
-purview-cli account info --profile production
+pvw account getAccount --profile production
 
 # Start monitoring dashboard
-purview-cli monitoring start-dashboard --realtime
+pvw monitoring dashboard --realtime
 
 # Run ML-powered data discovery
-purview-cli ml discover-similar --entity-guid <guid>
+pvw ml find-similar --entity-guid <guid>
 
 # Access web UI
-purview-cli ui start --port 8080
+pvw ui start --port 8080
 ```
 
 ---
@@ -71,19 +71,19 @@ The Advanced Scanning Operations module provides enterprise-grade scanning autom
 
 ```bash
 # Start a new scan
-purview-cli scanning start-scan --datasource "my-sql-server" --template "sql-standard"
+pvw scanning start-scan --datasource "my-sql-server" --template "sql-standard"
 
 # Monitor scan progress
-purview-cli scanning monitor-scan --scan-id "scan-123"
+pvw scanning monitor-scan --scan-id "scan-123"
 
 # Bulk scan operations
-purview-cli scanning bulk-scan --datasources-file "datasources.json"
+pvw scanning bulk-scan --datasources-file "datasources.json"
 
 # Generate scan report
-purview-cli scanning generate-report --scan-id "scan-123" --format "json"
+pvw scanning generate-report --scan-id "scan-123" --format "json"
 
 # Create scan template
-purview-cli scanning create-template --name "custom-template" --config "template-config.json"
+pvw scanning create-template --name "custom-template" --config "template-config.json"
 ```
 
 ### API Usage
@@ -157,19 +157,19 @@ The Business Rules Engine provides automated governance policy enforcement with 
 
 ```bash
 # Check entity compliance
-purview-cli governance check-compliance --entity-guid "entity-123"
+pvw governance check-compliance --entity-guid "entity-123"
 
 # Generate compliance report
-purview-cli governance compliance-report --collection "sales-data" --format "html"
+pvw governance compliance-report --collection "sales-data" --format "html"
 
 # List all violations
-purview-cli governance list-violations --severity "high" --type "ownership"
+pvw governance list-violations --severity "high" --type "ownership"
 
 # Apply rule to collection
-purview-cli governance apply-rule --rule "data-ownership" --collection "finance"
+pvw governance apply-rule --rule "data-ownership" --collection "finance"
 
 # Create custom rule
-purview-cli governance create-rule --file "custom-rule.json"
+pvw governance create-rule --file "custom-rule.json"
 ```
 
 ### API Usage
@@ -250,19 +250,19 @@ The Real-time Monitoring Dashboard provides comprehensive visibility into Purvie
 
 ```bash
 # Start live dashboard
-purview-cli monitoring dashboard --refresh-interval 30
+pvw monitoring dashboard --refresh-interval 30
 
 # Export current metrics
-purview-cli monitoring export-metrics --format "json" --output "metrics.json"
+pvw monitoring export-metrics --format "json" --output "metrics.json"
 
 # Configure alerts
-purview-cli monitoring setup-alerts --config "alerts.json"
+pvw monitoring setup-alerts --config "alerts.json"
 
 # Generate daily report
-purview-cli monitoring daily-report --date "2024-01-15" --email "admin@company.com"
+pvw monitoring daily-report --date "2024-01-15" --email "admin@company.com"
 
 # Check system health
-purview-cli monitoring health-check --verbose
+pvw monitoring health-check --verbose
 ```
 
 ### API Usage
@@ -358,19 +358,19 @@ The ML Integration module brings intelligent automation to data governance throu
 
 ```bash
 # Find similar entities
-purview-cli ml find-similar --entity-guid "entity-123" --threshold 0.8
+pvw ml find-similar --entity-guid "entity-123" --threshold 0.8
 
 # Detect anomalies
-purview-cli ml detect-anomalies --collection "sales-data" --algorithm "isolation-forest"
+pvw ml detect-anomalies --collection "sales-data" --algorithm "isolation-forest"
 
 # Generate recommendations
-purview-cli ml recommendations --scope "governance" --entity-guid "entity-123"
+pvw ml recommendations --scope "governance" --entity-guid "entity-123"
 
 # Predict scan failures
-purview-cli ml predict-failures --datasource "sql-server" --timeframe "7d"
+pvw ml predict-failures --datasource "sql-server" --timeframe "7d"
 
 # Train classification model
-purview-cli ml train-classifier --training-data "labeled-entities.json"
+pvw ml train-classifier --training-data "labeled-entities.json"
 ```
 
 ### API Usage
@@ -488,19 +488,19 @@ Advanced Lineage Visualization provides deep analysis of data lineage with impac
 
 ```bash
 # Analyze lineage impact
-purview-cli lineage analyze-impact --entity-guid "entity-123" --depth 5
+pvw lineage analyze-impact --entity-guid "entity-123" --depth 5
 
 # Detect lineage gaps
-purview-cli lineage detect-gaps --collection "sales-data" --report-format "html"
+pvw lineage detect-gaps --collection "sales-data" --report-format "html"
 
 # Visualize lineage tree
-purview-cli lineage visualize --entity-guid "entity-123" --direction "both" --max-depth 3
+pvw lineage visualize --entity-guid "entity-123" --direction "both" --max-depth 3
 
 # Export lineage graph
-purview-cli lineage export --entity-guid "entity-123" --format "graphml" --output "lineage.xml"
+pvw lineage export --entity-guid "entity-123" --format "graphml" --output "lineage.xml"
 
 # Infer relationships
-purview-cli lineage infer-relationships --entity-guids "entity1,entity2,entity3"
+pvw lineage infer-relationships --entity-guids "entity1,entity2,entity3"
 ```
 
 ### API Usage
@@ -668,19 +668,19 @@ class CustomDatabasePlugin(DataSourcePlugin):
 
 ```bash
 # List available plugins
-purview-cli plugins list --category "datasource"
+pvw plugins list --category "datasource"
 
 # Install plugin
-purview-cli plugins install --plugin "custom-plugin.zip"
+pvw plugins install --plugin "custom-plugin.zip"
 
 # Execute plugin
-purview-cli plugins execute --name "my_plugin" --config "plugin-config.json"
+pvw plugins execute --name "my_plugin" --config "plugin-config.json"
 
 # Plugin information
-purview-cli plugins info --name "my_plugin"
+pvw plugins info --name "my_plugin"
 
 # Uninstall plugin
-purview-cli plugins uninstall --name "my_plugin"
+pvw plugins uninstall --name "my_plugin"
 ```
 
 ### API Usage
@@ -729,11 +729,10 @@ plugin_info = plugin_manager.get_plugin_info("my_plugin")
                 "async": false
             }
         }
-    },
-    "plugin_discovery": {
+    },    "plugin_discovery": {
         "directories": [
             "./plugins",
-            "/usr/local/share/purview-cli/plugins"
+            "/usr/local/share/pvw/plugins"
         ],
         "auto_load": true,
         "validate_signatures": true
@@ -817,7 +816,7 @@ npm install
 #### Quick Setup
 ```bash
 # Start the backend API server
-purview-cli web start-api --port 8000
+pvw web start-api --port 8000
 
 # Start the frontend development server
 cd web-ui
@@ -834,7 +833,7 @@ cd web-ui
 npm run build
 
 # Start production server
-purview-cli web start --production --port 80
+pvw web start --production --port 80
 
 # Or use Docker
 docker-compose up -d

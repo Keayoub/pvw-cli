@@ -79,24 +79,57 @@ export AZURE_REGION=  # (optional: 'china', 'usgov', etc.)
 Authenticate using Azure CLI (`az login`), Managed Identity, or Service Principal.
 
 ### 2. Using PVW CLI
+
 List all available commands:
 ```bash
 pvw --help
 ```
-Import entities from CSV:
+
+**Basic Operations:**
 ```bash
+# Import entities from CSV
 pvw entity import-csv --csv-file datasets.csv --template dataset
-```
-Export entities:
-```bash
+
+# Export entities
 pvw entity export-csv --query "name:customer*" --output-file exported.csv
-```
-Validate a CSV before import:
-```bash
+
+# Validate a CSV before import
 pvw validate csv --csv-file datasets.csv --template dataset
 ```
 
+**Advanced Features:**
+```bash
+# Business Rules & Governance
+pvw governance check-compliance --entity-guid "entity-123"
+pvw governance compliance-report --collection "sales-data"
+
+# Machine Learning Integration
+pvw ml find-similar --entity-guid "entity-123" --threshold 0.8
+pvw ml detect-anomalies --collection "sales-data"
+
+# Real-time Monitoring
+pvw monitoring dashboard --refresh-interval 30
+pvw monitoring export-metrics --format "json"
+
+# Advanced Lineage Analysis
+pvw lineage analyze-impact --entity-guid "entity-123" --depth 5
+pvw lineage visualize --entity-guid "entity-123" --direction "both"
+
+# Plugin System
+pvw plugins list --category "datasource"
+pvw plugins execute --name "my_plugin" --config "config.json"
+
+# CSV Lineage Processing
+pvw lineage_csv process --input-file "lineage.csv"
+pvw lineage_csv templates --output-dir "templates"
+
+# Web UI Interface
+pvw ui start --port 8080
+```
+
 ### 3. Using PurviewClient in Python
+
+**Basic Usage:**
 ```python
 from purviewcli.client.client import PurviewClient
 
@@ -110,11 +143,37 @@ response = client.http_request('catalog', 'GET', '/api/atlas/v2/entity/bulk?type
 print(response)
 ```
 
+**Advanced Features Integration:**
+```python
+from purviewcli.client.business_rules import BusinessRulesEngine
+from purviewcli.client.monitoring_dashboard import MonitoringDashboard
+from purviewcli.client.ml_integration import IntelligentDataDiscovery
+from purviewcli.client.lineage_visualization import AdvancedLineageAnalyzer
+
+# Business Rules Engine
+rules_engine = BusinessRulesEngine(client.config)
+compliance_result = rules_engine.check_entity_compliance("entity-guid")
+
+# Monitoring Dashboard
+dashboard = MonitoringDashboard(client.config)
+metrics = dashboard.collect_metrics()
+
+# ML Integration
+ml_discovery = IntelligentDataDiscovery(client.config)
+similar_entities = ml_discovery.find_similar_entities("entity-guid", threshold=0.8)
+
+# Advanced Lineage
+lineage_analyzer = AdvancedLineageAnalyzer(client.config)
+impact_analysis = lineage_analyzer.analyze_lineage_impact("entity-guid", max_depth=5)
+```
+
 ---
 
 ## Advanced Features & Enhancements
 
 ### PVW CLI
+
+**Core Features:**
 - **Profile Management**: Easily switch between multiple Purview accounts/environments
 - **Bulk CSV Lineage**: Create hundreds of lineage relationships from a CSV
 - **Glossary Automation**: Import/export terms, assign terms in bulk
@@ -122,13 +181,31 @@ print(response)
 - **Progress & Error Reporting**: Real-time progress bars, detailed error logs
 - **CI/CD Integration**: Use in DevOps pipelines for automated catalog management
 
+**Advanced Features (v2.0):**
+- **Business Rules Engine**: Automated governance policy enforcement with customizable rules
+- **Machine Learning Integration**: AI-powered data discovery, similarity analysis, and anomaly detection
+- **Real-time Monitoring Dashboard**: Live metrics collection with alerting and performance monitoring
+- **Advanced Lineage Visualization**: Deep lineage analysis with impact assessment and gap detection
+- **Plugin System**: Extensible architecture for adding custom functionality and integrations
+- **CSV Lineage Processing**: Bulk lineage creation and management from CSV files
+- **Web UI Interface**: Modern web-based dashboard for visual data governance operations
+
 ### PurviewClient
+
+**Core Features:**
 - **Async & Parallel Operations**: Use `http_request_async` and `bulk_operation` for high throughput
 - **Retry & Rate Limiting**: Automatic handling of throttling and transient errors
 - **Comprehensive Logging**: File and console logs for all operations
 - **Custom Error Handling**: Detailed diagnostics for 403/429 and other errors
 - **File Download Support**: Handles CSV and binary downloads automatically
 - **Health Checks**: Programmatically check Purview service health
+
+**Advanced Integrations (v2.0):**
+- **Business Rules API**: Programmatic access to governance rules and compliance checking
+- **ML Integration API**: Access to machine learning capabilities for data discovery
+- **Monitoring API**: Real-time metrics collection and dashboard management
+- **Lineage Analysis API**: Advanced lineage traversal and impact analysis
+- **Plugin Management API**: Dynamic loading and execution of custom plugins
 
 ---
 

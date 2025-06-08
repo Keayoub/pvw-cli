@@ -1,50 +1,67 @@
-# PURVIEW CLI - Comprehensive Azure Purview Automation
+# PURVIEW CLI v2.0 - Comprehensive Azure Purview Automation & Data Governance
 
-## PVW CLI & PurviewClient: Advanced Azure Purview Automation
+## PVW CLI & PurviewClient: Advanced Azure Purview Automation Platform
 
-**PVW CLI** and the **PurviewClient** Python library provide a powerful, developer-friendly, and automation-focused complement to the Azure Purview web UI. They enable advanced data catalog management, bulk operations, and deep integration with CI/CD, scripting, and data engineering workflows.
+**PVW CLI v2.0** and the **PurviewClient** Python library provide a powerful, enterprise-grade automation platform for Azure Purview. This comprehensive suite enables advanced data catalog management, intelligent governance automation, real-time monitoring, and deep integration with CI/CD, scripting, and data engineering workflows.
 
 ---
 
-### What is PVW CLI?
+### What is PVW CLI v2.0?
 
-**PVW CLI** is an enhanced command-line interface for Azure Purview, designed to:
+**PVW CLI v2.0** is an enhanced command-line interface and automation platform for Azure Purview, designed to:
 
-- Automate complex data catalog, lineage, and governance tasks
-- Support bulk import/export, validation, and advanced CSV operations
-- Manage Purview profiles, environments, and authentication
-- Integrate seamlessly with CI/CD, scripting, and data engineering pipelines
-- Provide rich output, progress tracking, and error reporting
+- **Automate Data Governance**: Intelligent business rules engine with automated compliance checking
+- **Enable ML-Powered Discovery**: AI-driven data discovery, similarity analysis, and anomaly detection
+- **Provide Real-time Monitoring**: Live dashboards with metrics, alerting, and performance tracking
+- **Advanced Lineage Analysis**: Deep lineage traversal with impact assessment and gap detection
+- **Extensible Architecture**: Plugin system for custom integrations and functionality
+- **Web UI Interface**: Modern web dashboard for visual data governance operations
+- **Bulk Operations**: Import/export thousands of entities, relationships, or glossary terms efficiently
+- **CSV Lineage Processing**: Create and manage complex lineage relationships from CSV files
 
 **Key Added Value:**
 
-- **Automation**: Script and schedule any Purview operation
-- **Bulk Operations**: Import/export thousands of entities, relationships, or glossary terms in one go
-- **Validation**: Built-in data quality and schema validation before import
-- **Template System**: Reusable templates for common entity and lineage types
-- **Developer Experience**: Rich CLI output, progress bars, and error diagnostics
-- **Complement to UI**: Enables tasks not possible or practical in the web UI (e.g., mass updates, integration with other tools)
+- **Intelligent Automation**: ML-powered governance with automated policy enforcement
+- **Enterprise Monitoring**: Real-time visibility into data governance operations
+- **Advanced Analytics**: Deep lineage analysis with impact assessment capabilities
+- **Extensibility**: Plugin architecture for custom integrations and workflows
+- **Visual Interface**: Web-based dashboard complementing CLI operations
+- **Compliance Automation**: Automated governance rules with violation detection and remediation
+- **Performance Optimization**: Advanced scanning, monitoring, and resource management
+- **Developer Experience**: Rich CLI output, progress tracking, and comprehensive error diagnostics
 
 ---
 
-### What is PurviewClient?
+### What is PurviewClient v2.0?
 
-**PurviewClient** is a Python library that provides:
+**PurviewClient v2.0** is an enhanced Python library that provides:
 
+**Core Capabilities:**
 - Full programmatic access to the latest Azure Purview REST APIs
 - Advanced retry, rate limiting, and error handling
 - Async and sync HTTP support for high-performance automation
 - Bulk operation helpers for parallel processing
--  logging and diagnostics
+- Comprehensive logging and diagnostics
 - Easy integration with Python scripts, notebooks, and automation tools
+
+**Advanced Features (v2.0):**
+- **Business Rules API**: Programmatic access to governance rules and compliance checking
+- **ML Integration API**: Access to machine learning capabilities for data discovery and recommendations
+- **Monitoring API**: Real-time metrics collection and dashboard management
+- **Advanced Lineage API**: Deep lineage traversal and impact analysis capabilities
+- **Plugin Management API**: Dynamic loading and execution of custom plugins
+- **Web UI API**: Backend services for the web-based governance dashboard
 
 **Key Enhancements Over SDK/UI:**
 
 - **Comprehensive API Coverage**: Access all data plane and control plane APIs
-- **Advanced Automation**: Retry logic, rate limiting, async support
-- **Bulk & Parallel Operations**: Efficiently process large datasets
-- **Custom Logging**: Detailed logs for debugging and auditing
-- **Error Diagnostics**: Rich error messages and token diagnostics
+- **Intelligent Automation**: ML-powered governance with automated compliance checking
+- **Advanced Analytics**: Real-time monitoring and performance optimization capabilities
+- **Extensible Architecture**: Plugin system for custom integrations and workflows
+- **Bulk & Parallel Operations**: Efficiently process large datasets with intelligent batching
+- **Enterprise Monitoring**: Real-time dashboards and alerting systems
+- **Custom Logging**: Detailed logs for debugging, auditing, and compliance tracking
+- **Error Diagnostics**: Rich error messages with actionable recommendations
 
 ---
 
@@ -77,7 +94,7 @@ Or copy `purviewcli/client/client.py` into your project and install dependencies
 
 ---
 
-### Getting Started
+### Getting Started with PVW CLI v2.0
 
 #### 1. Configure Authentication
 
@@ -90,15 +107,128 @@ export AZURE_REGION=  # (optional: 'china', 'usgov', etc.)
 
 Authenticate using Azure CLI (`az login`), Managed Identity, or Service Principal.
 
-#### 2. Using PVW CLI
+#### 2. Basic Operations
 
 List all available commands:
-
 ```bash
 pvw --help
 ```
 
-Import entities from CSV:
+**Core Data Management:**
+```bash
+# Import entities from CSV
+pvw entity import-csv --csv-file datasets.csv --template dataset
+
+# Export entities to CSV
+pvw entity export-csv --query "name:customer*" --output-file exported.csv
+
+# Validate CSV before import
+pvw validate csv --csv-file datasets.csv --template dataset
+```
+
+#### 3. Advanced Features (v2.0)
+
+**Business Rules & Governance Automation:**
+```bash
+# Check entity compliance against governance rules
+pvw governance check-compliance --entity-guid "entity-123"
+
+# Generate comprehensive compliance report
+pvw governance compliance-report --collection "sales-data" --format "html"
+
+# List governance violations
+pvw governance list-violations --severity "high" --type "ownership"
+
+# Apply governance rule to collection
+pvw governance apply-rule --rule "data-ownership" --collection "finance"
+```
+
+**Machine Learning Integration:**
+```bash
+# Find entities similar to a target entity
+pvw ml find-similar --entity-guid "entity-123" --threshold 0.8
+
+# Detect data anomalies using ML algorithms
+pvw ml detect-anomalies --collection "sales-data" --algorithm "isolation-forest"
+
+# Generate ML-powered governance recommendations
+pvw ml recommendations --scope "governance" --entity-guid "entity-123"
+
+# Predict potential scan failures
+pvw ml predict-failures --datasource "sql-server" --timeframe "7d"
+```
+
+**Real-time Monitoring & Analytics:**
+```bash
+# Start live monitoring dashboard
+pvw monitoring dashboard --refresh-interval 30
+
+# Export current system metrics
+pvw monitoring export-metrics --format "json" --output "metrics.json"
+
+# Setup custom alerts and thresholds
+pvw monitoring setup-alerts --config "alerts.json"
+
+# Generate comprehensive daily report
+pvw monitoring daily-report --date "2024-01-15" --email "admin@company.com"
+```
+
+**Advanced Lineage Analysis:**
+```bash
+# Analyze downstream impact of entity changes
+pvw lineage analyze-impact --entity-guid "entity-123" --depth 5
+
+# Detect gaps in lineage documentation
+pvw lineage detect-gaps --collection "sales-data" --report-format "html"
+
+# Visualize lineage relationships as tree structure
+pvw lineage visualize --entity-guid "entity-123" --direction "both" --max-depth 3
+
+# Export lineage graph for external analysis
+pvw lineage export --entity-guid "entity-123" --format "graphml" --output "lineage.xml"
+
+# Infer potential relationships using ML
+pvw lineage infer-relationships --entity-guids "entity1,entity2,entity3"
+```
+
+**Plugin System & Extensibility:**
+```bash
+# List available plugins by category
+pvw plugins list --category "datasource"
+
+# Install custom plugin
+pvw plugins install --plugin "custom-plugin.zip"
+
+# Execute plugin with custom configuration
+pvw plugins execute --name "my_plugin" --config "plugin-config.json"
+
+# Get detailed plugin information
+pvw plugins info --name "my_plugin"
+```
+
+**CSV Lineage Processing:**
+```bash
+# Process lineage relationships from CSV file
+pvw lineage_csv process --input-file "lineage.csv" --validate
+
+# Generate lineage templates for common patterns
+pvw lineage_csv templates --output-dir "templates" --type "all"
+
+# Validate lineage CSV before processing
+pvw lineage_csv validate --input-file "lineage.csv" --schema "standard"
+```
+
+**Web UI Interface:**
+```bash
+# Start web-based governance dashboard
+pvw ui start --port 8080
+
+# Start API backend for web interface
+pvw web start-api --port 8000
+
+# Access full-stack deployment
+pvw web start --production --port 80
+```
 
 ```bash
 pvw entity import-csv --csv-file datasets.csv --template dataset
@@ -532,7 +662,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - 📖 [Documentation](https://pvw-cli.readthedocs.io/)
 - 🐛 [Issue Tracker](https://github.com/your-org/pvw-cli/issues)
 - 💬 [Discussions](https://github.com/your-org/pvw-cli/discussions)
-- 📧 [Email Support](mailto:purview-cli@your-org.com)
+- 📧 [Email Support](mailto:pvw-cli@your-org.com)
 
 ## Changelog
 

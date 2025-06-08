@@ -87,7 +87,7 @@ class PurviewClient:
             headers={
                 'Authorization': f'Bearer {self._token}',
                 'Content-Type': 'application/json',
-                'User-Agent': f'purview-cli-enhanced/2.0'
+                'User-Agent': f'pvw-cli/2.0'
             }
         )
     
