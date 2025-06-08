@@ -2,6 +2,7 @@ __pycache__
 .env/
 .venv/
 env/
+myenv/
 .vscode/
 output/
 config.ini
@@ -31,4 +32,5 @@ web-ui/.eslintcache
 backend/.env
 pvw.exe
 pvw.spec
+nginx/
 
