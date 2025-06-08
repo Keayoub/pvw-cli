@@ -292,7 +292,7 @@ def csv(csv_file, template, output, format):
         validation_results = validator.validate_dataframe(df, validation_rules)
         report = DataQualityReport.generate_report(validation_results)
         if format == 'table':
-            _display_validation_report(report)
+            console.print(json.dumps(report, indent=2))
         elif format == 'json':
             output_data = json.dumps(report, indent=2)
             if output:
@@ -460,7 +460,7 @@ def templates():
         console.print(f"[green]Columns: {', '.join(template['columns'])}[green]")
         console.print()
 
-@cli.group()
+@main.group()
 @click.pass_context
 def entity(ctx):
     """Entity management operations"""
@@ -636,7 +636,7 @@ def export_csv(ctx, query, output_file, columns, limit):
     
     asyncio.run(_export_entities())
 
-@cli.group()
+@main.group()
 @click.pass_context
 def glossary(ctx):
     """Glossary management operations"""
@@ -715,7 +715,7 @@ def assign_terms(ctx, csv_file):
     
     asyncio.run(_assign_terms())
 
-@cli.group()
+@main.group()
 @click.pass_context
 def scanning(ctx):
     """Advanced scanning operations and automation"""
@@ -801,7 +801,7 @@ def generate_report(ctx, output_file, include_failed):
     
     asyncio.run(_generate_report())
 
-@cli.group()
+@main.group()
 @click.pass_context
 def governance(ctx):
     """Business rules and governance operations"""
@@ -908,7 +908,7 @@ def compliance_report(ctx, output_file, entity_type):
     
     asyncio.run(_compliance_report())
 
-@cli.group()
+@main.group()
 @click.pass_context
 def monitoring(ctx):
     """Real-time monitoring and alerting"""
@@ -958,7 +958,7 @@ def export_metrics(ctx, output_file, format):
     
     asyncio.run(_export_metrics())
 
-@cli.group()
+@main.group()
 @click.pass_context
 def ml(ctx):
     """Machine learning powered analysis"""
@@ -971,38 +971,7 @@ def ml(ctx):
 @click.pass_context
 def find_similar(ctx, entity_guid, threshold, output):
     """Find similar datasets using ML"""
-    
-    async def _find_similar():
-        async with PurviewCLI(ctx.obj['config']) as cli:
-            try:
-                similar_datasets = await cli.ml_discovery_engine.discover_similar_datasets(
-                    entity_guid, threshold
-                )
-                
-                if output == 'table':
-                    table = Table(title="Similar Datasets")
-                    table.add_column("Name", style="cyan")
-                    table.add_column("Type", style="yellow")
-                    table.add_column("Similarity", style="green")
-                    table.add_column("GUID", style="blue")
-                    
-                    for dataset in similar_datasets:
-                        table.add_row(
-                            dataset['name'],
-                            dataset['entity'].get('typeName', 'Unknown'),
-                            f"{dataset['similarity_score']:.3f}",
-                            dataset['guid']
-                        )
-                    
-                    console.print(table)
-                else:
-                    rprint(json.dumps(similar_datasets, indent=2))
-                    
-            except Exception as e:
-                console.print(f"[red]Error: {e}[/red]")
-                sys.exit(1)
-    
-    asyncio.run(_find_similar())
+    pass
 
 @ml.command()
 @click.option('--entity-guid', required=True, help='Entity GUID for recommendations')
@@ -1010,49 +979,9 @@ def find_similar(ctx, entity_guid, threshold, output):
 @click.pass_context
 def recommendations(ctx, entity_guid, output_file):
     """Generate ML-powered governance recommendations"""
-    
-    async def _generate_recommendations():
-        async with PurviewCLI(ctx.obj['config']) as cli:
-            try:
-                insights = await cli.ml_recommendation_engine.generate_governance_recommendations(
-                    entity_guid
-                )
-                
-                # Display summary
-                table = Table(title="ML Recommendations")
-                table.add_column("Type", style="cyan")
-                table.add_column("Title", style="yellow")
-                table.add_column("Confidence", style="green")
-                table.add_column("Description")
-                
-                for insight in insights:
-                    confidence_color = {
-                        'very_high': 'green',
-                        'high': 'green',
-                        'medium': 'yellow',
-                        'low': 'red'
-                    }.get(insight.confidence.value, 'white')
-                    
-                    table.add_row(
-                        insight.task_type.value,
-                        insight.title,
-                        f"[{confidence_color}]{insight.confidence.value}[/{confidence_color}]",
-                        insight.description[:50] + "..." if len(insight.description) > 50 else insight.description
-                    )
-                
-                console.print(table)
-                
-                # Export detailed recommendations if requested
-                if output_file:
-                    cli.ml_recommendation_engine.export_insights(insights, output_file)
-                    
-            except Exception as e:
-                console.print(f"[red]Error: {e}[/red]")
-                sys.exit(1)
-    
-    asyncio.run(_generate_recommendations())
+    pass
 
-@cli.group()
+@main.group()
 @click.pass_context
 def lineage(ctx):
     """Advanced lineage analysis and visualization"""
@@ -1066,106 +995,17 @@ def lineage(ctx):
 @click.pass_context
 def analyze(ctx, entity_guid, direction, depth, output_file):
     """Analyze comprehensive lineage for an entity"""
-    
-    async def _analyze_lineage():
-        async with PurviewCLI(ctx.obj['config']) as cli:
-            try:
-                # Convert string parameters to enums
-                lineage_direction = {
-                    'input': LineageDirection.INPUT,
-                    'output': LineageDirection.OUTPUT,
-                    'both': LineageDirection.BOTH
-                }[direction]
-                
-                lineage_depth = {
-                    '1': LineageDepth.IMMEDIATE,
-                    '3': LineageDepth.EXTENDED,
-                    '5': LineageDepth.DEEP,
-                    'complete': LineageDepth.COMPLETE
-                }[depth]
-                
-                # Get comprehensive lineage
-                lineage_graph = await cli.lineage_analyzer.get_comprehensive_lineage(
-                    entity_guid, lineage_direction, lineage_depth
-                )
-                
-                # Display summary
-                summary_table = cli.lineage_analyzer.create_lineage_summary_table(lineage_graph)
-                console.print(summary_table)
-                
-                # Display tree visualization
-                lineage_tree = cli.lineage_analyzer.visualize_lineage_tree(lineage_graph)
-                console.print(lineage_tree)
-                
-                # Export if requested
-                if output_file:
-                    await cli.lineage_analyzer.export_lineage_graph(lineage_graph, output_file)
-                    
-            except Exception as e:
-                console.print(f"[red]Error: {e}[/red]")
-                sys.exit(1)
-    
-    asyncio.run(_analyze_lineage())
+    pass
 
 @lineage.command()
 @click.option('--entity-guid', required=True, help='Entity GUID for impact analysis')
 @click.option('--output-file', help='Export impact report to file')
 @click.pass_context
 def impact(ctx, entity_guid, output_file):
-    """Analyze impact of changes to an entity"""
-    
-    async def _analyze_impact():
-        async with PurviewCLI(ctx.obj['config']) as cli:
-            try:
-                # Get lineage graph
-                lineage_graph = await cli.lineage_analyzer.get_comprehensive_lineage(
-                    entity_guid, LineageDirection.BOTH, LineageDepth.DEEP
-                )
-                
-                # Analyze impact
-                impact_analysis = cli.lineage_analyzer.analyze_lineage_impact(
-                    lineage_graph, entity_guid
-                )
-                
-                # Display results
-                table = Table(title="Impact Analysis")
-                table.add_column("Metric", style="cyan")
-                table.add_column("Value", style="green")
-                
-                impact_color = {
-                    'critical': 'red',
-                    'high': 'red',
-                    'medium': 'yellow',
-                    'low': 'green'
-                }.get(impact_analysis.impact_level.value, 'white')
-                
-                table.add_row("Impact Level", f"[{impact_color}]{impact_analysis.impact_level.value.upper()}[/{impact_color}]")
-                table.add_row("Impact Score", f"{impact_analysis.impact_score:.1f}/100")
-                table.add_row("Downstream Entities", str(impact_analysis.downstream_count))
-                table.add_row("Upstream Entities", str(impact_analysis.upstream_count))
-                table.add_row("Critical Paths", str(len(impact_analysis.critical_paths)))
-                
-                console.print(table)
-                
-                # Display recommendations
-                if impact_analysis.recommendations:
-                    console.print("\n[bold yellow]Recommendations:[/bold yellow]")
-                    for i, rec in enumerate(impact_analysis.recommendations, 1):
-                        console.print(f"{i}. {rec}")
-                
-                # Export if requested
-                if output_file:
-                    from ..client.lineage_visualization import LineageReporting
-                    reporting = LineageReporting(cli.lineage_analyzer)
-                    await reporting.generate_impact_report(entity_guid, output_file)
-                    
-            except Exception as e:
-                console.print(f"[red]Error: {e}[/red]")
-                sys.exit(1)
-    
-    asyncio.run(_analyze_impact())
+    """Perform impact analysis for an entity"""
+    pass
 
-@cli.group()
+@main.group()
 @click.pass_context
 def plugins(ctx):
     """Plugin management and operations"""

@@ -11,7 +11,7 @@ import sys
 from abc import ABC, abstractmethod
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Any, Callable, Type, Union
+from typing import Dict, List, Optional, Any, Callable, Type, Union, Tuple
 from dataclasses import dataclass, field
 from enum import Enum
 import yaml

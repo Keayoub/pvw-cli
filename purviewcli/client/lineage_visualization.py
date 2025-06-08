@@ -341,13 +341,15 @@ class AdvancedLineageAnalyzer:
             impact_level=impact_level,
             impact_score=impact_score,
             downstream_count=len(downstream_entities),
-            upstream_count=len(upstream_entities),
-            critical_paths=critical_paths,
+            upstream_count=len(upstream_entities),            critical_paths=critical_paths,
             recommendations=recommendations
         )
     
-    def _create_networkx_graph(self, graph: LineageGraph) -> nx.DiGraph:
+    def _create_networkx_graph(self, graph: LineageGraph) -> Any:
         """Create NetworkX directed graph from lineage graph"""
+        if nx is None:
+            return None
+        
         nx_graph = nx.DiGraph()
         
         # Add nodes
@@ -388,8 +390,7 @@ class AdvancedLineageAnalyzer:
         nodes: Dict[str, LineageNode]
     ) -> ImpactLevel:
         """Determine qualitative impact level"""
-        
-        # Check for critical entities in downstream
+          # Check for critical entities in downstream
         has_critical = any(
             'critical' in nodes.get(guid, LineageNode('', '', '', '')).classifications
             for guid in downstream_entities
@@ -406,7 +407,7 @@ class AdvancedLineageAnalyzer:
     
     def _find_critical_paths(
         self, 
-        nx_graph: nx.DiGraph, 
+        nx_graph: Any, 
         source_guid: str, 
         downstream_entities: List[str]
     ) -> List[List[str]]:

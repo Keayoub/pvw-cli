@@ -8,7 +8,7 @@ import json
 import re
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple, Union
+from typing import Dict, List, Optional, Any, Tuple, Union, TYPE_CHECKING
 from dataclasses import dataclass, field
 from enum import Enum
 from rich.console import Console
@@ -34,12 +34,12 @@ except ImportError as e:
     IsolationForest = None
     ML_AVAILABLE = False
     print(f"Warning: ML dependencies not available ({e}). ML features will be limited.")
+
 from rich.table import Table
 from rich.panel import Panel
 from rich.progress import Progress, TaskID
 
-from .api_client import PurviewClient
-from .config import PurviewProfile
+from .api_client import PurviewClient, PurviewConfig
 
 console = Console()
 
@@ -207,22 +207,24 @@ class IntelligentDataDiscovery:
         for classification in classifications:
             if isinstance(classification, dict):
                 features.append(classification.get('typeName', ''))
-        
-        # Custom attributes
+          # Custom attributes
         custom_attrs = attributes.get('customAttributes', {})
         if isinstance(custom_attrs, dict):
             for key, value in custom_attrs.items():
                 features.extend([key, str(value)])
         
         return ' '.join(filter(None, features))
-    
-    def _vectorize_features(self, feature_texts: List[str]) -> np.ndarray:
+
+    def _vectorize_features(self, feature_texts: List[str]) -> Any:
         """Convert text features to numerical vectors"""
         try:
             return self.vectorizer.fit_transform(feature_texts).toarray()
         except:
             # Fallback for empty or invalid texts
-            return np.zeros((len(feature_texts), 100))
+            if np is not None:
+                return np.zeros((len(feature_texts), 100))
+            else:
+                return [[0.0] * 100 for _ in range(len(feature_texts))]
     
     async def detect_schema_anomalies(self, entity_type: str = "DataSet") -> List[AnomalyResult]:
         """Detect schema anomalies using ML"""
