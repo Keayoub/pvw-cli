@@ -1,4 +1,4 @@
-# pv share deleteReceivedShare
+# pvw share deleteReceivedShare
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  deleteReceivedShare
 
@@ -9,7 +9,7 @@ Deletes a received share.
 ## Syntax
 
 ```
-pv share deleteReceivedShare --receivedShareName=<val>
+pvw share deleteReceivedShare --receivedShareName=<val>
 ```
 
 ## Required Arguments
@@ -33,5 +33,5 @@ DELETE https://{accountName}.purview.azure.com/share/receivedShares/{receivedSha
 Delete a received share.
 
 ```powershell
-pv share deleteReceivedShare --receivedShareName "NewShare"
+pvw share deleteReceivedShare --receivedShareName "NewShare"
 ```

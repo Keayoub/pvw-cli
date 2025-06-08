@@ -1,4 +1,4 @@
-# pv entity addOrUpdateBusinessAttribute
+# pvw entity addOrUpdateBusinessAttribute
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > addOrUpdateBusinessAttribute
 
 ## Description
@@ -6,7 +6,7 @@ Add or update business attributes to an entity.
 
 ## Syntax
 ```
-pv entity addOrUpdateBusinessAttribute --guid=<val> --bmName=<val> --payloadFile=<val>
+pvw entity addOrUpdateBusinessAttribute --guid=<val> --bmName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -31,7 +31,7 @@ POST https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/{g
 ## Examples
 Add or update business attributes to an entity.
 ```powershell
-pv entity addOrUpdateBusinessAttribute --guid "0e945784-4bc3-40bb-a541-e8d1f7c9bf50" --bmName "myBizMetadata1" --payloadFile "/path/to/file.json"
+pvw entity addOrUpdateBusinessAttribute --guid "0e945784-4bc3-40bb-a541-e8d1f7c9bf50" --bmName "myBizMetadata1" --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

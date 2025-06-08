@@ -1,4 +1,4 @@
-# pv insight tags
+# pvw insight tags
 [Command Reference](../../../README.md#command-reference) > [insight](./main.md) > tags
 
 ## Description
@@ -6,7 +6,7 @@ Number of assets by tags.
 
 ## Syntax
 ```
-pv insight tags
+pvw insight tags
 ```
 
 ## Required Arguments
@@ -23,7 +23,7 @@ GET https://{accountName}.purview.azure.com/mapanddiscover/reports/serverless/as
 ## Examples
 Get the number of assets by tags.
 ```powershell
-pv insight tags
+pvw insight tags
 ```
 <details><summary>Sample response.</summary>
 <p>

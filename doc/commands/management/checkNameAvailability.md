@@ -1,4 +1,4 @@
-# pv management checkNameAvailability
+# pvw management checkNameAvailability
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > checkNameAvailability
 
 ## Description
@@ -6,7 +6,7 @@ Checks the account name availability.
 
 ## Syntax
 ```
-pv management checkNameAvailability --subscriptionId=<val> --accountName=<val>
+pvw management checkNameAvailability --subscriptionId=<val> --accountName=<val>
 ```
 
 ## Required Arguments
@@ -28,7 +28,7 @@ POST https://management.azure.com/subscriptions/{subscriptionId}/providers/Micro
 ## Examples
 Check if the account name is available.
 ```powershell
-pv management checkNameAvailability --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --accountName "my-new-purview-account-name"
+pvw management checkNameAvailability --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --accountName "my-new-purview-account-name"
 ```
 
 <details><summary>Sample response.</summary>

@@ -1,4 +1,4 @@
-# pv entity addLabels
+# pvw entity addLabels
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > addLabels
 
 ## Description
@@ -6,7 +6,7 @@ Append labels to an entity.
 
 ## Syntax
 ```
-pv entity addLabels --guid=<val> --payloadFile=<val>
+pvw entity addLabels --guid=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -28,7 +28,7 @@ PUT https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/{gu
 ## Examples
 Append labels to an existing entity.
 ```powershell
-pv entity addLabels --guid "7738b5c7-7977-4261-9871-7d00e11cabe8" --payloadFile "/path/to/file.json"
+pvw entity addLabels --guid "7738b5c7-7977-4261-9871-7d00e11cabe8" --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

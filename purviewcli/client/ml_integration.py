@@ -38,7 +38,7 @@ from rich.table import Table
 from rich.panel import Panel
 from rich.progress import Progress, TaskID
 
-from .api_client import EnhancedPurviewClient
+from .api_client import PurviewClient
 from .config import PurviewProfile
 
 console = Console()
@@ -99,7 +99,7 @@ class AnomalyResult:
 class IntelligentDataDiscovery:
     """ML-powered data discovery and analysis"""
     
-    def __init__(self, client: EnhancedPurviewClient):
+    def __init__(self, client: PurviewClient):
         self.client = client
         self.console = Console()
         self.vectorizer = TfidfVectorizer(max_features=1000, stop_words='english')
@@ -569,7 +569,7 @@ class IntelligentDataDiscovery:
 class MLRecommendationEngine:
     """ML-powered recommendation engine for data governance"""
     
-    def __init__(self, client: EnhancedPurviewClient):
+    def __init__(self, client: PurviewClient):
         self.client = client
         self.console = Console()
         self.discovery_engine = IntelligentDataDiscovery(client)
@@ -757,7 +757,7 @@ class MLRecommendationEngine:
 class PredictiveAnalytics:
     """Predictive analytics for data governance trends"""
     
-    def __init__(self, client: EnhancedPurviewClient):
+    def __init__(self, client: PurviewClient):
         self.client = client
         self.console = Console()
     

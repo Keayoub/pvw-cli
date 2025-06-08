@@ -1,4 +1,4 @@
-# pv types readClassificationDef
+# pvw types readClassificationDef
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > readClassificationDef
 
 ## Description
@@ -6,7 +6,7 @@ Get the classification definition for the given GUID or by its name (unique).
 
 ## Syntax
 ```
-pv types readClassificationDef (--guid=<val> | --name=<val>)
+pvw types readClassificationDef (--guid=<val> | --name=<val>)
 ```
 
 ## Required Arguments
@@ -33,7 +33,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/classific
 ## Examples
 Get classification definition by name.
 ```powershell
-pv types readClassificationDef --name "MICROSOFT.GOVERNMENT.CANADA.DRIVERS_LICENSE_NUMBER"
+pvw types readClassificationDef --name "MICROSOFT.GOVERNMENT.CANADA.DRIVERS_LICENSE_NUMBER"
 ```
 
 <details><summary>Sample response.</summary>
@@ -65,5 +65,5 @@ pv types readClassificationDef --name "MICROSOFT.GOVERNMENT.CANADA.DRIVERS_LICEN
 
 Get classification definition by guid.
 ```powershell
-pv types readClassificationDef --guid "324fd07d-327a-3c0a-5f74-ee9310936782"
+pvw types readClassificationDef --guid "324fd07d-327a-3c0a-5f74-ee9310936782"
 ```

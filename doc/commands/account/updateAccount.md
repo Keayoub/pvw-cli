@@ -1,4 +1,4 @@
-# pv account updateAccount
+# pvw account updateAccount
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > updateAccount
 
 ## Description
@@ -6,7 +6,7 @@ Updates an account.
 
 ## Syntax
 ```
-pv account updateAccount --friendlyName=<val>
+pvw account updateAccount --friendlyName=<val>
 ```
 
 ## Required Arguments
@@ -25,7 +25,7 @@ PATCH https://{accountName}.purview.azure.com/account/
 ## Examples
 Update the friendly name of the account.
 ```powershell
-pv account updateAccount --friendlyName "Purview Sandbox"
+pvw account updateAccount --friendlyName "Purview Sandbox"
 ```
 
 <details><summary>Sample response.</summary>

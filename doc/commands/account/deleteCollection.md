@@ -1,4 +1,4 @@
-# pv account deleteCollection
+# pvw account deleteCollection
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > deleteCollection
 
 ## Description
@@ -6,7 +6,7 @@ Deletes a collection.
 
 ## Syntax
 ```
-pv account deleteCollection --collectionName=<val>
+pvw account deleteCollection --collectionName=<val>
 ```
 
 ## Required Arguments
@@ -25,5 +25,5 @@ DELETE https://{accountName}.purview.azure.com/account/collections/{collectionNa
 ## Examples
 Delete a collection by name.
 ```powershell
-pv account deleteCollection --collectionName "tn56xt" 
+pvw account deleteCollection --collectionName "tn56xt" 
 ```

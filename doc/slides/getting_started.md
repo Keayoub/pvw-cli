@@ -4,7 +4,7 @@ theme: uncover
 ---
 # Azure Purview CLI
 
-`purviewcli`
+`pvw-cli`
 
 ---
 
@@ -12,6 +12,7 @@ theme: uncover
 <!-- _footer: "Azure Purview High-Level Concepts" -->
 
 ![bg width:95%](https://raw.githubusercontent.com/tayganr/purviewcli/master/doc/image/purview_components.png)
+
 
 <style>
 section.left h4, section.left p {
@@ -22,18 +23,18 @@ section.left h4, section.left p {
 ---
 <!-- paginate: true -->
 
-## What is purviewcli?
+## What is pvw-cli?
 
-`purviewcli` is a Python package that provides a cross-platform command line interface (CLI) to Azure Purview. Suitable for ad-hoc tasks and quick exploratory operations.
+`pvw-cli` is a Python package that provides a cross-platform command line interface (CLI) to Azure Purview. Suitable for ad-hoc tasks and quick exploratory operations.
 
 ---
 
 <!-- _class: left -->
-<!-- _footer: "Python Package Index (PyPi) https://pypi.org/project/purviewcli/" -->
+<!-- _footer: "Python Package Index (PyPi) https://pypi.org/project/pvw-cli/" -->
 
 #### Installation
 
-`pip install purviewcli`
+`pip install pvw-cli`
 
 <style>
 section.left h4, section.left p {
@@ -71,13 +72,13 @@ table {
 
 #### Authentication
 
-The `purviewcli` package leverages `DefaultAzureCredential` from [azure-identity](https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/identity/azure-identity#defaultazurecredential). `purviewcli` will attempt to authenticate via the following mechanisms in this order, stopping when one succeeds.
+The `pvw-cli` package leverages `DefaultAzureCredential` from [azure-identity](https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/identity/azure-identity#defaultazurecredential). `pvw-cli` will attempt to authenticate via the following mechanisms in this order, stopping when one succeeds.
 |Mechanism |Description|
 |:---|:---|
-|Environment|If account information has been specified via Environment Variables, purviewcli will use it to authenticate.|
-|Managed Identity|If deployed to an Azure host with Managed Identity enabled, purviewcli will authenticate with it. |
-|Visual Studio Code|If a user has signed in to the Visual Studio Code Azure Account extension, purviewcli will authenticate as that user.|
-|Azure CLI|If a user has signed in via the Azure CLI `az login` command, purviewcli will authenticate as that user.|
+|Environment|If account information has been specified via Environment Variables, pvw-cli will use it to authenticate.|
+|Managed Identity|If deployed to an Azure host with Managed Identity enabled, pvw-cli will authenticate with it. |
+|Visual Studio Code|If a user has signed in to the Visual Studio Code Azure Account extension, pvw-cli will authenticate as that user.|
+|Azure CLI|If a user has signed in via the Azure CLI `az login` command, pvw-cli will authenticate as that user.|
 
 <!-- Scoped style -->
 <style scoped>
@@ -119,20 +120,20 @@ table {
 ---
 
 <!-- _class: left -->
-<!-- _footer: "`pv --help`" -->
+<!-- _footer: "`pvw --help`" -->
 
 #### Commands
 
 |Commands|Description|
 |:---|:---|
-|`pv entity`|Entities are a collection of attributes that model or represent an asset.|
-|`pv glossary`|A glossary provides vocabulary for business users.|
-|`pv lineage`|Understand the data's origin and where it moves over time.|
-|`pv relationship`|Relationships describe connections between two entities.|
-|`pv types`|A Type is a definition of how a particular object type is stored.|
-|`pv scan`|Azure Purview scan.|
-|`pv insight`|Azure Purview insights.|
-|`pv search`|Azure Purview advanced search.|
+|`pvw entity`|Entities are a collection of attributes that model or represent an asset.|
+|`pvw glossary`|A glossary provides vocabulary for business users.|
+|`pvw lineage`|Understand the data's origin and where it moves over time.|
+|`pvw relationship`|Relationships describe connections between two entities.|
+|`pvw types`|A Type is a definition of how a particular object type is stored.|
+|`pvw scan`|Azure Purview scan.|
+|`pvw insight`|Azure Purview insights.|
+|`pvw search`|Azure Purview advanced search.|
 
 <!-- Scoped style -->
 <style scoped>
@@ -152,7 +153,7 @@ ol {
 #### Usage
 
 ```python
-pv command sub-command --parameter1='value' --parameter2='value'
+pvw command sub-command --parameter1='value' --parameter2='value'
 ```
 
 - All parameters are required by default.
@@ -176,9 +177,9 @@ ul {
 
 #### Example
 
-An example of how you can get started with `purviewcli` within a Jupyter Notebook.
+An example of how you can get started with `pvw-cli` within a Jupyter Notebook.
 
- 1. Install purviewcli
+ 1. Install pvw-cli
  2. Set Environment Variables
  3. Execute Command
 

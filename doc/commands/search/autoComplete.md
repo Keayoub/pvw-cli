@@ -1,4 +1,4 @@
-# pv search autoComplete
+# pvw search autoComplete
 [Command Reference](../../../README.md#command-reference) > [search](./main.md) > autoComplete
 
 ## Description
@@ -6,7 +6,7 @@ Get auto complete options.
 
 ## Syntax
 ```
-pv search autoComplete [--keywords=<val> --limit=<val> --filterFile=<val>]
+pvw search autoComplete [--keywords=<val> --limit=<val> --filterFile=<val>]
 ```
 
 ## Required Arguments
@@ -31,7 +31,7 @@ POST https://{accountName}.purview.azure.com/catalog/api/search/autocomplete
 ## Examples
 Auto complete options with keywords.
 ```powershell
-pv search autoComplete --keywords "a"
+pvw search autoComplete --keywords "a"
 ```
 
 <details><summary>Sample response.</summary>

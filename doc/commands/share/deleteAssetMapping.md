@@ -1,4 +1,4 @@
-# pv share deleteAssetMapping
+# pvw share deleteAssetMapping
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  deleteAssetMapping
 
@@ -9,7 +9,7 @@ Delete AssetMapping in a receivedShare.
 ## Syntax
 
 ```
-pv share deleteAssetMapping --receivedShareName=<val> --assetMappingName=<val>
+pvw share deleteAssetMapping --receivedShareName=<val> --assetMappingName=<val>
 ```
 
 ## Required Arguments
@@ -36,5 +36,5 @@ DELETE https://{accountName}.purview.azure.com/share/receivedShares/{receivedSha
 Delete an asset mapping for a particular received share.
 
 ```powershell
-pv share deleteAssetMapping --receivedShareName "NewShare" --assetMappingName "assetName"
+pvw share deleteAssetMapping --receivedShareName "NewShare" --assetMappingName "assetName"
 ```

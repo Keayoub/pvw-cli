@@ -1,4 +1,4 @@
-# pv policystore deleteDataPolicyScope
+# pvw policystore deleteDataPolicyScope
 [Command Reference](../../../README.md#command-reference) > [policystore](./main.md) > deleteDataPolicyScope
 
 ## Description
@@ -6,7 +6,7 @@ Delete a data policy scope.
 
 ## Syntax
 ```
-pv policystore deleteDataPolicyScope --policyName=<val> --datasource=<val>
+pvw policystore deleteDataPolicyScope --policyName=<val> --datasource=<val>
 ```
 
 ## Required Arguments
@@ -28,5 +28,5 @@ DELETE https://{accountName}.purview.azure.com/policystore/dataPolicies/{policyN
 ## Examples
 Delete a scope associated to an existing data policy.
 ```powershell
-pv policystore deleteDataPolicyScope --policyName "new-policy" --scopeName "AzureDataLakeStorage"
+pvw policystore deleteDataPolicyScope --policyName "new-policy" --scopeName "AzureDataLakeStorage"
 ```

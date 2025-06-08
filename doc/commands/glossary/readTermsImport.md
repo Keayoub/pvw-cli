@@ -1,4 +1,4 @@
-# pv glossary readTermsImport
+# pvw glossary readTermsImport
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > readTermsImport
 
 ## Description
@@ -6,7 +6,7 @@ Get the status of an import CSV operation.
 
 ## Syntax
 ```
-pv glossary readTermsImport --operationGuid=<val>
+pvw glossary readTermsImport --operationGuid=<val>
 ```
 
 ## Required Arguments
@@ -25,7 +25,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/glossary/terms/import/{o
 ## Examples
 Get the status of an import CSV operation.
 ```powershell
-pv glossary readTermsImport --operationGuid "54c3e5d0-90b3-4249-851c-0e3c4dba33c1"
+pvw glossary readTermsImport --operationGuid "54c3e5d0-90b3-4249-851c-0e3c4dba33c1"
 ```
 
 <details><summary>Sample response.</summary>

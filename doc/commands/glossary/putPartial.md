@@ -1,4 +1,4 @@
-# pv glossary putPartial
+# pvw glossary putPartial
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > putPartial
 
 ## Description
@@ -6,7 +6,7 @@ Update the glossary partially.
 
 ## Syntax
 ```
-pv glossary putPartial --glossaryGuid=<val> --payloadFile=<val> [--includeTermHierarchy]
+pvw glossary putPartial --glossaryGuid=<val> --payloadFile=<val> [--includeTermHierarchy]
 ```
 
 ## Required Arguments
@@ -29,7 +29,7 @@ PUT https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/{gloss
 ## Examples
 Update an existing glossary.
 ```powershell
-pv glossary putPartial --glossaryGuid "f2307f48-5834-4709-be85-02f3aea5d149" --payloadFile "/path/to/file.json"
+pvw glossary putPartial --glossaryGuid "f2307f48-5834-4709-be85-02f3aea5d149" --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

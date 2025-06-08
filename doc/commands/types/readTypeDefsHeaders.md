@@ -1,4 +1,4 @@
-# pv types readTypeDefsHeaders
+# pvw types readTypeDefsHeaders
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > readTypeDefsHeaders
 
 ## Description
@@ -6,7 +6,7 @@ List all type definitions returned as a list of minimal information header.
 
 ## Syntax
 ```
-pv types readTypeDefsHeaders [--includeTermTemplate --type=<val>]
+pvw types readTypeDefsHeaders [--includeTermTemplate --type=<val>]
 ```
 
 ## Required Arguments
@@ -28,12 +28,12 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/typedefs/
 ## Examples
 Get all type definition headers.
 ```powershell
-pv types readTypeDefsHeaders
+pvw types readTypeDefsHeaders
 ```
 
 Get all type definition headers for a particular type.
 ```powershell
-pv types readTypeDefsHeaders --type "struct"
+pvw types readTypeDefsHeaders --type "struct"
 ```
 
 <details><summary>Sample response.</summary>

@@ -30,7 +30,7 @@ from rich.text import Text
 from rich.align import Align
 import threading
 
-from .api_client import EnhancedPurviewClient
+from .api_client import PurviewClient
 from .config import PurviewConfig
 
 console = Console()
@@ -87,7 +87,7 @@ class Threshold:
 class MonitoringDashboard:
     """Real-time monitoring dashboard for Purview"""
     
-    def __init__(self, client: EnhancedPurviewClient):
+    def __init__(self, client: PurviewClient):
         self.client = client
         self.console = Console()
         self.metrics: List[Metric] = []

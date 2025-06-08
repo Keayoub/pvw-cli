@@ -1,4 +1,4 @@
-# pv glossary createTerms
+# pvw glossary createTerms
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > createTerms
 
 ## Description
@@ -6,7 +6,7 @@ Create glossary terms in bulk.
 
 ## Syntax
 ```
-pv glossary createTerms --payloadFile=<val> [--includeTermHierarchy]
+pvw glossary createTerms --payloadFile=<val> [--includeTermHierarchy]
 ```
 
 ## Required Arguments
@@ -26,7 +26,7 @@ POST https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/terms
 ## Examples
 Create terms in bulk.
 ```powershell
-pv glossary createTerms --payloadFile "/path/to/file.json"
+pvw glossary createTerms --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>
@@ -61,7 +61,7 @@ pv glossary createTerms --payloadFile "/path/to/file.json"
 
 Create terms in bulk with a custom term template. Note: The payload has the additional "attributes" property.
 ```powershell
-pv glossary createTerms --payloadFile "/path/to/file.json"
+pvw glossary createTerms --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

@@ -1,4 +1,4 @@
-# pv entity deleteUniqueAttribute
+# pvw entity deleteUniqueAttribute
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > deleteUniqueAttribute
 
 ## Description
@@ -6,7 +6,7 @@ Delete an entity identified by its type and unique attributes. In addition to th
 
 ## Syntax
 ```
-pv entity deleteUniqueAttribute --typeName=<val> --qualifiedName=<val>
+pvw entity deleteUniqueAttribute --typeName=<val> --qualifiedName=<val>
 ```
 
 ## Required Arguments
@@ -28,5 +28,5 @@ DELETE https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/uniqu
 ## Examples
 Delete an existing entity by its type name and qualified name.
 ```powershell
-pv entity deleteUniqueAttribute --typeName "azure_datalake_gen2_path" --qualifiedName "https://esg26fa7f24adls.dfs.core.windows.net/01-bronze/esg/filename.csv"
+pvw entity deleteUniqueAttribute --typeName "azure_datalake_gen2_path" --qualifiedName "https://esg26fa7f24adls.dfs.core.windows.net/01-bronze/esg/filename.csv"
 ```

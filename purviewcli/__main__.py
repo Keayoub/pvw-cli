@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Enhanced Purview CLI v2.0 - Main Entry Point
+Purview CLI v2.0 - Main Entry Point
 """
 
 import sys
@@ -16,14 +16,14 @@ if str(parent_dir) not in sys.path:
     sys.path.insert(0, str(parent_dir))
 
 # Now we can import the modules
-from purviewcli.cli.main_cli import pv
+from purviewcli.cli.main_cli import pvw
 from purviewcli.cli import lineage
 from purviewcli.client.config import config_manager
 
 console = Console()
 
 def main():
-    """Main entry point for the Enhanced Purview CLI"""
+    """Main entry point for the  Purview CLI"""
     
     # Check if this is a lineage command that needs special handling
     if len(sys.argv) > 1 and sys.argv[1] == 'lineage':
@@ -32,22 +32,30 @@ def main():
             # This is a CSV lineage command, handle with docopt
             from docopt import docopt
             arguments = docopt(lineage.__doc__)            # Initialize client from profile
-            profile = config_manager.get_active_profile()
+            profile = config_manager.get_profile()
             if not profile:
-                console.print("[red]No active Purview profile found. Please run 'pv config' to set up a profile.[/red]")
+                console.print("[red]No active Purview profile found. Please run 'pvw config' to set up a profile.[/red]")
                 return 1
             
-            from purviewcli.client.api_client import EnhancedPurviewClient
-            client = EnhancedPurviewClient(profile.account_name, profile.get_credential())
+            from purviewcli.client.api_client import PurviewClient, PurviewConfig
+            config = PurviewConfig(
+                account_name=profile.account_name,
+                tenant_id=profile.tenant_id,
+                client_id=profile.client_id,
+                azure_region=profile.azure_region,
+                batch_size=profile.batch_size,
+                max_retries=profile.max_retries,
+                timeout=profile.timeout
+            )
+            client = PurviewClient(config)
             
             # Handle CSV lineage commands
             if arguments.get('csv'):
                 asyncio.run(lineage.handle_csv_lineage_commands(arguments, client))
                 return 0
-    
-    # For all other commands, use the Click-based CLI
+      # For all other commands, use the Click-based CLI
     try:
-        pv()
+        pvw()
     except Exception as e:
         console.print(f"[red]Error: {str(e)}[/red]")
         return 1

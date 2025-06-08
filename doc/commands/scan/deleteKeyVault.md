@@ -1,4 +1,4 @@
-# pv scan deleteKeyVault
+# pvw scan deleteKeyVault
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > deleteKeyVault
 
 ## Description
@@ -6,7 +6,7 @@ Deletes the key vault connection associated with the account
 
 ## Syntax
 ```
-pv scan deleteKeyVault --keyVaultName=<val>
+pvw scan deleteKeyVault --keyVaultName=<val>
 ```
 
 ## Required Arguments
@@ -25,5 +25,5 @@ DELETE https://{accountName}.purview.azure.com/scan/azureKeyVaults/{keyVaultName
 ## Examples
 Delete a key vault connection by name.
 ```powershell
-pv scan deleteKeyVault --keyVaultName "MyKeyVault"
+pvw scan deleteKeyVault --keyVaultName "MyKeyVault"
 ```

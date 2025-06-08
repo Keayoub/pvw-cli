@@ -1,37 +1,37 @@
 """
 usage: 
-    pv glossary create --payloadFile=<val>
-    pv glossary createCategories --payloadFile=<val>
-    pv glossary createCategory --payloadFile=<val>
-    pv glossary createTerm --payloadFile=<val> [--includeTermHierarchy]
-    pv glossary createTerms --payloadFile=<val> [--includeTermHierarchy]
-    pv glossary createTermsAssignedEntities --termGuid=<val> --payloadFile=<val>
-    pv glossary createTermsExport --glossaryGuid=<val> --termGuid=<val>... [--includeTermHierarchy]
-    pv glossary createTermsImport --glossaryFile=<val> [--glossaryGuid=<val> --includeTermHierarchy]
-    pv glossary delete --glossaryGuid=<val>
-    pv glossary deleteCategory --categoryGuid=<val>
-    pv glossary deleteTerm --termGuid=<val>
-    pv glossary deleteTermsAssignedEntities --termGuid=<val> --payloadFile=<val>
-    pv glossary put --glossaryGuid=<val> --payloadFile=<val>
-    pv glossary putCategory --categoryGuid=<val> --payloadFile=<val>
-    pv glossary putCategoryPartial --categoryGuid=<val> --payloadFile=<val>
-    pv glossary putPartial --glossaryGuid=<val> --payloadFile=<val> [--includeTermHierarchy]
-    pv glossary putTerm --termGuid=<val> --payloadFile=<val> [--includeTermHierarchy]
-    pv glossary putTermPartial --termGuid=<val> --payloadFile=<val> [--includeTermHierarchy]
-    pv glossary putTermsAssignedEntities --termGuid=<val> --payloadFile=<val>
-    pv glossary read [--glossaryGuid=<val> --limit=<val> --offset=<val> --sort=<val> --ignoreTermsAndCategories]
-    pv glossary readCategories --glossaryGuid=<val> [--limit=<val> --offset=<val> --sort=<val>]
-    pv glossary readCategoriesHeaders --glossaryGuid=<val> [--limit=<val> --offset=<val> --sort=<val>]
-    pv glossary readCategory --categoryGuid=<val> [--limit=<val> --offset=<val> --sort=<val>]
-    pv glossary readCategoryRelated --categoryGuid=<val>
-    pv glossary readCategoryTerms --categoryGuid=<val> [--limit=<val> --offset=<val> --sort=<val>]
-    pv glossary readDetailed --glossaryGuid=<val> [--includeTermHierarchy]
-    pv glossary readTerm --termGuid=<val> [--includeTermHierarchy]
-    pv glossary readTerms [--glossaryGuid=<val> --limit=<val> --offset=<val> --sort=<val> --extInfo --includeTermHierarchy]
-    pv glossary readTermsAssignedEntities --termGuid=<val> [--limit=<val> --offset=<val> --sort=<val>]
-    pv glossary readTermsHeaders --glossaryGuid=<val> [--limit=<val> --offset=<val> --sort=<val>]
-    pv glossary readTermsImport --operationGuid=<val>
-    pv glossary readTermsRelated --termGuid=<val> [--limit=<val> --offset=<val> --sort=<val>]
+    pvw glossary create --payloadFile=<val>
+    pvw glossary createCategories --payloadFile=<val>
+    pvw glossary createCategory --payloadFile=<val>
+    pvw glossary createTerm --payloadFile=<val> [--includeTermHierarchy]
+    pvw glossary createTerms --payloadFile=<val> [--includeTermHierarchy]
+    pvw glossary createTermsAssignedEntities --termGuid=<val> --payloadFile=<val>
+    pvw glossary createTermsExport --glossaryGuid=<val> --termGuid=<val>... [--includeTermHierarchy]
+    pvw glossary createTermsImport --glossaryFile=<val> [--glossaryGuid=<val> --includeTermHierarchy]
+    pvw glossary delete --glossaryGuid=<val>
+    pvw glossary deleteCategory --categoryGuid=<val>
+    pvw glossary deleteTerm --termGuid=<val>
+    pvw glossary deleteTermsAssignedEntities --termGuid=<val> --payloadFile=<val>
+    pvw glossary put --glossaryGuid=<val> --payloadFile=<val>
+    pvw glossary putCategory --categoryGuid=<val> --payloadFile=<val>
+    pvw glossary putCategoryPartial --categoryGuid=<val> --payloadFile=<val>
+    pvw glossary putPartial --glossaryGuid=<val> --payloadFile=<val> [--includeTermHierarchy]
+    pvw glossary putTerm --termGuid=<val> --payloadFile=<val> [--includeTermHierarchy]
+    pvw glossary putTermPartial --termGuid=<val> --payloadFile=<val> [--includeTermHierarchy]
+    pvw glossary putTermsAssignedEntities --termGuid=<val> --payloadFile=<val>
+    pvw glossary read [--glossaryGuid=<val> --limit=<val> --offset=<val> --sort=<val> --ignoreTermsAndCategories]
+    pvw glossary readCategories --glossaryGuid=<val> [--limit=<val> --offset=<val> --sort=<val>]
+    pvw glossary readCategoriesHeaders --glossaryGuid=<val> [--limit=<val> --offset=<val> --sort=<val>]
+    pvw glossary readCategory --categoryGuid=<val> [--limit=<val> --offset=<val> --sort=<val>]
+    pvw glossary readCategoryRelated --categoryGuid=<val>
+    pvw glossary readCategoryTerms --categoryGuid=<val> [--limit=<val> --offset=<val> --sort=<val>]
+    pvw glossary readDetailed --glossaryGuid=<val> [--includeTermHierarchy]
+    pvw glossary readTerm --termGuid=<val> [--includeTermHierarchy]
+    pvw glossary readTerms [--glossaryGuid=<val> --limit=<val> --offset=<val> --sort=<val> --extInfo --includeTermHierarchy]
+    pvw glossary readTermsAssignedEntities --termGuid=<val> [--limit=<val> --offset=<val> --sort=<val>]
+    pvw glossary readTermsHeaders --glossaryGuid=<val> [--limit=<val> --offset=<val> --sort=<val>]
+    pvw glossary readTermsImport --operationGuid=<val>
+    pvw glossary readTermsRelated --termGuid=<val> [--limit=<val> --offset=<val> --sort=<val>]
 
 options:
     --purviewName=<val>         [string]  Azure Purview account name.

@@ -13,7 +13,7 @@ from typing import Dict, List
 # Add parent directory to path for imports
 sys.path.append(str(Path(__file__).parent.parent))
 
-from purviewcli.client.api_client import EnhancedPurviewClient, PurviewConfig
+from purviewcli.client.api_client import PurviewClient, PurviewConfig
 from purviewcli.client.csv_operations import CSVBatchProcessor, CSVExporter, ENTITY_TEMPLATES
 
 class PurviewAutomation:
@@ -30,7 +30,7 @@ class PurviewAutomation:
     async def bulk_entity_import(self, csv_file: str, entity_type: str = 'dataset'):
         """Import entities from CSV with progress tracking"""
         
-        async with EnhancedPurviewClient(self.config) as client:
+        async with PurviewClient(self.config) as client:
             processor = CSVBatchProcessor(client)
             
             if entity_type not in ENTITY_TEMPLATES:
@@ -65,7 +65,7 @@ class PurviewAutomation:
     async def bulk_glossary_setup(self, terms_csv: str, assignments_csv: str = None):
         """Setup glossary terms and optionally assign them to entities"""
         
-        async with EnhancedPurviewClient(self.config) as client:
+        async with PurviewClient(self.config) as client:
             processor = CSVBatchProcessor(client)
             
             # Import terms
@@ -104,7 +104,7 @@ class PurviewAutomation:
         output_path = Path(output_dir)
         output_path.mkdir(exist_ok=True)
         
-        async with EnhancedPurviewClient(self.config) as client:
+        async with PurviewClient(self.config) as client:
             exporter = CSVExporter(client)
             
             exports = [
@@ -143,7 +143,7 @@ class PurviewAutomation:
     async def lineage_analysis(self, root_entity_guid: str, output_file: str):
         """Analyze and export lineage information"""
         
-        async with EnhancedPurviewClient(self.config) as client:
+        async with PurviewClient(self.config) as client:
             print(f"Analyzing lineage for entity {root_entity_guid}")
             
             lineage = await client.get_lineage(root_entity_guid, 'BOTH', 5)

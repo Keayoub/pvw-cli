@@ -1,4 +1,4 @@
-# pv share getAssetMapping
+# pvw share getAssetMapping
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  getAssetMapping
 
@@ -9,7 +9,7 @@ Get AssetMapping in a receivedShare.
 ## Syntax
 
 ```
-pv share getAssetMapping --receivedShareName=<val> --assetMappingName=<val>
+pvw share getAssetMapping --receivedShareName=<val> --assetMappingName=<val>
 ```
 
 ## Required Arguments
@@ -35,7 +35,7 @@ GET https://{accountName}.purview.azure.com/share/receivedShares/{receivedShareN
 Get an asset mapping for a particular received share.
 
 ```powershell
-pv share getAssetMapping --receivedShareName "MyShare" --assetMappingName "storagedatashare01"
+pvw share getAssetMapping --receivedShareName "MyShare" --assetMappingName "storagedatashare01"
 ```
 
 

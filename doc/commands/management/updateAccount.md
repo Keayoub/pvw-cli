@@ -1,4 +1,4 @@
-# pv management updateAccount
+# pvw management updateAccount
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > updateAccount
 
 ## Description
@@ -6,7 +6,7 @@ Patches the account resource.
 
 ## Syntax
 ```
-pv management updateAccount --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val> --payloadFile=<val>
+pvw management updateAccount --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -34,7 +34,7 @@ PATCH https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups
 ## Examples
 Add a new tag to an existing Azure Purview account.
 ```powershell
-pv management updateAccount --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "esg" --accountName "my-purview-account" --payloadFile "/path/to/file.json"
+pvw management updateAccount --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "esg" --accountName "my-purview-account" --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

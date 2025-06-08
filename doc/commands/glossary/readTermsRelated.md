@@ -1,4 +1,4 @@
-# pv glossary readTermsRelated
+# pvw glossary readTermsRelated
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > readTermsRelated
 
 ## Description
@@ -6,7 +6,7 @@ Get all related terms for a specific term by its GUID. Limit, offset, and sort p
 
 ## Syntax
 ```
-pv glossary readTermsRelated --termGuid=<val> [--limit=<val> --offset=<val> --sort=<val>]
+pvw glossary readTermsRelated --termGuid=<val> [--limit=<val> --offset=<val> --sort=<val>]
 ```
 
 ## Required Arguments
@@ -32,7 +32,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/terms/
 ## Examples
 Get all related terms for a specific term (e.g. Synonyms and Related Terms).
 ```powershell
-pv glossary readTermsRelated --termGuid "c059801e-5202-4b2c-8c41-6fc82f8404a0"
+pvw glossary readTermsRelated --termGuid "c059801e-5202-4b2c-8c41-6fc82f8404a0"
 ```
 
 <details><summary>Sample response.</summary>

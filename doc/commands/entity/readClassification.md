@@ -1,4 +1,4 @@
-# pv entity readClassification
+# pvw entity readClassification
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > readClassification
 
 ## Description
@@ -6,7 +6,7 @@ Get a classification assigned for a given entity by the entity GUID and classifi
 
 ## Syntax
 ```
-pv entity readClassification --guid=<val> --classificationName=<val>
+pvw entity readClassification --guid=<val> --classificationName=<val>
 ```
 
 ## Required Arguments
@@ -28,7 +28,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/{gu
 ## Examples
 Get a classification assigned to a particular entity via the entity GUID and classification name.
 ```powershell
-pv entity readClassification --guid "c6a7811a-0699-44d0-b0be-68babe560ab2" --classificationName "MICROSOFT.GOVERNMENT.AUSTRALIA.COMPANY.NUMBER"
+pvw entity readClassification --guid "c6a7811a-0699-44d0-b0be-68babe560ab2" --classificationName "MICROSOFT.GOVERNMENT.AUSTRALIA.COMPANY.NUMBER"
 ```
 
 <details><summary>Sample response.</summary>

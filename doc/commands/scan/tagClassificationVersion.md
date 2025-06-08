@@ -1,4 +1,4 @@
-# pv scan tagClassificationVersion
+# pvw scan tagClassificationVersion
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > tagClassificationVersion
 
 ## Description
@@ -6,7 +6,7 @@ Sets Classification Action on a specific classification rule version.
 
 ## Syntax
 ```
-pv scan tagClassificationVersion --classificationRuleName=<val> --classificationRuleVersion=<val> --action=<val>
+pvw scan tagClassificationVersion --classificationRuleName=<val> --classificationRuleVersion=<val> --action=<val>
 ```
 
 ## Required Arguments
@@ -31,10 +31,10 @@ POST https://{accountName}.purview.azure.com/scan/classificationrules/{classific
 ## Examples
 Set classification action to Keep on a specific classification rule version.
 ```powershell
-pv scan tagClassificationVersion --classificationRuleName "twitter_handle_rule" --classificationRuleVersion 1 --action "Keep"         
+pvw scan tagClassificationVersion --classificationRuleName "twitter_handle_rule" --classificationRuleVersion 1 --action "Keep"         
 ```
 
 Set classification action to Delete on a specific classification rule version.
 ```powershell
-pv scan tagClassificationVersion --classificationRuleName "twitter_handle_rule" --classificationRuleVersion 1 --action "Delete"         
+pvw scan tagClassificationVersion --classificationRuleName "twitter_handle_rule" --classificationRuleVersion 1 --action "Delete"         
 ```

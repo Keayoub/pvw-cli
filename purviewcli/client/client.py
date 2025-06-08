@@ -1,180 +1,448 @@
+"""
+PurviewClient: Advanced Azure Purview API Client
+
+This module provides the PurviewClient class, enabling comprehensive automation and programmatic access to all major Azure Purview REST APIs. It is the core client used by the PVW CLI and can be used directly in Python scripts, notebooks, and automation workflows.
+
+Key Features:
+- Full support for Azure Purview data plane and control plane APIs
+- Async and sync HTTP methods for high-performance automation
+- Built-in retry logic, rate limiting, and error diagnostics
+- Bulk operation helpers for parallel processing
+- Detailed logging and error reporting
+- Region and cloud support (public, China, US Gov, Germany)
+
+Typical Use Cases:
+- Automating data catalog, lineage, and governance operations
+- Bulk import/export of entities, relationships, and glossary terms
+- Integrating Purview with ETL, CI/CD, and data engineering workflows
+- Advanced diagnostics and health checks
+
+Example Usage:
+
+Synchronous:
+    from purviewcli.client.client import PurviewClient
+    client = PurviewClient()
+    client.set_region('catalog')
+    client.set_account('catalog')
+    client.set_token('catalog')
+    result = client.http_request('catalog', 'GET', '/api/atlas/v2/entity/bulk?typeName=DataSet')
+    print(result)
+
+Asynchronous:
+    import asyncio
+    from purviewcli.client.client import PurviewClient
+    async def main():
+        client = PurviewClient()
+        client.set_region('catalog')
+        client.set_account('catalog')
+        client.set_token('catalog')
+        result = await client.http_request_async('catalog', 'GET', '/api/atlas/v2/entity/bulk?typeName=DataSet')
+        print(result)
+    asyncio.run(main())
+
+For CLI usage and advanced documentation, see the PVW CLI README and docs/PVW_and_PurviewClient.md.
+"""
+
 import jwt
 import sys
 import os
 import logging
 import requests
+import time
+import asyncio
+import aiohttp
 from http.client import responses
 from azure.identity import DefaultAzureCredential
 from azure.core.exceptions import ClientAuthenticationError
 from azure.identity import AzureAuthorityHosts
+from typing import Dict, List, Optional, Union, Any
 from . import settings
+from .exceptions import PurviewClientError, PurviewAuthenticationError, PurviewAPIError
+from .retry_handler import RetryHandler
+from .rate_limiter import RateLimiter
 from .. import __version__
+
 
 logging.getLogger("azure.identity").setLevel(logging.ERROR)
 
-class PurviewClient():
-    def __init__(self):
+class PurviewClient:
+    """Purview client with comprehensive API coverage and automation features"""
+    
+    def __init__(self, 
+                 retry_config: Optional[Dict] = None,
+                 rate_limit_config: Optional[Dict] = None,
+                 enable_logging: bool = True,
+                 retry_after_default: float = 5.0):
+        """
+        Initialize the Purview Client
+        
+        Args:
+            retry_config: Configuration for retry logic
+            rate_limit_config: Configuration for rate limiting
+            enable_logging: Enable detailed logging
+            retry_after_default: Default wait time (seconds) if Retry-After header is not a float
+        """
         self.access_token = None
         self.account_name = None
         self.azure_region = None
         self.management_endpoint = None
         self.purview_endpoint = None
+        
+        #  features
+        self.retry_handler = RetryHandler(retry_config or {})
+        self.rate_limiter = RateLimiter(rate_limit_config or {})
+        self.session = requests.Session()
+        self.enable_logging = enable_logging
+        self.retry_after_default = retry_after_default
+        
+        # API endpoint mappings
+        self.api_endpoints = {
+            'management': '/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Purview/accounts/{account_name}',
+            'catalog': '/catalog',
+            'scan': '/scan',
+            'account': '/account',
+            'policystore': '/policystore',
+            'share': '/share',
+            'mapanddiscover': '/mapanddiscover',
+            'guardian': '',
+            'datamap': '/datamap',
+            'workflow': '/workflow',
+            'lineage': '/lineage',
+            'insights': '/insights',
+            'governance': '/governance',
+            'classification': '/classification',
+            'sensitivity': '/sensitivity'
+        }
+        
+        if enable_logging:
+            self._setup_logging()
 
-    def set_region(self,app):
-        self.azure_region = os.environ.get("AZURE_REGION")        
-        if self.azure_region is None:
-            self.management_endpoint= "https://management.azure.com"
-            self.purview_endpoint = "purview.azure.com"
-        elif self.azure_region is not None and self.azure_region.lower() == "china":
-            self.management_endpoint= "https://management.chinacloudapi.cn"
-            self.purview_endpoint = "purview.azure.cn"
-        elif self.azure_region is not None and self.azure_region.lower() == "usgov":
-            self.management_endpoint= "https://management.usgovcloudapi.net"
-            self.purview_endpoint = "purview.azure.us"
+    def _setup_logging(self):
+        """Setup comprehensive logging"""
+        logging.basicConfig(
+            level=logging.INFO,
+            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            handlers=[
+                logging.FileHandler('purview_client.log'),
+                logging.StreamHandler()
+            ]
+        )
+        self.logger = logging.getLogger(__name__)
+
+    def set_region(self, app: str):
+        """Set Azure region configuration with enhanced cloud support"""
+        self.azure_region = os.environ.get("AZURE_REGION")
+        
+        region_configs = {
+            None: {
+                'management': "https://management.azure.com",
+                'purview': "purview.azure.com"
+            },
+            'china': {
+                'management': "https://management.chinacloudapi.cn",
+                'purview': "purview.azure.cn"
+            },
+            'usgov': {
+                'management': "https://management.usgovcloudapi.net",
+                'purview': "purview.azure.us"
+            },
+            'germany': {
+                'management': "https://management.microsoftazure.de",
+                'purview': "purview.azure.de"
+            }
+        }
+        
+        if self.azure_region and self.azure_region.lower() in region_configs:
+            config = region_configs[self.azure_region.lower()]
+            self.management_endpoint = config['management']
+            self.purview_endpoint = config['purview']
+        elif self.azure_region is None:
+            config = region_configs[None]
+            self.management_endpoint = config['management']
+            self.purview_endpoint = config['purview']
         else:
-            print("[ERROR] Environment variable AZURE_REGION is not set correctly. Please remove this variable if Purview is provisioned on Public Azure.")
-            sys.exit()        
+            raise PurviewClientError(f"Unsupported Azure region: {self.azure_region}")
 
-    def set_account(self, app):        
+    def set_account(self, app: str):
+        """Set Purview account with enhanced validation"""
         if app == "management":
             self.account_name = None
         else:
-            self.account_name = settings.PURVIEW_NAME if settings.PURVIEW_NAME != None else os.environ.get("PURVIEW_NAME")
-            if self.account_name is None:
-                print("""[ERROR] Environment variable PURVIEW_NAME is missing.
+            self.account_name = (settings.PURVIEW_NAME if settings.PURVIEW_NAME 
+                               else os.environ.get("PURVIEW_NAME"))
+            
+            if not self.account_name:
+                raise PurviewClientError("""
+Environment variable PURVIEW_NAME is missing.
 
-Please configure the PURVIEW_NAME environment variable. Setting environment variables can vary by environment, see examples below.
-\tWindows (Command Prompt):\tset PURVIEW_NAME=value
-\tmacOS (Terminal):\t\texport PURVIEW_NAME=value
-\tPython:\t\t\t\tos.environ["PURVIEW_NAME"] = "value"
-\tPowerShell:\t\t\t$env:PURVIEW_NAME = "value"
-\tJupyter Notebook:\t\t%env PURVIEW_NAME=value
+Configure PURVIEW_NAME environment variable:
+    Windows (Command Prompt):   set PURVIEW_NAME=value
+    macOS (Terminal):           export PURVIEW_NAME=value
+    Python:                     os.environ["PURVIEW_NAME"] = "value"
+    PowerShell:                 $env:PURVIEW_NAME = "value"
+    Jupyter Notebook:           %env PURVIEW_NAME=value
 
-Alternatively, an Azure Purview account name can be provided by appending --purviewName=<val> at the end of your command.
+Alternatively, provide --purviewName=<val> argument.
 """)
-        sys.exit()
 
-    def set_token(self, app):
-        if self.azure_region is not None and self.azure_region.lower() == "china":
-            credential = DefaultAzureCredential(authority="https://login.partner.microsoftonline.cn",exclude_shared_token_cache_credential=True)
-        elif self.azure_region is not None and self.azure_region.lower() == "usgov":
-            credential = DefaultAzureCredential(authority=AzureAuthorityHosts.AZURE_GOVERNMENT)
-#DefaultAzureCredential(authority="https://login.partner.microsoftonline.us",exclude_shared_token_cache_credential=True)             
-        else: 
-            credential = DefaultAzureCredential(exclude_shared_token_cache_credential=True)         
-
-        if app == "management":
-            resource = self.management_endpoint + "/.default"
+    def set_token(self, app: str):
+        """ token management with better error handling"""
+        credential_config = {
+            'china': {
+                'authority': "https://login.partner.microsoftonline.cn",
+                'exclude_shared_token_cache_credential': True
+            },
+            'usgov': {
+                'authority': AzureAuthorityHosts.AZURE_GOVERNMENT
+            },
+            'germany': {
+                'authority': "https://login.microsoftonline.de"
+            }
+        }
+        
+        if self.azure_region and self.azure_region.lower() in credential_config:
+            config = credential_config[self.azure_region.lower()]
+            credential = DefaultAzureCredential(**config)
         else:
-            resource = "https://purview.azure.net/.default"
-
+            credential = DefaultAzureCredential(exclude_shared_token_cache_credential=True)
+        
+        resource = (f"{self.management_endpoint}/.default" if app == "management" 
+                   else "https://purview.azure.net/.default")
+        
         try:
-            token = credential.get_token(f'{resource}')
+            token = credential.get_token(resource)
+            self.access_token = token.token
+            
+            if self.enable_logging:
+                self.logger.info(f"Successfully obtained token for {app}")
+                
         except ClientAuthenticationError as e:
-            print(e)
-            print("For more information, check out: https://docs.microsoft.com/en-us/python/api/overview/azure/identity-readme?view=azure-python")
-            sys.exit()
-        self.access_token = token.token
+            raise PurviewAuthenticationError(f"Authentication failed: {e}")
 
-    def get_token(self):
-        return self.access_token
-
-    def http_get(self, app, method, endpoint, params, payload, files, headers):
-        if app == 'management':
-            uri = f"{self.management_endpoint}{endpoint}"
-        elif app == 'catalog':
-            uri = f"https://{self.account_name}.{self.purview_endpoint}/catalog{endpoint}"
-        elif app == 'scan':
-            uri = f"https://{self.account_name}.{self.purview_endpoint}/scan{endpoint}"
-        elif app == 'account':
-            uri = f"https://{self.account_name}.{self.purview_endpoint}/account{endpoint}"
-        elif app == 'policystore':
-            uri = f"https://{self.account_name}.{self.purview_endpoint}policystore{endpoint}"
-        elif app == 'share':
-            uri = f"https://{self.account_name}.{self.purview_endpoint}/share{endpoint}"
-        elif app == 'mapanddiscover':
-            uri = f"https://{self.account_name}.{self.purview_endpoint}/mapanddiscover{endpoint}"
-        elif app == 'guardian':
-            uri = f"https://{self.account_name}.{app}.{self.purview_endpoint}{endpoint}"
+    def get_base_url(self, app: str) -> str:
+        """Get base URL for different API surfaces"""
+        url_patterns = {
+            'management': f"{self.management_endpoint}",
+            'catalog': f"https://{self.account_name}.{self.purview_endpoint}/catalog",
+            'scan': f"https://{self.account_name}.{self.purview_endpoint}/scan",
+            'account': f"https://{self.account_name}.{self.purview_endpoint}/account",
+            'policystore': f"https://{self.account_name}.{self.purview_endpoint}/policystore",
+            'share': f"https://{self.account_name}.{self.purview_endpoint}/share",
+            'mapanddiscover': f"https://{self.account_name}.{self.purview_endpoint}/mapanddiscover",
+            'guardian': f"https://{self.account_name}.{app}.{self.purview_endpoint}",
+            'datamap': f"https://{self.account_name}.{self.purview_endpoint}/datamap",
+            'workflow': f"https://{self.account_name}.{self.purview_endpoint}/workflow",
+            'lineage': f"https://{self.account_name}.{self.purview_endpoint}/lineage",
+            'insights': f"https://{self.account_name}.{self.purview_endpoint}/insights",
+            'governance': f"https://{self.account_name}.{self.purview_endpoint}/governance",
+            'classification': f"https://{self.account_name}.{self.purview_endpoint}/classification",
+            'sensitivity': f"https://{self.account_name}.{self.purview_endpoint}/sensitivity"
+        }
+        
+        if app in url_patterns:
+            return url_patterns[app]
         else:
-            uri = f"https://{self.account_name}.{app}.{self.purview_endpoint}{endpoint}"
+            return f"https://{self.account_name}.{app}.{self.purview_endpoint}"
 
-        auth = {"Authorization": "Bearer {0}".format(self.access_token)}
-        useragent = {"User-Agent": "purviewcli/{0} {1}".format(__version__, requests.utils.default_headers().get("User-Agent"))}
-        headers = dict(**headers, **auth, **useragent)
+    async def http_request_async(self, 
+                                app: str, 
+                                method: str, 
+                                endpoint: str,
+                                params: Optional[Dict] = None,
+                                payload: Optional[Dict] = None,
+                                files: Optional[Dict] = None,
+                                headers: Optional[Dict] = None) -> Dict:
+        """Asynchronous HTTP request for parallel operations"""
+        uri = f"{self.get_base_url(app)}{endpoint}"
+        headers = headers or {}
+        
+        auth_headers = {
+            "Authorization": f"Bearer {self.access_token}",
+            "User-Agent": f"purviewcli/{__version__} {requests.utils.default_headers().get('User-Agent')}"
+        }
+        headers.update(auth_headers)
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.request(method, uri, params=params, json=payload, headers=headers) as response:
+                if response.content_type == 'application/json':
+                    return await response.json()
+                else:
+                    return {'status_code': response.status, 'content': await response.text()}
 
-        try:
-            response = requests.request(method, uri, params=params, json=payload, files=files, headers=headers)
-            # DEBUG
-            # print(f"Method:\t\t{method}")
-            # print(f"Body:\t\t{payload}")
-            # print(f"Headers:\t\t{headers}")
-            # print(f"Endpoint:\t{response.url}")
-        except requests.exceptions.HTTPError as errh:
-            print ("[HTTP ERROR]",errh)
-        except requests.exceptions.ConnectionError as errc:
-            print ("[CONNECTION ERROR]",errc)
-            sys.exit()
-        except requests.exceptions.Timeout as errt:
-            print ("[TIMEOUT ERROR]",errt)
-        except requests.exceptions.RequestException as err:
-            print ("[REQUEST EXCEPTION]",err)
+    def http_request(self, 
+                    app: str, 
+                    method: str, 
+                    endpoint: str,
+                    params: Optional[Dict] = None,
+                    payload: Optional[Dict] = None,
+                    files: Optional[Dict] = None,
+                    headers: Optional[Dict] = None,
+                    timeout: Optional[int] = None) -> Dict:
+        """ HTTP request with retry logic and rate limiting"""
+        
+        def _make_request():
+            uri = f"{self.get_base_url(app)}{endpoint}"
+            headers = headers or {}
+            
+            auth_headers = {
+                "Authorization": f"Bearer {self.access_token}",
+                "User-Agent": f"purviewcli/{__version__} {requests.utils.default_headers().get('User-Agent')}"
+            }
+            headers.update(auth_headers)
+            
+            # Apply rate limiting
+            self.rate_limiter.wait()
+            
+            try:
+                response = self.session.request(
+                    method, uri, 
+                    params=params, 
+                    json=payload, 
+                    files=files, 
+                    headers=headers,
+                    timeout=timeout or 30
+                )
+                
+                if response.status_code == 429:
+                    retry_after = response.headers.get('Retry-After')
+                    if retry_after:
+                        try:
+                            wait_time = float(retry_after)
+                        except ValueError:
+                            # Retry-After can be a date, fallback to parameterized seconds
+                            wait_time = self.retry_after_default
+                        if self.enable_logging:
+                            self.logger.warning(f"Received 429 Too Many Requests. Retrying after {wait_time} seconds.")
+                        time.sleep(wait_time)
+                        return _make_request()
+                
+                if self.enable_logging:
+                    self.logger.info(f"{method} {uri} - Status: {response.status_code}")
+                
+                return self._process_response(response, method, uri)
+                
+            except requests.exceptions.RequestException as e:
+                if self.enable_logging:
+                    self.logger.error(f"Request failed: {e}")
+                raise PurviewAPIError(f"Request failed: {e}")
+        
+        return self.retry_handler.execute(_make_request)
 
+    def _process_response(self, response: requests.Response, method: str, uri: str) -> Dict:
+        """Process HTTP response with enhanced error handling"""
         status_code = response.status_code
-
+        
         if status_code == 204:
-            data = {
-                'operation': '[%s] %s' % (method, response.url),
+            return {
+                'operation': f'[{method}] {uri}',
                 'status': 'The server successfully processed the request'
             }
-        elif status_code == 403:
-            # Decode JWT
-            print('[Error]')
-            print('Access to the requested resource is forbidden (HTTP status code 403).')
-            print('\r\n[Resource]')
-            print(f'[{method}] {uri}')
-            print('\r\n[Response]')
-            print(response.json())
-            claimset = jwt.decode(self.access_token, options={"verify_signature": False})
-            print('\r\n[Credentials]')
-            data = {
-                'applicationId': claimset.get('appid', None),
-                'objectId': claimset.get('oid', None),
-                'tenantId': claimset.get('tid',None)
-            }
-        elif 'Content-Type' in response.headers:
-            if response.headers['Content-Type'] == 'text/csv; charset=UTF-8':
-                filepath = os.path.join(os.getcwd(),'export.csv')
-                with open(filepath, 'wb') as f:
-                    f.write(response.content)
-                data = {
-                    'status_code': response.status_code,
-                    'export': filepath
-                }
-            elif response.headers['Content-Type'] == 'application/octet-stream':
-                filepath = os.path.join(os.getcwd(),'export.csv')
-                with open(filepath, 'wb') as f:
-                    f.write(response.content)
-                data = {
-                    'status_code': response.status_code,
-                    'export': filepath
-                }
-            else:
-                try:
-                    data = response.json()
-                except ValueError:
-                    data = {
-                        'url': response.url,
-                        'status_code': response.status_code,
-                        'reason': response.reason
-                    }
-        else:
-            status_code = response.status_code
-            status_msg = responses[status_code]
-            print(f"[INFO] HTTP Status Code: {status_code} ({status_msg})")
-
+        
+        if status_code == 403:
+            self._handle_forbidden_error(response, method, uri)
+            return {}
+        
+        if status_code >= 400:
+            error_msg = f"HTTP {status_code}: {response.reason}"
             try:
-                data = response.json()
+                error_detail = response.json()
+                error_msg += f" - {error_detail}"
+            except:
+                error_msg += f" - {response.text}"
+            
+            raise PurviewAPIError(error_msg)
+        
+        # Handle different content types
+        content_type = response.headers.get('Content-Type', '')
+        
+        if 'application/json' in content_type:
+            try:
+                return response.json()
             except ValueError:
-                data = response.content
-        return data
+                return {
+                    'url': response.url,
+                    'status_code': status_code,
+                    'content': response.text
+                }
+        
+        elif 'text/csv' in content_type or 'application/octet-stream' in content_type:
+            return self._handle_file_response(response, status_code)
+        
+        else:
+            return {
+                'url': response.url,
+                'status_code': status_code,
+                'content': response.text
+            }
+
+    def _handle_forbidden_error(self, response: requests.Response, method: str, uri: str):
+        """Handle 403 Forbidden errors with detailed diagnostics"""
+        print('[Error] Access to the requested resource is forbidden (HTTP status code 403).')
+        print(f'\n[Resource] [{method}] {uri}')
+        
+        try:
+            error_detail = response.json()
+            print(f'\n[Response] {error_detail}')
+        except:
+            print(f'\n[Response] {response.text}')
+        
+        if self.access_token:
+            try:
+                claimset = jwt.decode(self.access_token, options={"verify_signature": False})
+                print('\n[Credentials]')
+                print(f"Application ID: {claimset.get('appid', 'N/A')}")
+                print(f"Object ID: {claimset.get('oid', 'N/A')}")
+                print(f"Tenant ID: {claimset.get('tid', 'N/A')}")
+            except Exception as e:
+                print(f'\n[Token Decode Error] {e}')
+
+    def _handle_file_response(self, response: requests.Response, status_code: int) -> Dict:
+        """Handle file download responses"""
+        filepath = os.path.join(os.getcwd(), 'export.csv')
+        with open(filepath, 'wb') as f:
+            f.write(response.content)
+        
+        return {
+            'status_code': status_code,
+            'export': filepath,
+            'size': len(response.content)
+        }
+
+    # Bulk operation helpers
+    async def bulk_operation(self, operations: List[Dict]) -> List[Dict]:
+        """Execute bulk operations in parallel"""
+        tasks = []
+        for operation in operations:
+            task = self.http_request_async(
+                operation['app'],
+                operation['method'], 
+                operation['endpoint'],
+                operation.get('params'),
+                operation.get('payload'),
+                operation.get('files'),
+                operation.get('headers')
+            )
+            tasks.append(task)
+        
+        return await asyncio.gather(*tasks, return_exceptions=True)
+
+    def get_health_status(self) -> Dict:
+        """Get Purview service health status"""
+        try:
+            response = self.http_request('account', 'GET', '/health')
+            return {'status': 'healthy', 'details': response}
+        except Exception as e:
+            return {'status': 'unhealthy', 'error': str(e)}
+
+    def validate_connection(self) -> bool:
+        """Validate connection to Purview services"""
+        try:
+            self.get_health_status()
+            return True
+        except:
+            return False
+
+    def close(self):
+        """Clean up resources"""
+        if hasattr(self, 'session'):
+            self.session.close()

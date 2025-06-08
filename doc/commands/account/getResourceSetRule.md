@@ -1,4 +1,4 @@
-# pv account getResourceSetRule
+# pvw account getResourceSetRule
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > getResourceSetRule
 
 ## Description
@@ -6,7 +6,7 @@ Get a resource set.
 
 ## Syntax
 ```
-pv account getResourceSetRule
+pvw account getResourceSetRule
 ```
 
 ## Required Arguments
@@ -24,7 +24,7 @@ GET https://{accountName}.purview.azure.com/account/resourceSetRuleConfigs/defau
 ## Examples
 Get a resource set.
 ```powershell
-pv account getResourceSetRule
+pvw account getResourceSetRule
 ```
 
 <details><summary>Sample response.</summary>

@@ -1,4 +1,4 @@
-# pv glossary readCategory
+# pvw glossary readCategory
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > readCategory
 
 ## Description
@@ -6,7 +6,7 @@ Get specific glossary category by its GUID.
 
 ## Syntax
 ```
-pv glossary readCategory --categoryGuid=<val> [--limit=<val> --offset=<val> --sort=<val>]
+pvw glossary readCategory --categoryGuid=<val> [--limit=<val> --offset=<val> --sort=<val>]
 ```
 
 ## Required Arguments
@@ -31,7 +31,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/catego
 
 ## Examples
 ```powershell
-pv glossary readCategory --categoryGuid "c856ecef-21e6-4e92-8607-9493d8432e78"
+pvw glossary readCategory --categoryGuid "c856ecef-21e6-4e92-8607-9493d8432e78"
 ```
 <details><summary>Sample response.</summary>
 <p>

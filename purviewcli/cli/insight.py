@@ -1,12 +1,12 @@
 """
 usage: 
-    pv insight assetDistribution
-    pv insight filesAggregation
-    pv insight filesWithoutResourceSet
-    pv insight scanStatusSummary [--numberOfDays=<val>]
-    pv insight scanStatusSummaryByTs [--numberOfDays=<val>]
-    pv insight tags
-    pv insight tagsTimeSeries
+    pvw insight assetDistribution
+    pvw insight filesAggregation
+    pvw insight filesWithoutResourceSet
+    pvw insight scanStatusSummary [--numberOfDays=<val>]
+    pvw insight scanStatusSummaryByTs [--numberOfDays=<val>]
+    pvw insight tags
+    pvw insight tagsTimeSeries
 
 options:
     --purviewName=<val>          [string]  Azure Purview account name.

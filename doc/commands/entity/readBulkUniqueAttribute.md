@@ -1,4 +1,4 @@
-# pv entity readBulkUniqueAttribute
+# pvw entity readBulkUniqueAttribute
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > readBulkUniqueAttribute
 
 ## Description
@@ -6,7 +6,7 @@ Bulk API to retrieve list of entities identified by its unique attributes.
 
 ## Syntax
 ```
-pv entity readBulkUniqueAttribute --typeName=<val> --qualifiedName=<val>... [--ignoreRelationships --minExtInfo]
+pvw entity readBulkUniqueAttribute --typeName=<val> --qualifiedName=<val>... [--ignoreRelationships --minExtInfo]
 ```
 
 ## Required Arguments
@@ -24,7 +24,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/bulk/uni
 ## Examples
 Get the complete definition for a list of existing entities (bulk) by specifying a type name and a list of qualified names.
 ```powershell
-pv entity readBulkUniqueAttribute --typeName "azure_datalake_gen2_path" --qualifiedName "https://esg26fa7f24adls.dfs.core.windows.net/01-bronze/esg/xyz_company.csv" --qualifiedName "https://esg26fa7f24adls.dfs.core.windows.net/01-bronze/esg/filename.csv"
+pvw entity readBulkUniqueAttribute --typeName "azure_datalake_gen2_path" --qualifiedName "https://esg26fa7f24adls.dfs.core.windows.net/01-bronze/esg/xyz_company.csv" --qualifiedName "https://esg26fa7f24adls.dfs.core.windows.net/01-bronze/esg/filename.csv"
 ```
 
 <details><summary>Sample response.</summary>

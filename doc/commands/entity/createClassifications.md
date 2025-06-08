@@ -1,4 +1,4 @@
-# pv entity createClassifications
+# pvw entity createClassifications
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > createClassifications
 
 ## Description
@@ -6,7 +6,7 @@ Add classifications to an existing entity represented by a GUID.
 
 ## Syntax
 ```
-pv entity createClassifications --guid=<val> --payloadFile=<val>
+pvw entity createClassifications --guid=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -28,7 +28,7 @@ POST https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/{g
 ## Examples
 Associate an entity to multiple classifications.
 ```powershell
-pv entity createClassifications --guid "04f2bb30-91db-404b-a8e1-d65e45338929" --payloadFile "/path/to/file.json"
+pvw entity createClassifications --guid "04f2bb30-91db-404b-a8e1-d65e45338929" --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

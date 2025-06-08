@@ -1,4 +1,4 @@
-# pv policystore readMetadataPolicies
+# pvw policystore readMetadataPolicies
 [Command Reference](../../../README.md#command-reference) > [policystore](./main.md) > readMetadataPolicies
 
 ## Description
@@ -6,7 +6,7 @@ List all metadata policies.
 
 ## Syntax
 ```
-pv policystore readMetadataPolicies
+pvw policystore readMetadataPolicies
 ```
 
 ## Required Arguments
@@ -24,7 +24,7 @@ GET https://{accountName}.purview.azure.com/policystore/metadataPolicies
 ## Examples
 Get all metadata policies.
 ```powershell
-pv policystore readMetadataPolicies
+pvw policystore readMetadataPolicies
 ```
 
 <details><summary>Sample response.</summary>

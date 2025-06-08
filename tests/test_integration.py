@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Integration Test Suite for Enhanced Purview CLI v2.0
+Integration Test Suite for  Purview CLI v2.0
 Tests integration between all modules and end-to-end workflows
 """
 
@@ -25,7 +25,7 @@ from rich.progress import Progress, track
 console = Console()
 
 class IntegrationTestSuite:
-    """Integration tests for Enhanced Purview CLI"""
+    """Integration tests for  Purview CLI"""
     
     def __init__(self):
         self.test_results = []
@@ -525,7 +525,7 @@ class IntegrationTestSuite:
     def generate_integration_report(self):
         """Generate comprehensive integration test report"""
         console.print("\n" + "="*80)
-        console.print(Panel("[bold blue]Enhanced Purview CLI v2.0 - Integration Test Report[/bold blue]"))
+        console.print(Panel("[bold blue] Purview CLI v2.0 - Integration Test Report[/bold blue]"))
         
         # Calculate statistics
         total_tests = len(self.test_results)
@@ -586,7 +586,7 @@ class IntegrationTestSuite:
 
 async def main():
     """Main integration test execution"""
-    console.print("[bold green]Enhanced Purview CLI v2.0 - Integration Test Suite[/bold green]")
+    console.print("[bold green] Purview CLI v2.0 - Integration Test Suite[/bold green]")
     console.print("="*80)
     
     test_suite = IntegrationTestSuite()

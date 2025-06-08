@@ -1,4 +1,4 @@
-# pv share listSentShares
+# pvw share listSentShares
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  listSentShares
 
@@ -9,7 +9,7 @@ Get list of sent shares in the given Purview account.
 ## Syntax
 
 ```
-pv share listSentShares [--skipToken=<val> --filter=<val> --orderBy=<val>]
+pvw share listSentShares [--skipToken=<val> --filter=<val> --orderBy=<val>]
 ```
 
 ## Required Arguments
@@ -48,7 +48,7 @@ GET https://{accountName}.purview.azure.com/share/sentShares
 Get a list of sent shares.
 
 ```powershell
-pv share listSentShares
+pvw share listSentShares
 ```
 
 

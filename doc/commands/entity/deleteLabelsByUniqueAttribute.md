@@ -1,4 +1,4 @@
-# pv entity deleteLabelsByUniqueAttribute
+# pvw entity deleteLabelsByUniqueAttribute
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > deleteLabelsByUniqueAttribute
 
 ## Description
@@ -6,7 +6,7 @@ Delete label(s) from an entity identified by its type and unique attributes.
 
 ## Syntax
 ```
-pv entity deleteLabelsByUniqueAttribute --typeName=<val> --qualifiedName=<val> --payloadFile=<val>
+pvw entity deleteLabelsByUniqueAttribute --typeName=<val> --qualifiedName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -31,7 +31,7 @@ DELETE https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/uniqu
 ## Examples
 Delete labels from an existing entity identified by its type and unique attributes.
 ```powershell
-pv entity deleteLabelsByUniqueAttribute --typeName "azure_datalake_gen2_resource_set" --qualifiedName "https://STORAGE_ACCOUNT.dfs.core.windows.net/bing/data/{N}/QueriesByCountry_{Year}-{Month}-{Day}_{N}-{N}-{N}.tsv" --payloadFile "/path/to/file.json"
+pvw entity deleteLabelsByUniqueAttribute --typeName "azure_datalake_gen2_resource_set" --qualifiedName "https://STORAGE_ACCOUNT.dfs.core.windows.net/bing/data/{N}/QueriesByCountry_{Year}-{Month}-{Day}_{N}-{N}-{N}.tsv" --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

@@ -1,4 +1,4 @@
-// API Configuration for Enhanced Purview CLI v2.0
+// API Configuration for  Purview CLI v2.0
 // Centralized configuration for backend API endpoints and settings
 
 export interface ApiConfig {

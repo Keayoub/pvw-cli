@@ -1,4 +1,4 @@
-# pv insight scanStatusSummaryByTs
+# pvw insight scanStatusSummaryByTs
 [Command Reference](../../../README.md#command-reference) > [insight](./main.md) > scanStatusSummaryByTs
 
 ## Description
@@ -6,7 +6,7 @@ Total number of scans by status and time period.
 
 ## Syntax
 ```
-pv insight scanStatusSummaryByTs [--numberOfDays=<val>]
+pvw insight scanStatusSummaryByTs [--numberOfDays=<val>]
 ```
 
 ## Required Arguments
@@ -24,7 +24,7 @@ GET https://{accountName}.purview.azure.com/mapanddiscover/reports/scanstatus2/s
 ## Examples
 Get the total number of scans by status and time period.
 ```powershell
-pv insight scanStatusSummaryByTs
+pvw insight scanStatusSummaryByTs
 ```
 <details><summary>Sample response.</summary>
 <p>

@@ -1,4 +1,4 @@
-# pv scan readScanHistory
+# pvw scan readScanHistory
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readScanHistory
 
 ## Description
@@ -6,7 +6,7 @@ Lists the scan history of a scan
 
 ## Syntax
 ```
-pv scan readScanHistory --dataSourceName=<val> --scanName=<val>
+pvw scan readScanHistory --dataSourceName=<val> --scanName=<val>
 ```
 
 ## Required Arguments
@@ -28,7 +28,7 @@ GET https://{accountName}.purview.azure.com/scan/datasources/{dataSourceName}/sc
 ## Examples
 Get the scan history of a scan by data source name and scan name.
 ```powershell
-pv scan readScanHistory --dataSourceName "AzureDataLakeStorage-Gbm" --scanName "Scan-Xei"
+pvw scan readScanHistory --dataSourceName "AzureDataLakeStorage-Gbm" --scanName "Scan-Xei"
 ```
 <details><summary>Sample response.</summary>
 <p>

@@ -1,4 +1,4 @@
-# pv share createSentInvitation
+# pvw share createSentInvitation
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  createSentInvitation
 
@@ -9,7 +9,7 @@ Create/Update a sent share invitation in the given account.
 ## Syntax
 
 ```
-pv share createSentInvitation --sentShareName=<val> --invitationName=<val> --payloadFile=<val>
+pvw share createSentInvitation --sentShareName=<val> --invitationName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -42,7 +42,7 @@ PUT https://{accountName}.purview.azure.com/share/sentShares/{sentShareName}/sen
 Create a sent invitation from a sent share.
 
 ```powershell
-pv share createSentInvitation --sentShareName "MyNewSentShare" --invitationName "650f1292-9c84-44c9-9339-342b88940dbc" --payloadFile "/path/to/file.json"
+pvw share createSentInvitation --sentShareName "MyNewSentShare" --invitationName "650f1292-9c84-44c9-9339-342b88940dbc" --payloadFile "/path/to/file.json"
 ```
 
 

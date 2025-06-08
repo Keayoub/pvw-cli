@@ -1,4 +1,4 @@
-# pv account getAccount
+# pvw account getAccount
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > getAccount
 
 ## Description
@@ -6,7 +6,7 @@ Get an account.
 
 ## Syntax
 ```
-pv account getAccount
+pvw account getAccount
 ```
 
 ## Required Arguments
@@ -24,7 +24,7 @@ GET https://{accountName}.purview.azure.com/account
 ## Examples
 Get account properties.
 ```powershell
-pv account getAccount
+pvw account getAccount
 ```
 
 <details><summary>Sample response.</summary>

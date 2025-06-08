@@ -1,4 +1,4 @@
-# pv entity readBulk
+# pvw entity readBulk
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > readBulk
 
 ## Description
@@ -6,7 +6,7 @@ List entities in bulk identified by its GUIDs.
 
 ## Syntax
 ```
-pv entity readBulk --guid=<val>... [--ignoreRelationships --minExtInfo]
+pvw entity readBulk --guid=<val>... [--ignoreRelationships --minExtInfo]
 ```
 
 ## Required Arguments
@@ -29,7 +29,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/bulk
 ## Examples
 Get the complete definition for a list of existing entities (bulk) via their GUID.
 ```powershell
-pv entity readBulk --guid "c6a7811a-0699-44d0-b0be-68babe560ab2" --guid "6374e9e8-4719-4747-b2d2-054548023ae2" --guid "dcd41879-dda2-4b3c-8c97-9b76d39799b1"
+pvw entity readBulk --guid "c6a7811a-0699-44d0-b0be-68babe560ab2" --guid "6374e9e8-4719-4747-b2d2-054548023ae2" --guid "dcd41879-dda2-4b3c-8c97-9b76d39799b1"
 ```
 
 <details><summary>Sample response.</summary>

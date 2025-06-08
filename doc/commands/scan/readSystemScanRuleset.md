@@ -1,4 +1,4 @@
-# pv scan readSystemScanRuleset
+# pvw scan readSystemScanRuleset
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readSystemScanRuleset
 
 ## Description
@@ -6,7 +6,7 @@ Get a system scan ruleset for a data source.
 
 ## Syntax
 ```
-pv scan readSystemScanRuleset --dataSourceType=<val>
+pvw scan readSystemScanRuleset --dataSourceType=<val>
 ```
 
 ## Required Arguments
@@ -25,7 +25,7 @@ GET https://{accountName}.purview.azure.com/scan/systemScanRulesets/datasources/
 ## Examples
 Get a system scan ruleset by data source type.
 ```powershell
-pv scan readSystemScanRuleset --dataSourceType "AmazonMySql"
+pvw scan readSystemScanRuleset --dataSourceType "AmazonMySql"
 ```
 <details><summary>Sample response.</summary>
 <p>

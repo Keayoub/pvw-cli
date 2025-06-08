@@ -1,4 +1,4 @@
-# pv insight filesWithoutResourceSet
+# pvw insight filesWithoutResourceSet
 [Command Reference](../../../README.md#command-reference) > [insight](./main.md) > filesWithoutResourceSet
 
 ## Description
@@ -6,7 +6,7 @@ Number of files not stored in a resource set by sourceType.
 
 ## Syntax
 ```
-pv insight filesWithoutResourceSet
+pvw insight filesWithoutResourceSet
 ```
 
 ## Required Arguments
@@ -23,7 +23,7 @@ GET https://{accountName}.purview.azure.com/mapanddiscover/reports/serverless/as
 ## Examples
 Get number of fiels not stored in a resource set.
 ```powershell
-pv insight filesWithoutResourceSet
+pvw insight filesWithoutResourceSet
 ```
 <details><summary>Sample response.</summary>
 <p>

@@ -1,4 +1,4 @@
-# pv share getReceivedInvitation
+# pvw share getReceivedInvitation
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  getReceivedInvitation
 
@@ -9,7 +9,7 @@ Gets the received invitation identified by name.
 ## Syntax
 
 ```
-pv share getReceivedInvitation --invitationName=<val>
+pvw share getReceivedInvitation --invitationName=<val>
 ```
 
 ## Required Arguments
@@ -34,7 +34,7 @@ GET https://{accountName}.purview.azure.com/share/receivedInvitations/{receivedI
 Get a received invitation.
 
 ```powershell
-pv share getReceivedInvitation --invitationName "0acdde01-bdbd-49e1-b3d8-275d62b9b9bc"
+pvw share getReceivedInvitation --invitationName "0acdde01-bdbd-49e1-b3d8-275d62b9b9bc"
 ```
 
 

@@ -1,4 +1,4 @@
-# pv scan readDataSources
+# pvw scan readDataSources
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readDataSources
 
 ## Description
@@ -6,7 +6,7 @@ List data sources in Data catalog.
 
 ## Syntax
 ```
-pv scan readDataSources [--collectionName=<val>]
+pvw scan readDataSources [--collectionName=<val>]
 ```
 
 ## Required Arguments
@@ -30,7 +30,7 @@ GET https://{accountName}.purview.azure.com/scan/collections/{collectionName}/li
 ## Examples
 List all data sources.
 ```powershell
-pv scan readDataSources
+pvw scan readDataSources
 ```
 <details><summary>Sample response.</summary>
 <p>
@@ -250,7 +250,7 @@ pv scan readDataSources
 
 List all data sources within a specific collection.
 ```powershell
-pv scan readDataSources --collectionName "tdumy6"
+pvw scan readDataSources --collectionName "tdumy6"
 ```
 <details><summary>Sample response.</summary>
 <p>

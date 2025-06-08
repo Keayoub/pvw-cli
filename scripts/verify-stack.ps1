@@ -1,4 +1,4 @@
-# Verification Script for Enhanced Purview CLI v2.0
+# Verification Script for  Purview CLI v2.0
 # Comprehensive testing of frontend and backend integration
 
 param(
@@ -304,7 +304,7 @@ function Show-Summary {
 }
 
 # Main execution
-Write-Host "[*] Enhanced Purview CLI v2.0 - Stack Verification" -ForegroundColor $Magenta
+Write-Host "[*]  Purview CLI v2.0 - Stack Verification" -ForegroundColor $Magenta
 Write-Host "=================================================" -ForegroundColor $Magenta
 
 $results = @()

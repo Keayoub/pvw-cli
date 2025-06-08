@@ -1,4 +1,4 @@
-# Enhanced Purview CLI v2.0 - Redis Cache Service
+#  Purview CLI v2.0 - Redis Cache Service
 # Provides caching functionality for improved performance
 
 import json

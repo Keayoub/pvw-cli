@@ -1,4 +1,4 @@
-# pv credential delete
+# pvw credential delete
 [Command Reference](../../../README.md#command-reference) > [credential](./main.md) > delete
 
 ## Description
@@ -6,7 +6,7 @@ Delete a credential.
 
 ## Syntax
 ```
-pv scan deleteCredential --credentialName=<val>
+pvw scan deleteCredential --credentialName=<val>
 ```
 
 ## Required Arguments
@@ -24,5 +24,5 @@ DELETE https://{accountName}.purview.azure.com/scan/credentials/{credentialName}
 
 ## Examples
 ```powershell
-pv scan deleteCredential --credentialName "credential-SQL"
+pvw scan deleteCredential --credentialName "credential-SQL"
 ```

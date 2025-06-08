@@ -1,4 +1,4 @@
-# pv scan readSystemScanRulesetVersions
+# pvw scan readSystemScanRulesetVersions
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readSystemScanRulesetVersions
 
 ## Description
@@ -6,7 +6,7 @@ List system scan ruleset versions in Data catalog
 
 ## Syntax
 ```
-pv scan readSystemScanRulesetVersions --dataSourceType=<val>
+pvw scan readSystemScanRulesetVersions --dataSourceType=<val>
 ```
 
 ## Required Arguments
@@ -25,7 +25,7 @@ GET https://{accountName}.purview.azure.com/scan/systemScanRulesets/versions
 ## Examples
 List system scan ruleset versions by data source type.
 ```powershell
-pv scan readSystemScanRulesetVersions --dataSourceType "AmazonMySql" 
+pvw scan readSystemScanRulesetVersions --dataSourceType "AmazonMySql" 
 ```
 <details><summary>Sample response.</summary>
 <p>

@@ -1,4 +1,4 @@
-# pv lineage read
+# pvw lineage read
 [Command Reference](../../../README.md#command-reference) > [lineage](./main.md) > read
 
 ## Description
@@ -6,7 +6,7 @@ Get lineage info of the entity specified by GUID.
 
 ## Syntax
 ```
-pv lineage read --guid=<val> [--depth=<val> --width=<val> --direction=<val>]
+pvw lineage read --guid=<val> [--depth=<val> --width=<val> --direction=<val>]
 ```
 
 ## Required Arguments
@@ -32,7 +32,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/lineage/{guid}
 ## Examples
 Get lineage information for a particular entity.
 ```powershell
-pv lineage read --guid "c15f00b1-bf72-4413-9e95-565be22d18ed"
+pvw lineage read --guid "c15f00b1-bf72-4413-9e95-565be22d18ed"
 ```
 <details><summary>Sample response.</summary>
 <p>

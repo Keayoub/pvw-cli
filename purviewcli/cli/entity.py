@@ -1,42 +1,42 @@
 """
 usage: 
-    pv entity addLabels --guid=<val> --payloadFile=<val>
-    pv entity addLabelsByUniqueAttribute --typeName=<val> --qualifiedName=<val> --payloadFile=<val>
-    pv entity addOrUpdateBusinessAttribute --guid=<val> --bmName=<val> --payloadFile=<val>
-    pv entity addOrUpdateBusinessMetadata --guid=<val> --payloadFile=<val> [--isOverwrite]
-    pv entity changeCollection --collection=<val> --payloadFile=<val>
-    pv entity create --payloadFile=<val>
-    pv entity createBulk --payloadFile=<val>
-    pv entity createBulkClassification --payloadFile=<val>
-    pv entity createBulkSetClassifications --payloadFile=<val>
-    pv entity createClassifications --guid=<val> --payloadFile=<val>
-    pv entity createOrUpdateCollection --collection=<val> --payloadFile=<val>
-    pv entity createOrUpdateCollectionBulk --collection=<val> --payloadFile=<val>
-    pv entity createUniqueAttributeClassifications --typeName=<val> --qualifiedName=<val> --payloadFile=<val>
-    pv entity delete --guid=<val>
-    pv entity deleteBulk --guid=<val>...
-    pv entity deleteBusinessAttribute --guid=<val> --bmName=<val> --payloadFile=<val>
-    pv entity deleteBusinessMetadata --guid=<val> --payloadFile=<val>
-    pv entity deleteClassification --guid=<val> --classificationName=<val>
-    pv entity deleteLabels --guid=<val> --payloadFile=<val>
-    pv entity deleteLabelsByUniqueAttribute --typeName=<val> --qualifiedName=<val> --payloadFile=<val>
-    pv entity deleteUniqueAttribute --typeName=<val> --qualifiedName=<val>
-    pv entity deleteUniqueAttributeClassification --typeName=<val> --qualifiedName=<val> --classificationName=<val>
-    pv entity getBusinessMetadataTemplate
-    pv entity importBusinessMetadata --bmFile=<val>
-    pv entity put --guid=<val> --attrName=<val> --attrValue=<val>
-    pv entity putClassifications --guid=<val> --payloadFile=<val>
-    pv entity putUniqueAttribute --typeName=<val> --qualifiedName=<val> --payloadFile=<val>
-    pv entity putUniqueAttributeClassifications --typeName=<val> --qualifiedName=<val> --payloadFile=<val>
-    pv entity read --guid=<val> [--ignoreRelationships --minExtInfo]
-    pv entity readBulk --guid=<val>... [--ignoreRelationships --minExtInfo]
-    pv entity readBulkUniqueAttribute --typeName=<val> --qualifiedName=<val>... [--ignoreRelationships --minExtInfo]
-    pv entity readClassification --guid=<val> --classificationName=<val>
-    pv entity readClassifications --guid=<val>
-    pv entity readHeader --guid=<val>
-    pv entity readUniqueAttribute --typeName=<val> --qualifiedName=<val> [--ignoreRelationships --minExtInfo]
-    pv entity setLabels --guid=<val> --payloadFile=<val>
-    pv entity setLabelsByUniqueAttribute --typeName=<val> --qualifiedName=<val> --payloadFile=<val>
+    pvw entity addLabels --guid=<val> --payloadFile=<val>
+    pvw entity addLabelsByUniqueAttribute --typeName=<val> --qualifiedName=<val> --payloadFile=<val>
+    pvw entity addOrUpdateBusinessAttribute --guid=<val> --bmName=<val> --payloadFile=<val>
+    pvw entity addOrUpdateBusinessMetadata --guid=<val> --payloadFile=<val> [--isOverwrite]
+    pvw entity changeCollection --collection=<val> --payloadFile=<val>
+    pvw entity create --payloadFile=<val>
+    pvw entity createBulk --payloadFile=<val>
+    pvw entity createBulkClassification --payloadFile=<val>
+    pvw entity createBulkSetClassifications --payloadFile=<val>
+    pvw entity createClassifications --guid=<val> --payloadFile=<val>
+    pvw entity createOrUpdateCollection --collection=<val> --payloadFile=<val>
+    pvw entity createOrUpdateCollectionBulk --collection=<val> --payloadFile=<val>
+    pvw entity createUniqueAttributeClassifications --typeName=<val> --qualifiedName=<val> --payloadFile=<val>
+    pvw entity delete --guid=<val>
+    pvw entity deleteBulk --guid=<val>...
+    pvw entity deleteBusinessAttribute --guid=<val> --bmName=<val> --payloadFile=<val>
+    pvw entity deleteBusinessMetadata --guid=<val> --payloadFile=<val>
+    pvw entity deleteClassification --guid=<val> --classificationName=<val>
+    pvw entity deleteLabels --guid=<val> --payloadFile=<val>
+    pvw entity deleteLabelsByUniqueAttribute --typeName=<val> --qualifiedName=<val> --payloadFile=<val>
+    pvw entity deleteUniqueAttribute --typeName=<val> --qualifiedName=<val>
+    pvw entity deleteUniqueAttributeClassification --typeName=<val> --qualifiedName=<val> --classificationName=<val>
+    pvw entity getBusinessMetadataTemplate
+    pvw entity importBusinessMetadata --bmFile=<val>
+    pvw entity put --guid=<val> --attrName=<val> --attrValue=<val>
+    pvw entity putClassifications --guid=<val> --payloadFile=<val>
+    pvw entity putUniqueAttribute --typeName=<val> --qualifiedName=<val> --payloadFile=<val>
+    pvw entity putUniqueAttributeClassifications --typeName=<val> --qualifiedName=<val> --payloadFile=<val>
+    pvw entity read --guid=<val> [--ignoreRelationships --minExtInfo]
+    pvw entity readBulk --guid=<val>... [--ignoreRelationships --minExtInfo]
+    pvw entity readBulkUniqueAttribute --typeName=<val> --qualifiedName=<val>... [--ignoreRelationships --minExtInfo]
+    pvw entity readClassification --guid=<val> --classificationName=<val>
+    pvw entity readClassifications --guid=<val>
+    pvw entity readHeader --guid=<val>
+    pvw entity readUniqueAttribute --typeName=<val> --qualifiedName=<val> [--ignoreRelationships --minExtInfo]
+    pvw entity setLabels --guid=<val> --payloadFile=<val>
+    pvw entity setLabelsByUniqueAttribute --typeName=<val> --qualifiedName=<val> --payloadFile=<val>
     
 options:
     --purviewName=<val>                 [string]  Azure Purview account name.

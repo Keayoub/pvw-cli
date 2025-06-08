@@ -1,4 +1,4 @@
-# Enhanced Purview CLI v2.0 - Database Migration Manager
+#  Purview CLI v2.0 - Database Migration Manager
 # Handles database schema creation, updates, and migrations
 
 import asyncio

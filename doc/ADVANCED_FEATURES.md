@@ -1,11 +1,11 @@
-# Enhanced Purview CLI v2.0 - Advanced Features Documentation
+#  Purview CLI v2.0 - Advanced Features Documentation
 
 **Version**: 2.0 Enterprise Edition  
 **Status**: ✅ Production Ready  
 **Updated**: June 6, 2025  
 
 ## Executive Summary
-The Enhanced Purview CLI v2.0 is a comprehensive enterprise-grade data governance automation platform built on Azure Purview. This documentation covers the advanced features that transform data governance operations through intelligent automation, real-time monitoring, and extensible architecture.
+The  Purview CLI v2.0 is a comprehensive enterprise-grade data governance automation platform built on Azure Purview. This documentation covers the advanced features that transform data governance operations through intelligent automation, real-time monitoring, and extensible architecture.
 
 ## Table of Contents
 1. [Quick Start Guide](#quick-start-guide)
@@ -580,7 +580,7 @@ export_result = lineage_analyzer.export_lineage_graph(
 ## Plugin System
 
 ### Overview
-The Plugin System provides an extensible architecture for adding custom functionality to the Enhanced Purview CLI through third-party plugins and extensions.
+The Plugin System provides an extensible architecture for adding custom functionality to the  Purview CLI through third-party plugins and extensions.
 
 ### Plugin Types
 
@@ -746,7 +746,7 @@ plugin_info = plugin_manager.get_plugin_info("my_plugin")
 ## Web UI Interface
 
 ### Overview
-The Enhanced Purview CLI v2.0 includes a modern web-based user interface that provides an intuitive, interactive dashboard for data governance operations. The web UI complements the CLI by offering visual analytics, real-time monitoring, and simplified management workflows.
+The  Purview CLI v2.0 includes a modern web-based user interface that provides an intuitive, interactive dashboard for data governance operations. The web UI complements the CLI by offering visual analytics, real-time monitoring, and simplified management workflows.
 
 ### Key Features
 
@@ -1043,7 +1043,7 @@ const CustomWidget: React.FC<WidgetProps> = ({ title, data, config }) => {
 ## Testing Framework
 
 ### Overview
-Comprehensive testing framework with unit tests, integration tests, and performance tests for all Enhanced Purview CLI components.
+Comprehensive testing framework with unit tests, integration tests, and performance tests for all  Purview CLI components.
 
 ### Test Categories
 
@@ -1104,7 +1104,7 @@ python test_csv_functionality.py
 ## Performance Optimization
 
 ### Overview
-Performance optimization guidelines and best practices for Enhanced Purview CLI in production environments.
+Performance optimization guidelines and best practices for  Purview CLI in production environments.
 
 ### Optimization Areas
 
@@ -1179,7 +1179,7 @@ Performance optimization guidelines and best practices for Enhanced Purview CLI 
 
 ## Conclusion
 
-The Enhanced Purview CLI v2.0 advanced features provide a comprehensive data governance automation platform with enterprise-grade capabilities. The modular architecture ensures scalability and extensibility while maintaining high performance and reliability.
+The  Purview CLI v2.0 advanced features provide a comprehensive data governance automation platform with enterprise-grade capabilities. The modular architecture ensures scalability and extensibility while maintaining high performance and reliability.
 
 For additional support and documentation, refer to:
 - [API Reference](./api_reference.md)

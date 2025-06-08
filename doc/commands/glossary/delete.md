@@ -1,4 +1,4 @@
-# pv glossary delete
+# pvw glossary delete
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > delete
 
 ## Description
@@ -6,7 +6,7 @@ Delete a glossary.
 
 ## Syntax
 ```
-pv glossary delete --glossaryGuid=<val>
+pvw glossary delete --glossaryGuid=<val>
 ```
 
 ## Required Arguments
@@ -25,5 +25,5 @@ DELETE https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/{gl
 ## Examples
 Delete a glossary.
 ```powershell
-pv glossary delete --glossaryGuid "ac6ddb6d-d53f-4df7-b6d8-a4c29aca1447"
+pvw glossary delete --glossaryGuid "ac6ddb6d-d53f-4df7-b6d8-a4c29aca1447"
 ```

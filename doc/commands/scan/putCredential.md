@@ -1,4 +1,4 @@
-# pv credential put
+# pvw credential put
 [Command Reference](../../../README.md#command-reference) > [credential](./main.md) > put
 
 ## Description
@@ -6,7 +6,7 @@ Create or update a credential.
 
 ## Syntax
 ```
-pv scan putCredential --credentialName=<val> --payloadFile=<val>
+pvw scan putCredential --credentialName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -28,7 +28,7 @@ PUT https://{accountName}.purview.azure.com/scan/credentials/{credentialName}
 ## Examples
 Create or update a credential.
 ```powershell
-pv scan putCredential --credentialName "my_new_sql_credential"  --payloadFile "/path/to/file.json"
+pvw scan putCredential --credentialName "my_new_sql_credential"  --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

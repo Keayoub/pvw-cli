@@ -1,4 +1,4 @@
-# pv scan cancelScan
+# pvw scan cancelScan
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > cancelScan
 
 ## Description
@@ -6,7 +6,7 @@ Cancels a scan
 
 ## Syntax
 ```
-pv scan cancelScan --dataSourceName=<val> --scanName=<val> --runId=<val>
+pvw scan cancelScan --dataSourceName=<val> --scanName=<val> --runId=<val>
 ```
 
 ## Required Arguments
@@ -31,5 +31,5 @@ POST https://{accountName}.purview.azure.com/scan/datasources/{dataSourceName}/s
 ## Examples
 Cancel a scan run by data source name, scan name, and run id.
 ```powershell
-pv scan cancelScan --dataSourceName "AzureDataLakeStorage-EqK" --scanName "Scan-p1E" --runId "4b6ee19a-33f8-4b97-92bf-71cce074ba30"
+pvw scan cancelScan --dataSourceName "AzureDataLakeStorage-EqK" --scanName "Scan-p1E" --runId "4b6ee19a-33f8-4b97-92bf-71cce074ba30"
 ```

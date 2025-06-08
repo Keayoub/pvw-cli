@@ -1,4 +1,4 @@
-# pv share listReceivedShares
+# pvw share listReceivedShares
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  listReceivedShares
 
@@ -9,7 +9,7 @@ Get a list of received shares.
 ## Syntax
 
 ```
-pv share listReceivedShares [--skipToken=<val> --filter=<val> --orderBy=<val>]
+pvw share listReceivedShares [--skipToken=<val> --filter=<val> --orderBy=<val>]
 ```
 
 ## Required Arguments
@@ -48,7 +48,7 @@ GET https://{accountName}.purview.azure.com/share/receivedShares
 Get a list of received shares.
 
 ```powershell
-pv share listReceivedShares
+pvw share listReceivedShares
 ```
 
 

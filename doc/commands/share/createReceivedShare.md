@@ -1,4 +1,4 @@
-# pv share createReceivedShare
+# pvw share createReceivedShare
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  createReceivedShare
 
@@ -9,7 +9,7 @@ Create a received share in the given account.
 ## Syntax
 
 ```
-pv share createReceivedShare --receivedShareName=<val> --payloadFile=<val>
+pvw share createReceivedShare --receivedShareName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -38,7 +38,7 @@ PUT https://{accountName}.purview.azure.com/share/receivedShares/{receivedShareN
 Accept a sent share by creating a received share.
 
 ```powershell
-pv share createReceivedShare --receivedShareName "MyNewReceivedShare" --payloadFile "/path/to/file.json"
+pvw share createReceivedShare --receivedShareName "MyNewReceivedShare" --payloadFile "/path/to/file.json"
 ```
 
 

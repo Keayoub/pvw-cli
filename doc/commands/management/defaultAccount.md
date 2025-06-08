@@ -1,4 +1,4 @@
-# pv management defaultAccount
+# pvw management defaultAccount
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > defaultAccount
 
 ## Description
@@ -6,7 +6,7 @@ Gets the default account information set for the scope.
 
 ## Syntax
 ```
-pv management defaultAccount --scopeTenantId=<val> --scopeType=<val> --scope=<val>
+pvw management defaultAccount --scopeTenantId=<val> --scopeType=<val> --scope=<val>
 ```
 
 ## Required Arguments
@@ -30,5 +30,5 @@ GET https://management.azure.com/providers/Microsoft.Purview/getDefaultAccount
 
 ## Examples
 ```powershell
-pv management defaultAccount --scopeTenantId "72f988bf-86f1-41af-91ab-2d7cd011db47" --scopeType "Subscription" --scope "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0"
+pvw management defaultAccount --scopeTenantId "72f988bf-86f1-41af-91ab-2d7cd011db47" --scopeType "Subscription" --scope "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0"
 ```

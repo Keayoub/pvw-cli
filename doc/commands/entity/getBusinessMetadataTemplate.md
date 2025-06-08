@@ -1,4 +1,4 @@
-# pv entity getBusinessMetadataTemplate
+# pvw entity getBusinessMetadataTemplate
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > getBusinessMetadataTemplate
 
 ## Description
@@ -6,7 +6,7 @@ Get a sample template for uploading/creating business metadata in bulk.
 
 ## Syntax
 ```
-pv entity getBusinessMetadataTemplate
+pvw entity getBusinessMetadataTemplate
 ```
 
 ## Required Arguments
@@ -24,7 +24,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/business
 ## Examples
 Download a sample template for uploading/creating business metadata in bulk.
 ```powershell
-pv entity getBusinessMetadataTemplate
+pvw entity getBusinessMetadataTemplate
 ```
 <details><summary>Sample response.</summary>
 <p>

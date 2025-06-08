@@ -1,4 +1,4 @@
-# pv types readTermTemplateDef
+# pvw types readTermTemplateDef
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > readTermTemplateDef
 
 ## Description
@@ -6,7 +6,7 @@ Get the term template definition for the given GUID or by its name (unique).
 
 ## Syntax
 ```
-pv types readTermTemplateDef (--guid=<val> | --name=<val>)
+pvw types readTermTemplateDef (--guid=<val> | --name=<val>)
 ```
 
 ## Required Arguments
@@ -33,7 +33,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/types/termtemplatedef/na
 ## Examples
 Get term template definition by name.
 ```powershell
-pv types readTermTemplateDef --name "My Custom Term Template"
+pvw types readTermTemplateDef --name "My Custom Term Template"
 ```
 
 <details><summary>Sample response.</summary>
@@ -75,5 +75,5 @@ pv types readTermTemplateDef --name "My Custom Term Template"
 
 Get term template definition by guid.
 ```powershell
-pv types readTermTemplateDef --guid "71ee745e-5a99-3b0f-9e46-ed75b67c224d"
+pvw types readTermTemplateDef --guid "71ee745e-5a99-3b0f-9e46-ed75b67c224d"
 ```

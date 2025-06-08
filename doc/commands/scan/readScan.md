@@ -1,4 +1,4 @@
-# pv scan readScan
+# pvw scan readScan
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readScan
 
 ## Description
@@ -6,7 +6,7 @@ Gets a scan information
 
 ## Syntax
 ```
-pv scan readScan --dataSourceName=<val> --scanName=<val>
+pvw scan readScan --dataSourceName=<val> --scanName=<val>
 ```
 
 ## Required Arguments
@@ -28,7 +28,7 @@ GET https://{accountName}.purview.azure.com/scan/datasources/{dataSourceName}/sc
 ## Examples
 Get a scan by data source name and scan name.
 ```powershell
-pv scan readScan --dataSourceName "AzureDataLakeStorage-Gbm" --scanName "Scan-Xei"
+pvw scan readScan --dataSourceName "AzureDataLakeStorage-Gbm" --scanName "Scan-Xei"
 ```
 <details><summary>Sample response.</summary>
 <p>

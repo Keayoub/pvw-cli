@@ -1,4 +1,4 @@
-# pv share deleteSentShare
+# pvw share deleteSentShare
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  deleteSentShare
 
@@ -9,7 +9,7 @@ Deletes a sent share.
 ## Syntax
 
 ```
-pv share deleteSentShare --sentShareName=<val>
+pvw share deleteSentShare --sentShareName=<val>
 ```
 
 ## Required Arguments
@@ -34,5 +34,5 @@ DELETE https://{accountName}.purview.azure.com/share/sentShares/{sentShareName}
 Delete a sent share.
 
 ```powershell
-pv share deleteSentShare --sentShareName "NewShare"
+pvw share deleteSentShare --sentShareName "NewShare"
 ```

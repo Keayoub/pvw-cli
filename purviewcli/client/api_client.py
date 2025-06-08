@@ -1,5 +1,5 @@
 """
-Enhanced Azure Purview API Client
+ Azure Purview API Client
 Supports the latest Azure Purview REST API specifications with comprehensive automation capabilities
 """
 
@@ -30,8 +30,8 @@ class PurviewConfig:
     timeout: int = 30
     batch_size: int = 100
 
-class EnhancedPurviewClient:
-    """Enhanced Purview API Client with comprehensive automation support"""
+class PurviewClient:
+    """ Purview API Client with comprehensive automation support"""
     
     def __init__(self, config: PurviewConfig):
         self.config = config

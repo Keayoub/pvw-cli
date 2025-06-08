@@ -1,4 +1,4 @@
-# Enhanced Purview CLI v2.0 - Test Configuration
+#  Purview CLI v2.0 - Test Configuration
 # Pytest configuration and test utilities
 
 import pytest

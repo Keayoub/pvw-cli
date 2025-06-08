@@ -1,4 +1,4 @@
-# pv share registerEmail
+# pvw share registerEmail
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  registerEmail
 
@@ -9,7 +9,7 @@ Registers the tenant and email combination for activation.
 ## Syntax
 
 ```
-pv share registerEmail
+pvw share registerEmail
 ```
 
 ## Required Arguments
@@ -34,5 +34,5 @@ POST https://{accountName}.purview.azure.com/share/registerEmail
 Registers the tenant and email combination for activation.
 
 ```powershell
-pv share registerEmail
+pvw share registerEmail
 ```

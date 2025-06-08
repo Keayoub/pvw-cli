@@ -1,4 +1,4 @@
-# pv management listKeys
+# pvw management listKeys
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > listKeys
 
 ## Description
@@ -6,7 +6,7 @@ Lists the keys asynchronous.
 
 ## Syntax
 ```
-pv management listKeys --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val>
+pvw management listKeys --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val>
 ```
 
 ## Required Arguments
@@ -31,7 +31,7 @@ POST https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/
 ## Examples
 List the keys associated to an existing Azure Purview account.
 ```powershell
-pv management listKeys --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "myrg" --accountName "my-purview-account"
+pvw management listKeys --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "myrg" --accountName "my-purview-account"
 ```
 
 <details><summary>Sample response.</summary>

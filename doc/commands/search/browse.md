@@ -1,4 +1,4 @@
-# pv search browse
+# pvw search browse
 [Command Reference](../../../README.md#command-reference) > [search](./main.md) > browse
 
 ## Description
@@ -6,7 +6,7 @@ Browse entities by path or entity type.
 
 ## Syntax
 ```
-pv search browse (--entityType=<val> | --path=<val>) [--limit=<val> --offset=<val>]
+pvw search browse (--entityType=<val> | --path=<val>) [--limit=<val> --offset=<val>]
 ```
 
 ## Required Arguments
@@ -32,7 +32,7 @@ POST https://{accountName}.purview.azure.com/catalog/api/browse
 ## Examples
 Browse entities by entity type.
 ```powershell
-pv search browse --entityType "azure_datalake_gen2_path"
+pvw search browse --entityType "azure_datalake_gen2_path"
 ```
 
 <details><summary>Sample response.</summary>
@@ -96,7 +96,7 @@ pv search browse --entityType "azure_datalake_gen2_path"
 
 Browse entities by path.
 ```powershell
-pv search browse --path "/azure_storage_account#esg26fa7f24adls.core.windows.net/azure_datalake_gen2_service#esg26fa7f24adls.dfs.core.windows.net/azure_datalake_gen2_filesystem#01-bronze/azure_datalake_gen2_path#esg"
+pvw search browse --path "/azure_storage_account#esg26fa7f24adls.core.windows.net/azure_datalake_gen2_service#esg26fa7f24adls.dfs.core.windows.net/azure_datalake_gen2_filesystem#01-bronze/azure_datalake_gen2_path#esg"
 ```
 
 <details><summary>Sample response.</summary>

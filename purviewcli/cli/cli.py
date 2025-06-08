@@ -1,27 +1,26 @@
-
 """
-usage: pv [--version] [--help] <command> [<args>...]
+usage: pvw [--version] [--help] <command> [<args>...]
 
 options:
    -v, --version
    -h, --help
    
 
-The most commonly used pv commands are:
-   pv entity           [Atlas] Entities are a collection of attributes that model or represent an asset.
-   pv glossary         [Atlas] Vocabularies for business users.
-   pv lineage          [Atlas] Helps you understand the source and impact of data and changes to data over time.
-   pv relationship     [Atlas] Relationships describe connections between two entities.
-   pv types            [Atlas] A Type in Atlas is a definition of how a particular object type is stored and accessed.
-   pv management       [Control Plane] Manage Microsoft Purview resources in your subscription.
-   pv account          [Data Plane] Accounts, Collections, Resource Set Rules.
-   pv insight          [Data Plane] Data Estate Insights.
-   pv policystore      [Data Plane] Metadata Policies, Metadata Roles.
-   pv scan             [Data Plane] Scanning, Sources, Classification Rules, Credentials.
-   pv search           [Data Plane] Search.
-   pv share            [Data Plane] Data Share.
+The most commonly used pvw commands are:
+   pvw entity           [Atlas] Entities are a collection of attributes that model or represent an asset.
+   pvw glossary         [Atlas] Vocabularies for business users.
+   pvw lineage          [Atlas] Helps you understand the source and impact of data and changes to data over time.
+   pvw relationship     [Atlas] Relationships describe connections between two entities.
+   pvw types            [Atlas] A Type in Atlas is a definition of how a particular object type is stored and accessed.
+   pvw management       [Control Plane] Manage Microsoft Purview resources in your subscription.
+   pvw account          [Data Plane] Accounts, Collections, Resource Set Rules.
+   pvw insight          [Data Plane] Data Estate Insights.
+   pvw policystore      [Data Plane] Metadata Policies, Metadata Roles.
+   pvw scan             [Data Plane] Scanning, Sources, Classification Rules, Credentials.
+   pvw search           [Data Plane] Search.
+   pvw share            [Data Plane] Data Share.
 
-See 'pv <command>' for more information on a specific command.
+See 'pvw <command>' for more information on a specific command.
 
 """
 import sys
@@ -32,7 +31,7 @@ from purviewcli import __version__
 from purviewcli.client import settings
 
 def main():
-    # Append help flag if input is pv only
+    # Append help flag if input is pvw only
     if len(sys.argv) == 1:
         sys.argv.append('-h')
         sys.exit(main())

@@ -1,4 +1,4 @@
-# pv types readStatistics
+# pvw types readStatistics
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > readStatistics
 
 ## Description
@@ -6,7 +6,7 @@ Get a count of entities by type.
 
 ## Syntax
 ```
-pv types readStatistics
+pvw types readStatistics
 ```
 
 ## Required Arguments
@@ -23,7 +23,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/statistic
 ## Examples
 Get a count of entities by type.
 ```powershell
-pv types readStatistics
+pvw types readStatistics
 ```
 
 <details><summary>Sample response.</summary>

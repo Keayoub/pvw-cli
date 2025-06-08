@@ -1,4 +1,4 @@
-# pv glossary readCategoryTerms
+# pvw glossary readCategoryTerms
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > readCategoryTerms
 
 ## Description
@@ -6,7 +6,7 @@ Get all terms associated with the specific category.
 
 ## Syntax
 ```
-pv glossary readCategoryTerms --categoryGuid=<val> [--limit=<val> --offset=<val> --sort=<val>]
+pvw glossary readCategoryTerms --categoryGuid=<val> [--limit=<val> --offset=<val> --sort=<val>]
 ```
 
 ## Required Arguments
@@ -32,7 +32,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/catego
 ## Examples
 Get all terms associated with a category.
 ```powershell
-pv glossary readCategoryTerms --categoryGuid "c856ecef-21e6-4e92-8607-9493d8432e78"
+pvw glossary readCategoryTerms --categoryGuid "c856ecef-21e6-4e92-8607-9493d8432e78"
 ```
 <details><summary>Sample response.</summary>
 <p>

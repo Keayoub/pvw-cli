@@ -1,4 +1,4 @@
-# pv account getChildCollectionNames
+# pvw account getChildCollectionNames
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > getChildCollectionNames
 
 ## Description
@@ -6,7 +6,7 @@ Lists the child collections names in the collection.
 
 ## Syntax
 ```
-pv account getChildCollectionNames --collectionName=<val>
+pvw account getChildCollectionNames --collectionName=<val>
 ```
 
 ## Required Arguments
@@ -25,7 +25,7 @@ GET https://{accountName}.purview.azure.com/account/collections/{collectionName}
 ## Examples
 List the child collections beneath a target collection.
 ```powershell
-pv account getChildCollectionNames --collectionName "esg-26fa7f24-pv"
+pvw account getChildCollectionNames --collectionName "esg-26fa7f24-pv"
 ```
 
 <details><summary>Sample response.</summary>

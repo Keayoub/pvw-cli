@@ -1,4 +1,4 @@
-# pv glossary read
+# pvw glossary read
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > read
 
 ## Description
@@ -6,7 +6,7 @@ Get all glossaries registered with Atlas.
 
 ## Syntax
 ```
-pv glossary read [--glossaryGuid=<val> --limit=<val> --offset=<val> --sort=<val> --ignoreTermsAndCategories]
+pvw glossary read [--glossaryGuid=<val> --limit=<val> --offset=<val> --sort=<val> --ignoreTermsAndCategories]
 ```
 
 ## Required Arguments
@@ -42,7 +42,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/{gloss
 ## Examples
 Get all glossaries (without terms and categories).
 ```powershell
-pv glossary read --ignoreTermsAndCategories
+pvw glossary read --ignoreTermsAndCategories
 ```
 
 <details><summary>Sample response.</summary>
@@ -63,7 +63,7 @@ pv glossary read --ignoreTermsAndCategories
 
 Get all glossaries.
 ```powershell
-pv glossary read
+pvw glossary read
 ```
 
 <details><summary>Sample response.</summary>
@@ -101,7 +101,7 @@ pv glossary read
 
 Get a specific glossary.
 ```powershell
-pv glossary read --glossaryGuid "f2307f48-5834-4709-be85-02f3aea5d149"
+pvw glossary read --glossaryGuid "f2307f48-5834-4709-be85-02f3aea5d149"
 ```
 
 <details><summary>Sample response.</summary>

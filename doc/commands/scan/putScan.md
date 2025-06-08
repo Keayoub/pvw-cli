@@ -1,4 +1,4 @@
-# pv scan putScan
+# pvw scan putScan
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > putScan
 
 ## Description
@@ -6,7 +6,7 @@ Creates an instance of a scan
 
 ## Syntax
 ```
-pv scan putScan --dataSourceName=<val> --scanName=<val> --payloadFile=<val>
+pvw scan putScan --dataSourceName=<val> --scanName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -31,7 +31,7 @@ PUT https://{accountName}.purview.azure.com/scan/datasources/{dataSourceName}/sc
 ## Examples
 Create a scan.
 ```powershell
-pv scan putScan --dataSourceName "AzureDataLakeStorage-Gbm" --scanName "Scan-ABC" --payloadFile "/path/to/file.json"
+pvw scan putScan --dataSourceName "AzureDataLakeStorage-Gbm" --scanName "Scan-ABC" --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

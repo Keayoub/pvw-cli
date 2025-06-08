@@ -9,7 +9,7 @@ if (!(Test-Path .\.venv)) {
     Write-Host "❌ Failed to create .venv. Make sure Python 3.10 is installed and accessible via 'py -3.10'" -ForegroundColor Red
     exit 1
 }
-
+cd ..
 Write-Host "`n✅ Virtual environment created: .venv" -ForegroundColor Green
 Write-Host "`n⚠️ To activate the environment, run the following command manually:" -ForegroundColor Magenta
 Write-Host ".\.venv\Scripts\Activate.ps1" -ForegroundColor White

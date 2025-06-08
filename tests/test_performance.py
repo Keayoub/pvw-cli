@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Performance Test Suite for Enhanced Purview CLI v2.0
+Performance Test Suite for  Purview CLI v2.0
 Tests performance characteristics of all modules under various load conditions
 """
 
@@ -29,7 +29,7 @@ from rich.progress import Progress, BarColumn, TextColumn, TimeRemainingColumn
 console = Console()
 
 class PerformanceTestSuite:
-    """Performance testing suite for Enhanced Purview CLI"""
+    """Performance testing suite for  Purview CLI"""
     
     def __init__(self):
         self.test_results = []
@@ -543,7 +543,7 @@ class PerformanceTestSuite:
     def generate_performance_report(self):
         """Generate comprehensive performance report"""
         console.print("\n" + "="*80)
-        console.print(Panel("[bold blue]Enhanced Purview CLI v2.0 - Performance Test Report[/bold blue]"))
+        console.print(Panel("[bold blue] Purview CLI v2.0 - Performance Test Report[/bold blue]"))
         
         if not self.test_results:
             console.print("[red]No performance test results available[/red]")
@@ -675,7 +675,7 @@ class PerformanceTestSuite:
 
 async def main():
     """Main performance test execution"""
-    console.print("[bold green]Enhanced Purview CLI v2.0 - Performance Test Suite[/bold green]")
+    console.print("[bold green] Purview CLI v2.0 - Performance Test Suite[/bold green]")
     console.print("="*80)
     
     test_suite = PerformanceTestSuite()

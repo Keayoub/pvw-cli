@@ -1,4 +1,4 @@
-# pv scan readScanRuleset
+# pvw scan readScanRuleset
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readScanRuleset
 
 ## Description
@@ -6,7 +6,7 @@ Get a scan ruleset
 
 ## Syntax
 ```
-pv scan readScanRuleset --scanRulesetName=<val>
+pvw scan readScanRuleset --scanRulesetName=<val>
 ```
 
 ## Required Arguments
@@ -25,7 +25,7 @@ GET https://{accountName}.purview.azure.com/scan/scanrulesets/{scanRulesetName}
 ## Examples
 Get a custom scan ruleset.
 ```powershell
-pv scan readScanRuleset --scanRulesetName "adls_parquet_only"
+pvw scan readScanRuleset --scanRulesetName "adls_parquet_only"
 ```
 <details><summary>Sample response.</summary>
 <p>

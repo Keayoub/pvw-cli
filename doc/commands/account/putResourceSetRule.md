@@ -1,4 +1,4 @@
-# pv account putResourceSetRule
+# pvw account putResourceSetRule
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > putResourceSetRule
 
 ## Description
@@ -6,7 +6,7 @@ Creates or updates a resource set.
 
 ## Syntax
 ```
-pv account putResourceSetRule --payloadFile=<val>
+pvw account putResourceSetRule --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -25,5 +25,5 @@ PUT https://{accountName}.purview.azure.com/account/resourceSetRuleConfigs/defau
 ## Examples
 Create or update a resource set.
 ```powershell
-pv account putResourceSetRule --payloadFile "/path/to/file.json"
+pvw account putResourceSetRule --payloadFile "/path/to/file.json"
 ```

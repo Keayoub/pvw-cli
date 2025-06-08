@@ -1,4 +1,4 @@
-# pv share getReceivedShare
+# pvw share getReceivedShare
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  getReceivedShare
 
@@ -9,7 +9,7 @@ Get a received share by name.
 ## Syntax
 
 ```
-pv share getReceivedShare --receivedShareName=<val>
+pvw share getReceivedShare --receivedShareName=<val>
 ```
 
 ## Required Arguments
@@ -34,7 +34,7 @@ GET https://{accountName}.purview.azure.com/share/receivedShares/{receivedShareN
 Get a received share.
 
 ```powershell
-pv share getReceivedShare --receivedShareName "NewShare"
+pvw share getReceivedShare --receivedShareName "NewShare"
 ```
 
 

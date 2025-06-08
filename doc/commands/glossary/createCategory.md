@@ -1,4 +1,4 @@
-# pv glossary createCategory
+# pvw glossary createCategory
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > createCategory
 
 ## Description
@@ -6,7 +6,7 @@ Create a glossary category.
 
 ## Syntax
 ```
-pv glossary createCategory --payloadFile=<val>
+pvw glossary createCategory --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -25,7 +25,7 @@ POST https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/categ
 ## Examples
 Create a new category.
 ```powershell
-pv glossary createCategory --payloadFile "/path/to/file.json"
+pvw glossary createCategory --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

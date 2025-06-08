@@ -1,4 +1,4 @@
-# pv management listOperations
+# pvw management listOperations
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > listOperations
 
 ## Description
@@ -6,7 +6,7 @@ Lists the available operations
 
 ## Syntax
 ```
-pv management listOperations
+pvw management listOperations
 ```
 
 ## Required Arguments
@@ -24,7 +24,7 @@ GET https://management.azure.com/providers/Microsoft.Purview/operations
 ## Examples
 List the operations available via the Azure Purview resource provider.
 ```powershell
-pv management listOperations
+pvw management listOperations
 ```
 
 <details><summary>Sample response.</summary>

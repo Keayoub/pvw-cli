@@ -1,4 +1,4 @@
-# pv entity setLabelsByUniqueAttribute
+# pvw entity setLabelsByUniqueAttribute
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > setLabelsByUniqueAttribute
 
 ## Description
@@ -6,7 +6,7 @@ Overwrite labels for an entity identified by its type and unique attributes.
 
 ## Syntax
 ```
-pv entity setLabelsByUniqueAttribute --typeName=<val> --qualifiedName=<val> --payloadFile=<val>
+pvw entity setLabelsByUniqueAttribute --typeName=<val> --qualifiedName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -31,7 +31,7 @@ POST https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/uniqueA
 ## Examples
 Overwrite labels property for an existing entity identified by its type and unique attributes.
 ```powershell
-pv entity setLabelsByUniqueAttribute --typeName "azure_datalake_gen2_resource_set" --qualifiedName "https://STORAGE_ACCOUNT.dfs.core.windows.net/bing/data/{N}/QueriesByCountry_{Year}-{Month}-{Day}_{N}-{N}-{N}.tsv" --payloadFile "/path/to/file.json"
+pvw entity setLabelsByUniqueAttribute --typeName "azure_datalake_gen2_resource_set" --qualifiedName "https://STORAGE_ACCOUNT.dfs.core.windows.net/bing/data/{N}/QueriesByCountry_{Year}-{Month}-{Day}_{N}-{N}-{N}.tsv" --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

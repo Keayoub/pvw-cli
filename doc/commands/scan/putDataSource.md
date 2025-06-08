@@ -1,4 +1,4 @@
-# pv scan putDataSource
+# pvw scan putDataSource
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > putDataSource
 
 ## Description
@@ -6,7 +6,7 @@ Creates or Updates a data source
 
 ## Syntax
 ```
-pv scan putDataSource --dataSourceName=<val> --payloadFile=<val>
+pvw scan putDataSource --dataSourceName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -28,7 +28,7 @@ PUT https://{accountName}.purview.azure.com/scan/datasources/{dataSourceName}
 ## Examples
 Create or update a data source - Azure SQL Database.
 ```powershell
-pv scan putDataSource --dataSourceName "AzureSqlDatabase-ABC" --payloadFile "/path/to/file.json"  
+pvw scan putDataSource --dataSourceName "AzureSqlDatabase-ABC" --payloadFile "/path/to/file.json"  
 ```
 <details><summary>Example payload.</summary>
 <p>
@@ -56,7 +56,7 @@ pv scan putDataSource --dataSourceName "AzureSqlDatabase-ABC" --payloadFile "/pa
 
 Create or update a data source - SQL Server.
 ```powershell
-pv scan putDataSource --dataSourceName "YOUR_DS_NAME" --payloadFile "/path/to/file.json"  
+pvw scan putDataSource --dataSourceName "YOUR_DS_NAME" --payloadFile "/path/to/file.json"  
 ```
 <details><summary>Example payload.</summary>
 <p>

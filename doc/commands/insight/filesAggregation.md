@@ -1,4 +1,4 @@
-# pv insight filesAggregation
+# pvw insight filesAggregation
 [Command Reference](../../../README.md#command-reference) > [insight](./main.md) > filesAggregation
 
 ## Description
@@ -6,7 +6,7 @@ File count and size by fileType and sourceType.
 
 ## Syntax
 ```
-pv insight filesAggregation
+pvw insight filesAggregation
 ```
 
 ## Required Arguments
@@ -23,7 +23,7 @@ GET https://{accountName}.purview.azure.com/mapanddiscover/reports/serverless/as
 ## Examples
 Get file statistics by fileType and sourceType.
 ```powershell
-pv insight filesAggregation
+pvw insight filesAggregation
 ```
 <details><summary>Sample response.</summary>
 <p>

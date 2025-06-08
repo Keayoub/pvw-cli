@@ -193,7 +193,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </IconButton>
           
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}>
-            Enhanced Purview CLI v2.0
+             Purview CLI v2.0
           </Typography>
           
           <Search>

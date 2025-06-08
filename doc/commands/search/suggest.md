@@ -1,4 +1,4 @@
-# pv search suggest
+# pvw search suggest
 [Command Reference](../../../README.md#command-reference) > [search](./main.md) > suggest
 
 ## Description
@@ -6,7 +6,7 @@ Get search suggestions by query criteria.
 
 ## Syntax
 ```
-pv search suggest [--keywords=<val> --limit=<val> --filterFile=<val>]
+pvw search suggest [--keywords=<val> --limit=<val> --filterFile=<val>]
 ```
 
 ## Required Arguments
@@ -31,7 +31,7 @@ POST https://{accountName}.purview.azure.com/catalog/api/search/suggest
 ## Examples
 Search suggestions by keywords.
 ```powershell
-pv search suggest --keywords "Sta"
+pvw search suggest --keywords "Sta"
 ```
 
 <details><summary>Sample response.</summary>

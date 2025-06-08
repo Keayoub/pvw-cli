@@ -1,4 +1,4 @@
-# pv types putTypeDefs
+# pvw types putTypeDefs
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > putTypeDefs
 
 ## Description
@@ -6,7 +6,7 @@ Update all types in bulk, changes detected in the type definitions would be pers
 
 ## Syntax
 ```
-pv types putTypeDefs --payloadFile=<val>
+pvw types putTypeDefs --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -25,7 +25,7 @@ PUT https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/typedefs
 ## Examples
 Update type definitions in bulk.
 ```powershell
-pv types putTypeDefs --payloadFile "/path/to/file.json"
+pvw types putTypeDefs --payloadFile "/path/to/file.json"
 ```
 
 <details><summary>Example payload.</summary>

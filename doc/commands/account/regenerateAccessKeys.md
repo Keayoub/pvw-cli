@@ -1,4 +1,4 @@
-# pv account regenerateAccessKeys
+# pvw account regenerateAccessKeys
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > regenerateAccessKeys
 
 ## Description
@@ -6,7 +6,7 @@ Regenerate the authorization keys associated with this data catalog.
 
 ## Syntax
 ```
-pv account regenerateAccessKeys --keyType=<val>
+pvw account regenerateAccessKeys --keyType=<val>
 ```
 
 ## Required Arguments
@@ -24,7 +24,7 @@ POST https://{accountName}.purview.azure.com/account/regeneratekeys
 ## Examples
 Regenerate the primary Atlas Kafka authorization key.
 ```powershell
-pv account regenerateAccessKeys --keyType "PrimaryAtlasKafkaKey"
+pvw account regenerateAccessKeys --keyType "PrimaryAtlasKafkaKey"
 ```
 
 <details><summary>Sample response.</summary>
@@ -41,5 +41,5 @@ pv account regenerateAccessKeys --keyType "PrimaryAtlasKafkaKey"
 
 Regenerate the secondary Atlas Kafka authorization key.
 ```powershell
-pv account regenerateAccessKeys --keyType "SecondaryAtlasKafkaKey"
+pvw account regenerateAccessKeys --keyType "SecondaryAtlasKafkaKey"
 ```

@@ -1,5 +1,5 @@
 """
-Plugin System for Enhanced Purview CLI
+Plugin System for  Purview CLI
 Provides extensible architecture for third-party integrations and custom functionality
 """
 

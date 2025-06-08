@@ -1,4 +1,4 @@
-# pv glossary putTermPartial
+# pvw glossary putTermPartial
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > putTermPartial
 
 ## Description
@@ -6,7 +6,7 @@ Update the glossary term partially.
 
 ## Syntax
 ```
-pv glossary putTermPartial --termGuid=<val> --payloadFile=<val> [--includeTermHierarchy]
+pvw glossary putTermPartial --termGuid=<val> --payloadFile=<val> [--includeTermHierarchy]
 ```
 
 ## Required Arguments
@@ -29,7 +29,7 @@ PUT https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/term/{
 ## Examples
 Update a basic attribute of an existing glossary term.
 ```powershell
-pv glossary putTermPartial --termGuid "919e8f87-d5b2-4dde-9f6e-1bbd738536a1" --payloadFile "/path/to/file.json"
+pvw glossary putTermPartial --termGuid "919e8f87-d5b2-4dde-9f6e-1bbd738536a1" --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

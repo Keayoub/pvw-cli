@@ -1,4 +1,4 @@
-# pv entity changeCollection
+# pvw entity changeCollection
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > changeCollection
 
 ## Description
@@ -6,7 +6,7 @@ Move existing entities to the target collection.
 
 ## Syntax
 ```
-pv entity changeCollection --collection=<val> --payloadFile=<val>
+pvw entity changeCollection --collection=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -28,7 +28,7 @@ POST https://{accountName}.purview.azure.com/catalog/api/collections/{collection
 ## Examples
 Move a list of existing entities to a target collection.
 ```powershell
-pv entity changeCollection --collection "tdumy6" --payloadFile "/path/to/file.json"
+pvw entity changeCollection --collection "tdumy6" --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

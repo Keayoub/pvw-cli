@@ -1,4 +1,4 @@
-# pv types readRelationshipDef
+# pvw types readRelationshipDef
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > readRelationshipDef
 
 ## Description
@@ -6,7 +6,7 @@ Get the relationship definition for the given GUID or by its name (unique).
 
 ## Syntax
 ```
-pv types readRelationshipDef (--guid=<val> | --name=<val>)
+pvw types readRelationshipDef (--guid=<val> | --name=<val>)
 ```
 
 ## Required Arguments
@@ -33,7 +33,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/relations
 ## Examples
 Get relationship definition by name.
 ```powershell
-pv types readRelationshipDef --name "bigquery_dataset_tables"
+pvw types readRelationshipDef --name "bigquery_dataset_tables"
 ```
 
 <details><summary>Sample response.</summary>
@@ -77,5 +77,5 @@ pv types readRelationshipDef --name "bigquery_dataset_tables"
 
 Get relationship definition by guid.
 ```powershell
-pv types readRelationshipDef --guid "94dced37-45a9-7660-f63d-fd2ab949da82"
+pvw types readRelationshipDef --guid "94dced37-45a9-7660-f63d-fd2ab949da82"
 ```

@@ -1,4 +1,4 @@
-# pv types readTypeDef
+# pvw types readTypeDef
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > readTypeDef
 
 ## Description
@@ -6,7 +6,7 @@ Get the type definition for the given GUID or by its name (unique).
 
 ## Syntax
 ```
-pv types readTypeDef (--guid=<val> | --name=<val>)
+pvw types readTypeDef (--guid=<val> | --name=<val>)
 ```
 
 ## Required Arguments
@@ -33,7 +33,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/typedef/n
 ## Examples
 Get type definition by name.
 ```powershell
-pv types readTypeDef --name "azure_sql_table"
+pvw types readTypeDef --name "azure_sql_table"
 ```
 
 <details><summary>Sample response.</summary>
@@ -225,5 +225,5 @@ pv types readTypeDef --name "azure_sql_table"
 
 Get type definition by guid.
 ```powershell
-pv types readTypeDef --guid "7d92a449-f7e8-812f-5fc8-ca6127ba90bd"
+pvw types readTypeDef --guid "7d92a449-f7e8-812f-5fc8-ca6127ba90bd"
 ```

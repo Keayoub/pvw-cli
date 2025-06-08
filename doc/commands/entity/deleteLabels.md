@@ -1,4 +1,4 @@
-# pv entity deleteLabels
+# pvw entity deleteLabels
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > deleteLabels
 
 ## Description
@@ -6,7 +6,7 @@ Delete label(s) from an entity.
 
 ## Syntax
 ```
-pv entity deleteLabels --guid=<val> --payloadFile=<val>
+pvw entity deleteLabels --guid=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -28,7 +28,7 @@ DELETE https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/
 ## Examples
 Delete labels from an existing entity.
 ```powershell
-pv entity deleteLabels --guid "7738b5c7-7977-4261-9871-7d00e11cabe8" --payloadFile "/path/to/file.json"
+pvw entity deleteLabels --guid "7738b5c7-7977-4261-9871-7d00e11cabe8" --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

@@ -1,4 +1,4 @@
-# pv glossary createTermsImport
+# pvw glossary createTermsImport
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > createTermsImport
 
 ## Description
@@ -6,7 +6,7 @@ Import glossary terms from local csv file.
 
 ## Syntax
 ```
-pv glossary createTermsImport --glossaryFile=<val> [--glossaryGuid=<val> --includeTermHierarchy]
+pvw glossary createTermsImport --glossaryFile=<val> [--glossaryGuid=<val> --includeTermHierarchy]
 ```
 
 ## Required Arguments
@@ -34,7 +34,7 @@ POST https://{accountName}.purview.azure.com/catalog/api/glossary/name/{glossary
 ## Examples
 Upload glossary terms via a CSV file.
 ```powershell
-pv glossary createTermsImport --glossaryGuid "125e2575-5823-4887-89f0-ff03a70f7c3a" --glossaryFile "/path/to/file.json"
+pvw glossary createTermsImport --glossaryGuid "125e2575-5823-4887-89f0-ff03a70f7c3a" --glossaryFile "/path/to/file.json"
 ```
 
 <details><summary>Sample response.</summary>

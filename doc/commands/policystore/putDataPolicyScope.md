@@ -1,4 +1,4 @@
-# pv policystore putDataPolicyScope
+# pvw policystore putDataPolicyScope
 [Command Reference](../../../README.md#command-reference) > [policystore](./main.md) > putDataPolicyScope
 
 ## Description
@@ -6,7 +6,7 @@ Create or update a data policy scope.
 
 ## Syntax
 ```
-pv policystore putDataPolicyScope --policyName=<val> --payloadFile=<val>
+pvw policystore putDataPolicyScope --policyName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -28,7 +28,7 @@ PUT https://{accountName}.purview.azure.com/policystore/dataPolicies/{policyName
 ## Examples
 Create or update a data policy scope.
 ```powershell
-pv policystore putDataPolicyScope --policyName "new-policy" --payloadFile "/path/to/file.json"
+pvw policystore putDataPolicyScope --policyName "new-policy" --payloadFile "/path/to/file.json"
 ```
 
 <details><summary>Example payload.</summary>

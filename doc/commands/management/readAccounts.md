@@ -1,4 +1,4 @@
-# pv management readAccounts
+# pvw management readAccounts
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > readAccounts
 
 ## Description
@@ -6,7 +6,7 @@ Gets the accounts resources by subscription.
 
 ## Syntax
 ```
-pv management readAccounts --subscriptionId=<val> [--resourceGroupName=<val>]
+pvw management readAccounts --subscriptionId=<val> [--resourceGroupName=<val>]
 ```
 
 ## Required Arguments
@@ -26,7 +26,7 @@ GET https://management.azure.com/subscriptions/{subscriptionId}/providers/Micros
 ## Examples
 Get all Azure Purview accounts within a particular Azure subscription.
 ```powershell
-pv management readAccounts --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0"
+pvw management readAccounts --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0"
 ```
 
 <details><summary>Sample response.</summary>
@@ -138,5 +138,5 @@ pv management readAccounts --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca
 
 Get all Azure Purview accounts within a particular resource group.
 ```powershell
-pv management readAccounts --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "esg"
+pvw management readAccounts --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "esg"
 ```

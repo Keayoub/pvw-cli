@@ -1,4 +1,4 @@
-# pv share updateExpirationAcceptedShare
+# pvw share updateExpirationAcceptedShare
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  updateExpirationAcceptedShare
 
@@ -9,7 +9,7 @@ Update the expiration date of an active accepted sent share.
 ## Syntax
 
 ```
-pv share updateExpirationAcceptedShare --sentShareName=<val> --acceptedSentShareName=<val> --payloadFile=<val>
+pvw share updateExpirationAcceptedShare --sentShareName=<val> --acceptedSentShareName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -42,7 +42,7 @@ POST https://{accountName}.purview.azure.com/share/sentShares/{sentShareName}/ac
 Update the expiration date of an accepted share.
 
 ```powershell
-pv share updateExpirationAcceptedShare --sentShareName "MyNewSentShare" --acceptedSentShareName "4f5e1b4b-44f8-42c1-a783-b6c2265e49f5" --payloadFile "/path/to/file.json"
+pvw share updateExpirationAcceptedShare --sentShareName "MyNewSentShare" --acceptedSentShareName "4f5e1b4b-44f8-42c1-a783-b6c2265e49f5" --payloadFile "/path/to/file.json"
 ```
 
 

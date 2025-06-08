@@ -1,4 +1,4 @@
-# pv entity readClassifications
+# pvw entity readClassifications
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > readClassifications
 
 ## Description
@@ -6,7 +6,7 @@ List classifications for a given entity represented by a GUID.
 
 ## Syntax
 ```
-pv entity readClassifications --guid=<val>
+pvw entity readClassifications --guid=<val>
 ```
 
 ## Required Arguments
@@ -25,7 +25,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/{gu
 ## Examples
 Get a list of all classifications assigned to a particular entity via the entity GUID and classification name.
 ```powershell
-pv entity readClassifications --guid "c6a7811a-0699-44d0-b0be-68babe560ab2"
+pvw entity readClassifications --guid "c6a7811a-0699-44d0-b0be-68babe560ab2"
 ```
 
 <details><summary>Sample response.</summary>

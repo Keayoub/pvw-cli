@@ -29,7 +29,7 @@ except ImportError as e:
     GRAPH_AVAILABLE = False
     print(f"Warning: Graph analysis dependencies not available ({e}). Advanced lineage features will be limited.")
 
-from .api_client import EnhancedPurviewClient
+from .api_client import PurviewClient
 from .config import PurviewConfig
 
 console = Console()
@@ -99,7 +99,7 @@ class ImpactAnalysis:
 class AdvancedLineageAnalyzer:
     """Advanced data lineage analysis and visualization"""
     
-    def __init__(self, client: EnhancedPurviewClient):
+    def __init__(self, client: PurviewClient):
         self.client = client
         self.console = Console()
     

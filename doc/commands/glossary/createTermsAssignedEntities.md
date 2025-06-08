@@ -1,4 +1,4 @@
-# pv glossary createTermsAssignedEntities
+# pvw glossary createTermsAssignedEntities
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > createTermsAssignedEntities
 
 ## Description
@@ -6,7 +6,7 @@ Assign the given term to the provided list of related objects.
 
 ## Syntax
 ```
-pv glossary createTermsAssignedEntities --termGuid=<val> --payloadFile=<val>
+pvw glossary createTermsAssignedEntities --termGuid=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -28,7 +28,7 @@ POST https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/terms
 ## Examples
 Assign a term to one or more entities.
 ```powershell
-pv glossary createTermsAssignedEntities --termGuid "4ba01c1e-5ef8-4457-87b4-37e2054b1cb9" --payloadFile "/path/to/file.json"
+pvw glossary createTermsAssignedEntities --termGuid "4ba01c1e-5ef8-4457-87b4-37e2054b1cb9" --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

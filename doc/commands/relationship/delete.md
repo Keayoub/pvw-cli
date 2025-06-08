@@ -1,4 +1,4 @@
-# pv relationship delete
+# pvw relationship delete
 [Command Reference](../../../README.md#command-reference) > [relationship](./main.md) > delete
 
 ## Description
@@ -6,7 +6,7 @@ Delete a relationship between entities by its GUID.
 
 ## Syntax
 ```
-pv relationship delete --guid=<val>
+pvw relationship delete --guid=<val>
 ```
 
 ## Required Arguments
@@ -25,5 +25,5 @@ DELETE https://{accountName}.purview.azure.com/catalog/api/atlas/v2/relationship
 ## Examples
 Delete a relationship between entities by relationship GUID.
 ```powershell
-pv relationship delete --guid "90ca81c2-2d68-43f6-90cc-198a0fd07548"
+pvw relationship delete --guid "90ca81c2-2d68-43f6-90cc-198a0fd07548"
 ```

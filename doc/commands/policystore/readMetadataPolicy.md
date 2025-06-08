@@ -1,4 +1,4 @@
-# pv policystore readMetadataPolicy
+# pvw policystore readMetadataPolicy
 [Command Reference](../../../README.md#command-reference) > [policystore](./main.md) > readMetadataPolicy
 
 ## Description
@@ -6,7 +6,7 @@ Gets a metadata policy.
 
 ## Syntax
 ```
-pv policystore readMetadataPolicy (--collectionName=<val> | --policyId=<val>)
+pvw policystore readMetadataPolicy (--collectionName=<val> | --policyId=<val>)
 ```
 
 ## Required Arguments
@@ -33,7 +33,7 @@ GET https://{accountName}.purview.azure.com/policystore/collections/{collectionN
 ## Examples
 Get a metadata policy by collection name.
 ```powershell
-pv policystore readMetadataPolicy --collectionName "pokuj2"
+pvw policystore readMetadataPolicy --collectionName "pokuj2"
 ```
 
 <details><summary>Sample response.</summary>
@@ -128,5 +128,5 @@ pv policystore readMetadataPolicy --collectionName "pokuj2"
 
 Get a metadata policy by policy id.
 ```powershell
-pv policystore readMetadataPolicy --policyId "67c667b7-8f1c-468f-ab3b-f19fd943de95"
+pvw policystore readMetadataPolicy --policyId "67c667b7-8f1c-468f-ab3b-f19fd943de95"
 ```

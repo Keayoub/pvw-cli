@@ -1,4 +1,4 @@
-# Enhanced Purview CLI v2.0 - Production Deployment Script
+#  Purview CLI v2.0 - Production Deployment Script
 # Comprehensive deployment automation for production environments
 
 import os
@@ -20,7 +20,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 class DeploymentManager:
-    """Manages production deployment of Enhanced Purview CLI"""
+    """Manages production deployment of  Purview CLI"""
     
     def __init__(self, environment: str = "production"):
         self.environment = environment
@@ -163,7 +163,7 @@ class DeploymentManager:
         config = self.deployment_config
         
         env_vars = {
-            "APP_NAME": "Enhanced Purview CLI API",
+            "APP_NAME": " Purview CLI API",
             "VERSION": "2.0.0",
             "DEBUG": "False",
             "HOST": "0.0.0.0",
@@ -245,7 +245,7 @@ class DeploymentManager:
         logger.info("Setting up systemd service...")
         
         service_content = f"""[Unit]
-Description=Enhanced Purview CLI API
+Description= Purview CLI API
 After=network.target postgresql.service redis.service
 Wants=postgresql.service redis.service
 
@@ -548,7 +548,7 @@ WantedBy=multi-user.target
 
 def main():
     """Main deployment function"""
-    parser = argparse.ArgumentParser(description="Enhanced Purview CLI Deployment Manager")
+    parser = argparse.ArgumentParser(description=" Purview CLI Deployment Manager")
     parser.add_argument("--environment", "-e", default="production", 
                        help="Deployment environment")
     parser.add_argument("command", choices=[

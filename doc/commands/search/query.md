@@ -1,4 +1,4 @@
-# pv search query
+# pvw search query
 [Command Reference](../../../README.md#command-reference) > [search](./main.md) > query
 
 ## Description
@@ -6,7 +6,7 @@ Gets data using search.
 
 ## Syntax
 ```
-pv search query [--keywords=<val> --limit=<val> --offset=<val> --filterFile=<val> --facets-file=<val>]
+pvw search query [--keywords=<val> --limit=<val> --offset=<val> --filterFile=<val> --facets-file=<val>]
 ```
 
 ## Required Arguments
@@ -37,12 +37,12 @@ POST https://{accountName}.purview.azure.com/catalog/api/search/query
 ## Examples
 Search without specifying a keyword.
 ```powershell
-pv search query
+pvw search query
 ```
 
 Search by keyword.
 ```powershell
-pv search query --keywords "ESG"
+pvw search query --keywords "ESG"
 ```
 
 <details><summary>Sample response.</summary>

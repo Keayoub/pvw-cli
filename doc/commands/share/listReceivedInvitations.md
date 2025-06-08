@@ -1,4 +1,4 @@
-# pv share listReceivedInvitations
+# pvw share listReceivedInvitations
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  listReceivedInvitations
 
@@ -9,7 +9,7 @@ Lists received invitations.
 ## Syntax
 
 ```
-pv share listReceivedInvitations [--skipToken=<val> --filter=<val> --orderBy=<val>]
+pvw share listReceivedInvitations [--skipToken=<val> --filter=<val> --orderBy=<val>]
 ```
 
 ## Required Arguments
@@ -44,7 +44,7 @@ GET https://{accountName}.purview.azure.com/share/receivedInvitations
 Get a list of received invitations.
 
 ```powershell
-pv share listReceivedInvitations
+pvw share listReceivedInvitations
 ```
 
 

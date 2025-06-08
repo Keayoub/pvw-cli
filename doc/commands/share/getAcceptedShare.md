@@ -1,4 +1,4 @@
-# pv share getAcceptedShare
+# pvw share getAcceptedShare
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  getAcceptedShare
 
@@ -9,7 +9,7 @@ Get an accepted share with acceptedSentShareName to a particular sent share.
 ## Syntax
 
 ```
-pv share getAcceptedShare --sentShareName=<val> --acceptedSentShareName=<val>
+pvw share getAcceptedShare --sentShareName=<val> --acceptedSentShareName=<val>
 ```
 
 ## Required Arguments
@@ -38,7 +38,7 @@ GET https://{accountName}.purview.azure.com/share/sentShares/{sentShareName}/acc
 Get an accepted share for a particular sent share.
 
 ```powershell
-pv share getAcceptedShare --sentShareName "NewShare" --acceptedSentShareName "be2c3f1d-ac06-4aca-a5f8-28b44cad17ef"
+pvw share getAcceptedShare --sentShareName "NewShare" --acceptedSentShareName "be2c3f1d-ac06-4aca-a5f8-28b44cad17ef"
 ```
 
 

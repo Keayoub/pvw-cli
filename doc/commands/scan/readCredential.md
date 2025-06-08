@@ -1,4 +1,4 @@
-# pv credential read
+# pvw credential read
 [Command Reference](../../../README.md#command-reference) > [credential](./main.md) > read
 
 ## Description
@@ -6,7 +6,7 @@ Get a credential.
 
 ## Syntax
 ```
-pv scan readCredential [--credentialName=<val>]
+pvw scan readCredential [--credentialName=<val>]
 ```
 
 ## Required Arguments
@@ -30,7 +30,7 @@ GET https://{accountName}.purview.azure.com/scan/credentials/{credentialName}
 ## Examples
 Get all credentials.
 ```powershell
-pv scan readCredential
+pvw scan readCredential
 ```
 
 <details><summary>Sample response.</summary>
@@ -89,7 +89,7 @@ pv scan readCredential
 
 Get a credential by name.
 ```powershell
-pv credential read --credentialName "basic_credential"
+pvw credential read --credentialName "basic_credential"
 ```
 
 <details><summary>Sample response.</summary>

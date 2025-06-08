@@ -1,4 +1,4 @@
-# pv entity addOrUpdateBusinessMetadata
+# pvw entity addOrUpdateBusinessMetadata
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > addOrUpdateBusinessMetadata
 
 ## Description
@@ -6,7 +6,7 @@ Add or update business metadata to an entity.
 
 ## Syntax
 ```
-pv entity addOrUpdateBusinessMetadata --guid=<val> --payloadFile=<val> [--isOverwrite]
+pvw entity addOrUpdateBusinessMetadata --guid=<val> --payloadFile=<val> [--isOverwrite]
 ```
 
 ## Required Arguments
@@ -29,7 +29,7 @@ POST https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/{g
 ## Examples
 Add or update business metadata to an entity.
 ```powershell
-pv entity addOrUpdateBusinessMetadata --guid "0e945784-4bc3-40bb-a541-e8d1f7c9bf50" --payloadFile "/path/to/file.json"
+pvw entity addOrUpdateBusinessMetadata --guid "0e945784-4bc3-40bb-a541-e8d1f7c9bf50" --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

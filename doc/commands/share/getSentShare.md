@@ -1,4 +1,4 @@
-# pv share getSentShare
+# pvw share getSentShare
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  getSentShare
 
@@ -9,7 +9,7 @@ Get a sent share in the given Purview account.
 ## Syntax
 
 ```
-pv share getSentShare --sentShareName=<val>
+pvw share getSentShare --sentShareName=<val>
 ```
 
 ## Required Arguments
@@ -34,7 +34,7 @@ GET https://{accountName}.purview.azure.com/share/sentShares/{sentShareName}
 Get a sent share.
 
 ```powershell
-pv share getSentShare --sentShareName "NewShare"
+pvw share getSentShare --sentShareName "NewShare"
 ```
 
 

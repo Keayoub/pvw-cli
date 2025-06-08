@@ -1,4 +1,4 @@
-# pv account getCollections
+# pvw account getCollections
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > getCollections
 
 ## Description
@@ -6,7 +6,7 @@ List the collections in the account.
 
 ## Syntax
 ```
-pv account getCollections
+pvw account getCollections
 ```
 
 ## Required Arguments
@@ -24,7 +24,7 @@ GET https://{accountName}.purview.azure.com/account/collections
 ## Examples
 List collections in the account.
 ```powershell
-pv account getCollections
+pvw account getCollections
 ```
 
 <details><summary>Sample response.</summary>

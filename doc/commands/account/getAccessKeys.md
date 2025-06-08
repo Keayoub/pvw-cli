@@ -1,4 +1,4 @@
-# pv account getAccessKeys
+# pvw account getAccessKeys
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > getAccessKeys
 
 ## Description
@@ -6,7 +6,7 @@ List the authorization keys associated with this account.
 
 ## Syntax
 ```
-pv account getAccessKeys
+pvw account getAccessKeys
 ```
 
 ## Required Arguments
@@ -24,7 +24,7 @@ POST https://{accountName}.purview.azure.com/account/listkeys
 ## Examples
 Get access keys (e.g. Atlas Kafka endpoint connection strings).
 ```powershell
-pv account getAccessKeys
+pvw account getAccessKeys
 ```
 
 <details><summary>Sample response.</summary>

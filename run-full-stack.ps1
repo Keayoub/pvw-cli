@@ -1,4 +1,4 @@
-# Enhanced Purview CLI v2.0 - Full Stack Runner
+#  Purview CLI v2.0 - Full Stack Runner
 # This script starts both backend (FastAPI) and frontend (React) services
 
 param(
@@ -267,7 +267,7 @@ function Start-FullStack {
 
 # Main script execution
 try {
-    Write-ColorMessage "🔥 Enhanced Purview CLI v2.0 - Full Stack Runner" $Magenta
+    Write-ColorMessage "🔥  Purview CLI v2.0 - Full Stack Runner" $Magenta
     Write-ColorMessage "=================================================" $Magenta
     Write-ColorMessage "Mode: $Mode" $White
     Write-ColorMessage "Backend Port: $BackendPort" $White

@@ -1,4 +1,4 @@
-# pv insight assetDistribution
+# pvw insight assetDistribution
 [Command Reference](../../../README.md#command-reference) > [insight](./main.md) > assetDistribution
 
 ## Description
@@ -6,7 +6,7 @@ Asset distribution by sourceType, classificationCategory, and classification.
 
 ## Syntax
 ```
-pv insight assetDistribution
+pvw insight assetDistribution
 ```
 
 ## Required Arguments
@@ -23,7 +23,7 @@ GET https://{accountName}.purview.azure.com/mapanddiscover/reports/serverless/as
 ## Examples
 Get asset distribution.
 ```powershell
-pv insight assetDistribution
+pvw insight assetDistribution
 ```
 <details><summary>Sample response.</summary>
 <p>

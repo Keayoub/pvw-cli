@@ -1,4 +1,4 @@
-# pv policystore readMetadataRoles
+# pvw policystore readMetadataRoles
 [Command Reference](../../../README.md#command-reference) > [policystore](./main.md) > readMetadataRoles
 
 ## Description
@@ -6,7 +6,7 @@ Lists the metadata roles.
 
 ## Syntax
 ```
-pv policystore readMetadataRoles
+pvw policystore readMetadataRoles
 ```
 
 ## Required Arguments
@@ -24,7 +24,7 @@ GET https://{accountName}.purview.azure.com/policystore/metadataroles
 ## Examples
 Get all metadata roles.
 ```powershell
-pv policystore readMetadataRoles
+pvw policystore readMetadataRoles
 ```
 
 <details><summary>Sample response.</summary>

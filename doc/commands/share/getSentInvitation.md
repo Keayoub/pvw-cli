@@ -1,4 +1,4 @@
-# pv share getSentInvitation
+# pvw share getSentInvitation
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  getSentInvitation
 
@@ -9,7 +9,7 @@ Get Invitation for a given share.
 ## Syntax
 
 ```
-pv share getSentInvitation --sentShareName=<val> --invitationName=<val>
+pvw share getSentInvitation --sentShareName=<val> --invitationName=<val>
 ```
 
 ## Required Arguments
@@ -38,7 +38,7 @@ GET https://{accountName}.purview.azure.com/share/sentShares/{sentShareName}/sen
 Get a sent invitation for a sent share.
 
 ```powershell
-pv share getSentInvitation --sentShareName "NewShare" --invitationName "607c8df07dc82107ccab50bd1b8c792279b1d9fc"
+pvw share getSentInvitation --sentShareName "NewShare" --invitationName "607c8df07dc82107ccab50bd1b8c792279b1d9fc"
 ```
 
 

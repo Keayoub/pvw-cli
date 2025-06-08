@@ -1,4 +1,4 @@
-# pv share rejectReceivedInvitation
+# pvw share rejectReceivedInvitation
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  rejectReceivedInvitation
 
@@ -9,7 +9,7 @@ Rejects the received invitation identified by name
 ## Syntax
 
 ```
-pv share rejectReceivedInvitation --invitationName=<val> --payloadFile=<val>
+pvw share rejectReceivedInvitation --invitationName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -38,7 +38,7 @@ POST https://{accountName}.purview.azure.com/share/receivedInvitations/{received
 Reject a received invitation.
 
 ```powershell
-pv share rejectReceivedInvitation --invitationName "955af42b-b08d-4a00-ba58-aaf31afcd53a" --payloadFile "/path/to/file.json"
+pvw share rejectReceivedInvitation --invitationName "955af42b-b08d-4a00-ba58-aaf31afcd53a" --payloadFile "/path/to/file.json"
 ```
 
 

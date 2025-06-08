@@ -1,4 +1,4 @@
-# pv policystore readDataPolicyScopes
+# pvw policystore readDataPolicyScopes
 [Command Reference](../../../README.md#command-reference) > [policystore](./main.md) > readDataPolicyScopes
 
 ## Description
@@ -6,7 +6,7 @@ Get data policies.
 
 ## Syntax
 ```
-pv policystore readDataPolicyScopes --policyName=<val>
+pvw policystore readDataPolicyScopes --policyName=<val>
 ```
 
 ## Required Arguments
@@ -25,7 +25,7 @@ GET https://{accountName}.purview.azure.com/policystore/dataPolicies/{policyName
 ## Examples
 Get all scopes for a particular data policy.
 ```powershell
-pv policystore readDataPolicyScopes --policyName "new-policy"
+pvw policystore readDataPolicyScopes --policyName "new-policy"
 ```
 
 <details><summary>Sample response.</summary>

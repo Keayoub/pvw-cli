@@ -1,4 +1,4 @@
-# pv glossary readTerm
+# pvw glossary readTerm
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > readTerm
 
 ## Description
@@ -6,7 +6,7 @@ Get a specific glossary term by its GUID.
 
 ## Syntax
 ```
-pv glossary readTerm --termGuid=<val> [--includeTermHierarchy]
+pvw glossary readTerm --termGuid=<val> [--includeTermHierarchy]
 ```
 
 ## Required Arguments
@@ -26,7 +26,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/term/{
 ## Examples
 Get a glossary term.
 ```powershell
-pv glossary readTerm --termGuid "21b5e0b7-1b24-4804-ac73-089004d46e95"
+pvw glossary readTerm --termGuid "21b5e0b7-1b24-4804-ac73-089004d46e95"
 ```
 
 <details><summary>Sample response.</summary>

@@ -1,4 +1,4 @@
-# pv management createAccount
+# pvw management createAccount
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > createAccount
 
 ## Description
@@ -6,7 +6,7 @@ Create or update an account resource
 
 ## Syntax
 ```
-pv management createAccount --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val> --payloadFile=<val>
+pvw management createAccount --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -33,5 +33,5 @@ PUT https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{
 
 ## Examples
 ```powershell
-pv management createAccount --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "synapse" --accountName "taygan-26fa7f24-pv" --payloadFile "/path/to/file.json"
+pvw management createAccount --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "synapse" --accountName "taygan-26fa7f24-pv" --payloadFile "/path/to/file.json"
 ```

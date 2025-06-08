@@ -1,4 +1,4 @@
-# pv share listAssetMappings
+# pvw share listAssetMappings
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  listAssetMappings
 
@@ -9,7 +9,7 @@ List AssetMappings in a received share.
 ## Syntax
 
 ```
-pv share listAssetMappings --receivedShareName=<val> [--skipToken=<val> --filter=<val> --orderBy=<val>]
+pvw share listAssetMappings --receivedShareName=<val> [--skipToken=<val> --filter=<val> --orderBy=<val>]
 ```
 
 ## Required Arguments
@@ -44,7 +44,7 @@ GET https://{accountName}.purview.azure.com/share/receivedShares/{receivedShareN
 Get a list of asset mappings for a particular received share.
 
 ```powershell
-pv share listAssetMappings --receivedShareName "MyShare"
+pvw share listAssetMappings --receivedShareName "MyShare"
 ```
 
 

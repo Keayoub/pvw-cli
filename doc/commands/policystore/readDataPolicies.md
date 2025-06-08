@@ -1,4 +1,4 @@
-# pv policystore readDataPolicies
+# pvw policystore readDataPolicies
 [Command Reference](../../../README.md#command-reference) > [policystore](./main.md) > readDataPolicies
 
 ## Description
@@ -6,7 +6,7 @@ Get data policies.
 
 ## Syntax
 ```
-pv policystore readDataPolicies [--policyName=<val>]
+pvw policystore readDataPolicies [--policyName=<val>]
 ```
 
 ## Required Arguments
@@ -30,7 +30,7 @@ GET https://{accountName}.purview.azure.com/policystore/dataPolicies/{policyName
 ## Examples
 Get all data polciies.
 ```powershell
-pv policystore readDataPolicies
+pvw policystore readDataPolicies
 ```
 
 <details><summary>Sample response.</summary>
@@ -187,7 +187,7 @@ pv policystore readDataPolicies
 
 Get a specific data policy by name.
 ```powershell
-pv policystore readDataPolicies --policyName "new-policy"
+pvw policystore readDataPolicies --policyName "new-policy"
 ```
 
 <details><summary>Sample response.</summary>

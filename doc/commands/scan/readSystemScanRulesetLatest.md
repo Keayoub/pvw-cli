@@ -1,4 +1,4 @@
-# pv scan readSystemScanRulesetLatest
+# pvw scan readSystemScanRulesetLatest
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readSystemScanRulesetLatest
 
 ## Description
@@ -6,7 +6,7 @@ Get the latest version of a system scan ruleset
 
 ## Syntax
 ```
-pv scan readSystemScanRulesetLatest --dataSourceType=<val>
+pvw scan readSystemScanRulesetLatest --dataSourceType=<val>
 ```
 
 ## Required Arguments
@@ -25,7 +25,7 @@ GET https://{accountName}.purview.azure.com/scan/systemScanRulesets/versions/lat
 ## Examples
 Get the latest version of a system scan ruleset by data source type.
 ```powershell
-pv scan readSystemScanRulesetLatest --dataSourceType "AmazonMySql"
+pvw scan readSystemScanRulesetLatest --dataSourceType "AmazonMySql"
 ```
 <details><summary>Sample response.</summary>
 <p>

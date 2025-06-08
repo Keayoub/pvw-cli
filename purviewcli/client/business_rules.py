@@ -23,7 +23,7 @@ except ImportError:
     PANDAS_AVAILABLE = False
     print("Warning: pandas not available. Report generation features will be limited.")
 
-from .api_client import EnhancedPurviewClient
+from .api_client import PurviewClient
 from .config import PurviewConfig
 
 console = Console()
@@ -87,7 +87,7 @@ class RuleViolation:
 class BusinessRulesEngine:
     """Advanced business rules engine for data governance"""
     
-    def __init__(self, client: EnhancedPurviewClient):
+    def __init__(self, client: PurviewClient):
         self.client = client
         self.console = Console()
         self.rules: Dict[str, BusinessRule] = {}

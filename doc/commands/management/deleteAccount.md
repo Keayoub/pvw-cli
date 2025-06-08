@@ -1,4 +1,4 @@
-# pv management deleteAccount
+# pvw management deleteAccount
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > deleteAccount
 
 ## Description
@@ -6,7 +6,7 @@ Deletes the account resource.
 
 ## Syntax
 ```
-pv management deleteAccount --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val>
+pvw management deleteAccount --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val>
 ```
 
 ## Required Arguments
@@ -30,5 +30,5 @@ DELETE https://management.azure.com/subscriptions/{subscriptionId}/resourceGroup
 
 ## Examples
 ```powershell
-pv management deleteAccount --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "esg" --accountName "esg-26fa7f24-pv"
+pvw management deleteAccount --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "esg" --accountName "esg-26fa7f24-pv"
 ```

@@ -1,7 +1,7 @@
 {
   "name": "purview-cli-web-ui",
   "version": "2.0.0",
-  "description": "Modern web interface for Enhanced Purview CLI v2.0",
+  "description": "Modern web interface for  Purview CLI v2.0",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.11.1",

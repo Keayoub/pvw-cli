@@ -1,4 +1,4 @@
-# pv share getAsset
+# pvw share getAsset
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  getAsset
 
@@ -9,7 +9,7 @@ Get asset in a sentShare.
 ## Syntax
 
 ```
-pv share getAsset --sentShareName=<val> --assetName=<val>
+pvw share getAsset --sentShareName=<val> --assetName=<val>
 ```
 
 ## Required Arguments
@@ -38,7 +38,7 @@ GET https://{accountName}.purview.azure.com/share/sentShares/{sentShareName}/ass
 Get asset from a sent share.
 
 ```powershell
-pv share getAsset --sentShareName "NewShare" --assetName "assetName"
+pvw share getAsset --sentShareName "NewShare" --assetName "assetName"
 ```
 
 

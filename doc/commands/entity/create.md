@@ -1,4 +1,4 @@
-# pv entity create
+# pvw entity create
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > create
 
 ## Description
@@ -6,7 +6,7 @@ Create or update an entity in Atlas. Existing entity is matched using its unique
 
 ## Syntax
 ```
-pv entity create --payloadFile=<val>
+pvw entity create --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -26,7 +26,7 @@ POST https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity
 Create or update an entity.
 
 ```powershell
-pv entity create --payloadFile "/path/to/file.json"
+pvw entity create --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>
@@ -50,7 +50,7 @@ pv entity create --payloadFile "/path/to/file.json"
 Create an entity with custom attributes.
 
 ```powershell
-pv entity create --payloadFile "/path/to/file.json"
+pvw entity create --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

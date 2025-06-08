@@ -1,4 +1,4 @@
-# pv scan putTrigger
+# pvw scan putTrigger
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > putTrigger
 
 ## Description
@@ -6,7 +6,7 @@ Creates an instance of a trigger
 
 ## Syntax
 ```
-pv scan putTrigger --dataSourceName=<val> --scanName=<val> --payloadFile=<val>
+pvw scan putTrigger --dataSourceName=<val> --scanName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -31,7 +31,7 @@ PUT https://{accountName}.purview.azure.com/scan/datasources/{dataSourceName}/sc
 ## Examples
 Create a trigger and associate it to a scan.
 ```powershell
-pv scan putTrigger --dataSourceName "AzureDataLakeStorage-EqK" --scanName "Scan-Qrh" --payloadFile "/path/to/file.json"
+pvw scan putTrigger --dataSourceName "AzureDataLakeStorage-EqK" --scanName "Scan-Qrh" --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

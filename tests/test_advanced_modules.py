@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Comprehensive Test Suite for Enhanced Purview CLI v2.0 Advanced Modules
+Comprehensive Test Suite for  Purview CLI v2.0 Advanced Modules
 Tests all newly created advanced features including monitoring, ML integration, 
 lineage visualization, and plugin system.
 """
@@ -371,7 +371,7 @@ class TestAdvancedModules:
     def generate_test_report(self):
         """Generate comprehensive test report"""
         console.print("\n" + "="*80)
-        console.print(Panel("[bold blue]Enhanced Purview CLI v2.0 - Advanced Modules Test Report[/bold blue]"))
+        console.print(Panel("[bold blue] Purview CLI v2.0 - Advanced Modules Test Report[/bold blue]"))
         
         # Summary statistics
         total_tests = len(self.test_results)
@@ -409,7 +409,7 @@ class TestAdvancedModules:
         # Recommendations
         console.print("\n[bold blue]Recommendations:[/bold blue]")
         if failed_tests == 0:
-            console.print("[green]🎉 All tests passed! The Enhanced Purview CLI v2.0 advanced modules are working correctly.[/green]")
+            console.print("[green]🎉 All tests passed! The  Purview CLI v2.0 advanced modules are working correctly.[/green]")
             console.print("[green]✓ Ready for production deployment[/green]")
             console.print("[green]✓ All new features are functional[/green]")
         else:
@@ -426,7 +426,7 @@ class TestAdvancedModules:
 
 async def main():
     """Main test execution function"""
-    console.print("[bold green]Enhanced Purview CLI v2.0 - Advanced Modules Test Suite[/bold green]")
+    console.print("[bold green] Purview CLI v2.0 - Advanced Modules Test Suite[/bold green]")
     console.print("="*80)
     
     test_suite = TestAdvancedModules()

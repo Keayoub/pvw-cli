@@ -1,4 +1,4 @@
-# pv scan readFilters
+# pvw scan readFilters
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readFilters
 
 ## Description
@@ -6,7 +6,7 @@ Get a filter
 
 ## Syntax
 ```
-pv scan readFilters --dataSourceName=<val> --scanName=<val>
+pvw scan readFilters --dataSourceName=<val> --scanName=<val>
 ```
 
 ## Required Arguments
@@ -28,7 +28,7 @@ GET https://{accountName}.purview.azure.com/scan/datasources/{dataSourceName}/sc
 ## Examples
 Get scan filters (scope) by data source name and scan name.
 ```powershell
-pv scan readFilters --dataSourceName "AzureDataLakeStorage-Gbm" --scanName "Scan-5Jc"
+pvw scan readFilters --dataSourceName "AzureDataLakeStorage-Gbm" --scanName "Scan-5Jc"
 ```
 <details><summary>Sample response.</summary>
 <p>

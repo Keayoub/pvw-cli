@@ -1,4 +1,4 @@
-# pv share createSentShare
+# pvw share createSentShare
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  createSentShare
 
@@ -9,7 +9,7 @@ Create a sent share in the given Purview account.
 ## Syntax
 
 ```
-pv share createSentShare --sentShareName=<val> --payloadFile=<val>
+pvw share createSentShare --sentShareName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -38,7 +38,7 @@ PUT https://{accountName}.purview.azure.com/share/sentShares/{sentShareName}
 Create a sent share.
 
 ```powershell
-pv share createSentShare --sentShareName "MyNewSentShare" --payloadFile "/path/to/file.json"
+pvw share createSentShare --sentShareName "MyNewSentShare" --payloadFile "/path/to/file.json"
 ```
 
 

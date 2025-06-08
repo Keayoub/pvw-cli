@@ -1,5 +1,5 @@
 """
-Configuration Management for Enhanced Purview CLI
+Configuration Management for  Purview CLI
 Handles environment configuration, profiles, and settings
 """
 

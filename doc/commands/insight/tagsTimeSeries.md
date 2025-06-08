@@ -1,4 +1,4 @@
-# pv insight tagsTimeSeries
+# pvw insight tagsTimeSeries
 [Command Reference](../../../README.md#command-reference) > [insight](./main.md) > tagsTimeSeries
 
 ## Description
@@ -6,7 +6,7 @@ Total number of scans by status and time period.
 
 ## Syntax
 ```
-pv insight tagsTimeSeries
+pvw insight tagsTimeSeries
 ```
 
 ## Required Arguments
@@ -23,7 +23,7 @@ GET https://{accountName}.purview.azure.com/mapanddiscover/reports/serverless/as
 ## Examples
 Get the total number of scans by status and time period.
 ```powershell
-pv insight tagsTimeSeries
+pvw insight tagsTimeSeries
 ```
 <details><summary>Sample response.</summary>
 <p>

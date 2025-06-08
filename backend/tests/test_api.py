@@ -1,4 +1,4 @@
-# Enhanced Purview CLI v2.0 - API Integration Tests
+#  Purview CLI v2.0 - API Integration Tests
 # Comprehensive tests for API endpoints
 
 import pytest

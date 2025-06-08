@@ -1,4 +1,4 @@
-# pv policystore deleteDataPolicy
+# pvw policystore deleteDataPolicy
 [Command Reference](../../../README.md#command-reference) > [policystore](./main.md) > deleteDataPolicy
 
 ## Description
@@ -6,7 +6,7 @@ Delete a data policy.
 
 ## Syntax
 ```
-pv policystore deleteDataPolicy --policyName=<val>
+pvw policystore deleteDataPolicy --policyName=<val>
 ```
 
 ## Required Arguments
@@ -25,5 +25,5 @@ DELETE https://{accountName}.purview.azure.com/policystore/dataPolicies/{policyN
 ## Examples
 Delete a data policy.
 ```powershell
-pv policystore deleteDataPolicy --policyName "new-policy"
+pvw policystore deleteDataPolicy --policyName "new-policy"
 ```

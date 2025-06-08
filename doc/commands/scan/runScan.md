@@ -1,4 +1,4 @@
-# pv scan runScan
+# pvw scan runScan
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > runScan
 
 ## Description
@@ -6,7 +6,7 @@ Run a scan.
 
 ## Syntax
 ```
-pv scan runScan --dataSourceName=<val> --scanName=<val> [--scanLevel=<val>]
+pvw scan runScan --dataSourceName=<val> --scanName=<val> [--scanLevel=<val>]
 ```
 
 ## Required Arguments
@@ -29,7 +29,7 @@ PUT https://{accountName}.purview.azure.com/scan/datasources/{dataSourceName}/sc
 ## Examples
 Run a scan by data source name and scan name.
 ```powershell
-pv scan runScan --dataSourceName "AzureDataLakeStorage-Gbm" --scanName "Scan-Xei"  
+pvw scan runScan --dataSourceName "AzureDataLakeStorage-Gbm" --scanName "Scan-Xei"  
 ```
 <details><summary>Sample response.</summary>
 <p>

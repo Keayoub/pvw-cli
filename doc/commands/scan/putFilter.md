@@ -1,4 +1,4 @@
-# pv scan putFilter
+# pvw scan putFilter
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > putFilter
 
 ## Description
@@ -6,7 +6,7 @@ Creates or updates a filter.
 
 ## Syntax
 ```
-pv scan putFilter --dataSourceName=<val> --scanName=<val> --payloadFile=<val>
+pvw scan putFilter --dataSourceName=<val> --scanName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -31,7 +31,7 @@ PUT https://{accountName}.purview.azure.com/scan/datasources/{dataSourceName}/sc
 ## Examples
 Create or update a scan filter.
 ```powershell
-pv scan putFilter --dataSourceName "AzureDataLakeStorage-EqK" --scanName "Scan-Qrh" --payloadFile "/path/to/file.json"
+pvw scan putFilter --dataSourceName "AzureDataLakeStorage-EqK" --scanName "Scan-Qrh" --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

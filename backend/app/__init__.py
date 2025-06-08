@@ -1,1 +1,1 @@
-# Enhanced Purview CLI Backend Application
+#  Purview CLI Backend Application

@@ -1,4 +1,4 @@
-# pv glossary readTerms
+# pvw glossary readTerms
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > readTerms
 
 ## Description
@@ -6,7 +6,7 @@ Get terms by glossary name.
 
 ## Syntax
 ```
-pv glossary readTerms [--glossaryGuid=<val> --limit=<val> --offset=<val> --sort=<val> --extInfo --includeTermHierarchy]
+pvw glossary readTerms [--glossaryGuid=<val> --limit=<val> --offset=<val> --sort=<val> --extInfo --includeTermHierarchy]
 ```
 
 ## Required Arguments
@@ -45,7 +45,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/{gloss
 ## Examples
 Get all terms (not including term hierarchy).
 ```powershell
-pv glossary readTerms
+pvw glossary readTerms
 ```
 
 <details><summary>Sample response.</summary>
@@ -93,7 +93,7 @@ pv glossary readTerms
 
 Get all terms (including term hierarchy).
 ```powershell
-pv glossary readTerms --includeTermHierarchy
+pvw glossary readTerms --includeTermHierarchy
 ```
 
 <details><summary>Sample response.</summary>

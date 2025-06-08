@@ -1,5 +1,5 @@
 """
-Enhanced Purview CLI Backend API v2.0
+ Purview CLI Backend API v2.0
 Main FastAPI application with comprehensive data governance capabilities.
 """
 import asyncio
@@ -49,7 +49,7 @@ websocket_manager = WebSocketManager()
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifespan context manager"""
     # Startup
-    logger.info("Starting Enhanced Purview CLI API Server v2.0")
+    logger.info("Starting  Purview CLI API Server v2.0")
     
     try:
         # Initialize database
@@ -74,12 +74,12 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     
     finally:
         # Shutdown
-        logger.info("Shutting down Enhanced Purview CLI API Server")
+        logger.info("Shutting down  Purview CLI API Server")
         await websocket_manager.disconnect_all()
 
 # Create FastAPI app
 app = FastAPI(
-    title="Enhanced Purview CLI API",
+    title=" Purview CLI API",
     description="Comprehensive Azure Purview data governance and management API",
     version="2.0.0",
     docs_url="/docs",
@@ -138,9 +138,9 @@ async def detailed_health_check():
 async def root():
     """Root endpoint with API information"""
     return {
-        "name": "Enhanced Purview CLI API",
+        "name": " Purview CLI API",
         "version": "2.0.0",
-        "description": "REST API for Enhanced Purview CLI Web UI",
+        "description": "REST API for  Purview CLI Web UI",
         "docs_url": "/docs",
         "status": "running"
     }

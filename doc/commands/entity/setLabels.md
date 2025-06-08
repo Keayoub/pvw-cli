@@ -1,4 +1,4 @@
-# pv entity setLabels
+# pvw entity setLabels
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > setLabels
 
 ## Description
@@ -6,7 +6,7 @@ Overwrite labels for an entity.
 
 ## Syntax
 ```
-pv entity setLabels --guid=<val> --payloadFile=<val>
+pvw entity setLabels --guid=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -28,7 +28,7 @@ POST https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/{g
 ## Examples
 Overwrite labels property for an existing entity.
 ```powershell
-pv entity setLabels --guid "7738b5c7-7977-4261-9871-7d00e11cabe8" --payloadFile "/path/to/file.json"
+pvw entity setLabels --guid "7738b5c7-7977-4261-9871-7d00e11cabe8" --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

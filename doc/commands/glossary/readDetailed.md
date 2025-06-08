@@ -1,4 +1,4 @@
-# pv glossary readDetailed
+# pvw glossary readDetailed
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > readDetailed
 
 ## Description
@@ -6,7 +6,7 @@ Get a specific glossary with detailed information.
 
 ## Syntax
 ```
-pv glossary readDetailed --glossaryGuid=<val> [--includeTermHierarchy]
+pvw glossary readDetailed --glossaryGuid=<val> [--includeTermHierarchy]
 ```
 
 ## Required Arguments
@@ -26,7 +26,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/{gloss
 ## Examples
 Get a specific glossary with detailed information.
 ```powershell
-pv glossary readDetailed --glossaryGuid "f2307f48-5834-4709-be85-02f3aea5d149"
+pvw glossary readDetailed --glossaryGuid "f2307f48-5834-4709-be85-02f3aea5d149"
 ```
 
 <details><summary>Sample response.</summary>

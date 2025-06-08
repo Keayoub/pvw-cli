@@ -1,7 +1,7 @@
-# PowerShell script to compile purviewcli as a single CLI executable named pv.exe
+# PowerShell script to compile purviewcli as a single CLI executable named pvw.exe
 
 $entryFile = "purviewcli\__main__.py"
-$outputName = "pv"
+$outputName = "pvw"
 
 # 🧹 Clean old builds
 Write-Host "🧹 Cleaning previous builds..."
@@ -16,6 +16,4 @@ pyinstaller `
     $entryFile
 
 # ✅ Move output to root
-Move-Item -Path ".\dist\$outputName.exe" -Destination ".\$outputName.exe" -Force
-
-Write-Host "✅ Done! Run it with: .\$outputName.exe"
+Write-Host "✅ Done! Run it with: .\dist\$outputName.exe"

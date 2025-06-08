@@ -1,4 +1,4 @@
-# pv scan deleteScanRuleset
+# pvw scan deleteScanRuleset
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > deleteScanRuleset
 
 ## Description
@@ -6,7 +6,7 @@ Deletes a scan ruleset
 
 ## Syntax
 ```
-pv scan deleteScanRuleset --scanRulesetName=<val>
+pvw scan deleteScanRuleset --scanRulesetName=<val>
 ```
 
 ## Required Arguments
@@ -25,5 +25,5 @@ DELETE https://{accountName}.purview.azure.com/scan/scanrulesets/{scanRulesetNam
 ## Examples
 Delete a custom scan ruleset by name.
 ```powershell
-pv scan deleteScanRuleset --scanRulesetName "twitter_scan_rule_set"
+pvw scan deleteScanRuleset --scanRulesetName "twitter_scan_rule_set"
 ```

@@ -1,13 +1,13 @@
 """
-Enhanced Lineage CLI with CSV Batch Processing
+ Lineage CLI with CSV Batch Processing
 
 usage: 
-    pv lineage read --guid=<val> [--depth=<val> --width=<val> --direction=<val>]
-    pv lineage readNext --guid=<val> [--direction<val> --offset=<val> --limit=<val>]
-    pv lineage csv process <csv_file> [--batch-size=<val> --validate-entities --create-missing-entities --progress]
-    pv lineage csv generate-sample <output_file> [--num-samples=<val> --template=<val>]
-    pv lineage csv validate <csv_file>
-    pv lineage csv templates
+    pvw lineage read --guid=<val> [--depth=<val> --width=<val> --direction=<val>]
+    pvw lineage readNext --guid=<val> [--direction<val> --offset=<val> --limit=<val>]
+    pvw lineage csv process <csv_file> [--batch-size=<val> --validate-entities --create-missing-entities --progress]
+    pvw lineage csv generate-sample <output_file> [--num-samples=<val> --template=<val>]
+    pvw lineage csv validate <csv_file>
+    pvw lineage csv templates
 
 options:
     --purviewName=<val>               [string]  Azure Purview account name.
@@ -36,7 +36,7 @@ from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeEl
 from rich import print as rprint
 
 from ..client.csv_lineage_processor import CSVLineageProcessor, LineageCSVTemplates
-from ..client.api_client import EnhancedPurviewClient
+from ..client.api_client import PurviewClient
 from ..client.config import config_manager
 
 console = Console()
@@ -229,7 +229,7 @@ if __name__ == '__main__':
         console.print("[red]No active Purview profile found. Please configure a profile first.[/red]")
         sys.exit(1)
     
-    client = EnhancedPurviewClient(profile.account_name, profile.get_credential())
+    client = PurviewClient(profile.account_name, profile.get_credential())
     
     # Handle CSV lineage commands
     if arguments.get('csv'):

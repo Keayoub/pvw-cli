@@ -1,4 +1,4 @@
-# pv glossary putCategory
+# pvw glossary putCategory
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > putCategory
 
 ## Description
@@ -6,7 +6,7 @@ Update the given glossary category by its GUID.
 
 ## Syntax
 ```
-pv glossary putCategory --categoryGuid=<val> --payloadFile=<val>
+pvw glossary putCategory --categoryGuid=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -28,7 +28,7 @@ PUT https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/catego
 ## Examples
 Update an existing category.
 ```powershell
-pv glossary putCategory --categoryGuid "c856ecef-21e6-4e92-8607-9493d8432e78" --payloadFile "/path/to/file.json"
+pvw glossary putCategory --categoryGuid "c856ecef-21e6-4e92-8607-9493d8432e78" --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

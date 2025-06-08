@@ -1,4 +1,4 @@
-# pv management readPrivateEndpoints
+# pvw management readPrivateEndpoints
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > readPrivateEndpoints
 
 ## Description
@@ -6,7 +6,7 @@ Gets private endpoint connections.
 
 ## Syntax
 ```
-pv management readPrivateEndpoints --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val>
+pvw management readPrivateEndpoints --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val>
 ```
 
 ## Required Arguments
@@ -31,7 +31,7 @@ GET https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{
 ## Examples
 Get information on private endpoint connections.
 ```powershell
-pv management readPrivateEndpoints --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "private" --accountName "taygan-private-pv"
+pvw management readPrivateEndpoints --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "private" --accountName "taygan-private-pv"
 ```
 
 <details><summary>Sample response.</summary>

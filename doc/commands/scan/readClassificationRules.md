@@ -1,4 +1,4 @@
-# pv scan readClassificationRules
+# pvw scan readClassificationRules
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readClassificationRules
 
 ## Description
@@ -6,7 +6,7 @@ List classification rules.
 
 ## Syntax
 ```
-pv scan readClassificationRules
+pvw scan readClassificationRules
 ```
 
 ## Required Arguments
@@ -24,7 +24,7 @@ GET https://{accountName}.purview.azure.com/scan/classificationrules
 ## Examples
 List custom classification rules.
 ```powershell
-pv scan readClassificationRules
+pvw scan readClassificationRules
 ```
 <details><summary>Sample response.</summary>
 <p>

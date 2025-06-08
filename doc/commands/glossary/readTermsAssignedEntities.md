@@ -1,4 +1,4 @@
-# pv glossary readTermsAssignedEntities
+# pvw glossary readTermsAssignedEntities
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > readTermsAssignedEntities
 
 ## Description
@@ -6,7 +6,7 @@ Get all related objects assigned with the specified term.
 
 ## Syntax
 ```
-pv glossary readTermsAssignedEntities --termGuid=<val> [--limit=<val> --offset=<val> --sort=<val>]
+pvw glossary readTermsAssignedEntities --termGuid=<val> [--limit=<val> --offset=<val> --sort=<val>]
 ```
 
 ## Required Arguments
@@ -32,7 +32,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/terms/
 ## Examples
 Get all entities associated to a glossary term.
 ```powershell
-pv glossary readTermsAssignedEntities --termGuid "0d8c0610-4c8b-4f90-b18b-e85d688eb2e6"
+pvw glossary readTermsAssignedEntities --termGuid "0d8c0610-4c8b-4f90-b18b-e85d688eb2e6"
 ```
 
 <details><summary>Sample response.</summary>

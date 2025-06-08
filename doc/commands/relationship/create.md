@@ -1,4 +1,4 @@
-# pv relationship create
+# pvw relationship create
 [Command Reference](../../../README.md#command-reference) > [relationship](./main.md) > create
 
 ## Description
@@ -6,7 +6,7 @@ Create a new relationship between entities.
 
 ## Syntax
 ```
-pv relationship create --payloadFile=<val>
+pvw relationship create --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -25,7 +25,7 @@ POST https://{accountName}.purview.azure.com/catalog/api/atlas/v2/relationship
 ## Examples
 Create a new relationship.
 ```powershell
-pv relationship create --payloadFile "/path/to/file.json"
+pvw relationship create --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

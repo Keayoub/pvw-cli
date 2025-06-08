@@ -1,4 +1,4 @@
-# pv glossary putCategoryPartial
+# pvw glossary putCategoryPartial
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > putCategoryPartial
 
 ## Description
@@ -6,7 +6,7 @@ Update the glossary category partially.
 
 ## Syntax
 ```
-pv glossary putCategoryPartial --categoryGuid=<val> --payloadFile=<val>
+pvw glossary putCategoryPartial --categoryGuid=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -28,7 +28,7 @@ PUT https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/catego
 ## Examples
 Updated simple attributes of a category.
 ```powershell
-pv glossary putCategoryPartial --categoryGuid "c856ecef-21e6-4e92-8607-9493d8432e78" --payloadFile "/path/to/file.json"
+pvw glossary putCategoryPartial --categoryGuid "c856ecef-21e6-4e92-8607-9493d8432e78" --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

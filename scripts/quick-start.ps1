@@ -1,4 +1,4 @@
-# Quick Start Script for Enhanced Purview CLI v2.0
+# Quick Start Script for  Purview CLI v2.0
 # Simple script to quickly test both frontend and backend
 
 param(
@@ -18,7 +18,7 @@ function Write-Message {
     Write-Host $Message -ForegroundColor $Color
 }
 
-Write-Message "🚀 Enhanced Purview CLI v2.0 - Quick Start" $Magenta
+Write-Message "🚀  Purview CLI v2.0 - Quick Start" $Magenta
 Write-Message "==========================================" $Magenta
 
 # Check if virtual environment exists

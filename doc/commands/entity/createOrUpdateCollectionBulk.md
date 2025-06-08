@@ -1,4 +1,4 @@
-# pv entity createOrUpdateCollectionBulk
+# pvw entity createOrUpdateCollectionBulk
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > createOrUpdateCollectionBulk
 
 ## Description
@@ -6,7 +6,7 @@ Creates or updates entities in bulk to a collection. Existing entity is matched 
 
 ## Syntax
 ```
-pv entity createOrUpdateCollectionBulk --collection=<val> --payloadFile=<val>
+pvw entity createOrUpdateCollectionBulk --collection=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -28,7 +28,7 @@ POST https://{accountName}.purview.azure.com/catalog/api/collections/{collection
 ## Examples
 Create or update entities in bulk to a collection.
 ```powershell
-pv entity createOrUpdateCollectionBulk --collection "tdumy6" --payloadFile "/path/to/file.json"
+pvw entity createOrUpdateCollectionBulk --collection "tdumy6" --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

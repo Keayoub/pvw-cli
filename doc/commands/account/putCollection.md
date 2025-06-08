@@ -1,4 +1,4 @@
-# pv account putCollection
+# pvw account putCollection
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > putCollection
 
 ## Description
@@ -6,7 +6,7 @@ Creates or updates a collection entity.
 
 ## Syntax
 ```
-pv account putCollection --friendlyName=<val> --parentCollection=<val>
+pvw account putCollection --friendlyName=<val> --parentCollection=<val>
 ```
 
 ## Required Arguments
@@ -28,7 +28,7 @@ PUT https://{accountName}.purview.azure.com/account/collections/{collectionName}
 ## Examples
 Create or update a collection.
 ```powershell
-pv account putCollection --friendlyName "hello world" --parentCollection "w0kfma"
+pvw account putCollection --friendlyName "hello world" --parentCollection "w0kfma"
 ```
 
 <details><summary>Sample response.</summary>

@@ -1,4 +1,4 @@
-# pv account getCollection
+# pvw account getCollection
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > getCollection
 
 ## Description
@@ -6,7 +6,7 @@ Get a collection.
 
 ## Syntax
 ```
-pv account getCollection --collectionName=<val>
+pvw account getCollection --collectionName=<val>
 ```
 
 ## Required Arguments
@@ -25,7 +25,7 @@ GET https://{accountName}.purview.azure.com/account/collections/{collectionName}
 ## Examples
 Get a collection by name.
 ```powershell
-pv account getCollection --collectionName "g7qe97"
+pvw account getCollection --collectionName "g7qe97"
 ```
 
 <details><summary>Sample response.</summary>

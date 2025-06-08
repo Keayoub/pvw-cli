@@ -1,4 +1,4 @@
-# pv entity readUniqueAttribute
+# pvw entity readUniqueAttribute
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > readUniqueAttribute
 
 ## Description
@@ -6,7 +6,7 @@ Get complete definition of an entity given its type and unique attribute. In add
 
 ## Syntax
 ```
-pv entity readUniqueAttribute --typeName=<val> --qualifiedName=<val> [--ignoreRelationships --minExtInfo]
+pvw entity readUniqueAttribute --typeName=<val> --qualifiedName=<val> [--ignoreRelationships --minExtInfo]
 ```
 
 ## Required Arguments
@@ -32,7 +32,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/uniqueAt
 ## Examples
 Get an entity definition by specifying the entities type name and qualified name.
 ```powershell
-pv entity readUniqueAttribute --typeName "azure_datalake_gen2_path" --qualifiedName "https://esg26fa7f24adls.dfs.core.windows.net/01-bronze/esg/xyz_company.csv"
+pvw entity readUniqueAttribute --typeName "azure_datalake_gen2_path" --qualifiedName "https://esg26fa7f24adls.dfs.core.windows.net/01-bronze/esg/xyz_company.csv"
 ```
 
 <details><summary>Sample response.</summary>

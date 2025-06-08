@@ -1,4 +1,4 @@
-# pv policystore putMetadataPolicy
+# pvw policystore putMetadataPolicy
 [Command Reference](../../../README.md#command-reference) > [policystore](./main.md) > putMetadataPolicy
 
 ## Description
@@ -6,7 +6,7 @@ Updates a metadata policy.
 
 ## Syntax
 ```
-pv policystore putMetadataPolicy --policyId=<val> --payloadFile=<val>
+pvw policystore putMetadataPolicy --policyId=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments

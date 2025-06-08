@@ -1,4 +1,4 @@
-# pv entity put
+# pvw entity put
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > put
 
 ## Description
@@ -6,7 +6,7 @@ Update entity partially by its GUID. Supports only primitive attribute type and 
 
 ## Syntax
 ```
-pv entity put --guid=<val> --attrName=<val> --attrValue=<val>
+pvw entity put --guid=<val> --attrName=<val> --attrValue=<val>
 ```
 
 ## Required Arguments
@@ -31,7 +31,7 @@ PUT https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/{gu
 ## Examples
 Perform a partial update on an existing entity.
 ```powershell
-pv entity put --guid "a20331b9-c1b3-48c3-8072-59f06ba1ba39" --attrName "description" --attrValue "hello world"
+pvw entity put --guid "a20331b9-c1b3-48c3-8072-59f06ba1ba39" --attrName "description" --attrValue "hello world"
 ```
 <details><summary>Sample response.</summary>
 <p>

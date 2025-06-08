@@ -1,4 +1,4 @@
-# pv management listPrivateLinkResources
+# pvw management listPrivateLinkResources
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > listPrivateLinkResources
 
 ## Description
@@ -6,7 +6,7 @@ Gets a list of privately linkable resources for an account
 
 ## Syntax
 ```
-pv management listPrivateLinkResources --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val> [--groupId=<val>]
+pvw management listPrivateLinkResources --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val> [--groupId=<val>]
 ```
 
 ## Required Arguments
@@ -32,7 +32,7 @@ GET https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{
 ## Examples
 List privately linkable resources for an existing Azure Purview account.
 ```powershell
-pv management listPrivateLinkResources --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "esg" --accountName "esg-26fa7f24-pv"
+pvw management listPrivateLinkResources --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "esg" --accountName "esg-26fa7f24-pv"
 ```
 
 <details><summary>Sample response.</summary>

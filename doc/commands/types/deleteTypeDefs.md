@@ -1,4 +1,4 @@
-# pv types deleteTypeDefs
+# pvw types deleteTypeDefs
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > deleteTypeDefs
 
 ## Description
@@ -6,7 +6,7 @@ Delete API for all types in bulk.
 
 ## Syntax
 ```
-pv types deleteTypeDefs --payloadFile=<val>
+pvw types deleteTypeDefs --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -25,7 +25,7 @@ DELETE https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/typede
 ## Examples
 Delete type definitions in bulk.
 ```powershell
-pv types deleteTypeDefs --payloadFile "/path/to/file.json"
+pvw types deleteTypeDefs --payloadFile "/path/to/file.json"
 ```
 
 <details><summary>Example payload.</summary>

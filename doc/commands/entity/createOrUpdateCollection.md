@@ -1,4 +1,4 @@
-# pv entity createOrUpdateCollection
+# pvw entity createOrUpdateCollection
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > createOrUpdateCollection
 
 ## Description
@@ -6,7 +6,7 @@ Creates or updates an entity to a collection. Existing entity is matched using i
 
 ## Syntax
 ```
-pv entity createOrUpdateCollection --collection=<val> --payloadFile=<val>
+pvw entity createOrUpdateCollection --collection=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -28,7 +28,7 @@ POST https://{accountName}.purview.azure.com/catalog/api/collections/{collection
 ## Examples
 Create or update an entity to a collection.
 ```powershell
-pv entity createOrUpdateCollection --collection "tdumy6" --payloadFile "/path/to/file.json"
+pvw entity createOrUpdateCollection --collection "tdumy6" --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

@@ -1,4 +1,4 @@
-# pv glossary putTerm
+# pvw glossary putTerm
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > putTerm
 
 ## Description
@@ -6,7 +6,7 @@ Update the given glossary term by its GUID.
 
 ## Syntax
 ```
-pv glossary putTerm --termGuid=<val> --payloadFile=<val> [--includeTermHierarchy]
+pvw glossary putTerm --termGuid=<val> --payloadFile=<val> [--includeTermHierarchy]
 ```
 
 ## Required Arguments
@@ -29,7 +29,7 @@ PUT https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/term/{
 ## Examples
 Update an existing glossary term.
 ```powershell
-pv glossary putTerm --termGuid "919e8f87-d5b2-4dde-9f6e-1bbd738536a1" --payloadFile "/path/to/file.json"
+pvw glossary putTerm --termGuid "919e8f87-d5b2-4dde-9f6e-1bbd738536a1" --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

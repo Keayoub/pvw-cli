@@ -1,5 +1,5 @@
 """
-Enhanced Scanning Operations Module for Azure Purview
+ Scanning Operations Module for Azure Purview
 Provides comprehensive scanning automation and management capabilities
 """
 
@@ -21,7 +21,7 @@ except ImportError:
     PANDAS_AVAILABLE = False
     print("Warning: pandas not available. Report generation features will be limited.")
 
-from .api_client import EnhancedPurviewClient
+from .api_client import PurviewClient
 from .config import PurviewConfig
 
 console = Console()
@@ -29,7 +29,7 @@ console = Console()
 class ScanningManager:
     """Advanced scanning operations and automation"""
     
-    def __init__(self, client: EnhancedPurviewClient):
+    def __init__(self, client: PurviewClient):
         self.client = client
         self.console = Console()
     
@@ -481,7 +481,7 @@ async def create_scanning_cli_commands():
         with open(config_file, 'r') as f:
             sources_config = json.load(f)
         
-        async with EnhancedPurviewClient(config) as client:
+        async with PurviewClient(config) as client:
             manager = ScanningManager(client)
             results = await manager.bulk_create_data_sources(sources_config)
             
@@ -497,7 +497,7 @@ async def create_scanning_cli_commands():
         """Generate comprehensive scanning report"""
         config = PurviewConfig.load_profile(profile)
         
-        async with EnhancedPurviewClient(config) as client:
+        async with PurviewClient(config) as client:
             manager = ScanningManager(client)
             report = await manager.generate_scan_report(output_file, days)
             

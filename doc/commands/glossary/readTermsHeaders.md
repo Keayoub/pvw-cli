@@ -1,4 +1,4 @@
-# pv glossary readTermsHeaders
+# pvw glossary readTermsHeaders
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > readTermsHeaders
 
 ## Description
@@ -6,7 +6,7 @@ Get term headers belonging to a specific glossary.
 
 ## Syntax
 ```
-pv glossary readTermsHeaders --glossaryGuid=<val> [--limit=<val> --offset=<val> --sort=<val>]
+pvw glossary readTermsHeaders --glossaryGuid=<val> [--limit=<val> --offset=<val> --sort=<val>]
 ```
 
 ## Required Arguments
@@ -32,7 +32,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/{gloss
 ## Examples
 Get glossary term headers.
 ```powershell
-pv glossary readTermsHeaders --glossaryGuid "f2307f48-5834-4709-be85-02f3aea5d149"
+pvw glossary readTermsHeaders --glossaryGuid "f2307f48-5834-4709-be85-02f3aea5d149"
 ```
 
 <details><summary>Sample response.</summary>

@@ -53,7 +53,7 @@ docker exec -it purview-cli-docker bash
 
    Note #2: While an Azure Purview account name ***must*** be specified, you can provide this value within the command itself (as opposed to via an environment variable). Simply add `--purviewName=<val>` at the end of any command.
 
-3. Execute a command (e.g. `pv glossary read --purviewName PURVIEW_ACCOUNT_NAME`).
+3. Execute a command (e.g. `pvw glossary read --purviewName PURVIEW_ACCOUNT_NAME`).
 
 Snippet of an example Python-based notebook below.  
 Note: If you are executing purviewcli commands within a Python notebook, you will need to prefix the command with an exclamation mark `!`. This will ensure the command is passed to the shell (not the Python interpreter).

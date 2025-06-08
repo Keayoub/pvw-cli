@@ -1,4 +1,4 @@
-# pv share createAsset
+# pvw share createAsset
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  createAsset
 
@@ -9,7 +9,7 @@ Adds a new asset to an existing share.
 ## Syntax
 
 ```
-pv share createAsset --sentShareName=<val> --assetName=<val> --payloadFile=<val>
+pvw share createAsset --sentShareName=<val> --assetName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -42,7 +42,7 @@ PUT https://{accountName}.purview.azure.com/share/sentShares/{sentShareName}/ass
 Add an asset to an existing sent share.
 
 ```powershell
-pv share createAsset --sentShareName "MyNewSentShare" --assetName "MyAssetName" --payloadFile "/path/to/file.json"
+pvw share createAsset --sentShareName "MyNewSentShare" --assetName "MyAssetName" --payloadFile "/path/to/file.json"
 ```
 
 

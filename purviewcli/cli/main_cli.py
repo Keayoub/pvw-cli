@@ -1,5 +1,5 @@
 """
-Enhanced CLI Commands with Profile Management
+ CLI Commands with Profile Management
 """
 
 import asyncio
@@ -13,7 +13,7 @@ from rich.table import Table
 from rich import print as rprint
 
 from ..client.config import config_manager, PurviewProfile, EnvironmentHelper
-from ..client.api_client import EnhancedPurviewClient, PurviewConfig
+from ..client.api_client import PurviewClient, PurviewConfig
 from ..client.csv_operations import CSVBatchProcessor, CSVExporter, ENTITY_TEMPLATES, EntityTemplate, ColumnMapping
 from ..client.data_quality import DataQualityValidator, DataQualityReport, ENTITY_VALIDATION_RULES
 from ..client.csv_lineage_processor import CSVLineageProcessor, LineageCSVTemplates
@@ -25,8 +25,8 @@ console = Console()
 @click.option('--account-name', help='Override Purview account name')
 @click.option('--debug', is_flag=True, help='Enable debug mode')
 @click.pass_context
-def pv(ctx, profile, account_name, debug):
-    """Enhanced Purview CLI with profile management and automation"""
+def pvw(ctx, profile, account_name, debug):
+    """Purview CLI with profile management and automation"""
     
     ctx.ensure_object(dict)
     
@@ -57,13 +57,12 @@ def pv(ctx, profile, account_name, debug):
             resolved_profile = config_manager.create_profile_from_env()
     
     if not resolved_profile:
-        console.print("[red]No Purview account configured. Use 'pv profile add' to configure or set PURVIEW_NAME environment variable[/red]")
+        console.print("[red]No Purview account configured. Use 'pvw profile add' to configure or set PURVIEW_NAME environment variable[/red]")
         sys.exit(1)
     
     # Setup environment from profile
     EnvironmentHelper.setup_environment(resolved_profile)
-    
-    # Create Purview config
+      # Create Purview config
     purview_config = PurviewConfig(
         account_name=resolved_profile.account_name,
         tenant_id=resolved_profile.tenant_id,
@@ -76,7 +75,7 @@ def pv(ctx, profile, account_name, debug):
     ctx.obj['config'] = purview_config
     ctx.obj['profile'] = resolved_profile
 
-@pv.group()
+@pvw.group()
 def profile():
     """Manage connection profiles"""
     pass
@@ -167,7 +166,7 @@ def status():
     
     console.print(table)
 
-@pv.group()
+@pvw.group()
 def entity():
     """Entity management with validation"""
     pass
@@ -225,7 +224,7 @@ def import_csv(ctx, csv_file, template, config_file, validate_only, quality_repo
             return
         
         # Proceed with import
-        async with EnhancedPurviewClient(ctx.obj['config']) as client:
+        async with PurviewClient(ctx.obj['config']) as client:
             processor = CSVBatchProcessor(client)
             
             def progress_callback(current, total):
@@ -237,14 +236,13 @@ def import_csv(ctx, csv_file, template, config_file, validate_only, quality_repo
                 csv_file,
                 'create_entities',
                 entity_template,
-                progress_callback
-            )
+                progress_callback            )
             
             _display_operation_results(results, 'Entity Import')
     
     asyncio.run(_import_with_validation())
 
-@pv.group()
+@pvw.group()
 def validate():
     """Data validation commands"""
     pass
@@ -282,10 +280,9 @@ def csv(csv_file, template, output, format):
             DataQualityReport.export_report_to_csv(report, output)
             console.print(f"[green]✓ Report saved to {output}[/green]")
         
-    except Exception as e:
-        console.print(f"[red]Error validating CSV: {e}[/red]")
+    except Exception as e:        console.print(f"[red]Error validating CSV: {e}[/red]")
 
-@pv.group()
+@pvw.group()
 def config():
     """Configuration management"""
     pass
@@ -326,7 +323,7 @@ def get(key):
         
         console.print(table)
 
-@pv.group()
+@pvw.group()
 def lineage():
     """Data lineage management and CSV processing"""
     pass
@@ -355,7 +352,7 @@ def process(ctx, csv_file, batch_size, validate_entities, create_missing_entitie
                 return
             
             # Initialize client and processor
-            async with EnhancedPurviewClient(client_config.account_name, client_config.get_credential()) as client:
+            async with PurviewClient(client_config.account_name, client_config.get_credential()) as client:
                 processor = CSVLineageProcessor(client)
                 
                 console.print(f"[blue]Processing lineage from: {csv_file}[/blue]")
@@ -426,7 +423,7 @@ def generate_sample(ctx, output_file, num_samples, template):
                 console.print("[red]Error: No active configuration found[/red]")
                 return
             
-            async with EnhancedPurviewClient(client_config.account_name, client_config.get_credential()) as client:
+            async with PurviewClient(client_config.account_name, client_config.get_credential()) as client:
                 processor = CSVLineageProcessor(client)
                 
                 console.print(f"[blue]Generating sample CSV: {output_file}[/blue]")
@@ -468,7 +465,7 @@ def validate(ctx, csv_file):
                 console.print("[red]Error: No active configuration found[/red]")
                 return
             
-            async with EnhancedPurviewClient(client_config.account_name, client_config.get_credential()) as client:
+            async with PurviewClient(client_config.account_name, client_config.get_credential()) as client:
                 processor = CSVLineageProcessor(client)
                 
                 console.print(f"[blue]Validating CSV file: {csv_file}[/blue]")
@@ -611,4 +608,4 @@ def _display_validation_report(report: Dict):
             console.print(f"  Row {error['row']}: {error['message']}")
 
 if __name__ == '__main__':
-    pv()
+    pvw()

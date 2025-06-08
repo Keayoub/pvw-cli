@@ -1,4 +1,4 @@
-# pv share listAcceptedShares
+# pvw share listAcceptedShares
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  listAcceptedShares
 
@@ -9,7 +9,7 @@ List of accepted shares for the current sent share.
 ## Syntax
 
 ```
-pv share listAcceptedShares --sentShareName=<val> [--skipToken=<val>]
+pvw share listAcceptedShares --sentShareName=<val> [--skipToken=<val>]
 ```
 
 ## Required Arguments
@@ -36,7 +36,7 @@ GET https://{accountName}.purview.azure.com/share/sentShares/{sentShareName}/acc
 List accepted shares for a particular sent share.
 
 ```powershell
-pv share listAcceptedShares --sentShareName "NewShare"
+pvw share listAcceptedShares --sentShareName "NewShare"
 ```
 
 

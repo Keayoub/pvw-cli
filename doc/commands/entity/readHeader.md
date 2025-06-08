@@ -1,4 +1,4 @@
-# pv entity readHeader
+# pvw entity readHeader
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > readHeader
 
 ## Description
@@ -6,7 +6,7 @@ Get entity header given its GUID.
 
 ## Syntax
 ```
-pv entity readHeader --guid=<val>
+pvw entity readHeader --guid=<val>
 ```
 
 ## Required Arguments
@@ -25,7 +25,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/{gu
 ## Examples
 Get the header information for an existing entity via the entities GUID.
 ```powershell
-pv entity readHeader --guid "c6a7811a-0699-44d0-b0be-68babe560ab2"
+pvw entity readHeader --guid "c6a7811a-0699-44d0-b0be-68babe560ab2"
 ```
 
 <details><summary>Sample response.</summary>

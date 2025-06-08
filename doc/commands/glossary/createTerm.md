@@ -1,4 +1,4 @@
-# pv glossary createTerm
+# pvw glossary createTerm
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > createTerm
 
 ## Description
@@ -6,7 +6,7 @@ Create a glossary term.
 
 ## Syntax
 ```
-pv glossary createTerm --payloadFile=<val> [--includeTermHierarchy]
+pvw glossary createTerm --payloadFile=<val> [--includeTermHierarchy]
 ```
 
 ## Required Arguments
@@ -26,7 +26,7 @@ POST https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/term
 ## Examples
 Create a term.
 ```powershell
-pv glossary createTerm --payloadFile "/path/to/file.json"
+pvw glossary createTerm --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

@@ -1,4 +1,4 @@
-# pv types deleteTypeDef
+# pvw types deleteTypeDef
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > deleteTypeDef
 
 ## Description
@@ -6,7 +6,7 @@ Delete API for type identified by its name.
 
 ## Syntax
 ```
-pv types deleteTypeDef --name=<val>
+pvw types deleteTypeDef --name=<val>
 ```
 
 ## Required Arguments
@@ -25,5 +25,5 @@ DELETE https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/typede
 ## Examples
 Delete a type definition by name.
 ```powershell
-pv types deleteTypeDef --name "My Custom Term Template"
+pvw types deleteTypeDef --name "My Custom Term Template"
 ```

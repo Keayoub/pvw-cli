@@ -1,4 +1,4 @@
-# pv entity addLabelsByUniqueAttribute
+# pvw entity addLabelsByUniqueAttribute
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > addLabelsByUniqueAttribute
 
 ## Description
@@ -6,7 +6,7 @@ Append labels to an entity identified by its type and unique attributes.
 
 ## Syntax
 ```
-pv entity addLabelsByUniqueAttribute --typeName=<val> --qualifiedName=<val> --payloadFile=<val>
+pvw entity addLabelsByUniqueAttribute --typeName=<val> --qualifiedName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -31,7 +31,7 @@ PUT https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/uniqueAt
 ## Examples
 Append labels to an existing entity identified by its type and unique attributes.
 ```powershell
-pv entity addLabelsByUniqueAttribute --typeName "azure_datalake_gen2_resource_set" --qualifiedName "https://STORAGE_ACCOUNT.dfs.core.windows.net/bing/data/{N}/QueriesByCountry_{Year}-{Month}-{Day}_{N}-{N}-{N}.tsv" --payloadFile "/path/to/file.json"
+pvw entity addLabelsByUniqueAttribute --typeName "azure_datalake_gen2_resource_set" --qualifiedName "https://STORAGE_ACCOUNT.dfs.core.windows.net/bing/data/{N}/QueriesByCountry_{Year}-{Month}-{Day}_{N}-{N}-{N}.tsv" --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

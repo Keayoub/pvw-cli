@@ -1,4 +1,4 @@
-# pv lineage readNext
+# pvw lineage readNext
 [Command Reference](../../../README.md#command-reference) > [lineage](./main.md) > readNext
 
 ## Description
@@ -6,7 +6,7 @@ Return immediate next page lineage info about entity with pagination.
 
 ## Syntax
 ```
-pv lineage readNext --guid=<val> [--direction<val> --offset=<val> --limit=<val>]
+pvw lineage readNext --guid=<val> [--direction<val> --offset=<val> --limit=<val>]
 ```
 
 ## Required Arguments
@@ -32,7 +32,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/lineage/{guid}/next
 ## Examples
 Get lineage information for a particular entity.
 ```powershell
-pv lineage readNext --guid "c15f00b1-bf72-4413-9e95-565be22d18ed"
+pvw lineage readNext --guid "c15f00b1-bf72-4413-9e95-565be22d18ed"
 ```
 
 <details><summary>Sample response.</summary>

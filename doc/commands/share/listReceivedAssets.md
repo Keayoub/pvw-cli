@@ -1,4 +1,4 @@
-# pv share listReceivedAssets
+# pvw share listReceivedAssets
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  listReceivedAssets
 
@@ -9,7 +9,7 @@ List source asset of a received share.
 ## Syntax
 
 ```
-pv share listReceivedAssets --receivedShareName=<val> [--skipToken=<val>]
+pvw share listReceivedAssets --receivedShareName=<val> [--skipToken=<val>]
 ```
 
 ## Required Arguments
@@ -36,7 +36,7 @@ GET https://{accountName}.purview.azure.com/share/receivedShares/{receivedShareN
 Get a list of received assets from a particular received share.
 
 ```powershell
-pv share listReceivedAssets --receivedShareName "NewShare"
+pvw share listReceivedAssets --receivedShareName "NewShare"
 ```
 
 

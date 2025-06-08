@@ -1,4 +1,4 @@
-# pv management deletePrivateEndpoint
+# pvw management deletePrivateEndpoint
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > deletePrivateEndpoint
 
 ## Description
@@ -6,7 +6,7 @@ Deletes private endpoint connection.
 
 ## Syntax
 ```
-pv management deletePrivateEndpoint --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val> --privateEndpointConnectionName=<val>
+pvw management deletePrivateEndpoint --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val> --privateEndpointConnectionName=<val>
 ```
 
 ## Required Arguments
@@ -34,5 +34,5 @@ DELETE https://management.azure.com/subscriptions/{subscriptionId}/resourceGroup
 ## Examples
 Delete a private endpoint.
 ```powershell
-pv management deletePrivateEndpoint --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "private" --accountName "taygan-private-pv" --privateEndpointConnectionName "purview-pe-instance-a2dbee21-876d-43a4-b521-df9863a98553"
+pvw management deletePrivateEndpoint --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "private" --accountName "taygan-private-pv" --privateEndpointConnectionName "purview-pe-instance-a2dbee21-876d-43a4-b521-df9863a98553"
 ```

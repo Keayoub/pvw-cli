@@ -1,4 +1,4 @@
-# pv types readStructDef
+# pvw types readStructDef
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > readStructDef
 
 ## Description
@@ -6,7 +6,7 @@ Get the struct definition for the given GUID or by its name (unique).
 
 ## Syntax
 ```
-pv types readStructDef (--guid=<val> | --name=<val>)
+pvw types readStructDef (--guid=<val> | --name=<val>)
 ```
 
 ## Required Arguments
@@ -33,7 +33,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/structdef
 ## Examples
 Get struct definition by name.
 ```powershell
-pv types readStructDef --name "cosmosdb_offer"
+pvw types readStructDef --name "cosmosdb_offer"
 ```
 
 <details><summary>Sample response.</summary>
@@ -84,5 +84,5 @@ pv types readStructDef --name "cosmosdb_offer"
 
 Get struct definition by guid.
 ```powershell
-pv types readStructDef --guid "d96ff541-abd9-a199-58b6-2deb81e4ca5f"
+pvw types readStructDef --guid "d96ff541-abd9-a199-58b6-2deb81e4ca5f"
 ```

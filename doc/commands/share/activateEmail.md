@@ -1,4 +1,4 @@
-# pv share activateEmail
+# pvw share activateEmail
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  activateEmail
 
@@ -9,7 +9,7 @@ Activates the tenant and email combination using the activation code received.
 ## Syntax
 
 ```
-pv share activateEmail --payloadFile=<val>
+pvw share activateEmail --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -35,7 +35,7 @@ POST https://{accountName}.purview.azure.com/share/activateEmail
 Activates the tenant and email combination using the activation code received.
 
 ```powershell
-pv share activateEmail --payloadFile "/path/to/file.json"
+pvw share activateEmail --payloadFile "/path/to/file.json"
 ```
 
 

@@ -1,19 +1,19 @@
 """
 usage: 
-    pv account deleteCollection --collectionName=<val>
-    pv account deleteResourceSetRule
-    pv account getAccessKeys
-    pv account getAccount
-    pv account getChildCollectionNames --collectionName=<val>
-    pv account getCollection --collectionName=<val>
-    pv account getCollectionPath --collectionName=<val>
-    pv account getCollections
-    pv account getResourceSetRule
-    pv account getResourceSetRules
-    pv account putCollection --friendlyName=<val> --parentCollection=<val>
-    pv account putResourceSetRule --payloadFile=<val>
-    pv account regenerateAccessKeys --keyType=<val>
-    pv account updateAccount --friendlyName=<val>
+    pvw account deleteCollection --collectionName=<val>
+    pvw account deleteResourceSetRule
+    pvw account getAccessKeys
+    pvw account getAccount
+    pvw account getChildCollectionNames --collectionName=<val>
+    pvw account getCollection --collectionName=<val>
+    pvw account getCollectionPath --collectionName=<val>
+    pvw account getCollections
+    pvw account getResourceSetRule
+    pvw account getResourceSetRules
+    pvw account putCollection --friendlyName=<val> --parentCollection=<val>
+    pvw account putResourceSetRule --payloadFile=<val>
+    pvw account regenerateAccessKeys --keyType=<val>
+    pvw account updateAccount --friendlyName=<val>
 
 
 options:

@@ -1,4 +1,4 @@
-# pv policystore putDataPolicy
+# pvw policystore putDataPolicy
 [Command Reference](../../../README.md#command-reference) > [policystore](./main.md) > putDataPolicy
 
 ## Description
@@ -6,7 +6,7 @@ Create or update a data policy.
 
 ## Syntax
 ```
-pv policystore putDataPolicy --policyName=<val> --payloadFile=<val>
+pvw policystore putDataPolicy --policyName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -28,7 +28,7 @@ PUT https://{accountName}.purview.azure.com/policystore/dataPolicies/{policyName
 ## Examples
 Create or update a data policy.
 ```powershell
-pv policystore putDataPolicy --policyName "new-policy" --payloadFile "/path/to/file.json"
+pvw policystore putDataPolicy --policyName "new-policy" --payloadFile "/path/to/file.json"
 ```
 
 <details><summary>Example payload.</summary>

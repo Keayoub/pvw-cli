@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Comprehensive Test Runner for Enhanced Purview CLI v2.0
+Comprehensive Test Runner for  Purview CLI v2.0
 Executes all test suites and provides unified reporting
 """
 
@@ -28,7 +28,7 @@ from rich.live import Live
 console = Console()
 
 class ComprehensiveTestRunner:
-    """Unified test runner for all Enhanced Purview CLI test suites"""
+    """Unified test runner for all  Purview CLI test suites"""
     
     def __init__(self):
         self.test_results = {}
@@ -316,7 +316,7 @@ class ComprehensiveTestRunner:
     def generate_detailed_report(self):
         """Generate detailed test execution report"""
         console.print("\n" + "="*80)
-        console.print(Panel("[bold blue]Enhanced Purview CLI v2.0 - Comprehensive Test Report[/bold blue]"))
+        console.print(Panel("[bold blue] Purview CLI v2.0 - Comprehensive Test Report[/bold blue]"))
         
         summary = self.generate_test_summary()
         
@@ -406,7 +406,7 @@ class ComprehensiveTestRunner:
         console.print("\n[bold blue]Recommendations:[/bold blue]")
         
         if summary['success_rate'] >= 90:
-            console.print("[green]🎉 Excellent! The Enhanced Purview CLI is ready for production.[/green]")
+            console.print("[green]🎉 Excellent! The  Purview CLI is ready for production.[/green]")
             console.print("[green]✓ All major test suites are passing[/green]")
             console.print("[green]✓ Core functionality is stable[/green]")
             console.print("[green]✓ Advanced features are working correctly[/green]")
@@ -475,7 +475,7 @@ class ComprehensiveTestRunner:
     
     async def run_all_tests(self):
         """Run all test suites"""
-        console.print("[bold green]Enhanced Purview CLI v2.0 - Comprehensive Test Execution[/bold green]")
+        console.print("[bold green] Purview CLI v2.0 - Comprehensive Test Execution[/bold green]")
         console.print("="*80)
         
         self.start_time = datetime.now()

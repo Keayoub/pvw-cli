@@ -1,4 +1,4 @@
-# pv share revokeAcceptedShare
+# pvw share revokeAcceptedShare
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  revokeAcceptedShare
 
@@ -9,7 +9,7 @@ Revoke an accepted sent share's access
 ## Syntax
 
 ```
-pv share revokeAcceptedShare --sentShareName=<val> --acceptedSentShareName=<val>
+pvw share revokeAcceptedShare --sentShareName=<val> --acceptedSentShareName=<val>
 ```
 
 ## Required Arguments
@@ -38,7 +38,7 @@ POST https://{accountName}.purview.azure.com/share/sentShares/{sentShareName}/ac
 Revoke an accepted share.
 
 ```powershell
-pv share revokeAcceptedShare --sentShareName "MyNewSentShare" --acceptedSentShareName "4f5e1b4b-44f8-42c1-a783-b6c2265e49f5"
+pvw share revokeAcceptedShare --sentShareName "MyNewSentShare" --acceptedSentShareName "4f5e1b4b-44f8-42c1-a783-b6c2265e49f5"
 ```
 
 

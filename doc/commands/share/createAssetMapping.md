@@ -1,4 +1,4 @@
-# pv share createAssetMapping
+# pvw share createAssetMapping
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  createAssetMapping
 
@@ -9,7 +9,7 @@ Maps a source asset in the sent share to a destination asset in the received sha
 ## Syntax
 
 ```
-pv share createAssetMapping --receivedShareName=<val> --assetMappingName=<val> --payloadFile=<val>
+pvw share createAssetMapping --receivedShareName=<val> --assetMappingName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -42,7 +42,7 @@ PUT https://{accountName}.purview.azure.com/share/receivedShares/{receivedShareN
 Delete an asset mapping for a particular received share.
 
 ```powershell
-pv share createAssetMapping --receivedShareName "MyNewReceivedShare" --assetMappingName "MyAssetMappingName" --payloadFile "/path/to/file.json"
+pvw share createAssetMapping --receivedShareName "MyNewReceivedShare" --assetMappingName "MyAssetMappingName" --payloadFile "/path/to/file.json"
 ```
 
 

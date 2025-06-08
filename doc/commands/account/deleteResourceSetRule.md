@@ -1,4 +1,4 @@
-# pv account deleteResourceSetRule
+# pvw account deleteResourceSetRule
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > deleteResourceSetRule
 
 ## Description
@@ -6,7 +6,7 @@ Delete a resource set.
 
 ## Syntax
 ```
-pv account deleteResourceSetRule
+pvw account deleteResourceSetRule
 ```
 
 ## Required Arguments
@@ -24,5 +24,5 @@ DELETE https://{accountName}.purview.azure.com/account/resourceSetRuleConfigs/de
 ## Examples
 Delete a resource set.
 ```powershell
-pv account deleteResourceSetRule
+pvw account deleteResourceSetRule
 ```

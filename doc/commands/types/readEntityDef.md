@@ -1,4 +1,4 @@
-# pv types readEntityDef
+# pvw types readEntityDef
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > readEntityDef
 
 ## Description
@@ -6,7 +6,7 @@ Get the Entity definition for the given GUID or by its name (unique).
 
 ## Syntax
 ```
-pv types readEntityDef (--guid=<val> | --name=<val>)
+pvw types readEntityDef (--guid=<val> | --name=<val>)
 ```
 
 ## Required Arguments
@@ -33,7 +33,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/entitydef
 ## Examples
 Get an entity definition by name.
 ```powershell
-pv types readEntityDef --name "azure_sql_table"
+pvw types readEntityDef --name "azure_sql_table"
 ```
 
 <details><summary>Sample response.</summary>
@@ -225,5 +225,5 @@ pv types readEntityDef --name "azure_sql_table"
 
 Get an entity definition by guid.
 ```powershell
-pv types readEntityDef --guid "7d92a449-f7e8-812f-5fc8-ca6127ba90bd"
+pvw types readEntityDef --guid "7d92a449-f7e8-812f-5fc8-ca6127ba90bd"
 ```

@@ -1,4 +1,4 @@
-# pv scan readKeyVault
+# pvw scan readKeyVault
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readKeyVault
 
 ## Description
@@ -6,7 +6,7 @@ Gets key vault information
 
 ## Syntax
 ```
-pv scan readKeyVault --keyVaultName=<val>
+pvw scan readKeyVault --keyVaultName=<val>
 ```
 
 ## Required Arguments
@@ -25,7 +25,7 @@ GET https://{accountName}.purview.azure.com/scan/azureKeyVaults/{keyVaultName}
 ## Examples
 Get Azure Key Vault connection information by name.
 ```powershell
-pv scan readKeyVault --keyVaultName "my_key_vault"
+pvw scan readKeyVault --keyVaultName "my_key_vault"
 ```
 <details><summary>Sample response.</summary>
 <p>

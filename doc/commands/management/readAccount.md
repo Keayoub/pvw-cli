@@ -1,4 +1,4 @@
-# pv management readAccount
+# pvw management readAccount
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > readAccount
 
 ## Description
@@ -6,7 +6,7 @@ Gets the account resource.
 
 ## Syntax
 ```
-pv management readAccount --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val>
+pvw management readAccount --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val>
 ```
 
 ## Required Arguments
@@ -31,7 +31,7 @@ GET https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{
 ## Examples
 Get the properties of an existing Azure Purview account.
 ```powershell
-pv management readAccount --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "esg" --accountName "esg-26fa7f24-pv"
+pvw management readAccount --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "esg" --accountName "esg-26fa7f24-pv"
 ```
 
 <details><summary>Sample response.</summary>

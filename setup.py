@@ -1,4 +1,4 @@
-# Enhanced Purview CLI Setup
+#  Purview CLI Setup
 from setuptools import setup, find_packages
 from pathlib import Path
 import os
@@ -20,21 +20,21 @@ if readme_file.exists():
         long_description = f.read()
 
 # Read requirements
-requirements_file = Path(__file__).parent / 'requirements_enhanced.txt'
+requirements_file = Path(__file__).parent / 'requirements.txt'
 requirements = []
 if requirements_file.exists():
     with open(requirements_file, 'r') as f:
         requirements = [line.strip() for line in f if line.strip() and not line.startswith('#')]
 
 setup(
-    name='purviewcli-enhanced',
+    name='pvw-cli',
     version=version.get('__version__', '2.0.0'),
-    description="Enhanced Azure Purview CLI with comprehensive automation capabilities",
+    description="Microsoft Purview CLI with comprehensive automation capabilities",
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/your-org/purviewcli-enhanced',
-    author='Enhanced Purview CLI Team',
-    author_email='purview-cli@your-org.com',
+    url='https://github.com/Keayoub/Purview_cli',
+    author='Ayoub KEBAILI',
+    author_email='keayoub@msn.com',
     license='MIT',
     packages=find_packages(),
     install_requires=requirements,
@@ -55,12 +55,10 @@ setup(
         "Topic :: Database",
         "Topic :: Internet :: WWW/HTTP",
     ],
-    keywords='azure purview cli data catalog governance automation',
+    keywords='azure purview cli data catalog governance automation pvw',
     entry_points={
         'console_scripts': [
-            'pv = purviewcli.cli.cli:main',
-            'pv-enhanced = purviewcli.cli.enhanced_cli:cli',
-            'purview-automation = scripts.automation_examples:main'
+            'pvw = purviewcli.cli.cli:main'           
         ],
     },
     package_data={
@@ -72,8 +70,8 @@ setup(
     include_package_data=True,
     zip_safe=False,
     project_urls={
-        'Bug Reports': 'https://github.com/your-org/purviewcli-enhanced/issues',
-        'Source': 'https://github.com/your-org/purviewcli-enhanced',
-        'Documentation': 'https://purviewcli-enhanced.readthedocs.io/',
+        'Bug Reports': 'https://github.com/Keayoub/Purview_cli/issues',
+        'Source': 'https://github.com/Keayoub/Purview_cli',
+        'Documentation': 'https://github.com/Keayoub/Purview_cli/wiki',
     },
 )

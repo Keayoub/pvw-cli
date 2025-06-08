@@ -1,4 +1,4 @@
-# pv relationship put
+# pvw relationship put
 [Command Reference](../../../README.md#command-reference) > [relationship](./main.md) > put
 
 ## Description
@@ -6,7 +6,7 @@ Update an existing relationship between entities.
 
 ## Syntax
 ```
-pv relationship put --payloadFile=<val>
+pvw relationship put --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -25,5 +25,5 @@ PUT https://{accountName}.purview.azure.com/catalog/api/atlas/v2/relationship
 ## Examples
 Update an existing relationship.
 ```powershell
-pv relationship put --payloadFile "/path/to/file.json"
+pvw relationship put --payloadFile "/path/to/file.json"
 ```

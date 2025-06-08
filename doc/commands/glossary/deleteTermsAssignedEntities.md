@@ -1,4 +1,4 @@
-# pv glossary deleteTermsAssignedEntities
+# pvw glossary deleteTermsAssignedEntities
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > deleteTermsAssignedEntities
 
 ## Description
@@ -6,7 +6,7 @@ Delete the term assignment for the given list of related objects.
 
 ## Syntax
 ```
-pv glossary deleteTermsAssignedEntities --termGuid=<val> --payloadFile=<val>
+pvw glossary deleteTermsAssignedEntities --termGuid=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -28,7 +28,7 @@ DELETE https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/ter
 ## Examples
 Remove term assignments in bulk.
 ```powershell
-pv glossary deleteTermsAssignedEntities --termGuid "bcf9fa54-9c28-4e8d-8775-ccb60785aab9" --payloadFile "/path/to/file.json"
+pvw glossary deleteTermsAssignedEntities --termGuid "bcf9fa54-9c28-4e8d-8775-ccb60785aab9" --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

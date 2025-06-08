@@ -1,4 +1,4 @@
-# pv types readTypeDefs
+# pvw types readTypeDefs
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > readTypeDefs
 
 ## Description
@@ -6,7 +6,7 @@ Get all type definitions in Atlas in bulk.
 
 ## Syntax
 ```
-pv types readTypeDefs [--includeTermTemplate --type=<val>]
+pvw types readTypeDefs [--includeTermTemplate --type=<val>]
 ```
 
 ## Required Arguments
@@ -28,7 +28,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/typedefs
 ## Examples
 Get all type definitions for a particular type.
 ```powershell
-pv types readTypeDefs --type "enum"
+pvw types readTypeDefs --type "enum"
 ```
 
 <details><summary>Sample response.</summary>
@@ -566,10 +566,10 @@ pv types readTypeDefs --type "enum"
 
 Get all type definitions (not including term templates).
 ```powershell
-pv types readTypeDefs
+pvw types readTypeDefs
 ```
 
 Get all type definitions (including term templates).
 ```powershell
-pv types readTypeDefs --includeTermTemplate
+pvw types readTypeDefs --includeTermTemplate
 ```

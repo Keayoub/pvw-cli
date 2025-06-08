@@ -1,5 +1,5 @@
 """
-Enhanced CLI Command Handler
+ CLI Command Handler
 Provides comprehensive command-line interface for Purview operations
 """
 
@@ -14,7 +14,7 @@ from rich.table import Table
 from rich.progress import Progress, TaskID
 from rich import print as rprint
 
-from ..client.api_client import EnhancedPurviewClient, PurviewConfig, BatchOperationProgress
+from ..client.api_client import PurviewClient, PurviewConfig, BatchOperationProgress
 from ..client.csv_operations import CSVBatchProcessor, CSVExporter, ENTITY_TEMPLATES, ColumnMapping, EntityTemplate
 from ..client.scanning_operations import ScanningManager, ScanTemplateManager
 from ..client.business_rules import BusinessRulesEngine, RuleType, RuleSeverity
@@ -26,7 +26,7 @@ from ..plugins.plugin_system import PluginManager, PluginRegistry, PluginType
 console = Console()
 
 class PurviewCLI:
-    """Enhanced Purview CLI with comprehensive automation support"""
+    """ Purview CLI with comprehensive automation support"""
     
     def __init__(self, config: PurviewConfig):
         self.config = config
@@ -44,7 +44,7 @@ class PurviewCLI:
     
     async def __aenter__(self):
         """Initialize async resources"""
-        self.client = EnhancedPurviewClient(self.config)
+        self.client = PurviewClient(self.config)
         await self.client.__aenter__()
         self.csv_processor = CSVBatchProcessor(self.client)
         self.csv_exporter = CSVExporter(self.client)
@@ -79,7 +79,7 @@ class PurviewCLI:
 @click.option('--timeout', default=30, help='Request timeout in seconds')
 @click.pass_context
 def cli(ctx, account_name, tenant_id, region, batch_size, max_retries, timeout):
-    """Enhanced Purview CLI for comprehensive data catalog management"""
+    """ Purview CLI for comprehensive data catalog management"""
     
     config = PurviewConfig(
         account_name=account_name,

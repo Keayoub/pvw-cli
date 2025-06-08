@@ -1,4 +1,4 @@
-# pv relationship read
+# pvw relationship read
 [Command Reference](../../../README.md#command-reference) > [relationship](./main.md) > read
 
 ## Description
@@ -6,7 +6,7 @@ Get relationship information between entities by its GUID.
 
 ## Syntax
 ```
-pv relationship read --guid=<val> [--extendedInfo]
+pvw relationship read --guid=<val> [--extendedInfo]
 ```
 
 ## Required Arguments
@@ -26,7 +26,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/relationship/gu
 ## Examples
 Get relationship information between entities by relationship GUID.
 ```powershell
-pv relationship read --guid "bb990675-2f5b-42aa-a10c-3ce02b5ddf94"
+pvw relationship read --guid "bb990675-2f5b-42aa-a10c-3ce02b5ddf94"
 ```
 <details><summary>Sample response.</summary>
 <p>
@@ -68,7 +68,7 @@ pv relationship read --guid "bb990675-2f5b-42aa-a10c-3ce02b5ddf94"
 
 Include extended information (e.g. referredEntities).
 ```powershell
-pv relationship read --guid "bb990675-2f5b-42aa-a10c-3ce02b5ddf94" --extendedInfo
+pvw relationship read --guid "bb990675-2f5b-42aa-a10c-3ce02b5ddf94" --extendedInfo
 ```
 
 <details><summary>Sample response.</summary>

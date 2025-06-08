@@ -1,5 +1,5 @@
 """
-Enhanced CSV Lineage Processor for Azure Purview
+ CSV Lineage Processor for Azure Purview
 Supports bulk lineage creation with advanced validation and error handling
 """
 
@@ -13,7 +13,7 @@ from datetime import datetime
 from dataclasses import dataclass, field
 import logging
 
-from .api_client import EnhancedPurviewClient
+from .api_client import PurviewClient
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +50,7 @@ class LineageProcessingResult:
     processing_time: float = 0.0
 
 class CSVLineageProcessor:
-    """Enhanced CSV processor for creating custom lineage relationships in Azure Purview"""
+    """ CSV processor for creating custom lineage relationships in Azure Purview"""
     
     # Supported relationship types
     RELATIONSHIP_TYPES = [
@@ -71,7 +71,7 @@ class CSVLineageProcessor:
         'metadata', 'description', 'owner', 'tags'
     ]
     
-    def __init__(self, purview_client: EnhancedPurviewClient):
+    def __init__(self, purview_client: PurviewClient):
         """Initialize the CSV lineage processor"""
         self.client = purview_client
         self.account_name = purview_client.account_name

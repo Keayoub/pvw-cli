@@ -1,4 +1,4 @@
-# pv entity deleteUniqueAttributeClassification
+# pvw entity deleteUniqueAttributeClassification
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > deleteUniqueAttributeClassification
 
 ## Description
@@ -6,7 +6,7 @@ Delete a given classification from an entity identified by its type and unique a
 
 ## Syntax
 ```
-pv entity deleteUniqueAttributeClassification --typeName=<val> --qualifiedName=<val> --classificationName=<val>
+pvw entity deleteUniqueAttributeClassification --typeName=<val> --qualifiedName=<val> --classificationName=<val>
 ```
 
 ## Required Arguments
@@ -31,5 +31,5 @@ DELETE https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/uniqu
 ## Examples
 Remove a classification from an entity via the entities qualified name.
 ```powershell
-pv entity deleteUniqueAttributeClassification --typeName "azure_datalake_gen2_filesystem" --qualifiedName "https://esg26fa7f24adls.dfs.core.windows.net/02-silver" --classificationName "MICROSOFT.FINANCIAL.US.ABA_ROUTING_NUMBER"
+pvw entity deleteUniqueAttributeClassification --typeName "azure_datalake_gen2_filesystem" --qualifiedName "https://esg26fa7f24adls.dfs.core.windows.net/02-silver" --classificationName "MICROSOFT.FINANCIAL.US.ABA_ROUTING_NUMBER"
 ```

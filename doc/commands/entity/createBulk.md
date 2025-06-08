@@ -1,4 +1,4 @@
-# pv entity createBulk
+# pvw entity createBulk
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > createBulk
 
 ## Description
@@ -6,7 +6,7 @@ Create or update entities in Atlas in bulk. Existing entity is matched using its
 
 ## Syntax
 ```
-pv entity createBulk --payloadFile=<val>
+pvw entity createBulk --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -25,7 +25,7 @@ POST https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/bulk
 ## Examples
 Create or update entities in bulk.
 ```powershell
-pv entity createBulk --payloadFile "/path/to/file.json"
+pvw entity createBulk --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

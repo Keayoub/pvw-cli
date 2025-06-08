@@ -1,4 +1,4 @@
-# pv scan readClassificationRule
+# pvw scan readClassificationRule
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readClassificationRule
 
 ## Description
@@ -6,7 +6,7 @@ Get a classification rule
 
 ## Syntax
 ```
-pv scan readClassificationRule --classificationRuleName=<val>
+pvw scan readClassificationRule --classificationRuleName=<val>
 ```
 
 ## Required Arguments
@@ -25,7 +25,7 @@ GET https://{accountName}.purview.azure.com/scan/classificationrules/{classifica
 ## Examples
 Get a classification rule by name.
 ```powershell
-pv scan readClassificationRule --classificationRuleName "twitter_handle"
+pvw scan readClassificationRule --classificationRuleName "twitter_handle"
 ```
 <details><summary>Sample response.</summary>
 <p>

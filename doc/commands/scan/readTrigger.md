@@ -1,4 +1,4 @@
-# pv scan readTrigger
+# pvw scan readTrigger
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readTrigger
 
 ## Description
@@ -6,7 +6,7 @@ Gets trigger information
 
 ## Syntax
 ```
-pv scan readTrigger --dataSourceName=<val> --scanName=<val>
+pvw scan readTrigger --dataSourceName=<val> --scanName=<val>
 ```
 
 ## Required Arguments
@@ -28,7 +28,7 @@ GET https://{accountName}.purview.azure.com/scan/datasources/{dataSourceName}/sc
 ## Examples
 Get trigger information for a scan by data source name and scan name.
 ```powershell
-pv scan readTrigger --dataSourceName "AzureDataLakeStorage-Gbm" --scanName "Scan-5Jc"
+pvw scan readTrigger --dataSourceName "AzureDataLakeStorage-Gbm" --scanName "Scan-5Jc"
 ```
 <details><summary>Sample response.</summary>
 <p>

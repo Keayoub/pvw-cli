@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     """Application settings"""
     
     # Basic app settings
-    APP_NAME: str = "Enhanced Purview CLI API"
+    APP_NAME: str = " Purview CLI API"
     VERSION: str = "2.0.0"
     DEBUG: bool = True
     

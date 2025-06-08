@@ -1,4 +1,4 @@
-# pv scan readScanRulesets
+# pvw scan readScanRulesets
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readScanRulesets
 
 ## Description
@@ -6,7 +6,7 @@ List scan rulesets in Data catalog
 
 ## Syntax
 ```
-pv scan readScanRulesets
+pvw scan readScanRulesets
 ```
 
 ## Required Arguments
@@ -24,7 +24,7 @@ GET https://{accountName}.purview.azure.com/scan/scanrulesets
 ## Examples
 List all custom scan rulesets.
 ```powershell
-pv scan readScanRulesets
+pvw scan readScanRulesets
 ```
 <details><summary>Sample response.</summary>
 <p>

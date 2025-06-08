@@ -1,4 +1,4 @@
-# pv share listAssets
+# pvw share listAssets
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  listAssets
 
@@ -9,7 +9,7 @@ List Assets in a share.
 ## Syntax
 
 ```
-pv share listAssets --sentShareName=<val> [--skipToken=<val> --filter=<val> --orderBy=<val>]
+pvw share listAssets --sentShareName=<val> [--skipToken=<val> --filter=<val> --orderBy=<val>]
 ```
 
 ## Required Arguments
@@ -44,7 +44,7 @@ GET https://{accountName}.purview.azure.com/share/sentShares/{sentShareName}/ass
 List assets in a sent share.
 
 ```powershell
-pv share listAssets --sentShareName "NewShare"
+pvw share listAssets --sentShareName "NewShare"
 ```
 
 

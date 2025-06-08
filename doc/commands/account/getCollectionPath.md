@@ -1,4 +1,4 @@
-# pv account getCollectionPath
+# pvw account getCollectionPath
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > getCollectionPath
 
 ## Description
@@ -6,7 +6,7 @@ Gets the parent name and parent friendly name chains that represent the collecti
 
 ## Syntax
 ```
-pv account getCollectionPath --collectionName=<val>
+pvw account getCollectionPath --collectionName=<val>
 ```
 
 ## Required Arguments
@@ -25,7 +25,7 @@ GET https://{accountName}.purview.azure.com/account/collections/{collectionName}
 ## Examples
 Get the collection path (parent references) for a collection by name.
 ```powershell
-pv account getCollectionPath --collectionName "w0kfma"
+pvw account getCollectionPath --collectionName "w0kfma"
 ```
 
 <details><summary>Sample response.</summary>

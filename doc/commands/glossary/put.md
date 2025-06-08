@@ -1,4 +1,4 @@
-# pv glossary put
+# pvw glossary put
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > put
 
 ## Description
@@ -6,7 +6,7 @@ Update the given glossary.
 
 ## Syntax
 ```
-pv glossary put --glossaryGuid=<val> --payloadFile=<val>
+pvw glossary put --glossaryGuid=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -28,7 +28,7 @@ PUT https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/{gloss
 ## Examples
 Update an existing glossary.
 ```powershell
-pv glossary put --glossaryGuid "f2307f48-5834-4709-be85-02f3aea5d149" --payloadFile "/path/to/file.json"
+pvw glossary put --glossaryGuid "f2307f48-5834-4709-be85-02f3aea5d149" --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

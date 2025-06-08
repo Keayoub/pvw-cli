@@ -1,4 +1,4 @@
-# pv types createTypeDefs
+# pvw types createTypeDefs
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > createTypeDefs
 
 ## Description
@@ -6,7 +6,7 @@ Create all atlas type definitions in bulk, only new definitions will be created.
 
 ## Syntax
 ```
-pv types createTypeDefs --payloadFile=<val>
+pvw types createTypeDefs --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -25,7 +25,7 @@ POST https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/typedefs
 ## Examples
 Create type definitions in bulk.
 ```powershell
-pv types createTypeDefs --payloadFile "/path/to/file.json"
+pvw types createTypeDefs --payloadFile "/path/to/file.json"
 ```
 
 <details><summary>Example payload.</summary>

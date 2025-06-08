@@ -1,4 +1,4 @@
-# pv insight scanStatusSummary
+# pvw insight scanStatusSummary
 [Command Reference](../../../README.md#command-reference) > [insight](./main.md) > scanStatusSummary
 
 ## Description
@@ -6,7 +6,7 @@ Total number of scans by status.
 
 ## Syntax
 ```
-pv insight scanStatusSummary [--numberOfDays=<val>]
+pvw insight scanStatusSummary [--numberOfDays=<val>]
 ```
 
 ## Required Arguments
@@ -24,7 +24,7 @@ GET https://{accountName}.purview.azure.com/mapanddiscover/reports/scanstatus2/s
 ## Examples
 Get the total number of scans by status.
 ```powershell
-pv insight scanStatusSummary
+pvw insight scanStatusSummary
 ```
 <details><summary>Sample response.</summary>
 <p>

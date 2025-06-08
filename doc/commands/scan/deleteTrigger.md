@@ -1,4 +1,4 @@
-# pv scan deleteTrigger
+# pvw scan deleteTrigger
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > deleteTrigger
 
 ## Description
@@ -6,7 +6,7 @@ Deletes the trigger associated with the scan
 
 ## Syntax
 ```
-pv scan deleteTrigger --dataSourceName=<val> --scanName=<val>
+pvw scan deleteTrigger --dataSourceName=<val> --scanName=<val>
 ```
 
 ## Required Arguments
@@ -28,5 +28,5 @@ DELETE https://{accountName}.purview.azure.com/scan/datasources/{dataSourceName}
 ## Examples
 Delete a scan trigger by data source name and scan name.
 ```powershell
-pv scan deleteTrigger --dataSourceName "AzureDataLakeStorage-EqK" --scanName "Scan-xTh"
+pvw scan deleteTrigger --dataSourceName "AzureDataLakeStorage-EqK" --scanName "Scan-xTh"
 ```

@@ -1,4 +1,4 @@
-# pv entity read
+# pvw entity read
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > read
 
 ## Description
@@ -6,7 +6,7 @@ Get complete definition of an entity given its GUID.
 
 ## Syntax
 ```
-pv entity read --guid=<val> [--ignoreRelationships --minExtInfo]
+pvw entity read --guid=<val> [--ignoreRelationships --minExtInfo]
 ```
 
 ## Required Arguments
@@ -29,7 +29,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/{gu
 ## Examples
 Get the complete definition of an existing entity via the entities GUID.
 ```powershell
-pv entity read --guid "c6a7811a-0699-44d0-b0be-68babe560ab2"
+pvw entity read --guid "c6a7811a-0699-44d0-b0be-68babe560ab2"
 ```
 
 <details><summary>Sample response.</summary>
@@ -220,7 +220,7 @@ pv entity read --guid "c6a7811a-0699-44d0-b0be-68babe560ab2"
 
 Get the complete definition of an existing entity via the entities GUID (ignoring relationships).
 ```powershell
-pv entity read --guid "c6a7811a-0699-44d0-b0be-68babe560ab2" --ignoreRelationships
+pvw entity read --guid "c6a7811a-0699-44d0-b0be-68babe560ab2" --ignoreRelationships
 ```
 
 <details><summary>Sample response.</summary>

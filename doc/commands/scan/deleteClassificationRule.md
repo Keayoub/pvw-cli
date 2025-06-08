@@ -1,4 +1,4 @@
-# pv scan deleteClassificationRule
+# pvw scan deleteClassificationRule
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > deleteClassificationRule
 
 ## Description
@@ -6,7 +6,7 @@ Deletes a classification rule
 
 ## Syntax
 ```
-pv scan deleteClassificationRule --classificationRuleName=<val>
+pvw scan deleteClassificationRule --classificationRuleName=<val>
 ```
 
 ## Required Arguments
@@ -25,5 +25,5 @@ DELETE https://{accountName}.purview.azure.com/scan/classificationrules/{classif
 ## Examples
 Delete a classification rule by name.
 ```powershell
-pv scan deleteClassificationRule --classificationRuleName "twitter_handle"
+pvw scan deleteClassificationRule --classificationRuleName "twitter_handle"
 ```

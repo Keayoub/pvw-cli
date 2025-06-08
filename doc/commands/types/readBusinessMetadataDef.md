@@ -1,4 +1,4 @@
-# pv types readBusinessMetadataDef
+# pvw types readBusinessMetadataDef
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > readBusinessMetadataDef
 
 ## Description
@@ -6,7 +6,7 @@ Get the business metadata definition by GUID or its name (unique).
 
 ## Syntax
 ```
-pv types readBusinessMetadataDef (--guid=<val> | --name=<val>)
+pvw types readBusinessMetadataDef (--guid=<val> | --name=<val>)
 ```
 
 ## Required Arguments
@@ -29,7 +29,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/businessm
 ## Examples
 Get business metadata definition by name.
 ```powershell
-pv types readBusinessMetadataDef --name "myBizMetadata1"
+pvw types readBusinessMetadataDef --name "myBizMetadata1"
 ```
 <details><summary>Sample response.</summary>
 <p>

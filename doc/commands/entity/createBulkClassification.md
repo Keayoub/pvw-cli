@@ -1,4 +1,4 @@
-# pv entity createBulkClassification
+# pvw entity createBulkClassification
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > createBulkClassification
 
 ## Description
@@ -6,7 +6,7 @@ Associate a classification to multiple entities in bulk.
 
 ## Syntax
 ```
-pv entity createBulkClassification --payloadFile=<val>
+pvw entity createBulkClassification --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -25,7 +25,7 @@ POST https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/bulk/cl
 ## Examples
 Associate a classification to multiple entities.
 ```powershell
-pv entity createBulkClassification --payloadFile "/path/to/file.json"
+pvw entity createBulkClassification --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>

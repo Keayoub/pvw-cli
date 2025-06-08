@@ -1,5 +1,5 @@
 """
-Enhanced Purview Client with comprehensive API coverage
+ Purview Client with comprehensive API coverage
 Supports latest Azure Purview API specifications and advanced automation features
 """
 
@@ -17,7 +17,7 @@ from azure.core.exceptions import ClientAuthenticationError
 from azure.identity import AzureAuthorityHosts
 from typing import Dict, List, Optional, Union, Any
 from . import settings
-from .. import __version__
+from purviewcli import __version__
 from .exceptions import PurviewClientError, PurviewAuthenticationError, PurviewAPIError
 from .retry_handler import RetryHandler
 from .rate_limiter import RateLimiter
@@ -25,14 +25,14 @@ from .rate_limiter import RateLimiter
 logging.getLogger("azure.identity").setLevel(logging.ERROR)
 
 class EnhancedPurviewClient:
-    """Enhanced Purview client with comprehensive API coverage and automation features"""
+    """ Purview client with comprehensive API coverage and automation features"""
     
     def __init__(self, 
                  retry_config: Optional[Dict] = None,
                  rate_limit_config: Optional[Dict] = None,
                  enable_logging: bool = True):
         """
-        Initialize the Enhanced Purview Client
+        Initialize the  Purview Client
         
         Args:
             retry_config: Configuration for retry logic
@@ -45,7 +45,7 @@ class EnhancedPurviewClient:
         self.management_endpoint = None
         self.purview_endpoint = None
         
-        # Enhanced features
+        #  features
         self.retry_handler = RetryHandler(retry_config or {})
         self.rate_limiter = RateLimiter(rate_limit_config or {})
         self.session = requests.Session()
@@ -142,7 +142,7 @@ Alternatively, provide --purviewName=<val> argument.
 """)
 
     def set_token(self, app: str):
-        """Enhanced token management with better error handling"""
+        """ token management with better error handling"""
         credential_config = {
             'china': {
                 'authority': "https://login.partner.microsoftonline.cn",
@@ -234,7 +234,7 @@ Alternatively, provide --purviewName=<val> argument.
                     files: Optional[Dict] = None,
                     headers: Optional[Dict] = None,
                     timeout: Optional[int] = None) -> Dict:
-        """Enhanced HTTP request with retry logic and rate limiting"""
+        """ HTTP request with retry logic and rate limiting"""
         
         def _make_request():
             uri = f"{self.get_base_url(app)}{endpoint}"

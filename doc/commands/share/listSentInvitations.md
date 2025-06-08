@@ -1,4 +1,4 @@
-# pv share listSentInvitations
+# pvw share listSentInvitations
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  listSentInvitations
 
@@ -9,7 +9,7 @@ List all Invitations in a share.
 ## Syntax
 
 ```
-pv share listSentInvitations --sentShareName=<val> [--skipToken=<val> --filter=<val> --orderBy=<val>]
+pvw share listSentInvitations --sentShareName=<val> [--skipToken=<val> --filter=<val> --orderBy=<val>]
 ```
 
 ## Required Arguments
@@ -44,7 +44,7 @@ GET https://{accountName}.purview.azure.com/share/sentShares/{sentShareName}/sen
 List all sent invitations for a sent share.
 
 ```powershell
-pv share listSentInvitations --sentShareName "NewShare"
+pvw share listSentInvitations --sentShareName "NewShare"
 ```
 
 

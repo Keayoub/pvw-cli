@@ -1,9 +1,9 @@
 """
 usage: 
-    pv relationship create --payloadFile=<val>
-    pv relationship delete --guid=<val>
-    pv relationship put --payloadFile=<val>
-    pv relationship read --guid=<val> [--extendedInfo]
+    pvw relationship create --payloadFile=<val>
+    pvw relationship delete --guid=<val>
+    pvw relationship put --payloadFile=<val>
+    pvw relationship read --guid=<val> [--extendedInfo]
 
 options:
     --purviewName=<val>           [string]  Azure Purview account name.

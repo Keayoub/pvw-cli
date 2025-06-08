@@ -1,4 +1,4 @@
-# pv types readEnumDef
+# pvw types readEnumDef
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > readEnumDef
 
 ## Description
@@ -6,7 +6,7 @@ Get the enum definition for the given GUID or by its name (unique).
 
 ## Syntax
 ```
-pv types readEnumDef (--guid=<val> | --name=<val>)
+pvw types readEnumDef (--guid=<val> | --name=<val>)
 ```
 
 ## Required Arguments
@@ -33,7 +33,7 @@ GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/enumdef/n
 ## Examples
 Get enum definition by name.
 ```powershell
-pv types readEnumDef --name "blob_type"
+pvw types readEnumDef --name "blob_type"
 ```
 
 <details><summary>Sample response.</summary>
@@ -78,5 +78,5 @@ pv types readEnumDef --name "blob_type"
 
 Get enum definition by guid.
 ```powershell
-pv types readEnumDef --guid "171bba26-3a17-3f5c-50f2-1e313c87d473"
+pvw types readEnumDef --guid "171bba26-3a17-3f5c-50f2-1e313c87d473"
 ```

@@ -1,4 +1,4 @@
-# pv share deleteSentInvitation
+# pvw share deleteSentInvitation
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  deleteSentInvitation
 
@@ -9,7 +9,7 @@ Delete Invitation in a share.
 ## Syntax
 
 ```
-pv share deleteSentInvitation --sentShareName=<val> --invitationName=<val>
+pvw share deleteSentInvitation --sentShareName=<val> --invitationName=<val>
 ```
 
 ## Required Arguments
@@ -38,5 +38,5 @@ DELETE https://{accountName}.purview.azure.com/share/sentShares/{sentShareName}/
 Delete a sent invitation for a sent share.
 
 ```powershell
-pv share deleteSentInvitation --sentShareName "NewShare" --invitationName "7543515465d5676285972198ef4cdc1dd3a0f711"
+pvw share deleteSentInvitation --sentShareName "NewShare" --invitationName "7543515465d5676285972198ef4cdc1dd3a0f711"
 ```

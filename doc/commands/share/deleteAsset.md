@@ -1,4 +1,4 @@
-# pv share deleteAsset
+# pvw share deleteAsset
 
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) >  deleteAsset
 
@@ -9,7 +9,7 @@ Delete asset in a sentShare.
 ## Syntax
 
 ```
-pv share deleteAsset --sentShareName=<val> --assetName=<val>
+pvw share deleteAsset --sentShareName=<val> --assetName=<val>
 ```
 
 ## Required Arguments
@@ -36,5 +36,5 @@ DELETE https://{accountName}.purview.azure.com/share/sentShares/{sentShareName}/
 Delete asset from a sent share.
 
 ```powershell
-pv share deleteAsset --sentShareName "MyNewSentShare" --assetName "MyAssetName"
+pvw share deleteAsset --sentShareName "MyNewSentShare" --assetName "MyAssetName"
 ```

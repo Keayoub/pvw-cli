@@ -1,4 +1,4 @@
-# pv management removeDefaultAccount
+# pvw management removeDefaultAccount
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > removeDefaultAccount
 
 ## Description
@@ -6,7 +6,7 @@ Removes the default account from the scope.
 
 ## Syntax
 ```
-pv management removeDefaultAccount --scopeTenantId=<val> --scopeType=<val> --scope=<val>
+pvw management removeDefaultAccount --scopeTenantId=<val> --scopeType=<val> --scope=<val>
 ```
 
 ## Required Arguments
@@ -30,5 +30,5 @@ POST https://management.azure.com/providers/Microsoft.Purview/removeDefaultAccou
 
 ## Examples
 ```powershell
-pv management removeDefaultAccount --scopeTenantId "72f988bf-86f1-41af-91ab-2d7cd011db47" --scopeType "Subscription" --scope "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" 
+pvw management removeDefaultAccount --scopeTenantId "72f988bf-86f1-41af-91ab-2d7cd011db47" --scopeType "Subscription" --scope "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" 
 ```

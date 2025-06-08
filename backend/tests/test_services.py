@@ -1,4 +1,4 @@
-# Enhanced Purview CLI v2.0 - Service Unit Tests
+#  Purview CLI v2.0 - Service Unit Tests
 # Unit tests for service layer components
 
 import pytest

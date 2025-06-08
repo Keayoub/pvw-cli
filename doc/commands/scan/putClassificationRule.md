@@ -1,4 +1,4 @@
-# pv scan putClassificationRule
+# pvw scan putClassificationRule
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > putClassificationRule
 
 ## Description
@@ -6,7 +6,7 @@ Creates or Updates a classification rule
 
 ## Syntax
 ```
-pv scan putClassificationRule --classificationRuleName=<val> --payloadFile=<val>
+pvw scan putClassificationRule --classificationRuleName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
@@ -28,7 +28,7 @@ PUT https://{accountName}.purview.azure.com/scan/classificationrules/{classifica
 ## Examples
 Create or update a classification rule.
 ```powershell
-pv scan putClassificationRule --classificationRuleName "my_rule" --payloadFile "/path/to/file.json"
+pvw scan putClassificationRule --classificationRuleName "my_rule" --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>
