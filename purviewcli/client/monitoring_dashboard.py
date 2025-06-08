@@ -30,8 +30,7 @@ from rich.text import Text
 from rich.align import Align
 import threading
 
-from .api_client import PurviewClient
-from .config import PurviewConfig
+from .api_client import PurviewClient, PurviewConfig
 
 console = Console()
 

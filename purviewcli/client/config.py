@@ -9,7 +9,7 @@ import yaml
 from pathlib import Path
 from typing import Dict, Any, Optional
 from dataclasses import dataclass, asdict
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 import logging
 
 logger = logging.getLogger(__name__)

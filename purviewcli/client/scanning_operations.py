@@ -22,7 +22,6 @@ except ImportError:
     print("Warning: pandas not available. Report generation features will be limited.")
 
 from .api_client import PurviewClient
-from .config import PurviewConfig
 
 console = Console()
 

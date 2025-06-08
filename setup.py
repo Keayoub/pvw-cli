@@ -58,7 +58,7 @@ setup(
     keywords='azure purview cli data catalog governance automation pvw',
     entry_points={
         'console_scripts': [
-            'pvw = purviewcli.cli.cli:main'           
+            'pvw = purviewcli.cli.cli:main'
         ],
     },
     package_data={

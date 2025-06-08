@@ -29,8 +29,7 @@ except ImportError as e:
     GRAPH_AVAILABLE = False
     print(f"Warning: Graph analysis dependencies not available ({e}). Advanced lineage features will be limited.")
 
-from .api_client import PurviewClient
-from .config import PurviewConfig
+from .api_client import PurviewClient, PurviewConfig
 
 console = Console()
 

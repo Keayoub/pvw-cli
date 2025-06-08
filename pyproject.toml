@@ -79,8 +79,8 @@ Repository = "https://github.com/your-org/pvw-cli.git"
 Changelog = "https://github.com/your-org/pvw-cli/blob/main/CHANGELOG.md"
 
 [project.scripts]
-pvw = "purviewcli.cli.main_cli:pvw"
-pvw-cli = "purviewcli.cli.main_cli:pvw"
+pvw = "purviewcli.cli.cli:main"
+pvw-cli = "purviewcli.cli.cli:main"
 
 [tool.setuptools]
 packages = ["purviewcli"]
