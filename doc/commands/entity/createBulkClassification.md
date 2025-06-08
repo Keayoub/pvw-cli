@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > createBulkClassification
 
 ## Description
-Associate a classification to multiple entities in bulk.
+Createbulkclassification operation for entity
 
 ## Syntax
 ```
@@ -10,37 +10,35 @@ pvw entity createBulkClassification --payloadFile=<val>
 ```
 
 ## Required Arguments
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--bmFile`: File path to a valid business metadata template CSV file. (string)
+- `--bmName`: BusinessMetadata name. (string)
+- `--classificationName`: The name of the classification. (string)
+- `--collection`: The collection unique name. (string)
+- `--guid`: The globally unique identifier of the entity. (string)
+- `--name`: The name of the attribute. (string)
+- `--qualifiedName`: The qualified name of the entity. (string)
+- `--typeName`: The name of the type. (string)
 
 ## API Mapping
-Catalog Data Plane > Entity > [Add Classification](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/entity/add-classification)
+ >  > []()
 ```
-POST https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/bulk/classification
+GET /api/entity/createBulkClassification
 ```
 
 ## Examples
-Associate a classification to multiple entities.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw entity createBulkClassification --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "classification": {
-        "typeName": "MICROSOFT.FINANCIAL.US.ABA_ROUTING_NUMBER"
-    },
-    "entityGuids": [
-        "c6a7811a-0699-44d0-b0be-68babe560ab2",
-        "6374e9e8-4719-4747-b2d2-054548023ae2",
-        "dcd41879-dda2-4b3c-8c97-9b76d39799b1"
-    ]
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

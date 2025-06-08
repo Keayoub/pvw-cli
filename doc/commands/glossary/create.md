@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > create
 
 ## Description
-Create a glossary.
+Create operation for glossary
 
 ## Syntax
 ```
@@ -10,31 +10,35 @@ pvw glossary create --payloadFile=<val>
 ```
 
 ## Required Arguments
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--categoryGuid`: The globally unique identifier of the category. (string)
+- `--glossaryGuid`: The globally unique identifier for glossary. (string)
+- `--glossaryName`: The name of the glossary. (string)
+- `--limit`: The page size - by default there is no paging [default: 1000]. (integer)
+- `--offset`: Offset for pagination purpose [default: 0]. (integer)
+- `--operationGuid`: The globally unique identifier for async operation/job. (string)
+- `--sort`: ASC or DESC [default: ASC]. (string)
+- `--termGuid`: The globally unique identifier for glossary term. (string)
 
 ## API Mapping
-Catalog Data Plane > Glossary > [Create Glossary](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/glossary/create-glossary)
+ >  > []()
 ```
-POST https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary
+GET /api/glossary/create
 ```
 
 ## Examples
-Create a glossary.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw glossary create --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "name": "MyGlossary",
-    "qualifiedName": "MyGlossary"
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

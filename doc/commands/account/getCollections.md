@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > getCollections
 
 ## Description
-List the collections in the account.
+Getcollections operation for account
 
 ## Syntax
 ```
@@ -10,97 +10,32 @@ pvw account getCollections
 ```
 
 ## Required Arguments
-*None*
+No required arguments.
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--collectionName`: The technical name of the collection. (string)
+- `--keyType`: The access key type. (string)
+- `--friendlyName`: The friendly name for the azure resource. (string)
+- `--parentCollection`: Gets or sets the parent collection reference. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
-Account Data Plane > Collections > [List Collections](https://docs.microsoft.com/en-us/rest/api/purview/accountdataplane/collections/list-collections)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/account/collections
+GET /api/account/getCollections
 ```
 
 ## Examples
-List collections in the account.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw account getCollections
+EXAMPLE_COMMAND
 ```
-
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "count": 4,
-    "value": [
-        {
-            "collectionProvisioningState": "Succeeded",
-            "description": "The root collection.",
-            "friendlyName": "My Friendly Collection Name",
-            "name": "esg-26fa7f24-pvw",
-            "systemData": {
-                "createdAt": "2022-02-23T09:46:46.2381767Z",
-                "createdBy": "095354ff-cae8-44ff-8120-22ec5a941b40",
-                "createdByType": "User",
-                "lastModifiedAt": "2022-02-23T15:45:37.0561952Z",
-                "lastModifiedBy": "095354ff-cae8-44ff-8120-22ec5a941b40",
-                "lastModifiedByType": "User"
-            }
-        },
-        {
-            "collectionProvisioningState": "Succeeded",
-            "friendlyName": "Environment",
-            "name": "g7qe97",
-            "parentCollection": {
-                "referenceName": "esg-26fa7f24-pvw",
-                "type": "CollectionReference"
-            },
-            "systemData": {
-                "createdAt": "2022-02-27T12:52:28.8826657Z",
-                "createdBy": "095354ff-cae8-44ff-8120-22ec5a941b40",
-                "createdByType": "User",
-                "lastModifiedAt": "2022-02-27T12:52:28.8826659Z",
-                "lastModifiedBy": "095354ff-cae8-44ff-8120-22ec5a941b40",
-                "lastModifiedByType": "User"
-            }
-        },
-        {
-            "collectionProvisioningState": "Succeeded",
-            "friendlyName": "Social",
-            "name": "6b93rz",
-            "parentCollection": {
-                "referenceName": "esg-26fa7f24-pvw",
-                "type": "CollectionReference"
-            },
-            "systemData": {
-                "createdAt": "2022-02-27T12:52:36.1509462Z",
-                "createdBy": "095354ff-cae8-44ff-8120-22ec5a941b40",
-                "createdByType": "User",
-                "lastModifiedAt": "2022-02-27T12:52:36.1509463Z",
-                "lastModifiedBy": "095354ff-cae8-44ff-8120-22ec5a941b40",
-                "lastModifiedByType": "User"
-            }
-        },
-        {
-            "collectionProvisioningState": "Succeeded",
-            "friendlyName": "Governance",
-            "name": "bfgnyg",
-            "parentCollection": {
-                "referenceName": "esg-26fa7f24-pvw",
-                "type": "CollectionReference"
-            },
-            "systemData": {
-                "createdAt": "2022-02-27T12:52:43.3993723Z",
-                "createdBy": "095354ff-cae8-44ff-8120-22ec5a941b40",
-                "createdByType": "User",
-                "lastModifiedAt": "2022-02-27T12:52:43.3993724Z",
-                "lastModifiedBy": "095354ff-cae8-44ff-8120-22ec5a941b40",
-                "lastModifiedByType": "User"
-            }
-        }
-    ]
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

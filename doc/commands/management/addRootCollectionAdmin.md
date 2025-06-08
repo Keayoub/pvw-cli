@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > addRootCollectionAdmin
 
 ## Description
-Add the administrator for root collection associated with this account.
+Addrootcollectionadmin operation for management
 
 ## Syntax
 ```
@@ -10,29 +10,34 @@ pvw management addRootCollectionAdmin --subscriptionId=<val> --resourceGroupName
 ```
 
 ## Required Arguments
-`--subscriptionId` (string)  
-The subscription identifier.
-
-`--resourceGroupName` (string)  
-The resource group name.
-
-`--accountName` (string)  
-The name of the account.
-
-`--objectId` (string)  
-The object identifier of the admin.
+- `--subscriptionId`: subscriptionId parameter
+- `--resourceGroupName`: resourceGroupName parameter
+- `--accountName`: accountName parameter
+- `--objectId`: objectId parameter
 
 ## Optional Arguments
-*None*
+- `--scopeTenantId`: The scope tenant in which the default account is set. (string)
+- `--scopeType`: The scope where the default account is set (Tenant or Subscription). (string)
+- `--scope`: The scope object ID (e.g. sub ID or tenant ID). (string)
+- `--groupId`: The group identifier. (string)
+- `--privateEndpointConnectionName`: The name of the private endpoint connection. (string)
 
 ## API Mapping
-Accounts > [Add Root Collection Admin](https://docs.microsoft.com/en-us/rest/api/purview/accounts/add-root-collection-admin)
+ >  > []()
 ```
-POST https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Purview/accounts/{accountName}/addRootCollectionAdmin
+GET /api/management/addRootCollectionAdmin
 ```
 
 ## Examples
-Assign the collection administrator role to a user via their Azure AD object identifier at the root collection of the Azure Purview account.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw management addRootCollectionAdmin --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "myrg" --accountName "my-purview-account" --objectId "ac2b4099-7d5a-4d71-b9e4-65325a82c487"
+EXAMPLE_COMMAND
 ```
+<details><summary>Example payload.</summary>
+<p>
+
+```json
+PASTE_JSON_HERE
+```
+</p>
+</details>

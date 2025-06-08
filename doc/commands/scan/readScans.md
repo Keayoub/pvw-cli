@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readScans
 
 ## Description
-List scans in data source.
+Readscans operation for scan
 
 ## Syntax
 ```
@@ -10,64 +10,38 @@ pvw scan readScans --dataSourceName=<val>
 ```
 
 ## Required Arguments
-`--dataSourceName` (string)  
-The data source name.
+- `--dataSourceName`: dataSourceName parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--action`: Allowed values: Delete or Keep. (string)
+- `--classificationRuleName`: Name of the classification rule. (string)
+- `--classificationRuleVersion`: Version of the classification rule. (integer)
+- `--scanName`: Name of the scan. (string)
+- `--scanRulesetName`: Name of the scan ruleset. (string)
+- `--keyVaultName`: Name of the key vault. (string)
+- `--runId`: The unique identifier of the run. (string)
+- `--dataSourceType`: Type of data source. (string)
+- `--scanLevel`: Allowed values: Full or Incremental [default: Full]. (string)
+- `--collectionName`: The unique collection name. (string)
+- `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
-Scanning Data Plane > Scans > [List By Data Source](https://docs.microsoft.com/en-us/rest/api/purview/scanningdataplane/scans/list-by-data-source)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/scan/datasources/{dataSourceName}/scans
+GET /api/scan/readScans
 ```
 
 ## Examples
-List scans in a data source.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw scan readScans --dataSourceName "AzureDataLakeStorage-Gbm"
+EXAMPLE_COMMAND
 ```
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "count": 2,
-    "value": [
-        {
-            "id": "datasources/AzureDataLakeStorage-Gbm/scans/Scan-Xei",
-            "kind": "AdlsGen2Msi",
-            "name": "Scan-Xei",
-            "properties": {
-                "collection": {
-                    "lastModifiedAt": "2022-02-23T15:45:56.3612911Z",
-                    "referenceName": "esg-26fa7f24-pvw",
-                    "type": "CollectionReference"
-                },
-                "createdAt": "2022-02-23T15:45:56.3612911Z",
-                "lastModifiedAt": "2022-02-23T15:45:56.3612911Z",
-                "scanRulesetName": "AdlsGen2",
-                "scanRulesetType": "System"
-            }
-        },
-        {
-            "id": "datasources/AzureDataLakeStorage-Gbm/scans/Scan-5Jc",
-            "kind": "AdlsGen2Msi",
-            "name": "Scan-5Jc",
-            "properties": {
-                "collection": {
-                    "lastModifiedAt": "2022-02-27T20:26:51.1585438Z",
-                    "referenceName": "esg-26fa7f24-pvw",
-                    "type": "CollectionReference"
-                },
-                "createdAt": "2022-02-27T20:26:51.1585438Z",
-                "lastModifiedAt": "2022-02-27T20:29:51.4488154Z",
-                "scanRulesetName": "AdlsGen2",
-                "scanRulesetType": "System"
-            }
-        }
-    ]
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [relationship](./main.md) > create
 
 ## Description
-Create a new relationship between entities.
+Create operation for relationship
 
 ## Syntax
 ```
@@ -10,42 +10,28 @@ pvw relationship create --payloadFile=<val>
 ```
 
 ## Required Arguments
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--guid`: The globally unique identifier of the relationship. (string)
 
 ## API Mapping
-Catalog Data Plane > Relationship > [Create](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/relationship/create)
+ >  > []()
 ```
-POST https://{accountName}.purview.azure.com/catalog/api/atlas/v2/relationship
+GET /api/relationship/create
 ```
 
 ## Examples
-Create a new relationship.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw relationship create --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "end1": {
-        "typeName": "azure_sql_schema",
-        "uniqueAttributes": {
-            "qualifiedName": "mssql://pvdemofngxi-sqlsvr.database.windows.net/pvdemofngxi-sqldb/SalesLT"
-        }
-    },
-    "end2": {
-        "typeName": "azure_sql_table",
-        "uniqueAttributes": {
-            "qualifiedName": "mssql://pvdemofngxi-sqlsvr.database.windows.net/pvdemofngxi-sqldb/SalesLT/Customer"
-        }
-    },
-    "typeName": "azure_sql_schema_tables"
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

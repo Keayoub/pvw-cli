@@ -1,62 +1,45 @@
 # pvw share createReceivedShare
-
-[Command Reference](../../../README.md#command-reference) > [share](./main.md) >  createReceivedShare
+[Command Reference](../../../README.md#command-reference) > [share](./main.md) > createReceivedShare
 
 ## Description
-
-Create a received share in the given account.
+Createreceivedshare operation for share
 
 ## Syntax
-
 ```
 pvw share createReceivedShare --receivedShareName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
-
-`--receivedShareName` (string)
-
-The name of the received share.
-
-`--payloadFile` (string)
-
-File path to a valid JSON document.
+- `--receivedShareName`: receivedShareName parameter
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-
-*None*
+- `--purviewName`: The name of the Microsoft Purview account. (string)
+- `--sentShareName`: The name of the sent share. (string)
+- `--acceptedSentShareName`: The name of the accepted sent share. (string)
+- `--assetMappingName`: The name of the asset mapping. (string)
+- `--assetName`: The name of the asset. (string)
+- `--invitationName`: The name of the invitation. (string)
+- `--skipToken`: The continuation token to list the next page. (string)
+- `--filter`: Filters the results using OData syntax. (string)
+- `--orderBy`: Sorts the results using OData syntax. (string)
 
 ## API Mapping
-
-Share Data Plane > Received Shares > [Create](https://docs.microsoft.com/en-us/rest/api/purview/sharedataplane/received-shares/create)
+ >  > []()
 ```
-PUT https://{accountName}.purview.azure.com/share/receivedShares/{receivedShareName}
+GET /api/share/createReceivedShare
 ```
 
 ## Examples
-
-Accept a sent share by creating a received share.
-
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw share createReceivedShare --receivedShareName "MyNewReceivedShare" --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
-
-
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "properties": {
-        "sentShareLocation": "northeurope",
-        "invitationId": "71d43cbe-5e44-40a5-b747-4140752fce62",
-        "collection": {
-            "referenceName": "pvdemo52dg4-pvw",
-            "type": "CollectionReference"
-        }
-    },
-    "shareKind": "InPlace"
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

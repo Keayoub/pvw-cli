@@ -1,65 +1,45 @@
 # pvw share getSentShare
-
-[Command Reference](../../../README.md#command-reference) > [share](./main.md) >  getSentShare
+[Command Reference](../../../README.md#command-reference) > [share](./main.md) > getSentShare
 
 ## Description
-
-Get a sent share in the given Purview account.
+Getsentshare operation for share
 
 ## Syntax
-
 ```
 pvw share getSentShare --sentShareName=<val>
 ```
 
 ## Required Arguments
-
-`--sentShareName` (string)
-
-The name of the sent share.
+- `--sentShareName`: sentShareName parameter
 
 ## Optional Arguments
-
-*None*
+- `--purviewName`: The name of the Microsoft Purview account. (string)
+- `--receivedShareName`: The name of the received share. (string)
+- `--acceptedSentShareName`: The name of the accepted sent share. (string)
+- `--assetMappingName`: The name of the asset mapping. (string)
+- `--assetName`: The name of the asset. (string)
+- `--invitationName`: The name of the invitation. (string)
+- `--skipToken`: The continuation token to list the next page. (string)
+- `--filter`: Filters the results using OData syntax. (string)
+- `--orderBy`: Sorts the results using OData syntax. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
-
-Share Data Plane > Sent Shares > [Get](https://docs.microsoft.com/en-us/rest/api/purview/sharedataplane/sent-shares/get)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/share/sentShares/{sentShareName}
+GET /api/share/getSentShare
 ```
 
 ## Examples
-
-Get a sent share.
-
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw share getSentShare --sentShareName "NewShare"
+EXAMPLE_COMMAND
 ```
-
-
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-   "id":"/sentShares/NewShare",
-   "name":"NewShare",
-   "properties":{
-      "collection":{
-         "referenceName":"qrzdyx",
-         "type":"CollectionReference"
-      },
-      "createdAt":"2022-09-01T16:48:25.0489591Z",
-      "description":"This is a description.",
-      "provisioningState":"Succeeded",
-      "senderEmail":"tarifat@microsoft.com",
-      "senderName":"Taygan Rifat",
-      "senderTenantName":"Microsoft"
-   },
-   "shareKind":"InPlace",
-   "type":"sentShares"
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > getAccessKeys
 
 ## Description
-List the authorization keys associated with this account.
+Getaccesskeys operation for account
 
 ## Syntax
 ```
@@ -10,31 +10,32 @@ pvw account getAccessKeys
 ```
 
 ## Required Arguments
-*None*
+No required arguments.
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--collectionName`: The technical name of the collection. (string)
+- `--keyType`: The access key type. (string)
+- `--friendlyName`: The friendly name for the azure resource. (string)
+- `--parentCollection`: Gets or sets the parent collection reference. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
-Account Data Plane > Accounts > [Get Access Keys](https://docs.microsoft.com/en-us/rest/api/purview/accountdataplane/accounts/get-access-keys)
+ >  > []()
 ```
-POST https://{accountName}.purview.azure.com/account/listkeys
+GET /api/account/getAccessKeys
 ```
 
 ## Examples
-Get access keys (e.g. Atlas Kafka endpoint connection strings).
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw account getAccessKeys
+EXAMPLE_COMMAND
 ```
-
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "atlasKafkaPrimaryEndpoint": "Endpoint=sb://atlas-YOUR_ENDPOINT.servicebus.windows.net/;SharedAccessKeyName=AlternateSharedAccessKey;SharedAccessKey=YOUR_KEY",
-    "atlasKafkaSecondaryEndpoint": "Endpoint=sb://atlas-YOUR_ENDPOINT.servicebus.windows.net/;SharedAccessKeyName=AlternateSharedAccessKey;SharedAccessKey=YOUR_KEY"
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

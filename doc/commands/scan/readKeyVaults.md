@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readKeyVaults
 
 ## Description
-List Azure Key Vault connections.
+Readkeyvaults operation for scan
 
 ## Syntax
 ```
@@ -10,47 +10,39 @@ pvw scan readKeyVaults
 ```
 
 ## Required Arguments
-*None*
+No required arguments.
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--action`: Allowed values: Delete or Keep. (string)
+- `--classificationRuleName`: Name of the classification rule. (string)
+- `--classificationRuleVersion`: Version of the classification rule. (integer)
+- `--dataSourceName`: Name of the data source. (string)
+- `--scanName`: Name of the scan. (string)
+- `--scanRulesetName`: Name of the scan ruleset. (string)
+- `--keyVaultName`: Name of the key vault. (string)
+- `--runId`: The unique identifier of the run. (string)
+- `--dataSourceType`: Type of data source. (string)
+- `--scanLevel`: Allowed values: Full or Incremental [default: Full]. (string)
+- `--collectionName`: The unique collection name. (string)
+- `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
-Scanning Data Plane > Key Vault Connections > [List All](https://docs.microsoft.com/en-us/rest/api/purview/scanningdataplane/key-vault-connections/list-all)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/scan/azureKeyVaults
+GET /api/scan/readKeyVaults
 ```
 
 ## Examples
-List Azure Key Vault connections.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw scan readKeyVaults
+EXAMPLE_COMMAND
 ```
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "count": 2,
-    "value": [
-        {
-            "id": "/subscriptions/2c141777-2036-4ba0-a7f4-bbca73a181bf/resourceGroups/scanning-prod-westeurope/providers/Microsoft.Purview/accounts/purview-c66c7ceb-1944-4393-ae27-20497005f353/linkedservices/my_key_vault",
-            "name": "my_key_vault",
-            "properties": {
-                "baseUrl": "https://pvdemofngxi-keyvault.vault.azure.net/",
-                "description": ""
-            }
-        },
-        {
-            "id": "/subscriptions/2c141777-2036-4ba0-a7f4-bbca73a181bf/resourceGroups/scanning-prod-westeurope/providers/Microsoft.Purview/accounts/purview-c66c7ceb-1944-4393-ae27-20497005f353/linkedservices/My Key Vault",
-            "name": "My Key Vault",
-            "properties": {
-                "baseUrl": "https://mykv-keyvault.vault.azure.net/",
-                "description": ""
-            }
-        }
-    ]
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

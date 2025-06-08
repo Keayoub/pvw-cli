@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > readTermsImport
 
 ## Description
-Get the status of an import CSV operation.
+Readtermsimport operation for glossary
 
 ## Syntax
 ```
@@ -10,42 +10,35 @@ pvw glossary readTermsImport --operationGuid=<val>
 ```
 
 ## Required Arguments
-`--operationGuid` (string)  
-The globally unique identifier for async operation/job.
+- `--operationGuid`: operationGuid parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--categoryGuid`: The globally unique identifier of the category. (string)
+- `--glossaryGuid`: The globally unique identifier for glossary. (string)
+- `--glossaryName`: The name of the glossary. (string)
+- `--limit`: The page size - by default there is no paging [default: 1000]. (integer)
+- `--offset`: Offset for pagination purpose [default: 0]. (integer)
+- `--payloadFile`: File path to a valid JSON document. (string)
+- `--sort`: ASC or DESC [default: ASC]. (string)
+- `--termGuid`: The globally unique identifier for glossary term. (string)
 
 ## API Mapping
-Catalog Data Plane > Glossary > [Get Import Csv Operation Status](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/glossary/get-import-csv-operation-status)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/catalog/api/glossary/terms/import/{operationGuid}
+GET /api/glossary/readTermsImport
 ```
 
 ## Examples
-Get the status of an import CSV operation.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw glossary readTermsImport --operationGuid "54c3e5d0-90b3-4249-851c-0e3c4dba33c1"
+EXAMPLE_COMMAND
 ```
-
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "createTime": "2022-02-06T22:19:48.949+0000",
-    "error": {
-        "errorCode": 0,
-        "errorMessage": ""
-    },
-    "id": "54c3e5d0-90b3-4249-851c-0e3c4dba33c1",
-    "lastUpdateTime": "2022-02-06T22:19:50.824+0000",
-    "properties": {
-        "importedTerms": "51",
-        "totalTermsDetected": "51"
-    },
-    "status": "SUCCEED"
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

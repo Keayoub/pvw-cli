@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > readCategoryRelated
 
 ## Description
-Get all related categories (parent and children).
+Readcategoryrelated operation for glossary
 
 ## Syntax
 ```
@@ -10,19 +10,35 @@ pvw glossary readCategoryRelated --categoryGuid=<val>
 ```
 
 ## Required Arguments
-`--categoryGuid` (string)  
-The globally unique identifier of the category.
+- `--categoryGuid`: categoryGuid parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--glossaryGuid`: The globally unique identifier for glossary. (string)
+- `--glossaryName`: The name of the glossary. (string)
+- `--limit`: The page size - by default there is no paging [default: 1000]. (integer)
+- `--offset`: Offset for pagination purpose [default: 0]. (integer)
+- `--operationGuid`: The globally unique identifier for async operation/job. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
+- `--sort`: ASC or DESC [default: ASC]. (string)
+- `--termGuid`: The globally unique identifier for glossary term. (string)
 
 ## API Mapping
-Catalog Data Plane > Glossary > [List Related Categories](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/glossary/list-related-categories)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/category/{categoryGuid}/related
+GET /api/glossary/readCategoryRelated
 ```
 
 ## Examples
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw glossary readCategoryRelated --categoryGuid "c856ecef-21e6-4e92-8607-9493d8432e78"
+EXAMPLE_COMMAND
 ```
+<details><summary>Example payload.</summary>
+<p>
+
+```json
+PASTE_JSON_HERE
+```
+</p>
+</details>

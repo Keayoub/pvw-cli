@@ -1,83 +1,45 @@
 # pvw share listSentShares
-
-[Command Reference](../../../README.md#command-reference) > [share](./main.md) >  listSentShares
+[Command Reference](../../../README.md#command-reference) > [share](./main.md) > listSentShares
 
 ## Description
-
-Get list of sent shares in the given Purview account.
+Listsentshares operation for share
 
 ## Syntax
-
 ```
 pvw share listSentShares [--skipToken=<val> --filter=<val> --orderBy=<val>]
 ```
 
 ## Required Arguments
-
-`--sentShareName` (string)
-
-The name of the sent share.
-
-`--invitationName` (string)
-
-Name of the invitation.
+- `--skipToken`: skipToken parameter
+- `--filter`: filter parameter
+- `--orderBy`: orderBy parameter
 
 ## Optional Arguments
-
-`--skipToken` (string)
-
-The continuation token to list the next page.
-
-`--filter` (string)
-
-Filters the results using OData syntax.
-
-`--orderBy` (string)
-
-Sorts the results using OData syntax.
+- `--purviewName`: The name of the Microsoft Purview account. (string)
+- `--receivedShareName`: The name of the received share. (string)
+- `--sentShareName`: The name of the sent share. (string)
+- `--acceptedSentShareName`: The name of the accepted sent share. (string)
+- `--assetMappingName`: The name of the asset mapping. (string)
+- `--assetName`: The name of the asset. (string)
+- `--invitationName`: The name of the invitation. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
-
-Share Data Plane > Sent Shares > [List](https://docs.microsoft.com/en-us/rest/api/purview/sharedataplane/sent-shares/list)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/share/sentShares
+GET /api/share/listSentShares
 ```
 
 ## Examples
-
-Get a list of sent shares.
-
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw share listSentShares
+EXAMPLE_COMMAND
 ```
-
-
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-   "value":[
-      {
-         "id":"/sentShares/NewShare",
-         "name":"NewShare",
-         "properties":{
-            "collection":{
-               "referenceName":"qrzdyx",
-               "type":"CollectionReference"
-            },
-            "createdAt":"2022-09-01T16:48:25.0489591Z",
-            "description":"This is a description.",
-            "provisioningState":"Succeeded",
-            "senderEmail":"tarifat@microsoft.com",
-            "senderName":"Taygan Rifat",
-            "senderTenantName":"Microsoft"
-         },
-         "shareKind":"InPlace",
-         "type":"sentShares"
-      }
-   ]
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > readStructDef
 
 ## Description
-Get the struct definition for the given GUID or by its name (unique).
+Readstructdef operation for types
 
 ## Syntax
 ```
@@ -10,79 +10,30 @@ pvw types readStructDef (--guid=<val> | --name=<val>)
 ```
 
 ## Required Arguments
-`--guid` (string)  
-The globally unique identifier of the struct.
-
-`--name` (string)  
-The name of the struct.
+- `--guid`: guid parameter
+- `--name`: name parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
+- `--type`: Typedef name as search filter (classification | entity | enum | relationship | struct). (string)
 
 ## API Mapping
-Catalog Data Plane > Types > [Get Struct Def By Guid](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/types/get-struct-def-by-guid)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/structdef/guid/{guid}
-```
-
-Catalog Data Plane > Types > [Get Struct Def By Name](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/types/get-struct-def-by-name)
-```
-GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/structdef/name/{name}
+GET /api/types/readStructDef
 ```
 
 ## Examples
-Get struct definition by name.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw types readStructDef --name "cosmosdb_offer"
+EXAMPLE_COMMAND
 ```
-
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "attributeDefs": [
-        {
-            "cardinality": "SINGLE",
-            "includeInNotification": false,
-            "isIndexable": true,
-            "isOptional": false,
-            "isUnique": false,
-            "name": "content",
-            "typeName": "string",
-            "valuesMaxCount": 1,
-            "valuesMinCount": 1
-        },
-        {
-            "cardinality": "SINGLE",
-            "includeInNotification": false,
-            "isIndexable": true,
-            "isOptional": false,
-            "isUnique": false,
-            "name": "offerLink",
-            "typeName": "string",
-            "valuesMaxCount": 1,
-            "valuesMinCount": 1
-        }
-    ],
-    "category": "STRUCT",
-    "createTime": 1615787946118,
-    "createdBy": "admin",
-    "description": "cosmosdb_offer",
-    "guid": "d96ff541-abd9-a199-58b6-2deb81e4ca5f",
-    "lastModifiedTS": "1",
-    "name": "cosmosdb_offer",
-    "serviceType": "Azure Cosmos DB",
-    "typeVersion": "1.0",
-    "updateTime": 1615787946118,
-    "updatedBy": "admin",
-    "version": 1
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>
-
-Get struct definition by guid.
-```powershell
-pvw types readStructDef --guid "d96ff541-abd9-a199-58b6-2deb81e4ca5f"
-```

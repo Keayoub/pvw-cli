@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > create
 
 ## Description
-Create or update an entity in Atlas. Existing entity is matched using its unique guid if supplied or by its unique attributes eg: qualifiedName.
+Create operation for entity
 
 ## Syntax
 ```
@@ -10,67 +10,35 @@ pvw entity create --payloadFile=<val>
 ```
 
 ## Required Arguments
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--bmFile`: File path to a valid business metadata template CSV file. (string)
+- `--bmName`: BusinessMetadata name. (string)
+- `--classificationName`: The name of the classification. (string)
+- `--collection`: The collection unique name. (string)
+- `--guid`: The globally unique identifier of the entity. (string)
+- `--name`: The name of the attribute. (string)
+- `--qualifiedName`: The qualified name of the entity. (string)
+- `--typeName`: The name of the type. (string)
 
 ## API Mapping
-Catalog Data Plane > Entity > [Create Or Update](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/entity/create-or-update)
+ >  > []()
 ```
-POST https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity
+GET /api/entity/create
 ```
 
 ## Examples
-Create or update an entity.
-
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw entity create --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "entity": {
-        "attributes": {
-            "description": "This is a long description.",
-            "name": "myfile.csv",
-            "qualifiedName": "https://esg26fa7f24adls.dfs.core.windows.net/01-bronze/esg/myfile.csv",
-            "isFile": true
-        },
-        "collectionId": "esg-26fa7f24-pvw",
-        "typeName": "azure_datalake_gen2_path"
-    }
-}
+PASTE_JSON_HERE
 ```
 </p>
-</details><br />
-Create an entity with custom attributes.
-
-```powershell
-pvw entity create --payloadFile "/path/to/file.json"
-```
-<details><summary>Example payload.</summary>
-<p>
-
-```json
-{
-    "entity": {
-        "attributes": {
-            "description": "This is a long description.",
-            "name": "myfile.csv",
-            "qualifiedName": "https://storage_account.dfs.core.windows.net/01-bronze/folder/file.csv",
-            "isFile": true
-        },
-        "customAttributes": {
-            "custAttr1": "hello",
-            "custAttr2": "world"
-        },
-        "collectionId": "rqbhvc",
-        "typeName": "azure_datalake_gen2_path"
-    }
-}
-```
-</p>
+</details>

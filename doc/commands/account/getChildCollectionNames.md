@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > getChildCollectionNames
 
 ## Description
-Lists the child collections names in the collection.
+Getchildcollectionnames operation for account
 
 ## Syntax
 ```
@@ -10,45 +10,31 @@ pvw account getChildCollectionNames --collectionName=<val>
 ```
 
 ## Required Arguments
-`--collectionName` (string)  
-This is the unique name of the collection (not the friendly name).
+- `--collectionName`: collectionName parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--keyType`: The access key type. (string)
+- `--friendlyName`: The friendly name for the azure resource. (string)
+- `--parentCollection`: Gets or sets the parent collection reference. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
-Account Data Plane > Collections > [List Child Collection Names](https://docs.microsoft.com/en-us/rest/api/purview/accountdataplane/collections/list-child-collection-names)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/account/collections/{collectionName}/getChildCollectionNames
+GET /api/account/getChildCollectionNames
 ```
 
 ## Examples
-List the child collections beneath a target collection.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw account getChildCollectionNames --collectionName "esg-26fa7f24-pvw"
+EXAMPLE_COMMAND
 ```
-
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "count": 3,
-    "value": [
-        {
-            "friendlyName": "Environment",
-            "name": "g7qe97"
-        },
-        {
-            "friendlyName": "Social",
-            "name": "6b93rz"
-        },
-        {
-            "friendlyName": "Governance",
-            "name": "bfgnyg"
-        }
-    ]
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

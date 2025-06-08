@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > defaultAccount
 
 ## Description
-Gets the default account information set for the scope.
+Defaultaccount operation for management
 
 ## Syntax
 ```
@@ -10,25 +10,34 @@ pvw management defaultAccount --scopeTenantId=<val> --scopeType=<val> --scope=<v
 ```
 
 ## Required Arguments
-`--scopeTenantId` (string)  
-The tenant ID.
-
-`--scopeType` (string)  
-The scope for the default account (Subscription OR Tenant).
-
-`--scope` (string)  
-The Id of the scope object, for example if the scope is "Subscription" then it is the ID of that subscription.
+- `--scopeTenantId`: scopeTenantId parameter
+- `--scopeType`: scopeType parameter
+- `--scope`: scope parameter
 
 ## Optional Arguments
-*None*
+- `--subscriptionId`: The subscription ID. (string)
+- `--resourceGroupName`: The name of the resource group. (string)
+- `--accountName`: The name of the account. (string)
+- `--groupId`: The group identifier. (string)
+- `--privateEndpointConnectionName`: The name of the private endpoint connection. (string)
+- `--objectId`: Gets or sets the object identifier of the admin. (string)
 
 ## API Mapping
-Default Accounts > [Get](https://docs.microsoft.com/en-us/rest/api/purview/default-accounts/get)
+ >  > []()
 ```
-GET https://management.azure.com/providers/Microsoft.Purview/getDefaultAccount
+GET /api/management/defaultAccount
 ```
 
 ## Examples
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw management defaultAccount --scopeTenantId "72f988bf-86f1-41af-91ab-2d7cd011db47" --scopeType "Subscription" --scope "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0"
+EXAMPLE_COMMAND
 ```
+<details><summary>Example payload.</summary>
+<p>
+
+```json
+PASTE_JSON_HERE
+```
+</p>
+</details>

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > deleteTypeDef
 
 ## Description
-Delete API for type identified by its name.
+Deletetypedef operation for types
 
 ## Syntax
 ```
@@ -10,20 +10,30 @@ pvw types deleteTypeDef --name=<val>
 ```
 
 ## Required Arguments
-`--name` (string)  
-The name of the type.
+- `--name`: name parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--guid`: The globally unique identifier. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
+- `--type`: Typedef name as search filter (classification | entity | enum | relationship | struct). (string)
 
 ## API Mapping
-Catalog Data Plane > Types > [Delete Type By Name](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/types/delete-type-by-name)
+ >  > []()
 ```
-DELETE https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/typedef/name/{name}
+GET /api/types/deleteTypeDef
 ```
 
 ## Examples
-Delete a type definition by name.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw types deleteTypeDef --name "My Custom Term Template"
+EXAMPLE_COMMAND
 ```
+<details><summary>Example payload.</summary>
+<p>
+
+```json
+PASTE_JSON_HERE
+```
+</p>
+</details>

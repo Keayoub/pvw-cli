@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [policystore](./main.md) > putDataPolicyScope
 
 ## Description
-Create or update a data policy scope.
+Putdatapolicyscope operation for policystore
 
 ## Syntax
 ```
@@ -10,39 +10,30 @@ pvw policystore putDataPolicyScope --policyName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
-`--policyName` (string)  
-The name of the data policy.
-
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--policyName`: policyName parameter
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--collectionName`: The technical name of the Collection (e.g. friendlyName: Sales; name: afwbxs). (string)
+- `--policyId`: The unique policy id. (string)
 
 ## API Mapping
-Create or update a data policy scope.
+ >  > []()
 ```
-PUT https://{accountName}.purview.azure.com/policystore/dataPolicies/{policyName}/scopes
+GET /api/policystore/putDataPolicyScope
 ```
 
 ## Examples
-Create or update a data policy scope.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw policystore putDataPolicyScope --policyName "new-policy" --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
-
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "properties": {
-        "dataSourceScope": "/subscriptions/2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0/resourcegroups/pvdemo-rg-crv3k/providers/microsoft.storage/storageaccounts/pvdemocrv3kadls",
-        "dataSourceSubscription": "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0",
-        "datasource": "AzureDataLakeStorage",
-        "policyName": "new-policy"
-    }
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

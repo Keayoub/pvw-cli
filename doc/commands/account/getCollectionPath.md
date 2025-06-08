@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > getCollectionPath
 
 ## Description
-Gets the parent name and parent friendly name chains that represent the collection path.
+Getcollectionpath operation for account
 
 ## Syntax
 ```
@@ -10,38 +10,31 @@ pvw account getCollectionPath --collectionName=<val>
 ```
 
 ## Required Arguments
-`--collectionName` (string)  
-This is the unique name of the collection (not the friendly name).
+- `--collectionName`: collectionName parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--keyType`: The access key type. (string)
+- `--friendlyName`: The friendly name for the azure resource. (string)
+- `--parentCollection`: Gets or sets the parent collection reference. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
-Account Data Plane > Collections > [Get Collection Path](https://docs.microsoft.com/en-us/rest/api/purview/accountdataplane/collections/get-collection-path)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/account/collections/{collectionName}/getCollectionPath
+GET /api/account/getCollectionPath
 ```
 
 ## Examples
-Get the collection path (parent references) for a collection by name.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw account getCollectionPath --collectionName "w0kfma"
+EXAMPLE_COMMAND
 ```
-
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "parentFriendlyNameChain": [
-        "Root Collection Friendly Name",
-        "Social"
-    ],
-    "parentNameChain": [
-        "esg-26fa7f24-pvw",
-        "6b93rz"
-    ]
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

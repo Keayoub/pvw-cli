@@ -1,80 +1,45 @@
 # pvw share listAssets
-
-[Command Reference](../../../README.md#command-reference) > [share](./main.md) >  listAssets
+[Command Reference](../../../README.md#command-reference) > [share](./main.md) > listAssets
 
 ## Description
-
-List Assets in a share.
+Listassets operation for share
 
 ## Syntax
-
 ```
 pvw share listAssets --sentShareName=<val> [--skipToken=<val> --filter=<val> --orderBy=<val>]
 ```
 
 ## Required Arguments
-
-`--sentShareName` (string)
-
-The name of the sent share.
+- `--sentShareName`: sentShareName parameter
+- `--skipToken`: skipToken parameter
+- `--filter`: filter parameter
+- `--orderBy`: orderBy parameter
 
 ## Optional Arguments
-
-`--skipToken` (string)
-
-The continuation token to list the next page.
-
-`--filter` (string)
-
-Filters the results using OData syntax.
-
-`--orderBy` (string)
-
-Sorts the results using OData syntax.
+- `--purviewName`: The name of the Microsoft Purview account. (string)
+- `--receivedShareName`: The name of the received share. (string)
+- `--acceptedSentShareName`: The name of the accepted sent share. (string)
+- `--assetMappingName`: The name of the asset mapping. (string)
+- `--assetName`: The name of the asset. (string)
+- `--invitationName`: The name of the invitation. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
-
-Share Data Plane > Assets > [List](https://docs.microsoft.com/en-us/rest/api/purview/sharedataplane/assets/list)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/share/sentShares/{sentShareName}/assets
+GET /api/share/listAssets
 ```
 
 ## Examples
-
-List assets in a sent share.
-
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw share listAssets --sentShareName "NewShare"
+EXAMPLE_COMMAND
 ```
-
-
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-   "value":[
-      {
-         "id":"/sentShares/NewShare/assets/assetName",
-         "kind":"BlobAccount",
-         "name":"assetName",
-         "properties":{
-            "location":"uksouth",
-            "paths":[
-               {
-                  "containerName":"products",
-                  "receiverPath":"products.csv",
-                  "senderPath":"products.csv"
-               }
-            ],
-            "provisioningState":"Succeeded",
-            "receiverAssetName":"assetName",
-            "storageAccountResourceId":"/subscriptions/2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0/resourceGroups/pvw-7643-rg/providers/Microsoft.Storage/storageAccounts/storagedatashare01"
-         },
-         "type":"sentShares/assets"
-      }
-   ]
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

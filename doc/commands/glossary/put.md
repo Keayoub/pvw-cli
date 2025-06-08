@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > put
 
 ## Description
-Update the given glossary.
+Put operation for glossary
 
 ## Syntax
 ```
@@ -10,36 +10,35 @@ pvw glossary put --glossaryGuid=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
-`--glossaryGuid` (string)  
-The globally unique identifier for glossary.
-
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--glossaryGuid`: glossaryGuid parameter
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--categoryGuid`: The globally unique identifier of the category. (string)
+- `--glossaryName`: The name of the glossary. (string)
+- `--limit`: The page size - by default there is no paging [default: 1000]. (integer)
+- `--offset`: Offset for pagination purpose [default: 0]. (integer)
+- `--operationGuid`: The globally unique identifier for async operation/job. (string)
+- `--sort`: ASC or DESC [default: ASC]. (string)
+- `--termGuid`: The globally unique identifier for glossary term. (string)
 
 ## API Mapping
-Catalog Data Plane > Glossary > [Update Glossary](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/glossary/update-glossary)
+ >  > []()
 ```
-PUT https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/{glossaryGuid}
+GET /api/glossary/put
 ```
 
 ## Examples
-Update an existing glossary.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw glossary put --glossaryGuid "f2307f48-5834-4709-be85-02f3aea5d149" --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "guid": "f2307f48-5834-4709-be85-02f3aea5d149",
-    "name": "Glossary",
-    "qualifiedName": "Glossary",
-    "longDescription": "Hello World!"
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

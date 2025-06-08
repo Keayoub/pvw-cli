@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > readEntityDef
 
 ## Description
-Get the Entity definition for the given GUID or by its name (unique).
+Readentitydef operation for types
 
 ## Syntax
 ```
@@ -10,220 +10,30 @@ pvw types readEntityDef (--guid=<val> | --name=<val>)
 ```
 
 ## Required Arguments
-`--guid` (string)  
-The globally unique identifier of the guid.
-
-`--name` (string)  
-The name of the entity.
+- `--guid`: guid parameter
+- `--name`: name parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
+- `--type`: Typedef name as search filter (classification | entity | enum | relationship | struct). (string)
 
 ## API Mapping
-Catalog Data Plane > Types > [Get Entity Definition By Guid](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/types/get-entity-definition-by-guid)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/entitydef/guid/{guid}
-```
-
-Catalog Data Plane > Types > [Get Entity Definition By Name](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/types/get-entity-definition-by-name)
-```
-GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/entitydef/name/{name}
+GET /api/types/readEntityDef
 ```
 
 ## Examples
-Get an entity definition by name.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw types readEntityDef --name "azure_sql_table"
+EXAMPLE_COMMAND
 ```
-
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "attributeDefs": [
-        {
-            "cardinality": "SINGLE",
-            "includeInNotification": false,
-            "isIndexable": false,
-            "isOptional": true,
-            "isUnique": false,
-            "name": "principalId",
-            "typeName": "int",
-            "valuesMaxCount": 1,
-            "valuesMinCount": 0
-        },
-        {
-            "cardinality": "SINGLE",
-            "includeInNotification": false,
-            "isIndexable": false,
-            "isOptional": true,
-            "isUnique": false,
-            "name": "objectType",
-            "typeName": "string",
-            "valuesMaxCount": 1,
-            "valuesMinCount": 0
-        },
-        {
-            "cardinality": "SINGLE",
-            "includeInNotification": false,
-            "isIndexable": false,
-            "isOptional": true,
-            "isUnique": false,
-            "name": "createTime",
-            "typeName": "date",
-            "valuesMaxCount": 1,
-            "valuesMinCount": 0
-        },
-        {
-            "cardinality": "SINGLE",
-            "includeInNotification": false,
-            "isIndexable": false,
-            "isOptional": true,
-            "isUnique": false,
-            "name": "modifiedTime",
-            "typeName": "date",
-            "valuesMaxCount": 1,
-            "valuesMinCount": 0
-        }
-    ],
-    "category": "ENTITY",
-    "createTime": 1616124550225,
-    "createdBy": "admin",
-    "description": "azure_sql_table",
-    "guid": "7d92a449-f7e8-812f-5fc8-ca6127ba90bd",
-    "lastModifiedTS": "1",
-    "name": "azure_sql_table",
-    "options": {
-        "purviewEntityExtDef": "{}",
-        "schemaElementsAttribute": "columns"
-    },
-    "relationshipAttributeDefs": [
-        {
-            "cardinality": "SET",
-            "includeInNotification": false,
-            "isIndexable": false,
-            "isLegacyAttribute": false,
-            "isOptional": true,
-            "isUnique": false,
-            "name": "schema",
-            "relationshipTypeName": "avro_schema_associatedEntities",
-            "typeName": "array<avro_schema>",
-            "valuesMaxCount": -1,
-            "valuesMinCount": -1
-        },
-        {
-            "cardinality": "SET",
-            "includeInNotification": false,
-            "isIndexable": false,
-            "isLegacyAttribute": false,
-            "isOptional": true,
-            "isUnique": false,
-            "name": "inputToProcesses",
-            "relationshipTypeName": "dataset_process_inputs",
-            "typeName": "array<Process>",
-            "valuesMaxCount": -1,
-            "valuesMinCount": -1
-        },
-        {
-            "cardinality": "SINGLE",
-            "includeInNotification": false,
-            "isIndexable": false,
-            "isLegacyAttribute": false,
-            "isOptional": false,
-            "isUnique": false,
-            "name": "dbSchema",
-            "relationshipTypeName": "azure_sql_schema_tables",
-            "typeName": "azure_sql_schema",
-            "valuesMaxCount": -1,
-            "valuesMinCount": -1
-        },
-        {
-            "cardinality": "SET",
-            "constraints": [
-                {
-                    "type": "ownedRef"
-                }
-            ],
-            "includeInNotification": false,
-            "isIndexable": false,
-            "isLegacyAttribute": false,
-            "isOptional": true,
-            "isUnique": false,
-            "name": "columns",
-            "relationshipTypeName": "azure_sql_table_columns",
-            "typeName": "array<azure_sql_column>",
-            "valuesMaxCount": -1,
-            "valuesMinCount": -1
-        },
-        {
-            "cardinality": "SET",
-            "includeInNotification": false,
-            "isIndexable": false,
-            "isLegacyAttribute": false,
-            "isOptional": true,
-            "isUnique": false,
-            "name": "attachedSchema",
-            "relationshipTypeName": "dataset_attached_schemas",
-            "typeName": "array<schema>",
-            "valuesMaxCount": -1,
-            "valuesMinCount": -1
-        },
-        {
-            "cardinality": "SET",
-            "includeInNotification": false,
-            "isIndexable": false,
-            "isLegacyAttribute": false,
-            "isOptional": true,
-            "isUnique": false,
-            "name": "meanings",
-            "relationshipTypeName": "AtlasGlossarySemanticAssignment",
-            "typeName": "array<AtlasGlossaryTerm>",
-            "valuesMaxCount": -1,
-            "valuesMinCount": -1
-        },
-        {
-            "cardinality": "SET",
-            "includeInNotification": false,
-            "isIndexable": false,
-            "isLegacyAttribute": false,
-            "isOptional": true,
-            "isUnique": false,
-            "name": "outputFromProcesses",
-            "relationshipTypeName": "process_dataset_outputs",
-            "typeName": "array<Process>",
-            "valuesMaxCount": -1,
-            "valuesMinCount": -1
-        },
-        {
-            "cardinality": "SINGLE",
-            "includeInNotification": false,
-            "isIndexable": false,
-            "isLegacyAttribute": false,
-            "isOptional": true,
-            "isUnique": false,
-            "name": "tabular_schema",
-            "relationshipTypeName": "tabular_schema_datasets",
-            "typeName": "tabular_schema",
-            "valuesMaxCount": -1,
-            "valuesMinCount": -1
-        }
-    ],
-    "serviceType": "Azure SQL Database",
-    "subTypes": [],
-    "superTypes": [
-        "DataSet"
-    ],
-    "typeVersion": "1.0",
-    "updateTime": 1616124550225,
-    "updatedBy": "admin",
-    "version": 1
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>
-
-Get an entity definition by guid.
-```powershell
-pvw types readEntityDef --guid "7d92a449-f7e8-812f-5fc8-ca6127ba90bd"
-```

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > deleteDataSource
 
 ## Description
-Deletes a data source.
+Deletedatasource operation for scan
 
 ## Syntax
 ```
@@ -10,20 +10,38 @@ pvw scan deleteDataSource --dataSourceName=<val>
 ```
 
 ## Required Arguments
-`--dataSourceName` (string)  
-The data source name.
+- `--dataSourceName`: dataSourceName parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--action`: Allowed values: Delete or Keep. (string)
+- `--classificationRuleName`: Name of the classification rule. (string)
+- `--classificationRuleVersion`: Version of the classification rule. (integer)
+- `--scanName`: Name of the scan. (string)
+- `--scanRulesetName`: Name of the scan ruleset. (string)
+- `--keyVaultName`: Name of the key vault. (string)
+- `--runId`: The unique identifier of the run. (string)
+- `--dataSourceType`: Type of data source. (string)
+- `--scanLevel`: Allowed values: Full or Incremental [default: Full]. (string)
+- `--collectionName`: The unique collection name. (string)
+- `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
-Scanning Data Plane > Data Sources > [Delete](https://docs.microsoft.com/en-us/rest/api/purview/scanningdataplane/data-sources/delete)
+ >  > []()
 ```
-DELETE https://{accountName}.purview.azure.com/scan/datasources/{dataSourceName}
+GET /api/scan/deleteDataSource
 ```
 
 ## Examples
-Delete a data source.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw scan deleteDataSource --dataSourceName "AzureSynapseAnalytics-Wke"
+EXAMPLE_COMMAND
 ```
+<details><summary>Example payload.</summary>
+<p>
+
+```json
+PASTE_JSON_HERE
+```
+</p>
+</details>

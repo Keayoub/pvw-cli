@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > listPrivateLinkResources
 
 ## Description
-Gets a list of privately linkable resources for an account
+Listprivatelinkresources operation for management
 
 ## Syntax
 ```
@@ -10,68 +10,35 @@ pvw management listPrivateLinkResources --subscriptionId=<val> --resourceGroupNa
 ```
 
 ## Required Arguments
-`--subscriptionId` (string)  
-The subscription identifier.
-
-`--resourceGroupName` (string)  
-The resource group name.
-
-`--accountName` (string)  
-The name of the account.
+- `--subscriptionId`: subscriptionId parameter
+- `--resourceGroupName`: resourceGroupName parameter
+- `--accountName`: accountName parameter
+- `--groupId`: groupId parameter
 
 ## Optional Arguments
-`--groupId` (string)  
-The group identifier.
+- `--groupId`: groupId parameter (optional)
+- `--scopeTenantId`: The scope tenant in which the default account is set. (string)
+- `--scopeType`: The scope where the default account is set (Tenant or Subscription). (string)
+- `--scope`: The scope object ID (e.g. sub ID or tenant ID). (string)
+- `--privateEndpointConnectionName`: The name of the private endpoint connection. (string)
+- `--objectId`: Gets or sets the object identifier of the admin. (string)
 
 ## API Mapping
-Private Link Resources > [List By Account](https://docs.microsoft.com/en-us/rest/api/purview/private-link-resources/list-by-account)
+ >  > []()
 ```
-GET https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Purview/accounts/{accountName}/privateLinkResources
+GET /api/management/listPrivateLinkResources
 ```
 
 ## Examples
-List privately linkable resources for an existing Azure Purview account.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw management listPrivateLinkResources --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "esg" --accountName "esg-26fa7f24-pvw"
+EXAMPLE_COMMAND
 ```
-
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "count": 2,
-    "value": [
-        {
-            "id": "/subscriptions/2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0/resourceGroups/esg/providers/Microsoft.Purview/accounts/esg-26fa7f24-pvw/privateLinkResources/account",
-            "name": "account",
-            "properties": {
-                "groupId": "account",
-                "requiredMembers": [
-                    "account"
-                ],
-                "requiredZoneNames": [
-                    "privatelink.purview.azure.com"
-                ]
-            },
-            "type": "Microsoft.Purview/accounts/privateLinkResources"
-        },
-        {
-            "id": "/subscriptions/2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0/resourceGroups/esg/providers/Microsoft.Purview/accounts/esg-26fa7f24-pvw/privateLinkResources/portal",
-            "name": "portal",
-            "properties": {
-                "groupId": "portal",
-                "requiredMembers": [
-                    "portal"
-                ],
-                "requiredZoneNames": [
-                    "privatelink.purviewstudio.azure.com"
-                ]
-            },
-            "type": "Microsoft.Purview/accounts/privateLinkResources"
-        }
-    ]
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

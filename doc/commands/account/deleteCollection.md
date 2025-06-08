@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > deleteCollection
 
 ## Description
-Deletes a collection.
+Deletecollection operation for account
 
 ## Syntax
 ```
@@ -10,20 +10,31 @@ pvw account deleteCollection --collectionName=<val>
 ```
 
 ## Required Arguments
-`--collectionName` (string)  
-This is the unique name of the collection (not the friendly name).
+- `--collectionName`: collectionName parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--keyType`: The access key type. (string)
+- `--friendlyName`: The friendly name for the azure resource. (string)
+- `--parentCollection`: Gets or sets the parent collection reference. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
-Account Data Plane > Collections > [Delete Collection](https://docs.microsoft.com/en-us/rest/api/purview/accountdataplane/collections/delete-collection)
+ >  > []()
 ```
-DELETE https://{accountName}.purview.azure.com/account/collections/{collectionName}
+GET /api/account/deleteCollection
 ```
 
 ## Examples
-Delete a collection by name.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw account deleteCollection --collectionName "tn56xt" 
+EXAMPLE_COMMAND
 ```
+<details><summary>Example payload.</summary>
+<p>
+
+```json
+PASTE_JSON_HERE
+```
+</p>
+</details>

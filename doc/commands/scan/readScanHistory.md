@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readScanHistory
 
 ## Description
-Lists the scan history of a scan
+Readscanhistory operation for scan
 
 ## Syntax
 ```
@@ -10,60 +10,38 @@ pvw scan readScanHistory --dataSourceName=<val> --scanName=<val>
 ```
 
 ## Required Arguments
-`--dataSourceName` (string)  
-The data source name.
-
-`--scanName` (string)  
-The scan name.
+- `--dataSourceName`: dataSourceName parameter
+- `--scanName`: scanName parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--action`: Allowed values: Delete or Keep. (string)
+- `--classificationRuleName`: Name of the classification rule. (string)
+- `--classificationRuleVersion`: Version of the classification rule. (integer)
+- `--scanRulesetName`: Name of the scan ruleset. (string)
+- `--keyVaultName`: Name of the key vault. (string)
+- `--runId`: The unique identifier of the run. (string)
+- `--dataSourceType`: Type of data source. (string)
+- `--scanLevel`: Allowed values: Full or Incremental [default: Full]. (string)
+- `--collectionName`: The unique collection name. (string)
+- `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
-Scanning Data Plane > Scan Result > [List Scan History](https://docs.microsoft.com/en-us/rest/api/purview/scanningdataplane/scan-result/list-scan-history)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/scan/datasources/{dataSourceName}/scans/{scanName}/runs
+GET /api/scan/readScanHistory
 ```
 
 ## Examples
-Get the scan history of a scan by data source name and scan name.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw scan readScanHistory --dataSourceName "AzureDataLakeStorage-Gbm" --scanName "Scan-Xei"
+EXAMPLE_COMMAND
 ```
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "count": 1,
-    "value": [
-        {
-            "assetsClassified": 3,
-            "assetsDiscovered": 8,
-            "dataSourceType": "AdlsGen2",
-            "diagnostics": {
-                "exceptionCountMap": {},
-                "notifications": []
-            },
-            "endTime": "2022-02-23T15:52:25.4059244Z",
-            "error": null,
-            "errorMessage": null,
-            "id": "4ea34468-4242-4946-89b2-6bfedb237b10",
-            "ingestionJobId": "4ea34468-4242-4946-89b2-6bfedb237b10",
-            "parentId": null,
-            "pipelineStartTime": "2022-02-23T15:46:30Z",
-            "queuedTime": "2022-02-23T15:45:57.7955456Z",
-            "resourceId": "/subscriptions/2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0/resourceGroups/esg/providers/Microsoft.Storage/storageAccounts/esg26fa7f24adls",
-            "runType": "Manual",
-            "scanLevelType": "Full",
-            "scanRulesetType": "System",
-            "scanRulesetVersion": 5,
-            "startTime": "2022-02-23T15:45:57.5629837Z",
-            "status": "Succeeded",
-            "webScanResults": null
-        }
-    ]
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

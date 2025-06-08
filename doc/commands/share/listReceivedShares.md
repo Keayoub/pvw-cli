@@ -1,117 +1,45 @@
 # pvw share listReceivedShares
-
-[Command Reference](../../../README.md#command-reference) > [share](./main.md) >  listReceivedShares
+[Command Reference](../../../README.md#command-reference) > [share](./main.md) > listReceivedShares
 
 ## Description
-
-Get a list of received shares.
+Listreceivedshares operation for share
 
 ## Syntax
-
 ```
 pvw share listReceivedShares [--skipToken=<val> --filter=<val> --orderBy=<val>]
 ```
 
 ## Required Arguments
-
-`--invitationName` (string)
-
-Name of the invitation.
-
-`--payloadFile` (string)
-
-File path to a valid JSON document.
+- `--skipToken`: skipToken parameter
+- `--filter`: filter parameter
+- `--orderBy`: orderBy parameter
 
 ## Optional Arguments
-
-`--skipToken` (string)
-
-The continuation token to list the next page.
-
-`--filter` (string)
-
-Filters the results using OData syntax.
-
-`--orderBy` (string)
-
-Sorts the results using OData syntax.
+- `--purviewName`: The name of the Microsoft Purview account. (string)
+- `--receivedShareName`: The name of the received share. (string)
+- `--sentShareName`: The name of the sent share. (string)
+- `--acceptedSentShareName`: The name of the accepted sent share. (string)
+- `--assetMappingName`: The name of the asset mapping. (string)
+- `--assetName`: The name of the asset. (string)
+- `--invitationName`: The name of the invitation. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
-
-Share Data Plane > Received Shares > [List](https://docs.microsoft.com/en-us/rest/api/purview/sharedataplane/received-shares/list)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/share/receivedShares
+GET /api/share/listReceivedShares
 ```
 
 ## Examples
-
-Get a list of received shares.
-
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw share listReceivedShares
+EXAMPLE_COMMAND
 ```
-
-
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-   "value":[
-      {
-         "id":"/receivedShares/MyShare",
-         "name":"MyShare",
-         "properties":{
-            "collection":{
-               "referenceName":"djqn0b",
-               "type":"CollectionReference"
-            },
-            "createdAt":"2022-09-01T08:14:47.7203367Z",
-            "invitationId":"fb913088-56cd-40d3-abc5-fbae5597dbf8",
-            "provisioningState":"Succeeded",
-            "receivedShareStatus":"SourceDeleted",
-            "receiverEmail":"tarifat@microsoft.com",
-            "receiverName":"Taygan Rifat",
-            "receiverTenantName":"Microsoft",
-            "senderEmail":"tarifat@microsoft.com",
-            "senderName":"Taygan Rifat",
-            "senderTenantName":"Microsoft",
-            "sentShareDescription":"",
-            "sentShareLocation":"northeurope",
-            "shareName":"MyShare",
-            "sharedAt":"2022-09-01T08:14:30.3982663Z"
-         },
-         "shareKind":"InPlace",
-         "type":"receivedShares"
-      },
-      {
-         "id":"/receivedShares/NewShare",
-         "name":"NewShare",
-         "properties":{
-            "collection":{
-               "referenceName":"pvdemo52dg4-pvw",
-               "type":"CollectionReference"
-            },
-            "createdAt":"2022-09-02T13:28:13.1922869Z",
-            "invitationId":"037ac95e-98a4-4b6a-aba7-7f915ab72497",
-            "provisioningState":"Succeeded",
-            "receivedShareStatus":"Active",
-            "receiverEmail":"tarifat@microsoft.com",
-            "receiverName":"Taygan Rifat",
-            "receiverTenantName":"Microsoft",
-            "senderEmail":"tarifat@microsoft.com",
-            "senderName":"Taygan Rifat",
-            "senderTenantName":"Microsoft",
-            "sentShareDescription":"This is a description.",
-            "sentShareLocation":"northeurope",
-            "shareName":"NewShare",
-            "sharedAt":"2022-09-01T16:48:25.7585096Z"
-         },
-         "shareKind":"InPlace",
-         "type":"receivedShares"
-      }
-   ]
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

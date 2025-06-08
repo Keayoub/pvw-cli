@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > putTerm
 
 ## Description
-Update the given glossary term by its GUID.
+Putterm operation for glossary
 
 ## Syntax
 ```
@@ -10,40 +10,35 @@ pvw glossary putTerm --termGuid=<val> --payloadFile=<val> [--includeTermHierarch
 ```
 
 ## Required Arguments
-`--termGuid` (string)  
-The globally unique identifier for glossary term.
-
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--termGuid`: termGuid parameter
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-`--includeTermHierarchy` (boolean)  
-Whether to include the term hierarchy.
+- `--purviewName`: Azure Purview account name. (string)
+- `--categoryGuid`: The globally unique identifier of the category. (string)
+- `--glossaryGuid`: The globally unique identifier for glossary. (string)
+- `--glossaryName`: The name of the glossary. (string)
+- `--limit`: The page size - by default there is no paging [default: 1000]. (integer)
+- `--offset`: Offset for pagination purpose [default: 0]. (integer)
+- `--operationGuid`: The globally unique identifier for async operation/job. (string)
+- `--sort`: ASC or DESC [default: ASC]. (string)
 
 ## API Mapping
-Catalog Data Plane > Glossary > [Update Glossary Term](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/glossary/update-glossary-term)
+ >  > []()
 ```
-PUT https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/term/{termGuid}
+GET /api/glossary/putTerm
 ```
 
 ## Examples
-Update an existing glossary term.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw glossary putTerm --termGuid "919e8f87-d5b2-4dde-9f6e-1bbd738536a1" --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "anchor": {
-        "glossaryGuid": "125e2575-5823-4887-89f0-ff03a70f7c3a"
-    },
-    "name": "My Term",
-    "qualifiedName": "My Term@Glossary",
-    "longDescription": "Hello World!",
-    "status": "Approved"
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

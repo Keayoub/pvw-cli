@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > importBusinessMetadata
 
 ## Description
-Import business metadata in bulk from a CSV file.
+Import business metadata in bulk.
 
 ## Syntax
 ```
@@ -10,29 +10,35 @@ pvw entity importBusinessMetadata --bmFile=<val>
 ```
 
 ## Required Arguments
-`--bmFile` (string)  
-File path to a valid business metadata template CSV file.
+- `--bmFile`: bmFile parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--bmName`: BusinessMetadata name. (string)
+- `--classificationName`: The name of the classification. (string)
+- `--collection`: The collection unique name. (string)
+- `--guid`: The globally unique identifier of the entity. (string)
+- `--name`: The name of the attribute. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
+- `--qualifiedName`: The qualified name of the entity. (string)
+- `--typeName`: The name of the type. (string)
 
 ## API Mapping
-Catalog Data Plane > Entity > [Import Business Attributes](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/entity/import-business-attributes)
+ > Entity > [Import Business Attributes]()
 ```
-POST https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/businessmetadata/import
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/businessmetadata/import
 ```
 
 ## Examples
-Import business metadata in bulk from a CSV file.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw entity importBusinessMetadata --bmFile "/path/to/template.csv"
+EXAMPLE_COMMAND
 ```
-<details><summary>Example CSV.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
-```csv
-EntityType,EntityUniqueAttributeValue,BusinessAttributeName,BusinessAttributeValue,EntityUniqueAttributeName[optional]
-azure_datalake_gen2_path,https://STORAGE_ACCOUNT.dfs.core.windows.net/bing/data/merged.parquet,myBizMetadata1.bizAttr1,hello,
+```json
+PASTE_JSON_HERE
 ```
 </p>
 </details>

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readKeyVault
 
 ## Description
-Gets key vault information
+Readkeyvault operation for scan
 
 ## Syntax
 ```
@@ -10,35 +10,38 @@ pvw scan readKeyVault --keyVaultName=<val>
 ```
 
 ## Required Arguments
-`--keyVaultName` (string)  
-The name of the key vault connection.
+- `--keyVaultName`: keyVaultName parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--action`: Allowed values: Delete or Keep. (string)
+- `--classificationRuleName`: Name of the classification rule. (string)
+- `--classificationRuleVersion`: Version of the classification rule. (integer)
+- `--dataSourceName`: Name of the data source. (string)
+- `--scanName`: Name of the scan. (string)
+- `--scanRulesetName`: Name of the scan ruleset. (string)
+- `--runId`: The unique identifier of the run. (string)
+- `--dataSourceType`: Type of data source. (string)
+- `--scanLevel`: Allowed values: Full or Incremental [default: Full]. (string)
+- `--collectionName`: The unique collection name. (string)
+- `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
-Scanning Data Plane > Key Vault Connections > [Get](https://docs.microsoft.com/en-us/rest/api/purview/scanningdataplane/key-vault-connections/get)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/scan/azureKeyVaults/{keyVaultName}
+GET /api/scan/readKeyVault
 ```
 
 ## Examples
-Get Azure Key Vault connection information by name.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw scan readKeyVault --keyVaultName "my_key_vault"
+EXAMPLE_COMMAND
 ```
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "id": "/subscriptions/2c141777-2036-4ba0-a7f4-bbca73a181bf/resourceGroups/scanning-prod-westeurope/providers/Microsoft.Purview/accounts/purview-c66c7ceb-1944-4393-ae27-20497005f353/linkedservices/my_key_vault",
-    "name": "my_key_vault",
-    "properties": {
-        "baseUrl": "https://pvdemofngxi-keyvault.vault.azure.net/",
-        "description": ""
-    }
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

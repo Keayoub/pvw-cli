@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > runScan
 
 ## Description
-Run a scan.
+Runscan operation for scan
 
 ## Syntax
 ```
@@ -10,38 +10,39 @@ pvw scan runScan --dataSourceName=<val> --scanName=<val> [--scanLevel=<val>]
 ```
 
 ## Required Arguments
-`--dataSourceName` (string)  
-The data source name.
-
-`--scanName` (string)  
-The scan name.
+- `--dataSourceName`: dataSourceName parameter
+- `--scanName`: scanName parameter
+- `--scanLevel`: scanLevel parameter
 
 ## Optional Arguments
-`--scanLevel` (string)  
-The scan level type (Full or Incremental).
+- `--scanLevel`: scanLevel parameter (optional)
+- `--purviewName`: Azure Purview account name. (string)
+- `--action`: Allowed values: Delete or Keep. (string)
+- `--classificationRuleName`: Name of the classification rule. (string)
+- `--classificationRuleVersion`: Version of the classification rule. (integer)
+- `--scanRulesetName`: Name of the scan ruleset. (string)
+- `--keyVaultName`: Name of the key vault. (string)
+- `--runId`: The unique identifier of the run. (string)
+- `--dataSourceType`: Type of data source. (string)
+- `--collectionName`: The unique collection name. (string)
+- `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
-Scanning Data Plane > Scan Result > [Run Scan](https://docs.microsoft.com/en-us/rest/api/purview/scanningdataplane/scan-result/run-scan)
+ >  > []()
 ```
-PUT https://{accountName}.purview.azure.com/scan/datasources/{dataSourceName}/scans/{scanName}/run
+GET /api/scan/runScan
 ```
 
 ## Examples
-Run a scan by data source name and scan name.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw scan runScan --dataSourceName "AzureDataLakeStorage-Gbm" --scanName "Scan-Xei"  
+EXAMPLE_COMMAND
 ```
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "endTime": null,
-    "error": null,
-    "scanResultId": "7b8fd6fa-3ff5-457a-8689-718c9716689e",
-    "startTime": "2022-02-27T21:10:39.2802905Z",
-    "status": "Accepted"
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

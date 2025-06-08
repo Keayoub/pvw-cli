@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > putPrivateEndpoint
 
 ## Description
-Approves/Rejects private endpoint connection request.
+Putprivateendpoint operation for management
 
 ## Syntax
 ```
@@ -10,31 +10,35 @@ pvw management putPrivateEndpoint --subscriptionId=<val> --resourceGroupName=<va
 ```
 
 ## Required Arguments
-`--subscriptionId` (string)  
-The subscription identifier.
-
-`--resourceGroupName` (string)  
-The resource group name.
-
-`--accountName` (string)  
-The name of the account
-
-`--privateEndpointConnectionName` (string)  
-Name of the private endpoint connection.
-
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--subscriptionId`: subscriptionId parameter
+- `--resourceGroupName`: resourceGroupName parameter
+- `--accountName`: accountName parameter
+- `--privateEndpointConnectionName`: privateEndpointConnectionName parameter
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--scopeTenantId`: The scope tenant in which the default account is set. (string)
+- `--scopeType`: The scope where the default account is set (Tenant or Subscription). (string)
+- `--scope`: The scope object ID (e.g. sub ID or tenant ID). (string)
+- `--groupId`: The group identifier. (string)
+- `--objectId`: Gets or sets the object identifier of the admin. (string)
 
 ## API Mapping
-Private Endpoint Connections > [Create Or Update](https://docs.microsoft.com/en-us/rest/api/purview/private-endpoint-connections/create-or-update)
+ >  > []()
 ```
-PUT https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Purview/accounts/{accountName}/privateEndpointConnections/{privateEndpointConnectionName}
+GET /api/management/putPrivateEndpoint
 ```
 
 ## Examples
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw management deletePrivateEndpoint --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "private" --accountName "taygan-private-pvw" --privateEndpointConnectionName "purview-pe-instance-a2dbee21-876d-43a4-b521-df9863a98553" --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
+<details><summary>Example payload.</summary>
+<p>
+
+```json
+PASTE_JSON_HERE
+```
+</p>
+</details>

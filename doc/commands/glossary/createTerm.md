@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > createTerm
 
 ## Description
-Create a glossary term.
+Createterm operation for glossary
 
 ## Syntax
 ```
@@ -10,35 +10,35 @@ pvw glossary createTerm --payloadFile=<val> [--includeTermHierarchy]
 ```
 
 ## Required Arguments
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-`--includeTermHierarchy` (boolean)  
-Whether to include the term hierarchy [default: false].
+- `--purviewName`: Azure Purview account name. (string)
+- `--categoryGuid`: The globally unique identifier of the category. (string)
+- `--glossaryGuid`: The globally unique identifier for glossary. (string)
+- `--glossaryName`: The name of the glossary. (string)
+- `--limit`: The page size - by default there is no paging [default: 1000]. (integer)
+- `--offset`: Offset for pagination purpose [default: 0]. (integer)
+- `--operationGuid`: The globally unique identifier for async operation/job. (string)
+- `--sort`: ASC or DESC [default: ASC]. (string)
+- `--termGuid`: The globally unique identifier for glossary term. (string)
 
 ## API Mapping
-Catalog Data Plane > Glossary > [Create Glossary Term](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/glossary/create-glossary-term)
+ >  > []()
 ```
-POST https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/term
+GET /api/glossary/createTerm
 ```
 
 ## Examples
-Create a term.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw glossary createTerm --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "anchor": {
-        "glossaryGuid": "125e2575-5823-4887-89f0-ff03a70f7c3a"
-    },
-    "longDescription": "This is a basic term definition with no parent.",
-    "name": "My Basic Term"
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

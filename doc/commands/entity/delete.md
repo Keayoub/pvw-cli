@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > delete
 
 ## Description
-Delete an entity identified by its GUID.
+Delete operation for entity
 
 ## Syntax
 ```
@@ -10,20 +10,35 @@ pvw entity delete --guid=<val>
 ```
 
 ## Required Arguments
-`--guid` (string)  
-The globally unique identifier of the entity.
+- `--guid`: guid parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--bmFile`: File path to a valid business metadata template CSV file. (string)
+- `--bmName`: BusinessMetadata name. (string)
+- `--classificationName`: The name of the classification. (string)
+- `--collection`: The collection unique name. (string)
+- `--name`: The name of the attribute. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
+- `--qualifiedName`: The qualified name of the entity. (string)
+- `--typeName`: The name of the type. (string)
 
 ## API Mapping
-Catalog Data Plane > Entity > [Delete By Guid](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/entity/delete-by-guid)
+ >  > []()
 ```
-DELETE https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/{guid}
+GET /api/entity/delete
 ```
 
 ## Examples
-Delete an existing entity by its GUID.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw entity delete --guid "d3a5df04-8067-4558-a4bc-01f6ddc5aef8"
+EXAMPLE_COMMAND
 ```
+<details><summary>Example payload.</summary>
+<p>
+
+```json
+PASTE_JSON_HERE
+```
+</p>
+</details>

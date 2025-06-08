@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > deleteTerm
 
 ## Description
-Delete a glossary term.
+Deleteterm operation for glossary
 
 ## Syntax
 ```
@@ -10,20 +10,35 @@ pvw glossary deleteTerm --termGuid=<val>
 ```
 
 ## Required Arguments
-`--termGuid` (string)  
-The globally unique identifier for glossary term.
+- `--termGuid`: termGuid parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--categoryGuid`: The globally unique identifier of the category. (string)
+- `--glossaryGuid`: The globally unique identifier for glossary. (string)
+- `--glossaryName`: The name of the glossary. (string)
+- `--limit`: The page size - by default there is no paging [default: 1000]. (integer)
+- `--offset`: Offset for pagination purpose [default: 0]. (integer)
+- `--operationGuid`: The globally unique identifier for async operation/job. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
+- `--sort`: ASC or DESC [default: ASC]. (string)
 
 ## API Mapping
-Catalog Data Plane > Glossary > [Delete Glossary Term](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/glossary/delete-glossary-term)
+ >  > []()
 ```
-DELETE https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/term/{termGuid}
+GET /api/glossary/deleteTerm
 ```
 
 ## Examples
-Delete a term.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw glossary deleteTerm --termGuid "fb035cf8-aeb2-44b1-9fdf-d532dd26a5f0"
+EXAMPLE_COMMAND
 ```
+<details><summary>Example payload.</summary>
+<p>
+
+```json
+PASTE_JSON_HERE
+```
+</p>
+</details>

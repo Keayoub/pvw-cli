@@ -1,61 +1,45 @@
 # pvw share reinstateAcceptedShare
-
-[Command Reference](../../../README.md#command-reference) > [share](./main.md) >  reinstateAcceptedShare
+[Command Reference](../../../README.md#command-reference) > [share](./main.md) > reinstateAcceptedShare
 
 ## Description
-
-Reinstate a revoked accepted sent share.
+Reinstateacceptedshare operation for share
 
 ## Syntax
-
 ```
 pvw share reinstateAcceptedShare --sentShareName=<val> --acceptedSentShareName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
-
-`--sentShareName` (string)
-
-The name of the sent share.
-
-`--acceptedSentShareName` (string)
-
-The name of the accepted sent share.
-
-`--payloadFile` (string)
-
-File path to a valid JSON document.
+- `--sentShareName`: sentShareName parameter
+- `--acceptedSentShareName`: acceptedSentShareName parameter
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-
-*None*
+- `--purviewName`: The name of the Microsoft Purview account. (string)
+- `--receivedShareName`: The name of the received share. (string)
+- `--assetMappingName`: The name of the asset mapping. (string)
+- `--assetName`: The name of the asset. (string)
+- `--invitationName`: The name of the invitation. (string)
+- `--skipToken`: The continuation token to list the next page. (string)
+- `--filter`: Filters the results using OData syntax. (string)
+- `--orderBy`: Sorts the results using OData syntax. (string)
 
 ## API Mapping
-
-Share Data Plane > Accepted Sent Shares > [Reinstate](https://docs.microsoft.com/en-us/rest/api/purview/sharedataplane/accepted-sent-shares/reinstate)
+ >  > []()
 ```
-POST https://{accountName}.purview.azure.com/share/sentShares/{sentShareName}/acceptedSentShares/{acceptedSentShareName}:reinstate
+GET /api/share/reinstateAcceptedShare
 ```
 
 ## Examples
-
-Reinstate a revoked accepted share.
-
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw share reinstateAcceptedShare --sentShareName "MyNewSentShare" --acceptedSentShareName "4f5e1b4b-44f8-42c1-a783-b6c2265e49f5" --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
-
-
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "shareKind": "InPlace",
-    "properties": {
-        "expirationDate": "2023-02-24T21:02:24.695Z"
-    }
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

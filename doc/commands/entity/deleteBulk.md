@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > deleteBulk
 
 ## Description
-Delete a list of entities in bulk identified by their GUIDs or unique attributes.
+Deletebulk operation for entity
 
 ## Syntax
 ```
@@ -10,20 +10,35 @@ pvw entity deleteBulk --guid=<val>...
 ```
 
 ## Required Arguments
-`--guid` (string)  
-The globally unique identifier of the entity.
+- `--guid`: guid parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--bmFile`: File path to a valid business metadata template CSV file. (string)
+- `--bmName`: BusinessMetadata name. (string)
+- `--classificationName`: The name of the classification. (string)
+- `--collection`: The collection unique name. (string)
+- `--name`: The name of the attribute. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
+- `--qualifiedName`: The qualified name of the entity. (string)
+- `--typeName`: The name of the type. (string)
 
 ## API Mapping
-Catalog Data Plane > Entity > [Delete By Guids](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/entity/delete-by-guids)
+ >  > []()
 ```
-DELETE https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/bulk
+GET /api/entity/deleteBulk
 ```
 
 ## Examples
-Delete a list of existing entities by their GUID.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw entity deleteBulk --guid "0d42ecc0-0fb4-4276-96b0-0561cae3e97d" --guid "31aae3f9-6d6e-4417-97f4-08d89e360d49" --guid "5b7b5ae2-e2af-46b5-8998-926e7b4ba3f9" 
+EXAMPLE_COMMAND
 ```
+<details><summary>Example payload.</summary>
+<p>
+
+```json
+PASTE_JSON_HERE
+```
+</p>
+</details>

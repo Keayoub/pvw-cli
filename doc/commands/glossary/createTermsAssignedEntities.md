@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > createTermsAssignedEntities
 
 ## Description
-Assign the given term to the provided list of related objects.
+Createtermsassignedentities operation for glossary
 
 ## Syntax
 ```
@@ -10,41 +10,35 @@ pvw glossary createTermsAssignedEntities --termGuid=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
-`--termGuid` (string)  
-The globally unique identifier for glossary term.
-
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--termGuid`: termGuid parameter
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--categoryGuid`: The globally unique identifier of the category. (string)
+- `--glossaryGuid`: The globally unique identifier for glossary. (string)
+- `--glossaryName`: The name of the glossary. (string)
+- `--limit`: The page size - by default there is no paging [default: 1000]. (integer)
+- `--offset`: Offset for pagination purpose [default: 0]. (integer)
+- `--operationGuid`: The globally unique identifier for async operation/job. (string)
+- `--sort`: ASC or DESC [default: ASC]. (string)
 
 ## API Mapping
-Catalog Data Plane > Glossary > [Assign Term To Entities](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/glossary/assign-term-to-entities)
+ >  > []()
 ```
-POST https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/terms/{termGuid}/assignedEntities
+GET /api/glossary/createTermsAssignedEntities
 ```
 
 ## Examples
-Assign a term to one or more entities.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw glossary createTermsAssignedEntities --termGuid "4ba01c1e-5ef8-4457-87b4-37e2054b1cb9" --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-[
-    {
-        "guid": "6374e9e8-4719-4747-b2d2-054548023ae2"
-    },
-    {
-        "guid": "dcd41879-dda2-4b3c-8c97-9b76d39799b1"
-    },
-    {
-        "guid": "9759ea81-bb37-48ee-8099-02e452ccc57d"
-    }
-]
+PASTE_JSON_HERE
 ```
 </p>
 </details>

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > createCategory
 
 ## Description
-Create a glossary category.
+Createcategory operation for glossary
 
 ## Syntax
 ```
@@ -10,33 +10,35 @@ pvw glossary createCategory --payloadFile=<val>
 ```
 
 ## Required Arguments
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--categoryGuid`: The globally unique identifier of the category. (string)
+- `--glossaryGuid`: The globally unique identifier for glossary. (string)
+- `--glossaryName`: The name of the glossary. (string)
+- `--limit`: The page size - by default there is no paging [default: 1000]. (integer)
+- `--offset`: Offset for pagination purpose [default: 0]. (integer)
+- `--operationGuid`: The globally unique identifier for async operation/job. (string)
+- `--sort`: ASC or DESC [default: ASC]. (string)
+- `--termGuid`: The globally unique identifier for glossary term. (string)
 
 ## API Mapping
-Catalog Data Plane > Glossary > [Create Glossary Category](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/glossary/create-glossary-category)
+ >  > []()
 ```
-POST https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/category
+GET /api/glossary/createCategory
 ```
 
 ## Examples
-Create a new category.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw glossary createCategory --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "anchor": {
-        "glossaryGuid": "f2307f48-5834-4709-be85-02f3aea5d149"
-    },
-    "name": "MyCategory"
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

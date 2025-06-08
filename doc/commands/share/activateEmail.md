@@ -1,53 +1,45 @@
 # pvw share activateEmail
-
-[Command Reference](../../../README.md#command-reference) > [share](./main.md) >  activateEmail
+[Command Reference](../../../README.md#command-reference) > [share](./main.md) > activateEmail
 
 ## Description
-
-Activates the tenant and email combination using the activation code received.
+Activateemail operation for share
 
 ## Syntax
-
 ```
 pvw share activateEmail --payloadFile=<val>
 ```
 
 ## Required Arguments
-
-`--payloadFile` (string)
-
-File path to a valid JSON document.
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-
-*None*
+- `--purviewName`: The name of the Microsoft Purview account. (string)
+- `--receivedShareName`: The name of the received share. (string)
+- `--sentShareName`: The name of the sent share. (string)
+- `--acceptedSentShareName`: The name of the accepted sent share. (string)
+- `--assetMappingName`: The name of the asset mapping. (string)
+- `--assetName`: The name of the asset. (string)
+- `--invitationName`: The name of the invitation. (string)
+- `--skipToken`: The continuation token to list the next page. (string)
+- `--filter`: Filters the results using OData syntax. (string)
+- `--orderBy`: Sorts the results using OData syntax. (string)
 
 ## API Mapping
-
-Share Data Plane > Email Registration > [Activate](https://docs.microsoft.com/en-us/rest/api/purview/sharedataplane/email-registration/activate)
-
+ >  > []()
 ```
-POST https://{accountName}.purview.azure.com/share/activateEmail
+GET /api/share/activateEmail
 ```
 
 ## Examples
-
-Activates the tenant and email combination using the activation code received.
-
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw share activateEmail --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
-
-
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-   "properties":{
-      "activationCode":"15ee7153fe0df5a3a449a897d6cec836"
-   }
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

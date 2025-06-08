@@ -1,8 +1,8 @@
-# pvw credential put
-[Command Reference](../../../README.md#command-reference) > [credential](./main.md) > put
+# pvw scan putCredential
+[Command Reference](../../../README.md#command-reference) > [scan](./main.md) > putCredential
 
 ## Description
-Create or update a credential.
+Putcredential operation for scan
 
 ## Syntax
 ```
@@ -10,48 +10,39 @@ pvw scan putCredential --credentialName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
-`--credentialName` (string)  
-The name of the credential.
-
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--credentialName`: credentialName parameter
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--action`: Allowed values: Delete or Keep. (string)
+- `--classificationRuleName`: Name of the classification rule. (string)
+- `--classificationRuleVersion`: Version of the classification rule. (integer)
+- `--dataSourceName`: Name of the data source. (string)
+- `--scanName`: Name of the scan. (string)
+- `--scanRulesetName`: Name of the scan ruleset. (string)
+- `--keyVaultName`: Name of the key vault. (string)
+- `--runId`: The unique identifier of the run. (string)
+- `--dataSourceType`: Type of data source. (string)
+- `--scanLevel`: Allowed values: Full or Incremental [default: Full]. (string)
+- `--collectionName`: The unique collection name. (string)
 
 ## API Mapping
-Create or update a credential.
+ >  > []()
 ```
-PUT https://{accountName}.purview.azure.com/scan/credentials/{credentialName}
+GET /api/scan/putCredential
 ```
 
 ## Examples
-Create or update a credential.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw scan putCredential --credentialName "my_new_sql_credential"  --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "name": "my_new_sql_credential",
-    "properties": {
-        "type": "SqlAuth",
-        "typeProperties": {
-            "password": {
-                "secretName": "sql-secret-name",
-                "secretVersion": "",
-                "store": {
-                    "referenceName": "my_key_vault",
-                    "type": "LinkedServiceReference"
-                },
-                "type": "AzureKeyVaultSecret"
-            },
-            "user": "sql-user-name"
-        }
-    }
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

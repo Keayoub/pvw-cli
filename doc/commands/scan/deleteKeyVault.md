@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > deleteKeyVault
 
 ## Description
-Deletes the key vault connection associated with the account
+Deletekeyvault operation for scan
 
 ## Syntax
 ```
@@ -10,20 +10,38 @@ pvw scan deleteKeyVault --keyVaultName=<val>
 ```
 
 ## Required Arguments
-`--keyVaultName` (string)  
-The data source name.
+- `--keyVaultName`: keyVaultName parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--action`: Allowed values: Delete or Keep. (string)
+- `--classificationRuleName`: Name of the classification rule. (string)
+- `--classificationRuleVersion`: Version of the classification rule. (integer)
+- `--dataSourceName`: Name of the data source. (string)
+- `--scanName`: Name of the scan. (string)
+- `--scanRulesetName`: Name of the scan ruleset. (string)
+- `--runId`: The unique identifier of the run. (string)
+- `--dataSourceType`: Type of data source. (string)
+- `--scanLevel`: Allowed values: Full or Incremental [default: Full]. (string)
+- `--collectionName`: The unique collection name. (string)
+- `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
-Scanning Data Plane > Key Vault Connections > [Delete](https://docs.microsoft.com/en-us/rest/api/purview/scanningdataplane/key-vault-connections/delete)
+ >  > []()
 ```
-DELETE https://{accountName}.purview.azure.com/scan/azureKeyVaults/{keyVaultName}
+GET /api/scan/deleteKeyVault
 ```
 
 ## Examples
-Delete a key vault connection by name.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw scan deleteKeyVault --keyVaultName "MyKeyVault"
+EXAMPLE_COMMAND
 ```
+<details><summary>Example payload.</summary>
+<p>
+
+```json
+PASTE_JSON_HERE
+```
+</p>
+</details>

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > checkNameAvailability
 
 ## Description
-Checks the account name availability.
+Checknameavailability operation for management
 
 ## Syntax
 ```
@@ -10,34 +10,34 @@ pvw management checkNameAvailability --subscriptionId=<val> --accountName=<val>
 ```
 
 ## Required Arguments
-`--subscriptionId` (string)  
-The subscription identifier.
-
-`--accountName` (string)  
-The name of the account.
+- `--subscriptionId`: subscriptionId parameter
+- `--accountName`: accountName parameter
 
 ## Optional Arguments
-*None*
+- `--resourceGroupName`: The name of the resource group. (string)
+- `--scopeTenantId`: The scope tenant in which the default account is set. (string)
+- `--scopeType`: The scope where the default account is set (Tenant or Subscription). (string)
+- `--scope`: The scope object ID (e.g. sub ID or tenant ID). (string)
+- `--groupId`: The group identifier. (string)
+- `--privateEndpointConnectionName`: The name of the private endpoint connection. (string)
+- `--objectId`: Gets or sets the object identifier of the admin. (string)
 
 ## API Mapping
-Accounts > [Check Name Availability](https://docs.microsoft.com/en-us/rest/api/purview/accounts/check-name-availability)
+ >  > []()
 ```
-POST https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Purview/checkNameAvailability
+GET /api/management/checkNameAvailability
 ```
 
 ## Examples
-Check if the account name is available.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw management checkNameAvailability --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --accountName "my-new-purview-account-name"
+EXAMPLE_COMMAND
 ```
-
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{    
-    "nameAvailable": true
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

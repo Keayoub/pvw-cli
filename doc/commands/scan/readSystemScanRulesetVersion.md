@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readSystemScanRulesetVersion
 
 ## Description
-Get a scan ruleset by version
+Readsystemscanrulesetversion operation for scan
 
 ## Syntax
 ```
@@ -10,47 +10,39 @@ pvw scan readSystemScanRulesetVersion --version=<val> --dataSourceType=<val>
 ```
 
 ## Required Arguments
-`--version` (integer)  
-A system scan ruleset version number.
-
-`--dataSourceType` (string)  
-A valid data source type.
+- `--version`: version parameter
+- `--dataSourceType`: dataSourceType parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--action`: Allowed values: Delete or Keep. (string)
+- `--classificationRuleName`: Name of the classification rule. (string)
+- `--classificationRuleVersion`: Version of the classification rule. (integer)
+- `--dataSourceName`: Name of the data source. (string)
+- `--scanName`: Name of the scan. (string)
+- `--scanRulesetName`: Name of the scan ruleset. (string)
+- `--keyVaultName`: Name of the key vault. (string)
+- `--runId`: The unique identifier of the run. (string)
+- `--scanLevel`: Allowed values: Full or Incremental [default: Full]. (string)
+- `--collectionName`: The unique collection name. (string)
+- `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
-Scanning Data Plane > System Scan Rulesets > [Get By Version](https://docs.microsoft.com/en-us/rest/api/purview/scanningdataplane/system-scan-rulesets/get-by-version)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/scan/systemScanRulesets/versions/{version}
+GET /api/scan/readSystemScanRulesetVersion
 ```
 
 ## Examples
-Get a system scan ruleset by version and data source type.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw scan readSystemScanRulesetVersion --dataSourceType "AmazonMySql" --version 2
+EXAMPLE_COMMAND
 ```
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "id": "systemscanrulesets/AmazonMySql",
-    "kind": "AmazonMySql",
-    "name": "AmazonMySql",
-    "properties": {
-        "collection": null,
-        "createdAt": "2021-12-02T08:33:29.8537365Z",
-        "description": "Microsoft default scan rule set that includes all supported system classification rules",
-        "excludedSystemClassifications": [],
-        "includedCustomClassificationRuleNames": [],
-        "lastModifiedAt": "2021-12-02T08:33:29.8537365Z",
-        "temporaryResourceFilters": null
-    },
-    "scanRulesetType": "System",
-    "status": "Enabled",
-    "version": 2
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

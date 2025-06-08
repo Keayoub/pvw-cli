@@ -1,68 +1,45 @@
 # pvw share getReceivedInvitation
-
-[Command Reference](../../../README.md#command-reference) > [share](./main.md) >  getReceivedInvitation
+[Command Reference](../../../README.md#command-reference) > [share](./main.md) > getReceivedInvitation
 
 ## Description
-
-Gets the received invitation identified by name.
+Getreceivedinvitation operation for share
 
 ## Syntax
-
 ```
 pvw share getReceivedInvitation --invitationName=<val>
 ```
 
 ## Required Arguments
-
-`--invitationName` (string)
-
-Name of the invitation.
+- `--invitationName`: invitationName parameter
 
 ## Optional Arguments
-
-*None*
+- `--purviewName`: The name of the Microsoft Purview account. (string)
+- `--receivedShareName`: The name of the received share. (string)
+- `--sentShareName`: The name of the sent share. (string)
+- `--acceptedSentShareName`: The name of the accepted sent share. (string)
+- `--assetMappingName`: The name of the asset mapping. (string)
+- `--assetName`: The name of the asset. (string)
+- `--skipToken`: The continuation token to list the next page. (string)
+- `--filter`: Filters the results using OData syntax. (string)
+- `--orderBy`: Sorts the results using OData syntax. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
-
-Share Data Plane > Received Invitations > [Get](https://docs.microsoft.com/en-us/rest/api/purview/sharedataplane/received-invitations/get)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/share/receivedInvitations/{receivedInvitationName}
+GET /api/share/getReceivedInvitation
 ```
 
 ## Examples
-
-Get a received invitation.
-
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw share getReceivedInvitation --invitationName "0acdde01-bdbd-49e1-b3d8-275d62b9b9bc"
+EXAMPLE_COMMAND
 ```
-
-
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-   "id":"/receivedInvitations/0acdde01-bdbd-49e1-b3d8-275d62b9b9bc",
-   "invitationKind":"User",
-   "name":"0acdde01-bdbd-49e1-b3d8-275d62b9b9bc",
-   "properties":{
-      "description":"This is a description.",
-      "invitationStatus":"Pending",
-      "location":"northeurope",
-      "receiverEmail":"tarifat@microsoft.com",
-      "receiverName":null,
-      "receiverTenantName":null,
-      "senderEmail":"tarifat@microsoft.com",
-      "senderName":"Taygan Rifat",
-      "senderTenantName":"Microsoft",
-      "sentAt":"2022-09-02T13:38:29.3185176Z",
-      "sentShareName":"NewShare",
-      "shareKind":"InPlace",
-      "targetEmail":"tarifat@microsoft.com"
-   },
-   "type":"receivedInvitations"
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

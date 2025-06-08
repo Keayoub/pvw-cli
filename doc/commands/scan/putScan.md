@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > putScan
 
 ## Description
-Creates an instance of a scan
+Putscan operation for scan
 
 ## Syntax
 ```
@@ -10,45 +10,39 @@ pvw scan putScan --dataSourceName=<val> --scanName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
-`--dataSourceName` (string)  
-The data source name.
-
-`--scanName` (string)  
-The scan name.
-
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--dataSourceName`: dataSourceName parameter
+- `--scanName`: scanName parameter
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--action`: Allowed values: Delete or Keep. (string)
+- `--classificationRuleName`: Name of the classification rule. (string)
+- `--classificationRuleVersion`: Version of the classification rule. (integer)
+- `--scanRulesetName`: Name of the scan ruleset. (string)
+- `--keyVaultName`: Name of the key vault. (string)
+- `--runId`: The unique identifier of the run. (string)
+- `--dataSourceType`: Type of data source. (string)
+- `--scanLevel`: Allowed values: Full or Incremental [default: Full]. (string)
+- `--collectionName`: The unique collection name. (string)
+- `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
-Scanning Data Plane > Scans > [Create Or Update](https://docs.microsoft.com/en-us/rest/api/purview/scanningdataplane/scans/create-or-update)
+ >  > []()
 ```
-PUT https://{accountName}.purview.azure.com/scan/datasources/{dataSourceName}/scans/{scanName}
+GET /api/scan/putScan
 ```
 
 ## Examples
-Create a scan.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw scan putScan --dataSourceName "AzureDataLakeStorage-Gbm" --scanName "Scan-ABC" --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "kind": "AdlsGen2Msi",
-    "name": "Scan-ABC",
-    "properties": {
-        "collection": {
-            "referenceName": "esg-26fa7f24-pvw",
-            "type": "CollectionReference"
-        },
-        "scanRulesetName": "AdlsGen2",
-        "scanRulesetType": "System"
-    }
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

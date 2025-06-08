@@ -1,42 +1,45 @@
 # pvw share deleteSentInvitation
-
-[Command Reference](../../../README.md#command-reference) > [share](./main.md) >  deleteSentInvitation
+[Command Reference](../../../README.md#command-reference) > [share](./main.md) > deleteSentInvitation
 
 ## Description
-
-Delete Invitation in a share.
+Deletesentinvitation operation for share
 
 ## Syntax
-
 ```
 pvw share deleteSentInvitation --sentShareName=<val> --invitationName=<val>
 ```
 
 ## Required Arguments
-
-`--sentShareName` (string)
-
-The name of the sent share.
-
-`--invitationName` (string)
-
-Name of the invitation.
+- `--sentShareName`: sentShareName parameter
+- `--invitationName`: invitationName parameter
 
 ## Optional Arguments
-
-*None*
+- `--purviewName`: The name of the Microsoft Purview account. (string)
+- `--receivedShareName`: The name of the received share. (string)
+- `--acceptedSentShareName`: The name of the accepted sent share. (string)
+- `--assetMappingName`: The name of the asset mapping. (string)
+- `--assetName`: The name of the asset. (string)
+- `--skipToken`: The continuation token to list the next page. (string)
+- `--filter`: Filters the results using OData syntax. (string)
+- `--orderBy`: Sorts the results using OData syntax. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
-
-Share Data Plane > Sent Share Invitations > [Delete](https://docs.microsoft.com/en-us/rest/api/purview/sharedataplane/sent-share-invitations/delete)
+ >  > []()
 ```
-DELETE https://{accountName}.purview.azure.com/share/sentShares/{sentShareName}/sentShareInvitations/{sentShareInvitationName}
+GET /api/share/deleteSentInvitation
 ```
 
 ## Examples
-
-Delete a sent invitation for a sent share.
-
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw share deleteSentInvitation --sentShareName "NewShare" --invitationName "7543515465d5676285972198ef4cdc1dd3a0f711"
+EXAMPLE_COMMAND
 ```
+<details><summary>Example payload.</summary>
+<p>
+
+```json
+PASTE_JSON_HERE
+```
+</p>
+</details>

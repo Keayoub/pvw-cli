@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readClassificationRules
 
 ## Description
-List classification rules.
+Readclassificationrules operation for scan
 
 ## Syntax
 ```
@@ -10,57 +10,39 @@ pvw scan readClassificationRules
 ```
 
 ## Required Arguments
-*None*
+No required arguments.
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--action`: Allowed values: Delete or Keep. (string)
+- `--classificationRuleName`: Name of the classification rule. (string)
+- `--classificationRuleVersion`: Version of the classification rule. (integer)
+- `--dataSourceName`: Name of the data source. (string)
+- `--scanName`: Name of the scan. (string)
+- `--scanRulesetName`: Name of the scan ruleset. (string)
+- `--keyVaultName`: Name of the key vault. (string)
+- `--runId`: The unique identifier of the run. (string)
+- `--dataSourceType`: Type of data source. (string)
+- `--scanLevel`: Allowed values: Full or Incremental [default: Full]. (string)
+- `--collectionName`: The unique collection name. (string)
+- `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
-Scanning Data Plane > Classification Rules > [List All](https://docs.microsoft.com/en-us/rest/api/purview/scanningdataplane/classification-rules/list-all)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/scan/classificationrules
+GET /api/scan/readClassificationRules
 ```
 
 ## Examples
-List custom classification rules.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw scan readClassificationRules
+EXAMPLE_COMMAND
 ```
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "count": 1,
-    "value": [
-        {
-            "id": "classificationrules/twitter_handle",
-            "kind": "Custom",
-            "name": "twitter_handle",
-            "properties": {
-                "classificationAction": "Keep",
-                "classificationName": "Twitter Handle",
-                "classificationRuleBloomFilter": null,
-                "collection": null,
-                "columnPatterns": [],
-                "createdAt": "2022-02-27T21:00:53.2883178Z",
-                "dataPatterns": [
-                    {
-                        "kind": "Regex",
-                        "pattern": "^@[a-zA-Z0-9]+$"
-                    }
-                ],
-                "description": "This classification rule detects Twitter handles.",
-                "lastModifiedAt": "2022-02-27T21:00:53.2883178Z",
-                "minimumDistinctMatchCount": null,
-                "minimumPercentageMatch": 60.0,
-                "owner": "095354ff-cae8-44ff-8120-22ec5a941b40",
-                "ruleStatus": "Enabled",
-                "version": 1
-            }
-        }
-    ]
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

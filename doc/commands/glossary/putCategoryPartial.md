@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > putCategoryPartial
 
 ## Description
-Update the glossary category partially.
+Putcategorypartial operation for glossary
 
 ## Syntax
 ```
@@ -10,33 +10,35 @@ pvw glossary putCategoryPartial --categoryGuid=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
-`--categoryGuid` (string)  
-The globally unique identifier of the category.
-
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--categoryGuid`: categoryGuid parameter
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--glossaryGuid`: The globally unique identifier for glossary. (string)
+- `--glossaryName`: The name of the glossary. (string)
+- `--limit`: The page size - by default there is no paging [default: 1000]. (integer)
+- `--offset`: Offset for pagination purpose [default: 0]. (integer)
+- `--operationGuid`: The globally unique identifier for async operation/job. (string)
+- `--sort`: ASC or DESC [default: ASC]. (string)
+- `--termGuid`: The globally unique identifier for glossary term. (string)
 
 ## API Mapping
-Catalog Data Plane > Glossary > [Partial Update Glossary Category](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/glossary/partial-update-glossary-category)
+ >  > []()
 ```
-PUT https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/category/{categoryGuid}/partial
+GET /api/glossary/putCategoryPartial
 ```
 
 ## Examples
-Updated simple attributes of a category.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw glossary putCategoryPartial --categoryGuid "c856ecef-21e6-4e92-8607-9493d8432e78" --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "longDescription": "Example Long Description"
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

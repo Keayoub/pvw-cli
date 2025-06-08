@@ -10,30 +10,36 @@ pvw entity getBusinessMetadataTemplate
 ```
 
 ## Required Arguments
-*None*
+No required arguments.
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--bmFile`: File path to a valid business metadata template CSV file. (string)
+- `--bmName`: BusinessMetadata name. (string)
+- `--classificationName`: The name of the classification. (string)
+- `--collection`: The collection unique name. (string)
+- `--guid`: The globally unique identifier of the entity. (string)
+- `--name`: The name of the attribute. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
+- `--qualifiedName`: The qualified name of the entity. (string)
+- `--typeName`: The name of the type. (string)
 
 ## API Mapping
-Catalog Data Plane > Entity > [Get Sample Business Metadata Template](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/entity/get-sample-business-metadata-template)
+ > Entity > [Get Sample Business Metadata Template]()
 ```
-GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/businessmetadata/import/template
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/businessmetadata/import/template
 ```
 
 ## Examples
-Download a sample template for uploading/creating business metadata in bulk.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw entity getBusinessMetadataTemplate
+EXAMPLE_COMMAND
 ```
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "export": "/YOUR_CURRENT_DIRECTORY/export.csv",
-    "status_code": 200
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

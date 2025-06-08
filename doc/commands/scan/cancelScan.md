@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > cancelScan
 
 ## Description
-Cancels a scan
+Cancelscan operation for scan
 
 ## Syntax
 ```
@@ -10,26 +10,38 @@ pvw scan cancelScan --dataSourceName=<val> --scanName=<val> --runId=<val>
 ```
 
 ## Required Arguments
-`--dataSourceName` (string)  
-The data source name.
-
-`--scanName` (string)  
-The scan name.
-
-`--runId` (string)  
-The unique ID of the scan run.
+- `--dataSourceName`: dataSourceName parameter
+- `--scanName`: scanName parameter
+- `--runId`: runId parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--action`: Allowed values: Delete or Keep. (string)
+- `--classificationRuleName`: Name of the classification rule. (string)
+- `--classificationRuleVersion`: Version of the classification rule. (integer)
+- `--scanRulesetName`: Name of the scan ruleset. (string)
+- `--keyVaultName`: Name of the key vault. (string)
+- `--dataSourceType`: Type of data source. (string)
+- `--scanLevel`: Allowed values: Full or Incremental [default: Full]. (string)
+- `--collectionName`: The unique collection name. (string)
+- `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
-Scanning Data Plane > Scan Result > [Cancel Scan](https://docs.microsoft.com/en-us/rest/api/purview/scanningdataplane/scan-result/cancel-scan)
+ >  > []()
 ```
-POST https://{accountName}.purview.azure.com/scan/datasources/{dataSourceName}/scans/{scanName}/runs/{runId}/:cancel
+GET /api/scan/cancelScan
 ```
 
 ## Examples
-Cancel a scan run by data source name, scan name, and run id.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw scan cancelScan --dataSourceName "AzureDataLakeStorage-EqK" --scanName "Scan-p1E" --runId "4b6ee19a-33f8-4b97-92bf-71cce074ba30"
+EXAMPLE_COMMAND
 ```
+<details><summary>Example payload.</summary>
+<p>
+
+```json
+PASTE_JSON_HERE
+```
+</p>
+</details>

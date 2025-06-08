@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [search](./main.md) > autoComplete
 
 ## Description
-Get auto complete options.
+Autocomplete operation for search
 
 ## Syntax
 ```
@@ -10,82 +10,32 @@ pvw search autoComplete [--keywords=<val> --limit=<val> --filterFile=<val>]
 ```
 
 ## Required Arguments
-*None*
+- `--keywords`: keywords parameter
+- `--limit`: limit parameter
+- `--filterFile`: filterFile parameter
 
 ## Optional Arguments
-`--keywords` (string)  
-The keywords applied to all fields that support autocomplete operation. It must be at least 1 character, and no more than 100 characters.
-
-`--limit` (integer)  
-The number of autocomplete results we hope to return. The default value is 50. The value must be a number between 1 and 100.
-
-`--filterFile` (string)  
-The filter for the search.
+- `--purviewName`: Azure Purview account name. (string)
+- `--entityType`: The entity type to browse as the root level entry point. (string)
+- `--path`: The path to browse the next level child entities. (string)
+- `--offset`: Offset for pagination purpose [default: 0]. (integer)
 
 ## API Mapping
-Catalog Data Plane > Discovery > [Auto Complete](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/discovery/auto-complete)
+ >  > []()
 ```
-POST https://{accountName}.purview.azure.com/catalog/api/search/autocomplete
+GET /api/search/autoComplete
 ```
 
 ## Examples
-Auto complete options with keywords.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw search autoComplete --keywords "a"
+EXAMPLE_COMMAND
 ```
-
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "value": [
-        {
-            "queryPlusText": "A",
-            "text": "A"
-        },
-        {
-            "queryPlusText": "a",
-            "text": "a"
-        },
-        {
-            "queryPlusText": "Annual employee survey",
-            "text": "Annual employee survey"
-        },
-        {
-            "queryPlusText": "A less attrition",
-            "text": "A less attrition"
-        },
-        {
-            "queryPlusText": "A during a",
-            "text": "A during a"
-        },
-        {
-            "queryPlusText": "Attrition the number",
-            "text": "Attrition the number"
-        },
-        {
-            "queryPlusText": "Annual Percent Attrition",
-            "text": "Annual Percent Attrition"
-        },
-        {
-            "queryPlusText": "a part of",
-            "text": "a part of"
-        },
-        {
-            "queryPlusText": "AtlasGlossaryTerm",
-            "text": "AtlasGlossaryTerm"
-        },
-        {
-            "queryPlusText": "A plus changes",
-            "text": "A plus changes"
-        },
-        {
-            "queryPlusText": "an annual employee",
-            "text": "an annual employee"
-        }
-    ]
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

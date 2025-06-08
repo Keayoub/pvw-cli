@@ -39,9 +39,9 @@ services:
   postgres:
     image: postgres:15-alpine
     environment:
-      - POSTGRES_DB=purview_cli
+      - POSTGRES_DB=pvw_cli
       - POSTGRES_USER=purview
-      - POSTGRES_PASSWORD=purview123
+      - POSTGRES_PASSWORD=purviewcli#db25
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./backend/sql:/docker-entrypoint-initdb.d

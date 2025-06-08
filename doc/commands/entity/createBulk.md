@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > createBulk
 
 ## Description
-Create or update entities in Atlas in bulk. Existing entity is matched using its unique guid if supplied or by its unique attributes eg: qualifiedName.
+Createbulk operation for entity
 
 ## Syntax
 ```
@@ -10,61 +10,35 @@ pvw entity createBulk --payloadFile=<val>
 ```
 
 ## Required Arguments
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--bmFile`: File path to a valid business metadata template CSV file. (string)
+- `--bmName`: BusinessMetadata name. (string)
+- `--classificationName`: The name of the classification. (string)
+- `--collection`: The collection unique name. (string)
+- `--guid`: The globally unique identifier of the entity. (string)
+- `--name`: The name of the attribute. (string)
+- `--qualifiedName`: The qualified name of the entity. (string)
+- `--typeName`: The name of the type. (string)
 
 ## API Mapping
-Catalog Data Plane > Entity > [Create Or Update Entities](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/entity/create-or-update-entities)
+ >  > []()
 ```
-POST https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/bulk
+GET /api/entity/createBulk
 ```
 
 ## Examples
-Create or update entities in bulk.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw entity createBulk --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "entities": [
-        {
-            "attributes": {
-                "description": "This is a long description.",
-                "name": "myfile01.csv",
-                "qualifiedName": "https://esg26fa7f24adls.dfs.core.windows.net/01-bronze/esg/myfile01.csv",
-                "isFile": true
-            },
-            "collectionId": "esg-26fa7f24-pvw",
-            "typeName": "azure_datalake_gen2_path"
-        },
-        {
-            "attributes": {
-                "description": "This is a long description.",
-                "name": "myfile02.csv",
-                "qualifiedName": "https://esg26fa7f24adls.dfs.core.windows.net/01-bronze/esg/myfile02.csv",
-                "isFile": true
-            },
-            "collectionId": "esg-26fa7f24-pvw",
-            "typeName": "azure_datalake_gen2_path"
-        },
-        {
-            "attributes": {
-                "description": "This is a long description.",
-                "name": "myfile03.csv",
-                "qualifiedName": "https://esg26fa7f24adls.dfs.core.windows.net/01-bronze/esg/myfile03.csv",
-                "isFile": true
-            },
-            "collectionId": "esg-26fa7f24-pvw",
-            "typeName": "azure_datalake_gen2_path"
-        }
-    ]
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > createAccount
 
 ## Description
-Create or update an account resource
+Createaccount operation for management
 
 ## Syntax
 ```
@@ -10,28 +10,35 @@ pvw management createAccount --subscriptionId=<val> --resourceGroupName=<val> --
 ```
 
 ## Required Arguments
-`--subscriptionId` (string)  
-The subscription identifier.
-
-`--resourceGroupName` (string)  
-The resource group name.
-
-`--accountName` (string)  
-The name of the account.
-
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--subscriptionId`: subscriptionId parameter
+- `--resourceGroupName`: resourceGroupName parameter
+- `--accountName`: accountName parameter
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--scopeTenantId`: The scope tenant in which the default account is set. (string)
+- `--scopeType`: The scope where the default account is set (Tenant or Subscription). (string)
+- `--scope`: The scope object ID (e.g. sub ID or tenant ID). (string)
+- `--groupId`: The group identifier. (string)
+- `--privateEndpointConnectionName`: The name of the private endpoint connection. (string)
+- `--objectId`: Gets or sets the object identifier of the admin. (string)
 
 ## API Mapping
-Accounts > [Create Or Update](https://docs.microsoft.com/en-us/rest/api/purview/accounts/create-or-update)
+ >  > []()
 ```
-PUT https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Purview/accounts/{accountName}
+GET /api/management/createAccount
 ```
 
 ## Examples
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw management createAccount --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "synapse" --accountName "taygan-26fa7f24-pvw" --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
+<details><summary>Example payload.</summary>
+<p>
+
+```json
+PASTE_JSON_HERE
+```
+</p>
+</details>

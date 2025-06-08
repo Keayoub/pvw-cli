@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readSystemScanRuleset
 
 ## Description
-Get a system scan ruleset for a data source.
+Readsystemscanruleset operation for scan
 
 ## Syntax
 ```
@@ -10,44 +10,38 @@ pvw scan readSystemScanRuleset --dataSourceType=<val>
 ```
 
 ## Required Arguments
-`--dataSourceType` (string)  
-A valid data source type.
+- `--dataSourceType`: dataSourceType parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--action`: Allowed values: Delete or Keep. (string)
+- `--classificationRuleName`: Name of the classification rule. (string)
+- `--classificationRuleVersion`: Version of the classification rule. (integer)
+- `--dataSourceName`: Name of the data source. (string)
+- `--scanName`: Name of the scan. (string)
+- `--scanRulesetName`: Name of the scan ruleset. (string)
+- `--keyVaultName`: Name of the key vault. (string)
+- `--runId`: The unique identifier of the run. (string)
+- `--scanLevel`: Allowed values: Full or Incremental [default: Full]. (string)
+- `--collectionName`: The unique collection name. (string)
+- `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
-Scanning Data Plane > System Scan Rulesets > [Get](https://docs.microsoft.com/en-us/rest/api/purview/scanningdataplane/system-scan-rulesets/get)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/scan/systemScanRulesets/datasources/{dataSourceType}
+GET /api/scan/readSystemScanRuleset
 ```
 
 ## Examples
-Get a system scan ruleset by data source type.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw scan readSystemScanRuleset --dataSourceType "AmazonMySql"
+EXAMPLE_COMMAND
 ```
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "id": "systemscanrulesets/AmazonMySql",
-    "kind": "AmazonMySql",
-    "name": "AmazonMySql",
-    "properties": {
-        "collection": null,
-        "createdAt": "2021-12-02T09:24:49.8617837Z",
-        "description": "Microsoft default scan rule set that includes all supported system classification rules",
-        "excludedSystemClassifications": [],
-        "includedCustomClassificationRuleNames": [],
-        "lastModifiedAt": "2021-12-02T09:24:49.8617837Z",
-        "temporaryResourceFilters": null
-    },
-    "scanRulesetType": "System",
-    "status": "Enabled",
-    "version": 3
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

@@ -1,0 +1,16 @@
+site_name: Purview CLI Documentation
+nav:
+  - Home: README.md
+  - CLI Reference: cli/README.md
+  - API Documentation: api/index.html
+  - User Guides:
+    - Overview: guides/README.md
+    - Installation: guides/installation.md
+    - Configuration: guides/configuration.md
+    - Quick Start: guides/quickstart.md
+  - Examples: examples/README.md
+  - Reference:
+    - Overview: reference/README.md
+    - Complete CLI Reference: reference/complete-cli-reference.md
+    - Command Reference: reference/command-reference.md
+    - API Mapping: reference/api-mapping.md

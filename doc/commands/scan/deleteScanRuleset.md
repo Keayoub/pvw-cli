@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > deleteScanRuleset
 
 ## Description
-Deletes a scan ruleset
+Deletescanruleset operation for scan
 
 ## Syntax
 ```
@@ -10,20 +10,38 @@ pvw scan deleteScanRuleset --scanRulesetName=<val>
 ```
 
 ## Required Arguments
-`--scanRulesetName` (string)  
-The scan ruleset name.
+- `--scanRulesetName`: scanRulesetName parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--action`: Allowed values: Delete or Keep. (string)
+- `--classificationRuleName`: Name of the classification rule. (string)
+- `--classificationRuleVersion`: Version of the classification rule. (integer)
+- `--dataSourceName`: Name of the data source. (string)
+- `--scanName`: Name of the scan. (string)
+- `--keyVaultName`: Name of the key vault. (string)
+- `--runId`: The unique identifier of the run. (string)
+- `--dataSourceType`: Type of data source. (string)
+- `--scanLevel`: Allowed values: Full or Incremental [default: Full]. (string)
+- `--collectionName`: The unique collection name. (string)
+- `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
-Scanning Data Plane > Scan Rulesets > [Delete](https://docs.microsoft.com/en-us/rest/api/purview/scanningdataplane/scan-rulesets/delete)
+ >  > []()
 ```
-DELETE https://{accountName}.purview.azure.com/scan/scanrulesets/{scanRulesetName}
+GET /api/scan/deleteScanRuleset
 ```
 
 ## Examples
-Delete a custom scan ruleset by name.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw scan deleteScanRuleset --scanRulesetName "twitter_scan_rule_set"
+EXAMPLE_COMMAND
 ```
+<details><summary>Example payload.</summary>
+<p>
+
+```json
+PASTE_JSON_HERE
+```
+</p>
+</details>

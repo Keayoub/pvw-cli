@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > putPartial
 
 ## Description
-Update the glossary partially.
+Putpartial operation for glossary
 
 ## Syntax
 ```
@@ -10,34 +10,35 @@ pvw glossary putPartial --glossaryGuid=<val> --payloadFile=<val> [--includeTermH
 ```
 
 ## Required Arguments
-`--glossaryGuid` (string)  
-The globally unique identifier for glossary.
-
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--glossaryGuid`: glossaryGuid parameter
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-`--includeTermHierarchy` (boolean)  
-Whether to include the term hierarchy [default: false].
+- `--purviewName`: Azure Purview account name. (string)
+- `--categoryGuid`: The globally unique identifier of the category. (string)
+- `--glossaryName`: The name of the glossary. (string)
+- `--limit`: The page size - by default there is no paging [default: 1000]. (integer)
+- `--offset`: Offset for pagination purpose [default: 0]. (integer)
+- `--operationGuid`: The globally unique identifier for async operation/job. (string)
+- `--sort`: ASC or DESC [default: ASC]. (string)
+- `--termGuid`: The globally unique identifier for glossary term. (string)
 
 ## API Mapping
-Catalog Data Plane > Glossary > [Partial Update Glossary](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/glossary/partial-update-glossary)
+ >  > []()
 ```
-PUT https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/{glossaryGuid}/partial
+GET /api/glossary/putPartial
 ```
 
 ## Examples
-Update an existing glossary.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw glossary putPartial --glossaryGuid "f2307f48-5834-4709-be85-02f3aea5d149" --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "longDescription": "This is a long description!"
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

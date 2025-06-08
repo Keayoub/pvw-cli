@@ -10,35 +10,35 @@ pvw entity deleteBusinessMetadata --guid=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
-`--guid` (string)  
-The globally unique identifier of the entity.
-
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--guid`: guid parameter
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--bmFile`: File path to a valid business metadata template CSV file. (string)
+- `--bmName`: BusinessMetadata name. (string)
+- `--classificationName`: The name of the classification. (string)
+- `--collection`: The collection unique name. (string)
+- `--name`: The name of the attribute. (string)
+- `--qualifiedName`: The qualified name of the entity. (string)
+- `--typeName`: The name of the type. (string)
 
 ## API Mapping
-Catalog Data Plane > Entity > [Delete Business Metadata](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/entity/delete-business-metadata)
+ > Entity > [Delete Business Metadata]()
 ```
-DELETE https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/{guid}/businessmetadata
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/{guid}/businessmetadata
 ```
 
 ## Examples
-Remove business metadata from an entity.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw entity deleteBusinessMetadata --guid "0e945784-4bc3-40bb-a541-e8d1f7c9bf50" --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "myBizMetadata1": {
-        "bizAttr1": "myBizMetaData1.bizAttr1"
-    }
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

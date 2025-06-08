@@ -1,64 +1,45 @@
 # pvw share getAssetMapping
-
-[Command Reference](../../../README.md#command-reference) > [share](./main.md) >  getAssetMapping
+[Command Reference](../../../README.md#command-reference) > [share](./main.md) > getAssetMapping
 
 ## Description
-
-Get AssetMapping in a receivedShare.
+Getassetmapping operation for share
 
 ## Syntax
-
 ```
 pvw share getAssetMapping --receivedShareName=<val> --assetMappingName=<val>
 ```
 
 ## Required Arguments
-
-`--receivedShareName` (string)
-The name of the received share.
-
-`--assetMappingName` (string)
-The name of the asset mapping.
+- `--receivedShareName`: receivedShareName parameter
+- `--assetMappingName`: assetMappingName parameter
 
 ## Optional Arguments
-
-*None*
+- `--purviewName`: The name of the Microsoft Purview account. (string)
+- `--sentShareName`: The name of the sent share. (string)
+- `--acceptedSentShareName`: The name of the accepted sent share. (string)
+- `--assetName`: The name of the asset. (string)
+- `--invitationName`: The name of the invitation. (string)
+- `--skipToken`: The continuation token to list the next page. (string)
+- `--filter`: Filters the results using OData syntax. (string)
+- `--orderBy`: Sorts the results using OData syntax. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
-Share Data Plane > Asset Mappings > [Get](https://docs.microsoft.com/en-us/rest/api/purview/sharedataplane/asset-mappings/get)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/share/receivedShares/{receivedShareName}/assetMappings/{assetMappingName}
+GET /api/share/getAssetMapping
 ```
 
 ## Examples
-
-Get an asset mapping for a particular received share.
-
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw share getAssetMapping --receivedShareName "MyShare" --assetMappingName "storagedatashare01"
+EXAMPLE_COMMAND
 ```
-
-
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-   "id":"/receivedShares/MyShare/assetMappings/storagedatashare01",
-   "kind":"BlobAccount",
-   "name":"storagedatashare01",
-   "properties":{
-      "assetId":"f4a4d0f9-d3db-4c80-944e-fe692705f27f",
-      "assetMappingStatus":"Broken",
-      "containerName":"customer",
-      "folder":"helloWorld",
-      "location":"uksouth",
-      "mountPath":"",
-      "provisioningState":"Succeeded",
-      "storageAccountResourceId":"/subscriptions/2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0/resourceGroups/pvw-7643-rg/providers/Microsoft.Storage/storageAccounts/storagedatashare01"
-   },
-   "type":"receivedShares/assetMappings"
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

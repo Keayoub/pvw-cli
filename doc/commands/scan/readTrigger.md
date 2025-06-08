@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readTrigger
 
 ## Description
-Gets trigger information
+Readtrigger operation for scan
 
 ## Syntax
 ```
@@ -10,57 +10,38 @@ pvw scan readTrigger --dataSourceName=<val> --scanName=<val>
 ```
 
 ## Required Arguments
-`--dataSourceName` (string)  
-The data source name.
-
-`--scanName` (string)  
-The scan name.
+- `--dataSourceName`: dataSourceName parameter
+- `--scanName`: scanName parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--action`: Allowed values: Delete or Keep. (string)
+- `--classificationRuleName`: Name of the classification rule. (string)
+- `--classificationRuleVersion`: Version of the classification rule. (integer)
+- `--scanRulesetName`: Name of the scan ruleset. (string)
+- `--keyVaultName`: Name of the key vault. (string)
+- `--runId`: The unique identifier of the run. (string)
+- `--dataSourceType`: Type of data source. (string)
+- `--scanLevel`: Allowed values: Full or Incremental [default: Full]. (string)
+- `--collectionName`: The unique collection name. (string)
+- `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
-Scanning Data Plane > Triggers > [Get Trigger](https://docs.microsoft.com/en-us/rest/api/purview/scanningdataplane/triggers/get-trigger)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/scan/datasources/{dataSourceName}/scans/{scanName}/triggers/default
+GET /api/scan/readTrigger
 ```
 
 ## Examples
-Get trigger information for a scan by data source name and scan name.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw scan readTrigger --dataSourceName "AzureDataLakeStorage-Gbm" --scanName "Scan-5Jc"
+EXAMPLE_COMMAND
 ```
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{   
-    "id": "datasources/AzureDataLakeStorage-Gbm/scans/Scan-5Jc/triggers/default",
-    "name": "default",
-    "properties": {
-        "createdAt": "2022-02-27T20:26:52.086397Z",
-        "lastModifiedAt": "2022-02-27T20:26:52.086397Z",
-        "lastScheduled": null,
-        "recurrence": {
-            "endTime": null,
-            "frequency": "Month",
-            "interval": 1,
-            "schedule": {
-                "hours": null,
-                "minutes": null,
-                "monthDays": [
-                    15
-                ],
-                "monthlyOccurrences": null,
-                "weekDays": null
-            },
-            "startTime": "2022-02-27T20:25:00Z",
-            "timezone": "UTC"
-        },
-        "recurrenceInterval": null,
-        "scanLevel": "Incremental"
-    }
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

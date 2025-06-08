@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [policystore](./main.md) > deleteDataPolicyScope
 
 ## Description
-Delete a data policy scope.
+Deletedatapolicyscope operation for policystore
 
 ## Syntax
 ```
@@ -10,23 +10,31 @@ pvw policystore deleteDataPolicyScope --policyName=<val> --datasource=<val>
 ```
 
 ## Required Arguments
-`--policyName` (string)  
-The name of the data policy.
-
-`--datasource` (string)  
-The name of the data source.
+- `--policyName`: policyName parameter
+- `--datasource`: datasource parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--collectionName`: The technical name of the Collection (e.g. friendlyName: Sales; name: afwbxs). (string)
+- `--policyId`: The unique policy id. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
-Delete a scope associated to an existing data policy.
+ >  > []()
 ```
-DELETE https://{accountName}.purview.azure.com/policystore/dataPolicies/{policyName}/scopes/{datasource}
+GET /api/policystore/deleteDataPolicyScope
 ```
 
 ## Examples
-Delete a scope associated to an existing data policy.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw policystore deleteDataPolicyScope --policyName "new-policy" --scopeName "AzureDataLakeStorage"
+EXAMPLE_COMMAND
 ```
+<details><summary>Example payload.</summary>
+<p>
+
+```json
+PASTE_JSON_HERE
+```
+</p>
+</details>

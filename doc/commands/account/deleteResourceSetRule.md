@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > deleteResourceSetRule
 
 ## Description
-Delete a resource set.
+Deleteresourcesetrule operation for account
 
 ## Syntax
 ```
@@ -10,19 +10,32 @@ pvw account deleteResourceSetRule
 ```
 
 ## Required Arguments
-*None*
+No required arguments.
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--collectionName`: The technical name of the collection. (string)
+- `--keyType`: The access key type. (string)
+- `--friendlyName`: The friendly name for the azure resource. (string)
+- `--parentCollection`: Gets or sets the parent collection reference. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
-Account Data Plane > Resource Set Rules > [Delete Resource Set Rule](https://docs.microsoft.com/en-us/rest/api/purview/accountdataplane/resource-set-rules/delete-resource-set-rule)
+ >  > []()
 ```
-DELETE https://{accountName}.purview.azure.com/account/resourceSetRuleConfigs/defaultResourceSetRuleConfig
+GET /api/account/deleteResourceSetRule
 ```
 
 ## Examples
-Delete a resource set.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw account deleteResourceSetRule
+EXAMPLE_COMMAND
 ```
+<details><summary>Example payload.</summary>
+<p>
+
+```json
+PASTE_JSON_HERE
+```
+</p>
+</details>

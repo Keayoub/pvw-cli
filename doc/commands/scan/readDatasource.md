@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readDataSource
 
 ## Description
-Get a data source.
+Readdatasource operation for scan
 
 ## Syntax
 ```
@@ -10,50 +10,38 @@ pvw scan readDataSource --dataSourceName=<val>
 ```
 
 ## Required Arguments
-`--dataSourceName` (string)  
-The data source name.
+- `--dataSourceName`: dataSourceName parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--action`: Allowed values: Delete or Keep. (string)
+- `--classificationRuleName`: Name of the classification rule. (string)
+- `--classificationRuleVersion`: Version of the classification rule. (integer)
+- `--scanName`: Name of the scan. (string)
+- `--scanRulesetName`: Name of the scan ruleset. (string)
+- `--keyVaultName`: Name of the key vault. (string)
+- `--runId`: The unique identifier of the run. (string)
+- `--dataSourceType`: Type of data source. (string)
+- `--scanLevel`: Allowed values: Full or Incremental [default: Full]. (string)
+- `--collectionName`: The unique collection name. (string)
+- `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
-Scanning Data Plane > Data Sources > [Get](https://docs.microsoft.com/en-us/rest/api/purview/scanningdataplane/data-sources/get)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/scan/datasources/{dataSourceName}
+GET /api/scan/readDataSource
 ```
 
 ## Examples
-Get a data source.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw scan readDataSource --dataSourceName "AzureDataLakeStorage-Gbm"
+EXAMPLE_COMMAND
 ```
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "id": "datasources/AzureDataLakeStorage-Gbm",
-    "kind": "AdlsGen2",
-    "name": "AzureDataLakeStorage-Gbm",
-    "properties": {
-        "collection": {
-            "lastModifiedAt": "2022-02-23T15:45:16.5674969Z",
-            "referenceName": "esg-26fa7f24-pvw",
-            "type": "CollectionReference"
-        },
-        "createdAt": "2022-02-23T15:45:16.5674969Z",
-        "dataSourceCollectionMovingState": 0,
-        "dataUseGovernance": "Disabled",
-        "endpoint": "https://esg26fa7f24adls.dfs.core.windows.net/",
-        "lastModifiedAt": "2022-02-23T15:45:16.5674969Z",
-        "location": "westeurope",
-        "parentCollection": null,
-        "resourceGroup": "esg",
-        "resourceId": "/subscriptions/2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0/resourceGroups/esg/providers/Microsoft.Storage/storageAccounts/esg26fa7f24adls",
-        "resourceName": "esg26fa7f24adls",
-        "subscriptionId": "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0"
-    }
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

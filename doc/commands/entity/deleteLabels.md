@@ -10,34 +10,35 @@ pvw entity deleteLabels --guid=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
-`--guid` (string)  
-The globally unique identifier of the entity.
-
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--guid`: guid parameter
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--bmFile`: File path to a valid business metadata template CSV file. (string)
+- `--bmName`: BusinessMetadata name. (string)
+- `--classificationName`: The name of the classification. (string)
+- `--collection`: The collection unique name. (string)
+- `--name`: The name of the attribute. (string)
+- `--qualifiedName`: The qualified name of the entity. (string)
+- `--typeName`: The name of the type. (string)
 
 ## API Mapping
-Catalog Data Plane > Entity > [Delete given labels to a given entity.](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/entity/delete-labels)
+ > Entity > [Delete given labels to a given entity.]()
 ```
-DELETE https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/{guid}/labels
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/{guid}/labels
 ```
 
 ## Examples
-Delete labels from an existing entity.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw entity deleteLabels --guid "7738b5c7-7977-4261-9871-7d00e11cabe8" --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-[
-    "a",
-    "c"
-]
+PASTE_JSON_HERE
 ```
 </p>
 </details>

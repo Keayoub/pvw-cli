@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > putClassificationRule
 
 ## Description
-Creates or Updates a classification rule
+Putclassificationrule operation for scan
 
 ## Syntax
 ```
@@ -10,72 +10,39 @@ pvw scan putClassificationRule --classificationRuleName=<val> --payloadFile=<val
 ```
 
 ## Required Arguments
-`--classificationRuleName` (string)  
-The name of the classification rule.
-
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--classificationRuleName`: classificationRuleName parameter
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--action`: Allowed values: Delete or Keep. (string)
+- `--classificationRuleVersion`: Version of the classification rule. (integer)
+- `--dataSourceName`: Name of the data source. (string)
+- `--scanName`: Name of the scan. (string)
+- `--scanRulesetName`: Name of the scan ruleset. (string)
+- `--keyVaultName`: Name of the key vault. (string)
+- `--runId`: The unique identifier of the run. (string)
+- `--dataSourceType`: Type of data source. (string)
+- `--scanLevel`: Allowed values: Full or Incremental [default: Full]. (string)
+- `--collectionName`: The unique collection name. (string)
+- `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
-Scanning Data Plane > Classification Rules > [Create Or Update](https://docs.microsoft.com/en-us/rest/api/purview/scanningdataplane/classification-rules/create-or-update)
+ >  > []()
 ```
-PUT https://{accountName}.purview.azure.com/scan/classificationrules/{classificationRuleName}
+GET /api/scan/putClassificationRule
 ```
 
 ## Examples
-Create or update a classification rule.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw scan putClassificationRule --classificationRuleName "my_rule" --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "kind": "Custom",
-    "name": "my_rule",
-    "properties": {
-        "classificationAction": "Keep",
-        "classificationName": "Twitter Handle",
-        "columnPatterns": [],
-        "dataPatterns": [
-            {
-                "kind": "Regex",
-                "pattern": "^@[a-zA-Z0-9]{5,15}$"
-            }
-        ],
-        "description": "",
-        "minimumDistinctMatchCount": null,
-        "minimumPercentageMatch": 60.0
-    }
-}
-```
-</p>
-</details><br />
-
-<details><summary>Example payload.</summary>
-<p>
-
-```json
-{
-    "name":"my_rule",
-    "kind":"Custom",
-    "properties": {
-        "description":"",
-        "classificationName":"Twitter_Handle",
-        "columnPatterns":[],
-        "dataPatterns":[],
-        "minimumPercentageMatch":60,
-        "classificationRuleBloomFilter": {
-            "sourceFileName":"dictionary.csv",
-            "cookedBloomFilter":"sQPxegwAAAABBwgAAAAAAAYAAAAOAAAAFQAAAAAAAACN3Af9UPI7AkpL4RHZO4cIMGVXnTVGQSV07TARgE35QWHFVBaaYZwDr9WZlVdGKmc=",
-            "bloomFilterName":null
-        }
-    }
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

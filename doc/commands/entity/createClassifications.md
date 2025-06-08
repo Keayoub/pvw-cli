@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > createClassifications
 
 ## Description
-Add classifications to an existing entity represented by a GUID.
+Createclassifications operation for entity
 
 ## Syntax
 ```
@@ -10,38 +10,35 @@ pvw entity createClassifications --guid=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
-`--guid` (string)  
-The globally unique identifier of the entity.
-
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--guid`: guid parameter
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--bmFile`: File path to a valid business metadata template CSV file. (string)
+- `--bmName`: BusinessMetadata name. (string)
+- `--classificationName`: The name of the classification. (string)
+- `--collection`: The collection unique name. (string)
+- `--name`: The name of the attribute. (string)
+- `--qualifiedName`: The qualified name of the entity. (string)
+- `--typeName`: The name of the type. (string)
 
 ## API Mapping
-Catalog Data Plane > Entity > [Add Classifications](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/entity/add-classifications)
+ >  > []()
 ```
-POST https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/{guid}/classifications
+GET /api/entity/createClassifications
 ```
 
 ## Examples
-Associate an entity to multiple classifications.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw entity createClassifications --guid "04f2bb30-91db-404b-a8e1-d65e45338929" --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-[
-    {
-        "typeName": "MICROSOFT.FINANCIAL.US.ABA_ROUTING_NUMBER"
-    },
-    {
-        "typeName": "MICROSOFT.FINANCIAL.CREDIT_CARD_NUMBER"
-    }
-]
+PASTE_JSON_HERE
 ```
 </p>
 </details>

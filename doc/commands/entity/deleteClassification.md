@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > deleteClassification
 
 ## Description
-Delete a given classification from an existing entity represented by a GUID.
+Deleteclassification operation for entity
 
 ## Syntax
 ```
@@ -10,23 +10,35 @@ pvw entity deleteClassification --guid=<val> --classificationName=<val>
 ```
 
 ## Required Arguments
-`--guid` (string)  
-The globally unique identifier of the entity.
-
-`--classificationName` (string)  
-The name of the classification.
+- `--guid`: guid parameter
+- `--classificationName`: classificationName parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--bmFile`: File path to a valid business metadata template CSV file. (string)
+- `--bmName`: BusinessMetadata name. (string)
+- `--collection`: The collection unique name. (string)
+- `--name`: The name of the attribute. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
+- `--qualifiedName`: The qualified name of the entity. (string)
+- `--typeName`: The name of the type. (string)
 
 ## API Mapping
-Catalog Data Plane > Entity > [Delete Classification](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/entity/delete-classification)
+ >  > []()
 ```
-DELETE https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/{guid}/classification/{classificationName}
+GET /api/entity/deleteClassification
 ```
 
 ## Examples
-Remove a classification from an entity via the entity GUID.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw entity deleteClassification --guid "bbb9ff1d-f880-435e-ac87-d6fd5676d8f0" --classificationName "MICROSOFT.FINANCIAL.CREDIT_CARD_NUMBER"
+EXAMPLE_COMMAND
 ```
+<details><summary>Example payload.</summary>
+<p>
+
+```json
+PASTE_JSON_HERE
+```
+</p>
+</details>

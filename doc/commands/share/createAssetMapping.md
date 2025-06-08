@@ -1,65 +1,45 @@
 # pvw share createAssetMapping
-
-[Command Reference](../../../README.md#command-reference) > [share](./main.md) >  createAssetMapping
+[Command Reference](../../../README.md#command-reference) > [share](./main.md) > createAssetMapping
 
 ## Description
-
-Maps a source asset in the sent share to a destination asset in the received share.
+Createassetmapping operation for share
 
 ## Syntax
-
 ```
 pvw share createAssetMapping --receivedShareName=<val> --assetMappingName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
-
-`--receivedShareName` (string)
-
-The name of the received share.
-
-`--assetMappingName` (string)
-
-The name of the asset mapping.
-
-`--payloadFile` (string)
-
-File path to a valid JSON document.
+- `--receivedShareName`: receivedShareName parameter
+- `--assetMappingName`: assetMappingName parameter
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-
-*None*
+- `--purviewName`: The name of the Microsoft Purview account. (string)
+- `--sentShareName`: The name of the sent share. (string)
+- `--acceptedSentShareName`: The name of the accepted sent share. (string)
+- `--assetName`: The name of the asset. (string)
+- `--invitationName`: The name of the invitation. (string)
+- `--skipToken`: The continuation token to list the next page. (string)
+- `--filter`: Filters the results using OData syntax. (string)
+- `--orderBy`: Sorts the results using OData syntax. (string)
 
 ## API Mapping
-
-Share Data Plane > Asset Mappings > [Create](https://docs.microsoft.com/en-us/rest/api/purview/sharedataplane/asset-mappings/create)
+ >  > []()
 ```
-PUT https://{accountName}.purview.azure.com/share/receivedShares/{receivedShareName}/assetMappings/{assetMappingName}
+GET /api/share/createAssetMapping
 ```
 
 ## Examples
-
-Delete an asset mapping for a particular received share.
-
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw share createAssetMapping --receivedShareName "MyNewReceivedShare" --assetMappingName "MyAssetMappingName" --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
-
-
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-  "kind": "BlobAccount",
-  "properties": {
-    "assetId": "8c3538ba-e787-4823-83ab-f01de6c18289",
-    "storageAccountResourceId": "/subscriptions/2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0/resourceGroups/pvw-7643-rg/providers/Microsoft.Storage/storageAccounts/storagedatashare01",
-    "containerName": "customer",
-    "folder": "helloWorld",
-    "mountPath": ""
-  }
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

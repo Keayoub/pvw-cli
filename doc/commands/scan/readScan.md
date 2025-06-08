@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readScan
 
 ## Description
-Gets a scan information
+Readscan operation for scan
 
 ## Syntax
 ```
@@ -10,46 +10,38 @@ pvw scan readScan --dataSourceName=<val> --scanName=<val>
 ```
 
 ## Required Arguments
-`--dataSourceName` (string)  
-The data source name.
-
-`--scanName` (string)  
-The scan name.
+- `--dataSourceName`: dataSourceName parameter
+- `--scanName`: scanName parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--action`: Allowed values: Delete or Keep. (string)
+- `--classificationRuleName`: Name of the classification rule. (string)
+- `--classificationRuleVersion`: Version of the classification rule. (integer)
+- `--scanRulesetName`: Name of the scan ruleset. (string)
+- `--keyVaultName`: Name of the key vault. (string)
+- `--runId`: The unique identifier of the run. (string)
+- `--dataSourceType`: Type of data source. (string)
+- `--scanLevel`: Allowed values: Full or Incremental [default: Full]. (string)
+- `--collectionName`: The unique collection name. (string)
+- `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
-Scanning Data Plane > Scans > [Get](https://docs.microsoft.com/en-us/rest/api/purview/scanningdataplane/scans/get)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/scan/datasources/{dataSourceName}/scans/{scanName}
+GET /api/scan/readScan
 ```
 
 ## Examples
-Get a scan by data source name and scan name.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw scan readScan --dataSourceName "AzureDataLakeStorage-Gbm" --scanName "Scan-Xei"
+EXAMPLE_COMMAND
 ```
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "id": "datasources/AzureDataLakeStorage-Gbm/scans/Scan-Xei",
-    "kind": "AdlsGen2Msi",
-    "name": "Scan-Xei",
-    "properties": {
-        "collection": {
-            "lastModifiedAt": "2022-02-23T15:45:56.3612911Z",
-            "referenceName": "esg-26fa7f24-pvw",
-            "type": "CollectionReference"
-        },
-        "createdAt": "2022-02-23T15:45:56.3612911Z",
-        "lastModifiedAt": "2022-02-23T15:45:56.3612911Z",
-        "scanRulesetName": "AdlsGen2",
-        "scanRulesetType": "System"
-    }
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [relationship](./main.md) > put
 
 ## Description
-Update an existing relationship between entities.
+Put operation for relationship
 
 ## Syntax
 ```
@@ -10,20 +10,28 @@ pvw relationship put --payloadFile=<val>
 ```
 
 ## Required Arguments
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--guid`: The globally unique identifier of the relationship. (string)
 
 ## API Mapping
-Catalog Data Plane > Relationship > [Update](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/relationship/update)
+ >  > []()
 ```
-PUT https://{accountName}.purview.azure.com/catalog/api/atlas/v2/relationship
+GET /api/relationship/put
 ```
 
 ## Examples
-Update an existing relationship.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw relationship put --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
+<details><summary>Example payload.</summary>
+<p>
+
+```json
+PASTE_JSON_HERE
+```
+</p>
+</details>

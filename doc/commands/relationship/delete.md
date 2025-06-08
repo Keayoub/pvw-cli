@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [relationship](./main.md) > delete
 
 ## Description
-Delete a relationship between entities by its GUID.
+Delete operation for relationship
 
 ## Syntax
 ```
@@ -10,20 +10,28 @@ pvw relationship delete --guid=<val>
 ```
 
 ## Required Arguments
-`--guid` (string)  
-The globally unique identifier of the relationship.
+- `--guid`: guid parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
-Catalog Data Plane > Relationship > [Delete](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/relationship/delete)
+ >  > []()
 ```
-DELETE https://{accountName}.purview.azure.com/catalog/api/atlas/v2/relationship/guid/{guid}
+GET /api/relationship/delete
 ```
 
 ## Examples
-Delete a relationship between entities by relationship GUID.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw relationship delete --guid "90ca81c2-2d68-43f6-90cc-198a0fd07548"
+EXAMPLE_COMMAND
 ```
+<details><summary>Example payload.</summary>
+<p>
+
+```json
+PASTE_JSON_HERE
+```
+</p>
+</details>

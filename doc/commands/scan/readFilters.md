@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readFilters
 
 ## Description
-Get a filter
+Readfilters operation for scan
 
 ## Syntax
 ```
@@ -10,47 +10,38 @@ pvw scan readFilters --dataSourceName=<val> --scanName=<val>
 ```
 
 ## Required Arguments
-`--dataSourceName` (string)  
-The data source name.
-
-`--scanName` (string)  
-The scan name.
+- `--dataSourceName`: dataSourceName parameter
+- `--scanName`: scanName parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--action`: Allowed values: Delete or Keep. (string)
+- `--classificationRuleName`: Name of the classification rule. (string)
+- `--classificationRuleVersion`: Version of the classification rule. (integer)
+- `--scanRulesetName`: Name of the scan ruleset. (string)
+- `--keyVaultName`: Name of the key vault. (string)
+- `--runId`: The unique identifier of the run. (string)
+- `--dataSourceType`: Type of data source. (string)
+- `--scanLevel`: Allowed values: Full or Incremental [default: Full]. (string)
+- `--collectionName`: The unique collection name. (string)
+- `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
-Scanning Data Plane > Filters > [Get](https://docs.microsoft.com/en-us/rest/api/purview/scanningdataplane/filters/get)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/scan/datasources/{dataSourceName}/scans/{scanName}/filters/custom
+GET /api/scan/readFilters
 ```
 
 ## Examples
-Get scan filters (scope) by data source name and scan name.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw scan readFilters --dataSourceName "AzureDataLakeStorage-Gbm" --scanName "Scan-5Jc"
+EXAMPLE_COMMAND
 ```
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "id": "datasources/AzureDataLakeStorage-Gbm/scans/Scan-5Jc/filters/custom",
-    "name": "custom",
-    "properties": {
-        "excludeRegexes": null,
-        "excludeUriPrefixes": [
-            "https://esg26fa7f24adls.dfs.core.windows.net/01-bronze",
-            "https://esg26fa7f24adls.dfs.core.windows.net/02-silver",
-            "https://esg26fa7f24adls.dfs.core.windows.net/esg26fa7f24fs"
-        ],
-        "includeRegexes": null,
-        "includeUriPrefixes": [
-            "https://esg26fa7f24adls.dfs.core.windows.net/",
-            "https://esg26fa7f24adls.dfs.core.windows.net/03-gold"
-        ]
-    }
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

@@ -1,66 +1,46 @@
 # pvw share listReceivedAssets
-
-[Command Reference](../../../README.md#command-reference) > [share](./main.md) >  listReceivedAssets
+[Command Reference](../../../README.md#command-reference) > [share](./main.md) > listReceivedAssets
 
 ## Description
-
-List source asset of a received share.
+Listreceivedassets operation for share
 
 ## Syntax
-
 ```
 pvw share listReceivedAssets --receivedShareName=<val> [--skipToken=<val>]
 ```
 
 ## Required Arguments
-
-`--receivedShareName` (string)
-
-The name of the received share.
+- `--receivedShareName`: receivedShareName parameter
+- `--skipToken`: skipToken parameter
 
 ## Optional Arguments
-
-`--skipToken` (string)
-
-The continuation token to list the next page.
+- `--skipToken`: skipToken parameter (optional)
+- `--purviewName`: The name of the Microsoft Purview account. (string)
+- `--sentShareName`: The name of the sent share. (string)
+- `--acceptedSentShareName`: The name of the accepted sent share. (string)
+- `--assetMappingName`: The name of the asset mapping. (string)
+- `--assetName`: The name of the asset. (string)
+- `--invitationName`: The name of the invitation. (string)
+- `--filter`: Filters the results using OData syntax. (string)
+- `--orderBy`: Sorts the results using OData syntax. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
-
-Share Data Plane > Received Assets > [List](https://docs.microsoft.com/en-us/rest/api/purview/sharedataplane/received-assets/list)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/share/receivedShares/{receivedShareName}/receivedAssets
+GET /api/share/listReceivedAssets
 ```
 
 ## Examples
-
-Get a list of received assets from a particular received share.
-
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw share listReceivedAssets --receivedShareName "NewShare"
+EXAMPLE_COMMAND
 ```
-
-
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-   "value":[
-      {
-         "id":"/receivedShares/NewShare/receivedAssets/6408e9cb-273a-49c7-8e2d-c89e928fd197",
-         "kind":"BlobAccount",
-         "name":"6408e9cb-273a-49c7-8e2d-c89e928fd197",
-         "properties":{
-            "location":"uksouth",
-            "receiverAssetName":"assetName",
-            "receiverPaths":[
-               "products.csv"
-            ]
-         },
-         "type":"receivedShares/receivedAssets"
-      }
-   ]
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > regenerateAccessKeys
 
 ## Description
-Regenerate the authorization keys associated with this data catalog.
+Regenerateaccesskeys operation for account
 
 ## Syntax
 ```
@@ -10,36 +10,31 @@ pvw account regenerateAccessKeys --keyType=<val>
 ```
 
 ## Required Arguments
-*None*
+- `--keyType`: keyType parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--collectionName`: The technical name of the collection. (string)
+- `--friendlyName`: The friendly name for the azure resource. (string)
+- `--parentCollection`: Gets or sets the parent collection reference. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
-Account Data Plane > Accounts > [Regenerate Access Key](https://docs.microsoft.com/en-us/rest/api/purview/accountdataplane/accounts/regenerate-access-key)
+ >  > []()
 ```
-POST https://{accountName}.purview.azure.com/account/regeneratekeys
+GET /api/account/regenerateAccessKeys
 ```
 
 ## Examples
-Regenerate the primary Atlas Kafka authorization key.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw account regenerateAccessKeys --keyType "PrimaryAtlasKafkaKey"
+EXAMPLE_COMMAND
 ```
-
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "atlasKafkaPrimaryEndpoint": "Endpoint=sb://YOUR_ENDPOINT.servicebus.windows.net/;SharedAccessKeyName=AlternateSharedAccessKey;SharedAccessKey=YOUR_NEW_KEY",
-    "atlasKafkaSecondaryEndpoint": "Endpoint=sb://YOUR_ENDPOINT.servicebus.windows.net/;SharedAccessKeyName=AlternateSharedAccessKey;SharedAccessKey=YOUR_NEW_KEY"
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>
-
-Regenerate the secondary Atlas Kafka authorization key.
-```powershell
-pvw account regenerateAccessKeys --keyType "SecondaryAtlasKafkaKey"
-```

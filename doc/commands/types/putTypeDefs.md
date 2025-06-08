@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > putTypeDefs
 
 ## Description
-Update all types in bulk, changes detected in the type definitions would be persisted.
+Puttypedefs operation for types
 
 ## Syntax
 ```
@@ -10,52 +10,30 @@ pvw types putTypeDefs --payloadFile=<val>
 ```
 
 ## Required Arguments
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--guid`: The globally unique identifier. (string)
+- `--name`: The name of the definition. (string)
+- `--type`: Typedef name as search filter (classification | entity | enum | relationship | struct). (string)
 
 ## API Mapping
-Catalog Data Plane > Types > [Update Atlas Type Definitions](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/types/update-atlas-type-definitions)
+ >  > []()
 ```
-PUT https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/typedefs
+GET /api/types/putTypeDefs
 ```
 
 ## Examples
-Update type definitions in bulk.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw types putTypeDefs --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
-
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "classificationDefs": [
-        {
-            "category": "CLASSIFICATION",
-            "name": "CUSTOM.PII.PATIENT.IDENTITY.CARD",
-            "description": "Positively identifying patients ensures intended patient receives the intended care.",
-            "options": {
-                "displayName": "Patient Identity Card Number"
-            }
-        },
-        {
-            "category": "CLASSIFICATION",
-            "name": "CUSTOM.PII.PATIENT.POLICY.NUMBER",
-            "description": "The number of the insurance policy as assigned by the Insurer.",
-            "options": {
-                "displayName": "Patient Policy Number"
-            }
-        }
-    ],
-    "entityDefs": [],
-    "enumDefs": [],
-    "relationshipDefs": [],
-    "structDefs": []
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

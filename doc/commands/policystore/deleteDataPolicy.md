@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [policystore](./main.md) > deleteDataPolicy
 
 ## Description
-Delete a data policy.
+Deletedatapolicy operation for policystore
 
 ## Syntax
 ```
@@ -10,20 +10,30 @@ pvw policystore deleteDataPolicy --policyName=<val>
 ```
 
 ## Required Arguments
-`--policyName` (string)  
-The name of the data policy.
+- `--policyName`: policyName parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--collectionName`: The technical name of the Collection (e.g. friendlyName: Sales; name: afwbxs). (string)
+- `--policyId`: The unique policy id. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
-Delete a data policy.
+ >  > []()
 ```
-DELETE https://{accountName}.purview.azure.com/policystore/dataPolicies/{policyName}
+GET /api/policystore/deleteDataPolicy
 ```
 
 ## Examples
-Delete a data policy.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw policystore deleteDataPolicy --policyName "new-policy"
+EXAMPLE_COMMAND
 ```
+<details><summary>Example payload.</summary>
+<p>
+
+```json
+PASTE_JSON_HERE
+```
+</p>
+</details>

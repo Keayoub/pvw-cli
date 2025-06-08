@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > putCollection
 
 ## Description
-Creates or updates a collection entity.
+Putcollection operation for account
 
 ## Syntax
 ```
@@ -10,48 +10,31 @@ pvw account putCollection --friendlyName=<val> --parentCollection=<val>
 ```
 
 ## Required Arguments
-`--friendlyName` (string)  
-The friendly name of the collection.
-
-`--parentCollection` (string)  
-This is the unique name of the parent collection (not the friendly name).
+- `--friendlyName`: friendlyName parameter
+- `--parentCollection`: parentCollection parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--collectionName`: The technical name of the collection. (string)
+- `--keyType`: The access key type. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
-Account Data Plane > Collections > [Create Or Update Collection](https://docs.microsoft.com/en-us/rest/api/purview/accountdataplane/collections/create-or-update-collection)
+ >  > []()
 ```
-PUT https://{accountName}.purview.azure.com/account/collections/{collectionName}
+GET /api/account/putCollection
 ```
 
 ## Examples
-Create or update a collection.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw account putCollection --friendlyName "hello world" --parentCollection "w0kfma"
+EXAMPLE_COMMAND
 ```
-
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "collectionProvisioningState": "Succeeded",
-    "friendlyName": "hello world",
-    "name": "qW48hl",
-    "parentCollection": {
-        "referenceName": "w0kfma",
-        "type": "CollectionReference"
-    },
-    "systemData": {
-        "createdAt": "2022-02-27T13:04:36.9095861Z",
-        "createdBy": "095354ff-cae8-44ff-8120-22ec5a941b40",
-        "createdByType": "User",
-        "lastModifiedAt": "2022-02-27T13:04:36.9095862Z",
-        "lastModifiedBy": "095354ff-cae8-44ff-8120-22ec5a941b40",
-        "lastModifiedByType": "User"
-    }
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

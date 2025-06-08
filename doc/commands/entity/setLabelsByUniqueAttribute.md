@@ -10,38 +10,35 @@ pvw entity setLabelsByUniqueAttribute --typeName=<val> --qualifiedName=<val> --p
 ```
 
 ## Required Arguments
-`--typeName` (string)  
-The name of the type.
-
-`--qualifiedName` (string)  
-The qualified name of the entity.
-
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--typeName`: typeName parameter
+- `--qualifiedName`: qualifiedName parameter
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--bmFile`: File path to a valid business metadata template CSV file. (string)
+- `--bmName`: BusinessMetadata name. (string)
+- `--classificationName`: The name of the classification. (string)
+- `--collection`: The collection unique name. (string)
+- `--guid`: The globally unique identifier of the entity. (string)
+- `--name`: The name of the attribute. (string)
 
 ## API Mapping
-Catalog Data Plane > Entity > [Set labels to a given entity identified by its type and unique attributes.](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/entity/set-labels-by-unique-attribute)
+ > Entity > [Set labels to a given entity identified by its type and unique attributes.]()
 ```
-POST https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/uniqueAttribute/type/{typeName}/labels
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/uniqueAttribute/type/{typeName}/labels
 ```
 
 ## Examples
-Overwrite labels property for an existing entity identified by its type and unique attributes.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw entity setLabelsByUniqueAttribute --typeName "azure_datalake_gen2_resource_set" --qualifiedName "https://STORAGE_ACCOUNT.dfs.core.windows.net/bing/data/{N}/QueriesByCountry_{Year}-{Month}-{Day}_{N}-{N}-{N}.tsv" --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-[
-    "a",
-    "b",
-    "c"
-]
+PASTE_JSON_HERE
 ```
 </p>
 </details>

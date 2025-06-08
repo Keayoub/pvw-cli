@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > readClassification
 
 ## Description
-Get a classification assigned for a given entity by the entity GUID and classification name.
+Readclassification operation for entity
 
 ## Syntax
 ```
@@ -10,40 +10,35 @@ pvw entity readClassification --guid=<val> --classificationName=<val>
 ```
 
 ## Required Arguments
-`--guid` (string)  
-The globally unique identifier of the entity.
-
-`--classificationName` (string)  
-The name of the classification.
+- `--guid`: guid parameter
+- `--classificationName`: classificationName parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--bmFile`: File path to a valid business metadata template CSV file. (string)
+- `--bmName`: BusinessMetadata name. (string)
+- `--collection`: The collection unique name. (string)
+- `--name`: The name of the attribute. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
+- `--qualifiedName`: The qualified name of the entity. (string)
+- `--typeName`: The name of the type. (string)
 
 ## API Mapping
-Catalog Data Plane > Entity > [Get Classification](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/entity/get-classification)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/{guid}/classification/{classificationName}
+GET /api/entity/readClassification
 ```
 
 ## Examples
-Get a classification assigned to a particular entity via the entity GUID and classification name.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw entity readClassification --guid "c6a7811a-0699-44d0-b0be-68babe560ab2" --classificationName "MICROSOFT.GOVERNMENT.AUSTRALIA.COMPANY.NUMBER"
+EXAMPLE_COMMAND
 ```
-
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "attributes": {
-        "confidence": null
-    },
-    "entityGuid": "c6a7811a-0699-44d0-b0be-68babe560ab2",
-    "entityStatus": "ACTIVE",
-    "lastModifiedTS": "1",
-    "typeName": "MICROSOFT.GOVERNMENT.AUSTRALIA.COMPANY.NUMBER"
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

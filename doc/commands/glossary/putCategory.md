@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > putCategory
 
 ## Description
-Update the given glossary category by its GUID.
+Putcategory operation for glossary
 
 ## Syntax
 ```
@@ -10,48 +10,35 @@ pvw glossary putCategory --categoryGuid=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
-`--categoryGuid` (string)  
-The globally unique identifier of the category.
-
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--categoryGuid`: categoryGuid parameter
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--glossaryGuid`: The globally unique identifier for glossary. (string)
+- `--glossaryName`: The name of the glossary. (string)
+- `--limit`: The page size - by default there is no paging [default: 1000]. (integer)
+- `--offset`: Offset for pagination purpose [default: 0]. (integer)
+- `--operationGuid`: The globally unique identifier for async operation/job. (string)
+- `--sort`: ASC or DESC [default: ASC]. (string)
+- `--termGuid`: The globally unique identifier for glossary term. (string)
 
 ## API Mapping
-Catalog Data Plane > Glossary > [Update Glossary Category](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/glossary/update-glossary-category)
+ >  > []()
 ```
-PUT https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/category/{categoryGuid}
+GET /api/glossary/putCategory
 ```
 
 ## Examples
-Update an existing category.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw glossary putCategory --categoryGuid "c856ecef-21e6-4e92-8607-9493d8432e78" --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "anchor": {
-        "glossaryGuid": "f2307f48-5834-4709-be85-02f3aea5d149"
-    },
-    "guid": "c856ecef-21e6-4e92-8607-9493d8432e78",
-    "name": "MyCategory",
-    "terms": [
-        {
-            "termGuid": "d99523b1-9b89-4748-8455-c00d76fd823a"
-        },
-        {
-            "termGuid": "06276c6f-aab7-46f3-980c-e92ad541f333"
-        },
-        {
-            "termGuid": "2796d276-75a0-46c0-9920-1d9e75c25842"
-        }
-    ]
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

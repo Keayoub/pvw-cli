@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > putClassifications
 
 ## Description
-Update classifications to an existing entity represented by a guid.
+Putclassifications operation for entity
 
 ## Syntax
 ```
@@ -10,39 +10,35 @@ pvw entity putClassifications --guid=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
-`--guid` (string)  
-The globally unique identifier of the entity.
-
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--guid`: guid parameter
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--bmFile`: File path to a valid business metadata template CSV file. (string)
+- `--bmName`: BusinessMetadata name. (string)
+- `--classificationName`: The name of the classification. (string)
+- `--collection`: The collection unique name. (string)
+- `--name`: The name of the attribute. (string)
+- `--qualifiedName`: The qualified name of the entity. (string)
+- `--typeName`: The name of the type. (string)
 
 ## API Mapping
-Catalog Data Plane > Entity > [Update Classifications](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/entity/update-classifications)
+ >  > []()
 ```
-PUT https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/{guid}/classifications
+GET /api/entity/putClassifications
 ```
 
 ## Examples
-Update existing classifications to an existing entity via the entity GUID.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw entity putClassifications --guid "bbb9ff1d-f880-435e-ac87-d6fd5676d8f0" --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-[
-
-    {
-        "typeName": "MICROSOFT.FINANCIAL.CREDIT_CARD_NUMBER",
-        "attributes": {
-            "confidence": 2
-        }
-    }
-]
+PASTE_JSON_HERE
 ```
 </p>
 </details>

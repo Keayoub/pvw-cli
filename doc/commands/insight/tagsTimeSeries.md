@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [insight](./main.md) > tagsTimeSeries
 
 ## Description
-Total number of scans by status and time period.
+Tagstimeseries operation for insight
 
 ## Syntax
 ```
@@ -10,28 +10,28 @@ pvw insight tagsTimeSeries
 ```
 
 ## Required Arguments
-*None*
+No required arguments.
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--numberOfDays`: Trailing time period in days [default: 30]. (integer)
 
 ## API Mapping
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/mapanddiscover/reports/serverless/asset2/tags/timeSeries
+GET /api/insight/tagsTimeSeries
 ```
 
 ## Examples
-Get the total number of scans by status and time period.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw insight tagsTimeSeries
+EXAMPLE_COMMAND
 ```
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "records": []
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

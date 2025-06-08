@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > readCategory
 
 ## Description
-Get specific glossary category by its GUID.
+Readcategory operation for glossary
 
 ## Syntax
 ```
@@ -10,43 +10,35 @@ pvw glossary readCategory --categoryGuid=<val> [--limit=<val> --offset=<val> --s
 ```
 
 ## Required Arguments
-`--categoryGuid` (string)  
-The globally unique identifier of the category.
+- `--categoryGuid`: categoryGuid parameter
+- `--limit`: limit parameter
+- `--offset`: offset parameter
+- `--sort`: sort parameter
 
 ## Optional Arguments
-`--limit` (integer)  
-The page size [default: 1000].
-
-`--offset` (integer)  
-Offset for pagination purpose [default: 0].
-
-`--sort` (string)  
-The sort order - ASC or DESC [default: ASC].
+- `--purviewName`: Azure Purview account name. (string)
+- `--glossaryGuid`: The globally unique identifier for glossary. (string)
+- `--glossaryName`: The name of the glossary. (string)
+- `--operationGuid`: The globally unique identifier for async operation/job. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
+- `--termGuid`: The globally unique identifier for glossary term. (string)
 
 ## API Mapping
-Catalog Data Plane > Glossary > [Get Glossary Category](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/glossary/get-glossary-category)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/category/{categoryGuid}
+GET /api/glossary/readCategory
 ```
 
 ## Examples
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw glossary readCategory --categoryGuid "c856ecef-21e6-4e92-8607-9493d8432e78"
+EXAMPLE_COMMAND
 ```
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "anchor": {
-        "glossaryGuid": "f2307f48-5834-4709-be85-02f3aea5d149",
-        "relationGuid": "02a36a2f-e240-40ea-b884-c5ec159d5688"
-    },
-    "guid": "c856ecef-21e6-4e92-8607-9493d8432e78",
-    "lastModifiedTS": "1",
-    "name": "MyCategory",
-    "qualifiedName": "MyCategory@Glossary"
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

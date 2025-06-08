@@ -10,36 +10,35 @@ pvw entity addOrUpdateBusinessMetadata --guid=<val> --payloadFile=<val> [--isOve
 ```
 
 ## Required Arguments
-`--guid` (string)  
-The globally unique identifier of the entity.
-
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--guid`: guid parameter
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-`--isOverwrite` (boolean)  
-Whether to overwrite the existing business metadata on the entity or not [default: false].
+- `--purviewName`: Azure Purview account name. (string)
+- `--bmFile`: File path to a valid business metadata template CSV file. (string)
+- `--bmName`: BusinessMetadata name. (string)
+- `--classificationName`: The name of the classification. (string)
+- `--collection`: The collection unique name. (string)
+- `--name`: The name of the attribute. (string)
+- `--qualifiedName`: The qualified name of the entity. (string)
+- `--typeName`: The name of the type. (string)
 
 ## API Mapping
-Catalog Data Plane > Entity > [Add Or Update Business Metadata](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/entity/add-or-update-business-metadata)
+ > Entity > [Add Or Update Business Metadata]()
 ```
-POST https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/{guid}/businessmetadata
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/{guid}/businessmetadata
 ```
 
 ## Examples
-Add or update business metadata to an entity.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw entity addOrUpdateBusinessMetadata --guid "0e945784-4bc3-40bb-a541-e8d1f7c9bf50" --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "myBizMetadata1": {
-        "bizAttr1": "myBizMetaData1.bizAttr1"
-    }
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

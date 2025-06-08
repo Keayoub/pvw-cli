@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > putScanRuleset
 
 ## Description
-Creates or Updates a scan ruleset
+Putscanruleset operation for scan
 
 ## Syntax
 ```
@@ -10,49 +10,39 @@ pvw scan putScanRuleset --scanRulesetName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
-`--scanRulesetName` (string)  
-The ruleset name.
-
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--scanRulesetName`: scanRulesetName parameter
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--action`: Allowed values: Delete or Keep. (string)
+- `--classificationRuleName`: Name of the classification rule. (string)
+- `--classificationRuleVersion`: Version of the classification rule. (integer)
+- `--dataSourceName`: Name of the data source. (string)
+- `--scanName`: Name of the scan. (string)
+- `--keyVaultName`: Name of the key vault. (string)
+- `--runId`: The unique identifier of the run. (string)
+- `--dataSourceType`: Type of data source. (string)
+- `--scanLevel`: Allowed values: Full or Incremental [default: Full]. (string)
+- `--collectionName`: The unique collection name. (string)
+- `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
-Scanning Data Plane > Scan Rulesets > [Create Or Update](https://docs.microsoft.com/en-us/rest/api/purview/scanningdataplane/scan-rulesets/create-or-update)
+ >  > []()
 ```
-PUT https://{accountName}.purview.azure.com/scan/scanrulesets/{scanRulesetName}
+GET /api/scan/putScanRuleset
 ```
 
 ## Examples
-Create a scan ruleset.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw scan putScanRuleset --scanRulesetName "my_ruleset" --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "kind": "AdlsGen2",
-    "name": "my_ruleset",
-    "properties": {
-        "excludedSystemClassifications": [
-            "MICROSOFT.GOVERNMENT.CYPRUS.TAX.IDENTIFICATION.NUMBER",
-            "MICROSOFT.GOVERNMENT.CHILE.CDI_NUMBER",
-            "MICROSOFT.GOVERNMENT.MALTA.DRIVERS.LICENSE.NUMBER"
-        ],
-        "includedCustomClassificationRuleNames": [],
-        "scanningRule": {
-            "customFileExtensions": null,
-            "fileExtensions": [
-                "PARQUET"
-            ]
-        }
-    },
-    "scanRulesetType": "Custom"
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readScanRuleset
 
 ## Description
-Get a scan ruleset
+Readscanruleset operation for scan
 
 ## Syntax
 ```
@@ -10,55 +10,38 @@ pvw scan readScanRuleset --scanRulesetName=<val>
 ```
 
 ## Required Arguments
-`--scanRulesetName` (string)  
-The scan ruleset name.
+- `--scanRulesetName`: scanRulesetName parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--action`: Allowed values: Delete or Keep. (string)
+- `--classificationRuleName`: Name of the classification rule. (string)
+- `--classificationRuleVersion`: Version of the classification rule. (integer)
+- `--dataSourceName`: Name of the data source. (string)
+- `--scanName`: Name of the scan. (string)
+- `--keyVaultName`: Name of the key vault. (string)
+- `--runId`: The unique identifier of the run. (string)
+- `--dataSourceType`: Type of data source. (string)
+- `--scanLevel`: Allowed values: Full or Incremental [default: Full]. (string)
+- `--collectionName`: The unique collection name. (string)
+- `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
-Scanning Data Plane > Scan Rulesets > [Get](https://docs.microsoft.com/en-us/rest/api/purview/scanningdataplane/scan-rulesets/get)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/scan/scanrulesets/{scanRulesetName}
+GET /api/scan/readScanRuleset
 ```
 
 ## Examples
-Get a custom scan ruleset.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw scan readScanRuleset --scanRulesetName "adls_parquet_only"
+EXAMPLE_COMMAND
 ```
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "id": "scanrulesets/adls_parquet_only",
-    "kind": "AdlsGen2",
-    "name": "adls_parquet_only",
-    "properties": {
-        "collection": null,
-        "createdAt": "2022-02-27T21:22:19.0970457Z",
-        "description": null,
-        "excludedSystemClassifications": [],
-        "includedCustomClassificationRuleNames": [],
-        "lastModifiedAt": "2022-02-27T21:22:19.0970462Z",
-        "scanningRule": {
-            "customFileExtensions": null,
-            "fileExtensions": [
-                "PARQUET"
-            ]
-        },
-        "temporaryResourceFilters": [
-            {
-                "ingestTemporaryResource": true,
-                "resourceFilterPattern": "(_SUCCESS|_started_\\d*|_committed_\\d*|_committed_vacuum\\d*)$"
-            }
-        ]
-    },
-    "scanRulesetType": "Custom",
-    "status": "Enabled",
-    "version": 1
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

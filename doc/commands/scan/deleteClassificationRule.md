@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > deleteClassificationRule
 
 ## Description
-Deletes a classification rule
+Deleteclassificationrule operation for scan
 
 ## Syntax
 ```
@@ -10,20 +10,38 @@ pvw scan deleteClassificationRule --classificationRuleName=<val>
 ```
 
 ## Required Arguments
-`--classificationRuleName` (string)  
-The name of the classification rule.
+- `--classificationRuleName`: classificationRuleName parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--action`: Allowed values: Delete or Keep. (string)
+- `--classificationRuleVersion`: Version of the classification rule. (integer)
+- `--dataSourceName`: Name of the data source. (string)
+- `--scanName`: Name of the scan. (string)
+- `--scanRulesetName`: Name of the scan ruleset. (string)
+- `--keyVaultName`: Name of the key vault. (string)
+- `--runId`: The unique identifier of the run. (string)
+- `--dataSourceType`: Type of data source. (string)
+- `--scanLevel`: Allowed values: Full or Incremental [default: Full]. (string)
+- `--collectionName`: The unique collection name. (string)
+- `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
-Scanning Data Plane > Classification Rules > [Delete](https://docs.microsoft.com/en-us/rest/api/purview/scanningdataplane/classification-rules/delete)
+ >  > []()
 ```
-DELETE https://{accountName}.purview.azure.com/scan/classificationrules/{classificationRuleName}
+GET /api/scan/deleteClassificationRule
 ```
 
 ## Examples
-Delete a classification rule by name.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw scan deleteClassificationRule --classificationRuleName "twitter_handle"
+EXAMPLE_COMMAND
 ```
+<details><summary>Example payload.</summary>
+<p>
+
+```json
+PASTE_JSON_HERE
+```
+</p>
+</details>

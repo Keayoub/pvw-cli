@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [insight](./main.md) > scanStatusSummary
 
 ## Description
-Total number of scans by status.
+Scanstatussummary operation for insight
 
 ## Syntax
 ```
@@ -10,38 +10,28 @@ pvw insight scanStatusSummary [--numberOfDays=<val>]
 ```
 
 ## Required Arguments
-*None*
+- `--numberOfDays`: numberOfDays parameter
 
 ## Optional Arguments
-`--numberOfDays` (integer)  
-Trailing time period in days [default: 30].
+- `--numberOfDays`: numberOfDays parameter (optional)
+- `--purviewName`: Azure Purview account name. (string)
 
 ## API Mapping
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/mapanddiscover/reports/scanstatus2/summaries
+GET /api/insight/scanStatusSummary
 ```
 
 ## Examples
-Get the total number of scans by status.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw insight scanStatusSummary
+EXAMPLE_COMMAND
 ```
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "values": [
-        {
-            "count": 33,
-            "type": "Succeeded"
-        },
-        {
-            "count": 9,
-            "type": "Failed"
-        }
-    ]
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

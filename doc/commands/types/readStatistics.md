@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > readStatistics
 
 ## Description
-Get a count of entities by type.
+Readstatistics operation for types
 
 ## Syntax
 ```
@@ -10,75 +10,31 @@ pvw types readStatistics
 ```
 
 ## Required Arguments
-*None*
+No required arguments.
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--guid`: The globally unique identifier. (string)
+- `--name`: The name of the definition. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
+- `--type`: Typedef name as search filter (classification | entity | enum | relationship | struct). (string)
 
 ## API Mapping
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/statistics
+GET /api/types/readStatistics
 ```
 
 ## Examples
-Get a count of entities by type.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw types readStatistics
+EXAMPLE_COMMAND
 ```
-
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "typeStatistics": {
-        "AtlasGlossary": {
-            "count": 1
-        },
-        "AtlasGlossaryTerm": {
-            "count": 51
-        },
-        "adf_copy_activity": {
-            "count": 2
-        },
-        "adf_pipeline": {
-            "count": 2
-        },
-        "azure_data_factory": {
-            "count": 1
-        },
-        "azure_datalake_gen2_filesystem": {
-            "count": 1
-        },
-        "azure_datalake_gen2_path": {
-            "count": 6
-        },
-        "azure_datalake_gen2_resource_set": {
-            "count": 2
-        },
-        "azure_datalake_gen2_service": {
-            "count": 1
-        },
-        "azure_sql_db": {
-            "count": 1
-        },
-        "azure_sql_schema": {
-            "count": 2
-        },
-        "azure_sql_server": {
-            "count": 1
-        },
-        "azure_sql_table": {
-            "count": 12
-        },
-        "azure_sql_view": {
-            "count": 3
-        },
-        "azure_storage_account": {
-            "count": 1
-        }
-    }
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

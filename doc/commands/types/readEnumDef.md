@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > readEnumDef
 
 ## Description
-Get the enum definition for the given GUID or by its name (unique).
+Readenumdef operation for types
 
 ## Syntax
 ```
@@ -10,73 +10,30 @@ pvw types readEnumDef (--guid=<val> | --name=<val>)
 ```
 
 ## Required Arguments
-`--guid` (string)  
-The globally unique identifier of the enum.
-
-`--name` (string)  
-The name of the enum.
+- `--guid`: guid parameter
+- `--name`: name parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
+- `--type`: Typedef name as search filter (classification | entity | enum | relationship | struct). (string)
 
 ## API Mapping
-Catalog Data Plane > Types > [Get Enum Def By Guid](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/types/get-enum-def-by-guid)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/enumdef/guid/{guid}
-```
-
-Catalog Data Plane > Types > [Get Enum Def By Name](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/types/get-enum-def-by-name)
-```
-GET https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/enumdef/name/{name}
+GET /api/types/readEnumDef
 ```
 
 ## Examples
-Get enum definition by name.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw types readEnumDef --name "blob_type"
+EXAMPLE_COMMAND
 ```
-
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "category": "ENUM",
-    "createTime": 1615787945788,
-    "createdBy": "admin",
-    "description": "blob_type",
-    "elementDefs": [
-        {
-            "ordinal": 0,
-            "value": "Unspecified"
-        },
-        {
-            "ordinal": 1,
-            "value": "PageBlob"
-        },
-        {
-            "ordinal": 2,
-            "value": "BlockBlob"
-        },
-        {
-            "ordinal": 3,
-            "value": "AppendBlob"
-        }
-    ],
-    "guid": "171bba26-3a17-3f5c-50f2-1e313c87d473",
-    "lastModifiedTS": "1",
-    "name": "blob_type",
-    "serviceType": "Azure Blob Storage",
-    "typeVersion": "1.0",
-    "updateTime": 1615787945788,
-    "updatedBy": "admin",
-    "version": 1
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>
-
-Get enum definition by guid.
-```powershell
-pvw types readEnumDef --guid "171bba26-3a17-3f5c-50f2-1e313c87d473"
-```

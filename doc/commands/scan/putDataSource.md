@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > putDataSource
 
 ## Description
-Creates or Updates a data source
+Putdatasource operation for scan
 
 ## Syntax
 ```
@@ -10,69 +10,39 @@ pvw scan putDataSource --dataSourceName=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
-`--dataSourceName` (string)  
-The data source name.
-
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--dataSourceName`: dataSourceName parameter
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--action`: Allowed values: Delete or Keep. (string)
+- `--classificationRuleName`: Name of the classification rule. (string)
+- `--classificationRuleVersion`: Version of the classification rule. (integer)
+- `--scanName`: Name of the scan. (string)
+- `--scanRulesetName`: Name of the scan ruleset. (string)
+- `--keyVaultName`: Name of the key vault. (string)
+- `--runId`: The unique identifier of the run. (string)
+- `--dataSourceType`: Type of data source. (string)
+- `--scanLevel`: Allowed values: Full or Incremental [default: Full]. (string)
+- `--collectionName`: The unique collection name. (string)
+- `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
-Scanning Data Plane > Data Sources > [Create Or Update](https://docs.microsoft.com/en-us/rest/api/purview/scanningdataplane/data-sources/create-or-update)
+ >  > []()
 ```
-PUT https://{accountName}.purview.azure.com/scan/datasources/{dataSourceName}
+GET /api/scan/putDataSource
 ```
 
 ## Examples
-Create or update a data source - Azure SQL Database.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw scan putDataSource --dataSourceName "AzureSqlDatabase-ABC" --payloadFile "/path/to/file.json"  
+EXAMPLE_COMMAND
 ```
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "kind": "AzureSqlDatabase",
-    "name": "AzureSqlDatabase-ABC",
-    "properties": {
-        "serverEndpoint": "my-sqlsvr.database.windows.net",
-        "subscriptionId": "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0",
-        "resourceGroup": "pvlab-taygan",
-        "location": "westeurope",
-        "resourceName": "my-sqlsvr",
-        "resourceId": "/subscriptions/2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0/resourceGroups/pvlab-taygan/providers/Microsoft.Sql/servers/pvlab-e2c824-sqlsvr",
-        "collection": {
-            "type": "CollectionReference",
-            "referenceName": "esg-26fa7f24-pvw"
-        }
-    }
-}
-```
-</p>
-</details><br />
-
-Create or update a data source - SQL Server.
-```powershell
-pvw scan putDataSource --dataSourceName "YOUR_DS_NAME" --payloadFile "/path/to/file.json"  
-```
-<details><summary>Example payload.</summary>
-<p>
-
-```json
-{
-    "kind": "SqlServerDatabase",
-    "name": "YOUR_DS_NAME",
-    "properties": {
-        "serverEndpoint": "YOUR_SQL_ENDPOINT",
-        "collection": {
-            "type": "CollectionReference",
-            "referenceName": "hqzywr"
-        }
-    }
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

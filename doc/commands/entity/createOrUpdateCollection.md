@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > createOrUpdateCollection
 
 ## Description
-Creates or updates an entity to a collection. Existing entity is matched using its unique guid if supplied or by its unique attributes eg: qualifiedName.
+Createorupdatecollection operation for entity
 
 ## Syntax
 ```
@@ -10,40 +10,35 @@ pvw entity createOrUpdateCollection --collection=<val> --payloadFile=<val>
 ```
 
 ## Required Arguments
-`--collection` (string)  
-The collection unique name.
-
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--collection`: collection parameter
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--bmFile`: File path to a valid business metadata template CSV file. (string)
+- `--bmName`: BusinessMetadata name. (string)
+- `--classificationName`: The name of the classification. (string)
+- `--guid`: The globally unique identifier of the entity. (string)
+- `--name`: The name of the attribute. (string)
+- `--qualifiedName`: The qualified name of the entity. (string)
+- `--typeName`: The name of the type. (string)
 
 ## API Mapping
-Catalog Data Plane > Collection > [Create Or Update](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/collection/create-or-update)
+ >  > []()
 ```
-POST https://{accountName}.purview.azure.com/catalog/api/collections/{collection}/entity
+GET /api/entity/createOrUpdateCollection
 ```
 
 ## Examples
-Create or update an entity to a collection.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw entity createOrUpdateCollection --collection "tdumy6" --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-  "referredEntities": {},
-  "entity": {
-    "typeName": "azure_datalake_gen2_path",
-    "attributes": {
-      "name": "merged.parquet",
-      "qualifiedName": "https://pvdemocrv3kadls.dfs.core.windows.net/bing/data/merged.parquet"
-    }
-  }
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

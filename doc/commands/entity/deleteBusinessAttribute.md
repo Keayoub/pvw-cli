@@ -10,36 +10,35 @@ pvw entity deleteBusinessAttribute --guid=<val> --bmName=<val> --payloadFile=<va
 ```
 
 ## Required Arguments
-`--guid` (string)  
-The globally unique identifier of the entity.
-
-`--bmName` (string)  
-The name of the business metadata.
-
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--guid`: guid parameter
+- `--bmName`: bmName parameter
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--bmFile`: File path to a valid business metadata template CSV file. (string)
+- `--classificationName`: The name of the classification. (string)
+- `--collection`: The collection unique name. (string)
+- `--name`: The name of the attribute. (string)
+- `--qualifiedName`: The qualified name of the entity. (string)
+- `--typeName`: The name of the type. (string)
 
 ## API Mapping
-Catalog Data Plane > Entity > [Delete Business Attributes](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/entity/delete-business-attributes)
+ > Entity > [Delete Business Attributes]()
 ```
-DELETE https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/{guid}/businessmetadata/{bmName}
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/{guid}/businessmetadata/{bmName}
 ```
 
 ## Examples
-Delete business metadata from an entity.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw entity deleteBusinessAttribute --guid "0e945784-4bc3-40bb-a541-e8d1f7c9bf50" --bmName "myBizMetadata1" --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "bizAttr1": "bizAttr1"
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > deleteUniqueAttributeClassification
 
 ## Description
-Delete a given classification from an entity identified by its type and unique attributes.
+Deleteuniqueattributeclassification operation for entity
 
 ## Syntax
 ```
@@ -10,26 +10,35 @@ pvw entity deleteUniqueAttributeClassification --typeName=<val> --qualifiedName=
 ```
 
 ## Required Arguments
-`--typeName` (string)  
-The name of the type.
-
-`--qualifiedName` (string)  
-The qualified name of the entity.
-
-`--classificationName` (string)  
-The name of the classification.
+- `--typeName`: typeName parameter
+- `--qualifiedName`: qualifiedName parameter
+- `--classificationName`: classificationName parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--bmFile`: File path to a valid business metadata template CSV file. (string)
+- `--bmName`: BusinessMetadata name. (string)
+- `--collection`: The collection unique name. (string)
+- `--guid`: The globally unique identifier of the entity. (string)
+- `--name`: The name of the attribute. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
-Catalog Data Plane > Entity > [Delete Classification By Unique Attribute](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/entity/delete-classification-by-unique-attribute)
+ >  > []()
 ```
-DELETE https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/uniqueAttribute/type/{typeName}/classification/{classificationName}
+GET /api/entity/deleteUniqueAttributeClassification
 ```
 
 ## Examples
-Remove a classification from an entity via the entities qualified name.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw entity deleteUniqueAttributeClassification --typeName "azure_datalake_gen2_filesystem" --qualifiedName "https://esg26fa7f24adls.dfs.core.windows.net/02-silver" --classificationName "MICROSOFT.FINANCIAL.US.ABA_ROUTING_NUMBER"
+EXAMPLE_COMMAND
 ```
+<details><summary>Example payload.</summary>
+<p>
+
+```json
+PASTE_JSON_HERE
+```
+</p>
+</details>

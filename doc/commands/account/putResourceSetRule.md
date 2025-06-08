@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > putResourceSetRule
 
 ## Description
-Creates or updates a resource set.
+Putresourcesetrule operation for account
 
 ## Syntax
 ```
@@ -10,20 +10,31 @@ pvw account putResourceSetRule --payloadFile=<val>
 ```
 
 ## Required Arguments
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--collectionName`: The technical name of the collection. (string)
+- `--keyType`: The access key type. (string)
+- `--friendlyName`: The friendly name for the azure resource. (string)
+- `--parentCollection`: Gets or sets the parent collection reference. (string)
 
 ## API Mapping
-Account Data Plane > Resource Set Rules > [Create Or Update Resource Set Rule](https://docs.microsoft.com/en-us/rest/api/purview/accountdataplane/resource-set-rules/create-or-update-resource-set-rule)
+ >  > []()
 ```
-PUT https://{accountName}.purview.azure.com/account/resourceSetRuleConfigs/defaultResourceSetRuleConfig
+GET /api/account/putResourceSetRule
 ```
 
 ## Examples
-Create or update a resource set.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw account putResourceSetRule --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
+<details><summary>Example payload.</summary>
+<p>
+
+```json
+PASTE_JSON_HERE
+```
+</p>
+</details>

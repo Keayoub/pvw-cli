@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > deleteAccount
 
 ## Description
-Deletes the account resource.
+Deleteaccount operation for management
 
 ## Syntax
 ```
@@ -10,25 +10,34 @@ pvw management deleteAccount --subscriptionId=<val> --resourceGroupName=<val> --
 ```
 
 ## Required Arguments
-`--subscriptionId` (string)  
-The subscription identifier.
-
-`--resourceGroupName` (string)  
-The resource group name.
-
-`--accountName` (string)  
-The name of the account.
+- `--subscriptionId`: subscriptionId parameter
+- `--resourceGroupName`: resourceGroupName parameter
+- `--accountName`: accountName parameter
 
 ## Optional Arguments
-*None*
+- `--scopeTenantId`: The scope tenant in which the default account is set. (string)
+- `--scopeType`: The scope where the default account is set (Tenant or Subscription). (string)
+- `--scope`: The scope object ID (e.g. sub ID or tenant ID). (string)
+- `--groupId`: The group identifier. (string)
+- `--privateEndpointConnectionName`: The name of the private endpoint connection. (string)
+- `--objectId`: Gets or sets the object identifier of the admin. (string)
 
 ## API Mapping
-Accounts > [Delete](https://docs.microsoft.com/en-us/rest/api/purview/accounts/delete)
+ >  > []()
 ```
-DELETE https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Purview/accounts/{accountName}
+GET /api/management/deleteAccount
 ```
 
 ## Examples
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw management deleteAccount --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "esg" --accountName "esg-26fa7f24-pvw"
+EXAMPLE_COMMAND
 ```
+<details><summary>Example payload.</summary>
+<p>
+
+```json
+PASTE_JSON_HERE
+```
+</p>
+</details>

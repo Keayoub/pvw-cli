@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > updateAccount
 
 ## Description
-Updates an account.
+Updateaccount operation for account
 
 ## Syntax
 ```
@@ -10,75 +10,31 @@ pvw account updateAccount --friendlyName=<val>
 ```
 
 ## Required Arguments
-`--friendlyName` (string)  
-The friendly name of the account.
+- `--friendlyName`: friendlyName parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--collectionName`: The technical name of the collection. (string)
+- `--keyType`: The access key type. (string)
+- `--parentCollection`: Gets or sets the parent collection reference. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
-Account Data Plane > Accounts > [Update Account Properties](https://docs.microsoft.com/en-us/rest/api/purview/accountdataplane/accounts/update-account-properties)
+ >  > []()
 ```
-PATCH https://{accountName}.purview.azure.com/account/
+GET /api/account/updateAccount
 ```
 
 ## Examples
-Update the friendly name of the account.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw account updateAccount --friendlyName "Purview Sandbox"
+EXAMPLE_COMMAND
 ```
-
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "id": "/subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/esg/providers/Microsoft.Purview/accounts/esg-26fa7f24-pvw",
-    "identity": {
-        "principalId": "YOUR_PRINCIPAL_ID",
-        "tenantId": "YOUR_TENANT_ID",
-        "type": "SystemAssigned"
-    },
-    "location": "westeurope",
-    "name": "esg-26fa7f24-pvw",
-    "properties": {
-        "cloudConnectors": {
-            "awsExternalId": "YOUR_AWS_EXTERNAL_ID"
-        },
-        "createdAt": "2022-02-23T09:46:46.2381767Z",
-        "createdBy": "EMAIL@DOMAIN.com",
-        "createdByObjectId": "AZURE_AD_OBJECT_ID",
-        "endpoints": {
-            "catalog": "https://esg-26fa7f24-pvw.purview.azure.com/catalog",
-            "guardian": "https://esg-26fa7f24-pvw.purview.azure.com/guardian",
-            "scan": "https://esg-26fa7f24-pvw.purview.azure.com/scan"
-        },
-        "friendlyName": "My Azure Purview Account",
-        "managedResourceGroupName": "managed-rg-esg-26fa7f24-pvw",
-        "managedResources": {
-            "eventHubNamespace": "/subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/managed-rg-esg-26fa7f24-pvw/providers/Microsoft.EventHub/namespaces/YOUR_EVENT_HUB",
-            "resourceGroup": "/subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/managed-rg-esg-26fa7f24-pvw",
-            "storageAccount": "/subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/managed-rg-esg-26fa7f24-pvw/providers/Microsoft.Storage/storageAccounts/YOUR_STORAGE_ACCOUNT"
-        },
-        "privateEndpointConnections": [],
-        "provisioningState": "Succeeded",
-        "publicNetworkAccess": "Enabled"
-    },
-    "sku": {
-        "capacity": 1,
-        "name": "Standard"
-    },
-    "systemData": {
-        "createdAt": "2022-02-23T09:46:46.2381767Z",
-        "createdBy": "EMAIL@DOMAIN.com",
-        "createdByType": "User",
-        "lastModifiedAt": "2022-02-23T09:46:46.2381767Z",
-        "lastModifiedBy": "EMAIL@DOMAIN.com",
-        "lastModifiedByType": "User"
-    },
-    "tags": {},
-    "type": "Microsoft.Purview/accounts"
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

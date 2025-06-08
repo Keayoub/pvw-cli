@@ -1,40 +1,45 @@
 # pvw share deleteAsset
-
-[Command Reference](../../../README.md#command-reference) > [share](./main.md) >  deleteAsset
+[Command Reference](../../../README.md#command-reference) > [share](./main.md) > deleteAsset
 
 ## Description
-
-Delete asset in a sentShare.
+Deleteasset operation for share
 
 ## Syntax
-
 ```
 pvw share deleteAsset --sentShareName=<val> --assetName=<val>
 ```
 
 ## Required Arguments
-
-`--sentShareName` (string)
-The name of the sent share.
-
-`--assetName` (string)
-The name of the asset.
+- `--sentShareName`: sentShareName parameter
+- `--assetName`: assetName parameter
 
 ## Optional Arguments
-
-*None*
+- `--purviewName`: The name of the Microsoft Purview account. (string)
+- `--receivedShareName`: The name of the received share. (string)
+- `--acceptedSentShareName`: The name of the accepted sent share. (string)
+- `--assetMappingName`: The name of the asset mapping. (string)
+- `--invitationName`: The name of the invitation. (string)
+- `--skipToken`: The continuation token to list the next page. (string)
+- `--filter`: Filters the results using OData syntax. (string)
+- `--orderBy`: Sorts the results using OData syntax. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
-
-Share Data Plane > Assets > [Delete](https://docs.microsoft.com/en-us/rest/api/purview/sharedataplane/assets/delete)
+ >  > []()
 ```
-DELETE https://{accountName}.purview.azure.com/share/sentShares/{sentShareName}/assets/{assetName}
+GET /api/share/deleteAsset
 ```
 
 ## Examples
-
-Delete asset from a sent share.
-
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw share deleteAsset --sentShareName "MyNewSentShare" --assetName "MyAssetName"
+EXAMPLE_COMMAND
 ```
+<details><summary>Example payload.</summary>
+<p>
+
+```json
+PASTE_JSON_HERE
+```
+</p>
+</details>

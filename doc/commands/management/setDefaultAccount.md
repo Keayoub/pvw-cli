@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > setDefaultAccount
 
 ## Description
-Sets the default account for the scope.
+Setdefaultaccount operation for management
 
 ## Syntax
 ```
@@ -10,34 +10,34 @@ pvw management setDefaultAccount --subscriptionId=<val> --resourceGroupName=<val
 ```
 
 ## Required Arguments
-`--subscriptionId` (string)  
-The subscription identifier.
-
-`--resourceGroupName` (string)  
-The resource group name.
-
-`--accountName` (string)  
-The name of the account.
-
-`--scopeTenantId` (string)  
-The tenant ID.
-
-`--scopeType` (string)  
-The scope for the default account (Subscription OR Tenant).
-
-`--scope` (string)  
-The Id of the scope object, for example if the scope is "Subscription" then it is the ID of that subscription.
+- `--subscriptionId`: subscriptionId parameter
+- `--resourceGroupName`: resourceGroupName parameter
+- `--accountName`: accountName parameter
+- `--scopeTenantId`: scopeTenantId parameter
+- `--scopeType`: scopeType parameter
+- `--scope`: scope parameter
 
 ## Optional Arguments
-*None*
+- `--groupId`: The group identifier. (string)
+- `--privateEndpointConnectionName`: The name of the private endpoint connection. (string)
+- `--objectId`: Gets or sets the object identifier of the admin. (string)
 
 ## API Mapping
-Default Accounts > [Set](https://docs.microsoft.com/en-us/rest/api/purview/default-accounts/set)
+ >  > []()
 ```
-POST https://management.azure.com/providers/Microsoft.Purview/setDefaultAccount
+GET /api/management/setDefaultAccount
 ```
 
 ## Examples
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw management setDefaultAccount --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "esg" --accountName "esg-26fa7f24-pvw" --scopeTenantId "72f988bf-86f1-41af-91ab-2d7cd011db47" --scopeType "Subscription" --scope "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0"
+EXAMPLE_COMMAND
 ```
+<details><summary>Example payload.</summary>
+<p>
+
+```json
+PASTE_JSON_HERE
+```
+</p>
+</details>

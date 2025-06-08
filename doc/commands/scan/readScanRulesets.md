@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readScanRulesets
 
 ## Description
-List scan rulesets in Data catalog
+Readscanrulesets operation for scan
 
 ## Syntax
 ```
@@ -10,120 +10,39 @@ pvw scan readScanRulesets
 ```
 
 ## Required Arguments
-*None*
+No required arguments.
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--action`: Allowed values: Delete or Keep. (string)
+- `--classificationRuleName`: Name of the classification rule. (string)
+- `--classificationRuleVersion`: Version of the classification rule. (integer)
+- `--dataSourceName`: Name of the data source. (string)
+- `--scanName`: Name of the scan. (string)
+- `--scanRulesetName`: Name of the scan ruleset. (string)
+- `--keyVaultName`: Name of the key vault. (string)
+- `--runId`: The unique identifier of the run. (string)
+- `--dataSourceType`: Type of data source. (string)
+- `--scanLevel`: Allowed values: Full or Incremental [default: Full]. (string)
+- `--collectionName`: The unique collection name. (string)
+- `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
-Scanning Data Plane > Scan Rulesets > [List All](https://docs.microsoft.com/en-us/rest/api/purview/scanningdataplane/scan-rulesets/list-all)
+ >  > []()
 ```
-GET https://{accountName}.purview.azure.com/scan/scanrulesets
+GET /api/scan/readScanRulesets
 ```
 
 ## Examples
-List all custom scan rulesets.
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw scan readScanRulesets
+EXAMPLE_COMMAND
 ```
-<details><summary>Sample response.</summary>
+<details><summary>Example payload.</summary>
 <p>
 
 ```json
-{
-    "count": 2,
-    "value": [
-        {
-            "id": "scanrulesets/adls_parquet_only",
-            "kind": "AdlsGen2",
-            "name": "adls_parquet_only",
-            "properties": {
-                "collection": null,
-                "createdAt": "2022-02-27T21:22:19.0970457Z",
-                "description": null,
-                "excludedSystemClassifications": [],
-                "includedCustomClassificationRuleNames": [],
-                "lastModifiedAt": "2022-02-27T21:22:19.0970462Z",
-                "scanningRule": {
-                    "customFileExtensions": null,
-                    "fileExtensions": [
-                        "PARQUET"
-                    ]
-                },
-                "temporaryResourceFilters": [
-                    {
-                        "ingestTemporaryResource": true,
-                        "resourceFilterPattern": "(_SUCCESS|_started_\\d*|_committed_\\d*|_committed_vacuum\\d*)$"
-                    }
-                ]
-            },
-            "scanRulesetType": "Custom",
-            "status": "Enabled",
-            "version": 1
-        },
-        {
-            "id": "scanrulesets/adls_include_custom_classification",
-            "kind": "AdlsGen2",
-            "name": "adls_include_custom_classification",
-            "properties": {
-                "collection": null,
-                "createdAt": "2022-02-27T21:22:45.1800309Z",
-                "description": null,
-                "excludedSystemClassifications": [],
-                "includedCustomClassificationRuleNames": [
-                    "twitter_handle"
-                ],
-                "lastModifiedAt": "2022-02-27T21:22:45.1800313Z",
-                "scanningRule": {
-                    "customFileExtensions": null,
-                    "fileExtensions": [
-                        "CSV",
-                        "JSON",
-                        "PSV",
-                        "SSV",
-                        "TSV",
-                        "TXT",
-                        "XML",
-                        "PARQUET",
-                        "AVRO",
-                        "ORC",
-                        "Documents",
-                        "GZ",
-                        "DOC",
-                        "DOCM",
-                        "DOCX",
-                        "DOT",
-                        "ODP",
-                        "ODS",
-                        "ODT",
-                        "PDF",
-                        "POT",
-                        "PPS",
-                        "PPSX",
-                        "PPT",
-                        "PPTM",
-                        "PPTX",
-                        "XLC",
-                        "XLS",
-                        "XLSB",
-                        "XLSM",
-                        "XLSX",
-                        "XLT"
-                    ]
-                },
-                "temporaryResourceFilters": [
-                    {
-                        "ingestTemporaryResource": true,
-                        "resourceFilterPattern": "(_SUCCESS|_started_\\d*|_committed_\\d*|_committed_vacuum\\d*)$"
-                    }
-                ]
-            },
-            "scanRulesetType": "Custom",
-            "status": "Enabled",
-            "version": 1
-        }
-    ]
-}
+PASTE_JSON_HERE
 ```
 </p>
 </details>

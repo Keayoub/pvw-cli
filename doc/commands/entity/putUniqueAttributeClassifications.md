@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > putUniqueAttributeClassifications
 
 ## Description
-Update classification on an entity identified by its type and unique attributes.
+Putuniqueattributeclassifications operation for entity
 
 ## Syntax
 ```
@@ -10,40 +10,35 @@ pvw entity putUniqueAttributeClassifications --typeName=<val> --qualifiedName=<v
 ```
 
 ## Required Arguments
-`--typeName` (string)  
-The name of the type.
-
-`--qualifiedName` (string)  
-The qualified name of the entity.
-
-`--payloadFile` (string)  
-File path to a valid JSON document.
+- `--typeName`: typeName parameter
+- `--qualifiedName`: qualifiedName parameter
+- `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-*None*
+- `--purviewName`: Azure Purview account name. (string)
+- `--bmFile`: File path to a valid business metadata template CSV file. (string)
+- `--bmName`: BusinessMetadata name. (string)
+- `--classificationName`: The name of the classification. (string)
+- `--collection`: The collection unique name. (string)
+- `--guid`: The globally unique identifier of the entity. (string)
+- `--name`: The name of the attribute. (string)
 
 ## API Mapping
-Catalog Data Plane > Entity > [Update Classifications By Unique Attribute](https://docs.microsoft.com/en-us/rest/api/purview/catalogdataplane/entity/update-classifications-by-unique-attribute)
+ >  > []()
 ```
-PUT https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/uniqueAttribute/type/{typeName}/classifications
+GET /api/entity/putUniqueAttributeClassifications
 ```
 
 ## Examples
+DESCRIBE_EXAMPLE.
 ```powershell
-pvw entity putUniqueAttributeClassifications --typeName "azure_datalake_gen2_filesystem" --qualifiedName "https://esg26fa7f24adls.dfs.core.windows.net/02-silver" --payloadFile "/path/to/file.json"
+EXAMPLE_COMMAND
 ```
 <details><summary>Example payload.</summary>
 <p>
 
 ```json
-[
-    {
-        "typeName": "MICROSOFT.FINANCIAL.CREDIT_CARD_NUMBER",
-        "attributes": {
-            "confidence": 7
-        }
-    }
-]
+PASTE_JSON_HERE
 ```
 </p>
 </details>
