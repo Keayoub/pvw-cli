@@ -32,7 +32,7 @@ GET https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{
 ## Examples
 List privately linkable resources for an existing Azure Purview account.
 ```powershell
-pvw management listPrivateLinkResources --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "esg" --accountName "esg-26fa7f24-pv"
+pvw management listPrivateLinkResources --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "esg" --accountName "esg-26fa7f24-pvw"
 ```
 
 <details><summary>Sample response.</summary>
@@ -43,7 +43,7 @@ pvw management listPrivateLinkResources --subscriptionId "2c334b6c-e556-40ac-a4c
     "count": 2,
     "value": [
         {
-            "id": "/subscriptions/2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0/resourceGroups/esg/providers/Microsoft.Purview/accounts/esg-26fa7f24-pv/privateLinkResources/account",
+            "id": "/subscriptions/2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0/resourceGroups/esg/providers/Microsoft.Purview/accounts/esg-26fa7f24-pvw/privateLinkResources/account",
             "name": "account",
             "properties": {
                 "groupId": "account",
@@ -57,7 +57,7 @@ pvw management listPrivateLinkResources --subscriptionId "2c334b6c-e556-40ac-a4c
             "type": "Microsoft.Purview/accounts/privateLinkResources"
         },
         {
-            "id": "/subscriptions/2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0/resourceGroups/esg/providers/Microsoft.Purview/accounts/esg-26fa7f24-pv/privateLinkResources/portal",
+            "id": "/subscriptions/2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0/resourceGroups/esg/providers/Microsoft.Purview/accounts/esg-26fa7f24-pvw/privateLinkResources/portal",
             "name": "portal",
             "properties": {
                 "groupId": "portal",

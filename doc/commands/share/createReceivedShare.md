@@ -51,7 +51,7 @@ pvw share createReceivedShare --receivedShareName "MyNewReceivedShare" --payload
         "sentShareLocation": "northeurope",
         "invitationId": "71d43cbe-5e44-40a5-b747-4140752fce62",
         "collection": {
-            "referenceName": "pvdemo52dg4-pv",
+            "referenceName": "pvdemo52dg4-pvw",
             "type": "CollectionReference"
         }
     },

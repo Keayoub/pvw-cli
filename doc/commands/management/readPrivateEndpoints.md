@@ -31,7 +31,7 @@ GET https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{
 ## Examples
 Get information on private endpoint connections.
 ```powershell
-pvw management readPrivateEndpoints --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "private" --accountName "taygan-private-pv"
+pvw management readPrivateEndpoints --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "private" --accountName "taygan-private-pvw"
 ```
 
 <details><summary>Sample response.</summary>
@@ -42,7 +42,7 @@ pvw management readPrivateEndpoints --subscriptionId "2c334b6c-e556-40ac-a4c0-c0
     "count": 1,
     "value": [
         {
-            "id": "/subscriptions/SUBSCRIPTION_ID/resourceGroups/private/providers/Microsoft.Purview/accounts/taygan-private-pv/privateEndpointConnections/purview-pe-instance-a2dbee21-876d-43a4-b521-df9863a98553",
+            "id": "/subscriptions/SUBSCRIPTION_ID/resourceGroups/private/providers/Microsoft.Purview/accounts/taygan-private-pvw/privateEndpointConnections/purview-pe-instance-a2dbee21-876d-43a4-b521-df9863a98553",
             "name": "purview-pe-instance-a2dbee21-876d-43a4-b521-df9863a98553",
             "properties": {
                 "privateEndpoint": {

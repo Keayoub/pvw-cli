@@ -1,4 +1,4 @@
-# pv {{COMMAND}} {{ACTION}}
+# pvw {{COMMAND}} {{ACTION}}
 [Command Reference](../../../README.md#command-reference) > [{{COMMAND}}](./main.md) > {{ACTION}}
 
 ## Description

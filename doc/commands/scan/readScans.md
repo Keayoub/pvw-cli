@@ -41,7 +41,7 @@ pvw scan readScans --dataSourceName "AzureDataLakeStorage-Gbm"
             "properties": {
                 "collection": {
                     "lastModifiedAt": "2022-02-23T15:45:56.3612911Z",
-                    "referenceName": "esg-26fa7f24-pv",
+                    "referenceName": "esg-26fa7f24-pvw",
                     "type": "CollectionReference"
                 },
                 "createdAt": "2022-02-23T15:45:56.3612911Z",
@@ -57,7 +57,7 @@ pvw scan readScans --dataSourceName "AzureDataLakeStorage-Gbm"
             "properties": {
                 "collection": {
                     "lastModifiedAt": "2022-02-27T20:26:51.1585438Z",
-                    "referenceName": "esg-26fa7f24-pv",
+                    "referenceName": "esg-26fa7f24-pvw",
                     "type": "CollectionReference"
                 },
                 "createdAt": "2022-02-27T20:26:51.1585438Z",

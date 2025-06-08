@@ -33,5 +33,5 @@ PUT https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{
 
 ## Examples
 ```powershell
-pvw management createAccount --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "synapse" --accountName "taygan-26fa7f24-pv" --payloadFile "/path/to/file.json"
+pvw management createAccount --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "synapse" --accountName "taygan-26fa7f24-pvw" --payloadFile "/path/to/file.json"
 ```

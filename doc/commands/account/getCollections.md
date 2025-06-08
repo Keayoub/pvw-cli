@@ -38,7 +38,7 @@ pvw account getCollections
             "collectionProvisioningState": "Succeeded",
             "description": "The root collection.",
             "friendlyName": "My Friendly Collection Name",
-            "name": "esg-26fa7f24-pv",
+            "name": "esg-26fa7f24-pvw",
             "systemData": {
                 "createdAt": "2022-02-23T09:46:46.2381767Z",
                 "createdBy": "095354ff-cae8-44ff-8120-22ec5a941b40",
@@ -53,7 +53,7 @@ pvw account getCollections
             "friendlyName": "Environment",
             "name": "g7qe97",
             "parentCollection": {
-                "referenceName": "esg-26fa7f24-pv",
+                "referenceName": "esg-26fa7f24-pvw",
                 "type": "CollectionReference"
             },
             "systemData": {
@@ -70,7 +70,7 @@ pvw account getCollections
             "friendlyName": "Social",
             "name": "6b93rz",
             "parentCollection": {
-                "referenceName": "esg-26fa7f24-pv",
+                "referenceName": "esg-26fa7f24-pvw",
                 "type": "CollectionReference"
             },
             "systemData": {
@@ -87,7 +87,7 @@ pvw account getCollections
             "friendlyName": "Governance",
             "name": "bfgnyg",
             "parentCollection": {
-                "referenceName": "esg-26fa7f24-pv",
+                "referenceName": "esg-26fa7f24-pvw",
                 "type": "CollectionReference"
             },
             "systemData": {

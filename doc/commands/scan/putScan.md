@@ -42,7 +42,7 @@ pvw scan putScan --dataSourceName "AzureDataLakeStorage-Gbm" --scanName "Scan-AB
     "name": "Scan-ABC",
     "properties": {
         "collection": {
-            "referenceName": "esg-26fa7f24-pv",
+            "referenceName": "esg-26fa7f24-pvw",
             "type": "CollectionReference"
         },
         "scanRulesetName": "AdlsGen2",

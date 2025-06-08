@@ -75,7 +75,7 @@ pvw entity readUniqueAttribute --typeName "azure_datalake_gen2_path" --qualified
                 "typeName": "MICROSOFT.FINANCIAL.US.ABA_ROUTING_NUMBER"
             }
         ],
-        "collectionId": "esg-26fa7f24-pv",
+        "collectionId": "esg-26fa7f24-pvw",
         "createTime": 1645631429711,
         "createdBy": "ServiceAdmin",
         "guid": "dcd41879-dda2-4b3c-8c97-9b76d39799b1",

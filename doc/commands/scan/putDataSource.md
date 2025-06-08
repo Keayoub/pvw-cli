@@ -46,7 +46,7 @@ pvw scan putDataSource --dataSourceName "AzureSqlDatabase-ABC" --payloadFile "/p
         "resourceId": "/subscriptions/2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0/resourceGroups/pvlab-taygan/providers/Microsoft.Sql/servers/pvlab-e2c824-sqlsvr",
         "collection": {
             "type": "CollectionReference",
-            "referenceName": "esg-26fa7f24-pv"
+            "referenceName": "esg-26fa7f24-pvw"
         }
     }
 }

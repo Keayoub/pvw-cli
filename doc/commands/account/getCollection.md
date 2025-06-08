@@ -37,7 +37,7 @@ pvw account getCollection --collectionName "g7qe97"
     "friendlyName": "Environment",
     "name": "g7qe97",
     "parentCollection": {
-        "referenceName": "esg-26fa7f24-pv",
+        "referenceName": "esg-26fa7f24-pvw",
         "type": "CollectionReference"
     },
     "systemData": {

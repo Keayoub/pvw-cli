@@ -30,5 +30,5 @@ DELETE https://management.azure.com/subscriptions/{subscriptionId}/resourceGroup
 
 ## Examples
 ```powershell
-pvw management deleteAccount --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "esg" --accountName "esg-26fa7f24-pv"
+pvw management deleteAccount --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "esg" --accountName "esg-26fa7f24-pvw"
 ```

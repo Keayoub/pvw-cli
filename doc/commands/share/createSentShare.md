@@ -50,7 +50,7 @@ pvw share createSentShare --sentShareName "MyNewSentShare" --payloadFile "/path/
     "properties": {
         "description": "This is a friendly description.",
         "collection": {
-            "referenceName": "pvdemo52dg4-pv",
+            "referenceName": "pvdemo52dg4-pvw",
             "type": "CollectionReference"
         }
     },

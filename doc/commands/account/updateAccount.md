@@ -33,14 +33,14 @@ pvw account updateAccount --friendlyName "Purview Sandbox"
 
 ```json
 {
-    "id": "/subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/esg/providers/Microsoft.Purview/accounts/esg-26fa7f24-pv",
+    "id": "/subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/esg/providers/Microsoft.Purview/accounts/esg-26fa7f24-pvw",
     "identity": {
         "principalId": "YOUR_PRINCIPAL_ID",
         "tenantId": "YOUR_TENANT_ID",
         "type": "SystemAssigned"
     },
     "location": "westeurope",
-    "name": "esg-26fa7f24-pv",
+    "name": "esg-26fa7f24-pvw",
     "properties": {
         "cloudConnectors": {
             "awsExternalId": "YOUR_AWS_EXTERNAL_ID"
@@ -49,16 +49,16 @@ pvw account updateAccount --friendlyName "Purview Sandbox"
         "createdBy": "EMAIL@DOMAIN.com",
         "createdByObjectId": "AZURE_AD_OBJECT_ID",
         "endpoints": {
-            "catalog": "https://esg-26fa7f24-pv.purview.azure.com/catalog",
-            "guardian": "https://esg-26fa7f24-pv.purview.azure.com/guardian",
-            "scan": "https://esg-26fa7f24-pv.purview.azure.com/scan"
+            "catalog": "https://esg-26fa7f24-pvw.purview.azure.com/catalog",
+            "guardian": "https://esg-26fa7f24-pvw.purview.azure.com/guardian",
+            "scan": "https://esg-26fa7f24-pvw.purview.azure.com/scan"
         },
         "friendlyName": "My Azure Purview Account",
-        "managedResourceGroupName": "managed-rg-esg-26fa7f24-pv",
+        "managedResourceGroupName": "managed-rg-esg-26fa7f24-pvw",
         "managedResources": {
-            "eventHubNamespace": "/subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/managed-rg-esg-26fa7f24-pv/providers/Microsoft.EventHub/namespaces/YOUR_EVENT_HUB",
-            "resourceGroup": "/subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/managed-rg-esg-26fa7f24-pv",
-            "storageAccount": "/subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/managed-rg-esg-26fa7f24-pv/providers/Microsoft.Storage/storageAccounts/YOUR_STORAGE_ACCOUNT"
+            "eventHubNamespace": "/subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/managed-rg-esg-26fa7f24-pvw/providers/Microsoft.EventHub/namespaces/YOUR_EVENT_HUB",
+            "resourceGroup": "/subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/managed-rg-esg-26fa7f24-pvw",
+            "storageAccount": "/subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/managed-rg-esg-26fa7f24-pvw/providers/Microsoft.Storage/storageAccounts/YOUR_STORAGE_ACCOUNT"
         },
         "privateEndpointConnections": [],
         "provisioningState": "Succeeded",

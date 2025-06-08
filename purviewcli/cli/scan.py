@@ -1,43 +1,43 @@
 """
 usage: 
-    pv scan cancelScan --dataSourceName=<val> --scanName=<val> --runId=<val>
-    pv scan deleteClassificationRule --classificationRuleName=<val>
-    pv scan deleteCredential --credentialName=<val>
-    pv scan deleteDataSource --dataSourceName=<val>
-    pv scan deleteKeyVault --keyVaultName=<val>
-    pv scan deleteScan --dataSourceName=<val> --scanName=<val>
-    pv scan deleteScanRuleset --scanRulesetName=<val>
-    pv scan deleteTrigger --dataSourceName=<val> --scanName=<val>
-    pv scan putClassificationRule --classificationRuleName=<val> --payloadFile=<val>
-    pv scan putCredential --credentialName=<val> --payloadFile=<val>
-    pv scan putDataSource --dataSourceName=<val> --payloadFile=<val>
-    pv scan putFilter --dataSourceName=<val> --scanName=<val> --payloadFile=<val>
-    pv scan putKeyVault --keyVaultName=<val> --payloadFile=<val>
-    pv scan putScan --dataSourceName=<val> --scanName=<val> --payloadFile=<val>
-    pv scan putScanRuleset --scanRulesetName=<val> --payloadFile=<val>
-    pv scan putTrigger --dataSourceName=<val> --scanName=<val> --payloadFile=<val>
-    pv scan readClassificationRule --classificationRuleName=<val>
-    pv scan readClassificationRuleVersions --classificationRuleName=<val>
-    pv scan readClassificationRules
-    pv scan readCredential [--credentialName=<val>]
-    pv scan readDataSource --dataSourceName=<val>
-    pv scan readDataSources [--collectionName=<val>]
-    pv scan readFilters --dataSourceName=<val> --scanName=<val>
-    pv scan readKeyVault --keyVaultName=<val>
-    pv scan readKeyVaults
-    pv scan readScan --dataSourceName=<val> --scanName=<val>
-    pv scan readScanHistory --dataSourceName=<val> --scanName=<val>
-    pv scan readScanRuleset --scanRulesetName=<val>
-    pv scan readScanRulesets
-    pv scan readScans --dataSourceName=<val>
-    pv scan readSystemScanRuleset --dataSourceType=<val>
-    pv scan readSystemScanRulesetLatest --dataSourceType=<val>
-    pv scan readSystemScanRulesetVersion --version=<val> --dataSourceType=<val>
-    pv scan readSystemScanRulesetVersions --dataSourceType=<val>
-    pv scan readSystemScanRulesets
-    pv scan readTrigger --dataSourceName=<val> --scanName=<val>
-    pv scan runScan --dataSourceName=<val> --scanName=<val> [--scanLevel=<val>]
-    pv scan tagClassificationVersion --classificationRuleName=<val> --classificationRuleVersion=<val> --action=<val>
+    pvw scan cancelScan --dataSourceName=<val> --scanName=<val> --runId=<val>
+    pvw scan deleteClassificationRule --classificationRuleName=<val>
+    pvw scan deleteCredential --credentialName=<val>
+    pvw scan deleteDataSource --dataSourceName=<val>
+    pvw scan deleteKeyVault --keyVaultName=<val>
+    pvw scan deleteScan --dataSourceName=<val> --scanName=<val>
+    pvw scan deleteScanRuleset --scanRulesetName=<val>
+    pvw scan deleteTrigger --dataSourceName=<val> --scanName=<val>
+    pvw scan putClassificationRule --classificationRuleName=<val> --payloadFile=<val>
+    pvw scan putCredential --credentialName=<val> --payloadFile=<val>
+    pvw scan putDataSource --dataSourceName=<val> --payloadFile=<val>
+    pvw scan putFilter --dataSourceName=<val> --scanName=<val> --payloadFile=<val>
+    pvw scan putKeyVault --keyVaultName=<val> --payloadFile=<val>
+    pvw scan putScan --dataSourceName=<val> --scanName=<val> --payloadFile=<val>
+    pvw scan putScanRuleset --scanRulesetName=<val> --payloadFile=<val>
+    pvw scan putTrigger --dataSourceName=<val> --scanName=<val> --payloadFile=<val>
+    pvw scan readClassificationRule --classificationRuleName=<val>
+    pvw scan readClassificationRuleVersions --classificationRuleName=<val>
+    pvw scan readClassificationRules
+    pvw scan readCredential [--credentialName=<val>]
+    pvw scan readDataSource --dataSourceName=<val>
+    pvw scan readDataSources [--collectionName=<val>]
+    pvw scan readFilters --dataSourceName=<val> --scanName=<val>
+    pvw scan readKeyVault --keyVaultName=<val>
+    pvw scan readKeyVaults
+    pvw scan readScan --dataSourceName=<val> --scanName=<val>
+    pvw scan readScanHistory --dataSourceName=<val> --scanName=<val>
+    pvw scan readScanRuleset --scanRulesetName=<val>
+    pvw scan readScanRulesets
+    pvw scan readScans --dataSourceName=<val>
+    pvw scan readSystemScanRuleset --dataSourceType=<val>
+    pvw scan readSystemScanRulesetLatest --dataSourceType=<val>
+    pvw scan readSystemScanRulesetVersion --version=<val> --dataSourceType=<val>
+    pvw scan readSystemScanRulesetVersions --dataSourceType=<val>
+    pvw scan readSystemScanRulesets
+    pvw scan readTrigger --dataSourceName=<val> --scanName=<val>
+    pvw scan runScan --dataSourceName=<val> --scanName=<val> [--scanLevel=<val>]
+    pvw scan tagClassificationVersion --classificationRuleName=<val> --classificationRuleVersion=<val> --action=<val>
 
 options:
     --purviewName=<val>                 [string]  Azure Purview account name.

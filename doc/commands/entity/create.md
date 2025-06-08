@@ -40,7 +40,7 @@ pvw entity create --payloadFile "/path/to/file.json"
             "qualifiedName": "https://esg26fa7f24adls.dfs.core.windows.net/01-bronze/esg/myfile.csv",
             "isFile": true
         },
-        "collectionId": "esg-26fa7f24-pv",
+        "collectionId": "esg-26fa7f24-pvw",
         "typeName": "azure_datalake_gen2_path"
     }
 }

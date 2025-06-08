@@ -28,7 +28,7 @@ PUT https://{accountName}.purview.azure.com/policystore/metadataPolicies/{policy
 ## Examples
 Update an existing metadata policy.
 ```powershell
- pv policystore putMetadataPolicy --policyId "67c667b7-8f1c-468f-ab3b-f19fd943de95" --payloadFile "/path/to/file.json"
+ pvw policystore putMetadataPolicy --policyId "67c667b7-8f1c-468f-ab3b-f19fd943de95" --payloadFile "/path/to/file.json"
 ```
 <details><summary>Example payload.</summary>
 <p>
@@ -36,7 +36,7 @@ Update an existing metadata policy.
 ```json
 {
     "id": "a17fef61-3a7d-4453-925c-8cbf7b83af92",
-    "name": "policy_esg-26fa7f24-pv",
+    "name": "policy_esg-26fa7f24-pvw",
     "properties": {
         "attributeRules": [
             {
@@ -55,9 +55,9 @@ Update an existing metadata policy.
                         }
                     ]
                 ],
-                "id": "purviewmetadatarole_builtin_collection-administrator:esg-26fa7f24-pv",
+                "id": "purviewmetadatarole_builtin_collection-administrator:esg-26fa7f24-pvw",
                 "kind": "attributerule",
-                "name": "purviewmetadatarole_builtin_collection-administrator:esg-26fa7f24-pv"
+                "name": "purviewmetadatarole_builtin_collection-administrator:esg-26fa7f24-pvw"
             },
             {
                 "dnfCondition": [
@@ -75,9 +75,9 @@ Update an existing metadata policy.
                         }
                     ]
                 ],
-                "id": "purviewmetadatarole_builtin_purview-reader:esg-26fa7f24-pv",
+                "id": "purviewmetadatarole_builtin_purview-reader:esg-26fa7f24-pvw",
                 "kind": "attributerule",
-                "name": "purviewmetadatarole_builtin_purview-reader:esg-26fa7f24-pv"
+                "name": "purviewmetadatarole_builtin_purview-reader:esg-26fa7f24-pvw"
             },
             {
                 "dnfCondition": [
@@ -96,9 +96,9 @@ Update an existing metadata policy.
                         }
                     ]
                 ],
-                "id": "purviewmetadatarole_builtin_data-curator:esg-26fa7f24-pv",
+                "id": "purviewmetadatarole_builtin_data-curator:esg-26fa7f24-pvw",
                 "kind": "attributerule",
-                "name": "purviewmetadatarole_builtin_data-curator:esg-26fa7f24-pv"
+                "name": "purviewmetadatarole_builtin_data-curator:esg-26fa7f24-pvw"
             },
             {
                 "dnfCondition": [
@@ -117,48 +117,48 @@ Update an existing metadata policy.
                         }
                     ]
                 ],
-                "id": "purviewmetadatarole_builtin_data-source-administrator:esg-26fa7f24-pv",
+                "id": "purviewmetadatarole_builtin_data-source-administrator:esg-26fa7f24-pvw",
                 "kind": "attributerule",
-                "name": "purviewmetadatarole_builtin_data-source-administrator:esg-26fa7f24-pv"
+                "name": "purviewmetadatarole_builtin_data-source-administrator:esg-26fa7f24-pvw"
             },
             {
                 "dnfCondition": [
                     [
                         {
                             "attributeName": "derived.purview.permission",
-                            "attributeValueIncludes": "purviewmetadatarole_builtin_collection-administrator:esg-26fa7f24-pv",
-                            "fromRule": "purviewmetadatarole_builtin_collection-administrator:esg-26fa7f24-pv"
+                            "attributeValueIncludes": "purviewmetadatarole_builtin_collection-administrator:esg-26fa7f24-pvw",
+                            "fromRule": "purviewmetadatarole_builtin_collection-administrator:esg-26fa7f24-pvw"
                         }
                     ],
                     [
                         {
                             "attributeName": "derived.purview.permission",
-                            "attributeValueIncludes": "purviewmetadatarole_builtin_purview-reader:esg-26fa7f24-pv",
-                            "fromRule": "purviewmetadatarole_builtin_purview-reader:esg-26fa7f24-pv"
+                            "attributeValueIncludes": "purviewmetadatarole_builtin_purview-reader:esg-26fa7f24-pvw",
+                            "fromRule": "purviewmetadatarole_builtin_purview-reader:esg-26fa7f24-pvw"
                         }
                     ],
                     [
                         {
                             "attributeName": "derived.purview.permission",
-                            "attributeValueIncludes": "purviewmetadatarole_builtin_data-curator:esg-26fa7f24-pv",
-                            "fromRule": "purviewmetadatarole_builtin_data-curator:esg-26fa7f24-pv"
+                            "attributeValueIncludes": "purviewmetadatarole_builtin_data-curator:esg-26fa7f24-pvw",
+                            "fromRule": "purviewmetadatarole_builtin_data-curator:esg-26fa7f24-pvw"
                         }
                     ],
                     [
                         {
                             "attributeName": "derived.purview.permission",
-                            "attributeValueIncludes": "purviewmetadatarole_builtin_data-source-administrator:esg-26fa7f24-pv",
-                            "fromRule": "purviewmetadatarole_builtin_data-source-administrator:esg-26fa7f24-pv"
+                            "attributeValueIncludes": "purviewmetadatarole_builtin_data-source-administrator:esg-26fa7f24-pvw",
+                            "fromRule": "purviewmetadatarole_builtin_data-source-administrator:esg-26fa7f24-pvw"
                         }
                     ]
                 ],
-                "id": "permission:esg-26fa7f24-pv",
+                "id": "permission:esg-26fa7f24-pvw",
                 "kind": "attributerule",
-                "name": "permission:esg-26fa7f24-pv"
+                "name": "permission:esg-26fa7f24-pvw"
             }
         ],
         "collection": {
-            "referenceName": "esg-26fa7f24-pv",
+            "referenceName": "esg-26fa7f24-pvw",
             "type": "CollectionReference"
         },
         "decisionRules": [
@@ -167,12 +167,12 @@ Update an existing metadata policy.
                     [
                         {
                             "attributeName": "resource.purview.collection",
-                            "attributeValueIncludes": "esg-26fa7f24-pv"
+                            "attributeValueIncludes": "esg-26fa7f24-pvw"
                         },
                         {
                             "attributeName": "derived.purview.permission",
-                            "attributeValueIncludes": "permission:esg-26fa7f24-pv",
-                            "fromRule": "permission:esg-26fa7f24-pv"
+                            "attributeValueIncludes": "permission:esg-26fa7f24-pvw",
+                            "fromRule": "permission:esg-26fa7f24-pvw"
                         }
                     ]
                 ],

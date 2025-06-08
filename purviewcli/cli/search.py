@@ -1,9 +1,9 @@
 """
 usage: 
-    pv search autoComplete [--keywords=<val> --limit=<val> --filterFile=<val>]
-    pv search browse  (--entityType=<val> | --path=<val>) [--limit=<val> --offset=<val>]
-    pv search query [--keywords=<val> --limit=<val> --offset=<val> --filterFile=<val> --facets-file=<val>]
-    pv search suggest [--keywords=<val> --limit=<val> --filterFile=<val>]
+    pvw search autoComplete [--keywords=<val> --limit=<val> --filterFile=<val>]
+    pvw search browse  (--entityType=<val> | --path=<val>) [--limit=<val> --offset=<val>]
+    pvw search query [--keywords=<val> --limit=<val> --offset=<val> --filterFile=<val> --facets-file=<val>]
+    pvw search suggest [--keywords=<val> --limit=<val> --filterFile=<val>]
 
 options:
   --purviewName=<val>     [string]  Azure Purview account name.

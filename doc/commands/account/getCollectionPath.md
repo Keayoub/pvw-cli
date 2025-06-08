@@ -38,7 +38,7 @@ pvw account getCollectionPath --collectionName "w0kfma"
         "Social"
     ],
     "parentNameChain": [
-        "esg-26fa7f24-pv",
+        "esg-26fa7f24-pvw",
         "6b93rz"
     ]
 }

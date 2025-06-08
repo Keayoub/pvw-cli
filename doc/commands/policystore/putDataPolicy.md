@@ -39,7 +39,7 @@ pvw policystore putDataPolicy --policyName "new-policy" --payloadFile "/path/to/
     "name": "new-policy",
     "properties": {
         "collection": {
-            "referenceName": "pvdemocrv3k-pv",
+            "referenceName": "pvdemocrv3k-pvw",
             "type": "CollectionReference"
         },
         "decisionRules": [

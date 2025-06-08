@@ -66,7 +66,7 @@ pvw share listAssetMappings --receivedShareName "MyShare"
             "location":"uksouth",
             "mountPath":"",
             "provisioningState":"Succeeded",
-            "storageAccountResourceId":"/subscriptions/2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0/resourceGroups/pv-7643-rg/providers/Microsoft.Storage/storageAccounts/storagedatashare01"
+            "storageAccountResourceId":"/subscriptions/2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0/resourceGroups/pvw-7643-rg/providers/Microsoft.Storage/storageAccounts/storagedatashare01"
          },
          "type":"receivedShares/assetMappings"
       }

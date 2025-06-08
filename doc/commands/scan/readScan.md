@@ -41,7 +41,7 @@ pvw scan readScan --dataSourceName "AzureDataLakeStorage-Gbm" --scanName "Scan-X
     "properties": {
         "collection": {
             "lastModifiedAt": "2022-02-23T15:45:56.3612911Z",
-            "referenceName": "esg-26fa7f24-pv",
+            "referenceName": "esg-26fa7f24-pvw",
             "type": "CollectionReference"
         },
         "createdAt": "2022-02-23T15:45:56.3612911Z",

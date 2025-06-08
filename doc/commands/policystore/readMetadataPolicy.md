@@ -63,8 +63,8 @@ pvw policystore readMetadataPolicy --collectionName "pokuj2"
                     [
                         {
                             "attributeName": "derived.purview.permission",
-                            "attributeValueIncludes": "purviewmetadatarole_builtin_collection-administrator:esg-26fa7f24-pv",
-                            "fromRule": "purviewmetadatarole_builtin_collection-administrator:esg-26fa7f24-pv"
+                            "attributeValueIncludes": "purviewmetadatarole_builtin_collection-administrator:esg-26fa7f24-pvw",
+                            "fromRule": "purviewmetadatarole_builtin_collection-administrator:esg-26fa7f24-pvw"
                         }
                     ]
                 ],
@@ -84,8 +84,8 @@ pvw policystore readMetadataPolicy --collectionName "pokuj2"
                     [
                         {
                             "attributeName": "derived.purview.permission",
-                            "attributeValueIncludes": "permission:esg-26fa7f24-pv",
-                            "fromRule": "permission:esg-26fa7f24-pv"
+                            "attributeValueIncludes": "permission:esg-26fa7f24-pvw",
+                            "fromRule": "permission:esg-26fa7f24-pvw"
                         }
                     ]
                 ],
@@ -118,7 +118,7 @@ pvw policystore readMetadataPolicy --collectionName "pokuj2"
             }
         ],
         "description": "",
-        "parentCollectionName": "esg-26fa7f24-pv"
+        "parentCollectionName": "esg-26fa7f24-pvw"
     },
     "version": 0
 }

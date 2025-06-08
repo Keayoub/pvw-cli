@@ -45,7 +45,7 @@ pvw policystore readDataPolicies
             "name": "another-policy",
             "properties": {
                 "collection": {
-                    "referenceName": "pvdemocrv3k-pv",
+                    "referenceName": "pvdemocrv3k-pvw",
                     "type": "CollectionReference"
                 },
                 "decisionRules": [
@@ -130,7 +130,7 @@ pvw policystore readDataPolicies
             "name": "new-policy",
             "properties": {
                 "collection": {
-                    "referenceName": "pvdemocrv3k-pv",
+                    "referenceName": "pvdemocrv3k-pvw",
                     "type": "CollectionReference"
                 },
                 "decisionRules": [
@@ -199,7 +199,7 @@ pvw policystore readDataPolicies --policyName "new-policy"
     "name": "new-policy",
     "properties": {
         "collection": {
-            "referenceName": "pvdemocrv3k-pv",
+            "referenceName": "pvdemocrv3k-pvw",
             "type": "CollectionReference"
         },
         "decisionRules": [

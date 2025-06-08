@@ -1,15 +1,15 @@
 """
 usage: 
-    pv policystore deleteDataPolicy --policyName=<val>
-    pv policystore deleteDataPolicyScope --policyName=<val> --datasource=<val>
-    pv policystore putDataPolicy --policyName=<val> --payloadFile=<val>
-    pv policystore putDataPolicyScope --policyName=<val> --payloadFile=<val>
-    pv policystore putMetadataPolicy --policyId=<val> --payloadFile=<val>
-    pv policystore readDataPolicies [--policyName=<val>]
-    pv policystore readDataPolicyScopes --policyName=<val>
-    pv policystore readMetadataPolicies
-    pv policystore readMetadataPolicy (--collectionName=<val> | --policyId=<val>)
-    pv policystore readMetadataRoles
+    pvw policystore deleteDataPolicy --policyName=<val>
+    pvw policystore deleteDataPolicyScope --policyName=<val> --datasource=<val>
+    pvw policystore putDataPolicy --policyName=<val> --payloadFile=<val>
+    pvw policystore putDataPolicyScope --policyName=<val> --payloadFile=<val>
+    pvw policystore putMetadataPolicy --policyId=<val> --payloadFile=<val>
+    pvw policystore readDataPolicies [--policyName=<val>]
+    pvw policystore readDataPolicyScopes --policyName=<val>
+    pvw policystore readMetadataPolicies
+    pvw policystore readMetadataPolicy (--collectionName=<val> | --policyId=<val>)
+    pvw policystore readMetadataRoles
 
 options:
     --purviewName=<val>           [string]  Azure Purview account name.

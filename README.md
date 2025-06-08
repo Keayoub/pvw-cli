@@ -272,16 +272,16 @@ The CLI uses Azure DefaultAzureCredential, which supports multiple authenticatio
 
 ```bash
 # Get entity information
-pv-enhanced entity get --guid "12345678-1234-1234-1234-123456789012"
+pvw entity get --guid "12345678-1234-1234-1234-123456789012"
 
 # Import entities from CSV
-pv-enhanced entity import-csv --csv-file datasets.csv --template dataset
+pvw entity import-csv --csv-file datasets.csv --template dataset
 
 # Export entities to CSV
-pv-enhanced entity export-csv --query "name:customer*" --output-file exported_entities.csv
+pvw entity export-csv --query "name:customer*" --output-file exported_entities.csv
 
 # Update entities from CSV
-pv-enhanced entity update-csv --csv-file updated_datasets.csv --template dataset
+pvw entity update-csv --csv-file updated_datasets.csv --template dataset
 ```
 
 #### Glossary Operations

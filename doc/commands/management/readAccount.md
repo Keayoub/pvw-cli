@@ -31,7 +31,7 @@ GET https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{
 ## Examples
 Get the properties of an existing Azure Purview account.
 ```powershell
-pvw management readAccount --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "esg" --accountName "esg-26fa7f24-pv"
+pvw management readAccount --subscriptionId "2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0" --resourceGroupName "esg" --accountName "esg-26fa7f24-pvw"
 ```
 
 <details><summary>Sample response.</summary>

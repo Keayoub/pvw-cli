@@ -89,7 +89,7 @@ pvw share listReceivedShares
          "name":"NewShare",
          "properties":{
             "collection":{
-               "referenceName":"pvdemo52dg4-pv",
+               "referenceName":"pvdemo52dg4-pvw",
                "type":"CollectionReference"
             },
             "createdAt":"2022-09-02T13:28:13.1922869Z",

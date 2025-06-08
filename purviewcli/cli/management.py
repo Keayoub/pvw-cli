@@ -1,22 +1,22 @@
 """
 usage: 
-    pv management addRootCollectionAdmin --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val> --objectId=<val>
-    pv management checkNameAvailability --subscriptionId=<val> --accountName=<val>
-    pv management createAccount --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val> --payloadFile=<val>
-    pv management defaultAccount --scopeTenantId=<val> --scopeType=<val> --scope=<val>
-    pv management deleteAccount --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val>
-    pv management deletePrivateEndpoint --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val> --privateEndpointConnectionName=<val>
-    pv management listKeys --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val>
-    pv management listOperations
-    pv management listPrivateLinkResources --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val> [--groupId=<val>]
-    pv management putPrivateEndpoint --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val> --privateEndpointConnectionName=<val> --payloadFile=<val>
-    pv management readAccount --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val>
-    pv management readAccounts --subscriptionId=<val> [--resourceGroupName=<val>]
-    pv management readPrivateEndpoint --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val> --privateEndpointConnectionName=<val>
-    pv management readPrivateEndpoints --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val>
-    pv management removeDefaultAccount --scopeTenantId=<val> --scopeType=<val> --scope=<val>
-    pv management setDefaultAccount --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val> --scopeTenantId=<val> --scopeType=<val> --scope=<val>
-    pv management updateAccount --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val> --payloadFile=<val>
+    pvw management addRootCollectionAdmin --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val> --objectId=<val>
+    pvw management checkNameAvailability --subscriptionId=<val> --accountName=<val>
+    pvw management createAccount --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val> --payloadFile=<val>
+    pvw management defaultAccount --scopeTenantId=<val> --scopeType=<val> --scope=<val>
+    pvw management deleteAccount --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val>
+    pvw management deletePrivateEndpoint --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val> --privateEndpointConnectionName=<val>
+    pvw management listKeys --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val>
+    pvw management listOperations
+    pvw management listPrivateLinkResources --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val> [--groupId=<val>]
+    pvw management putPrivateEndpoint --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val> --privateEndpointConnectionName=<val> --payloadFile=<val>
+    pvw management readAccount --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val>
+    pvw management readAccounts --subscriptionId=<val> [--resourceGroupName=<val>]
+    pvw management readPrivateEndpoint --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val> --privateEndpointConnectionName=<val>
+    pvw management readPrivateEndpoints --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val>
+    pvw management removeDefaultAccount --scopeTenantId=<val> --scopeType=<val> --scope=<val>
+    pvw management setDefaultAccount --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val> --scopeTenantId=<val> --scopeType=<val> --scope=<val>
+    pvw management updateAccount --subscriptionId=<val> --resourceGroupName=<val> --accountName=<val> --payloadFile=<val>
 
 options:
     --subscriptionId=<val>                  [string]  The subscription ID.

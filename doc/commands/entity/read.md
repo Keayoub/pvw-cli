@@ -100,7 +100,7 @@ pvw entity read --guid "c6a7811a-0699-44d0-b0be-68babe560ab2"
                 "typeName": "MICROSOFT.FINANCIAL.US.ABA_ROUTING_NUMBER"
             }
         ],
-        "collectionId": "esg-26fa7f24-pv",
+        "collectionId": "esg-26fa7f24-pvw",
         "contacts": {
             "Expert": [
                 {
@@ -291,7 +291,7 @@ pvw entity read --guid "c6a7811a-0699-44d0-b0be-68babe560ab2" --ignoreRelationsh
                 "typeName": "MICROSOFT.FINANCIAL.US.ABA_ROUTING_NUMBER"
             }
         ],
-        "collectionId": "esg-26fa7f24-pv",
+        "collectionId": "esg-26fa7f24-pvw",
         "contacts": {
             "Expert": [
                 {

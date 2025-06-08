@@ -4,7 +4,7 @@
 ## Commands
 | Command | Description |
 | --- | --- |
-| [pv search autoComplete](./autoComplete.md) | Get auto complete options. |
-| [pv search browse](./browse.md) | Browse entities by path or entity type. |
-| [pv search query](./query.md) | Gets data using search. |
-| [pv search suggest](./suggest.md) | Get search suggestions by query criteria. |
+| [pvw search autoComplete](./autoComplete.md) | Get auto complete options. |
+| [pvw search browse](./browse.md) | Browse entities by path or entity type. |
+| [pvw search query](./query.md) | Gets data using search. |
+| [pvw search suggest](./suggest.md) | Get search suggestions by query criteria. |

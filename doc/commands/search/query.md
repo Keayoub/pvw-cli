@@ -68,7 +68,7 @@ pvw search query --keywords "ESG"
                 "MICROSOFT.GOVERNMENT.AUSTRALIA.COMPANY.NUMBER",
                 "MICROSOFT.POWERBI.ENDORSEMENT"
             ],
-            "collectionId": "esg-26fa7f24-pv",
+            "collectionId": "esg-26fa7f24-pvw",
             "contact": [
                 {
                     "contactType": "Expert",
@@ -117,7 +117,7 @@ pvw search query --keywords "ESG"
                 "Azure Data Lake Storage Gen2"
             ],
             "classification": [],
-            "collectionId": "esg-26fa7f24-pv",
+            "collectionId": "esg-26fa7f24-pvw",
             "description": null,
             "entityType": "azure_datalake_gen2_path",
             "id": "6374e9e8-4719-4747-b2d2-054548023ae2",
@@ -146,7 +146,7 @@ pvw search query --keywords "ESG"
                 "Azure Data Lake Storage Gen2"
             ],
             "classification": [],
-            "collectionId": "esg-26fa7f24-pv",
+            "collectionId": "esg-26fa7f24-pvw",
             "description": null,
             "entityType": "azure_datalake_gen2_path",
             "id": "dcd41879-dda2-4b3c-8c97-9b76d39799b1",
@@ -172,7 +172,7 @@ pvw search query --keywords "ESG"
                 "Azure Data Lake Storage Gen2"
             ],
             "classification": [],
-            "collectionId": "esg-26fa7f24-pv",
+            "collectionId": "esg-26fa7f24-pvw",
             "description": null,
             "entityType": "azure_datalake_gen2_path",
             "id": "d20f67cf-139e-4063-b751-ce56c3035492",
@@ -283,7 +283,7 @@ pvw search query --keywords "ESG"
                 "Azure Data Lake Storage Gen2"
             ],
             "classification": [],
-            "collectionId": "esg-26fa7f24-pv",
+            "collectionId": "esg-26fa7f24-pvw",
             "description": null,
             "entityType": "azure_storage_account",
             "id": "0f354421-2284-458f-b99c-0030a73c2dca",
@@ -304,7 +304,7 @@ pvw search query --keywords "ESG"
                 "Azure Data Lake Storage Gen2"
             ],
             "classification": [],
-            "collectionId": "esg-26fa7f24-pv",
+            "collectionId": "esg-26fa7f24-pvw",
             "description": null,
             "entityType": "azure_datalake_gen2_service",
             "id": "79f230dc-2450-442a-b574-d8969ab23dbc",
@@ -388,7 +388,7 @@ pvw search query --keywords "ESG"
                 "Azure Data Lake Storage Gen2"
             ],
             "classification": [],
-            "collectionId": "esg-26fa7f24-pv",
+            "collectionId": "esg-26fa7f24-pvw",
             "description": null,
             "entityType": "azure_datalake_gen2_filesystem",
             "id": "f2359056-7bb8-4b3c-a866-367fd4c254a7",
@@ -405,7 +405,7 @@ pvw search query --keywords "ESG"
                 "Azure Data Lake Storage Gen2"
             ],
             "classification": [],
-            "collectionId": "esg-26fa7f24-pv",
+            "collectionId": "esg-26fa7f24-pvw",
             "description": null,
             "entityType": "azure_datalake_gen2_filesystem",
             "id": "04f2bb30-91db-404b-a8e1-d65e45338929",
@@ -422,7 +422,7 @@ pvw search query --keywords "ESG"
                 "Azure Data Lake Storage Gen2"
             ],
             "classification": [],
-            "collectionId": "esg-26fa7f24-pv",
+            "collectionId": "esg-26fa7f24-pvw",
             "description": null,
             "entityType": "azure_datalake_gen2_filesystem",
             "id": "bbb9ff1d-f880-435e-ac87-d6fd5676d8f0",
@@ -439,7 +439,7 @@ pvw search query --keywords "ESG"
                 "Azure Data Lake Storage Gen2"
             ],
             "classification": [],
-            "collectionId": "esg-26fa7f24-pv",
+            "collectionId": "esg-26fa7f24-pvw",
             "description": null,
             "entityType": "azure_datalake_gen2_filesystem",
             "id": "d1df0e2d-18b1-42ff-ab52-d7c954affa1a",

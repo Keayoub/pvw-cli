@@ -4,65 +4,65 @@
 ## Sent Shares
 | Command | Description |
 | --- | --- |
-| [pv share listSentShares](./listSentShares.md) | Get list of sent shares in the given Purview account. |
-| [pv share createSentShare](./createSentShare.md) | Create a sent share in the given Purview account. |
-| [pv share deleteSentShare](./deleteSentShare.md) | Deletes a sent share. |
-| [pv share getSentShare](./getSentShare.md) | Get a sent share in the given Purview account. |
+| [pvw share listSentShares](./listSentShares.md) | Get list of sent shares in the given Purview account. |
+| [pvw share createSentShare](./createSentShare.md) | Create a sent share in the given Purview account. |
+| [pvw share deleteSentShare](./deleteSentShare.md) | Deletes a sent share. |
+| [pvw share getSentShare](./getSentShare.md) | Get a sent share in the given Purview account. |
 
 ## Accepted Sent Shares
 | Command | Description |
 | --- | --- |
-| [pv share listAcceptedShares](./listAcceptedShares.md) | List of accepted shares for the current sent share. |
-| [pv share getAcceptedShare](./getAcceptedShare.md) | Get an accepted share with acceptedSentShareName to a particular sent share. |
-| [pv share reinstateAcceptedShare](./reinstateAcceptedShare.md) | Reinstate a revoked accepted sent share. |
-| [pv share revokeAcceptedShare](./revokeAcceptedShare.md) | Revoke an accepted sent share's access. |
-| [pv share updateExpirationAcceptedShare](./updateExpirationAcceptedShare.md) | Update the expiration date of an active accepted sent share. |
+| [pvw share listAcceptedShares](./listAcceptedShares.md) | List of accepted shares for the current sent share. |
+| [pvw share getAcceptedShare](./getAcceptedShare.md) | Get an accepted share with acceptedSentShareName to a particular sent share. |
+| [pvw share reinstateAcceptedShare](./reinstateAcceptedShare.md) | Reinstate a revoked accepted sent share. |
+| [pvw share revokeAcceptedShare](./revokeAcceptedShare.md) | Revoke an accepted sent share's access. |
+| [pvw share updateExpirationAcceptedShare](./updateExpirationAcceptedShare.md) | Update the expiration date of an active accepted sent share. |
 
 ## Sent Invitations
 | Command | Description |
 | --- | --- |
-| [pv share listSentInvitations](./listSentInvitations.md) | List all Invitations in a share. |
-| [pv share createSentInvitation](./createSentInvitation.md) | Create/Update a sent share invitation in the given account. |
-| [pv share deleteSentInvitation](./deleteSentInvitation.md) | Delete Invitation in a share. |
-| [pv share getSentInvitation](./getSentInvitation.md) | Get Invitation for a given share. |
+| [pvw share listSentInvitations](./listSentInvitations.md) | List all Invitations in a share. |
+| [pvw share createSentInvitation](./createSentInvitation.md) | Create/Update a sent share invitation in the given account. |
+| [pvw share deleteSentInvitation](./deleteSentInvitation.md) | Delete Invitation in a share. |
+| [pvw share getSentInvitation](./getSentInvitation.md) | Get Invitation for a given share. |
 
 ## Received Shares
 | Command | Description |
 | --- | --- |
-| [pv share listReceivedShares](./listReceivedShares.md) | Get a list of received shares. |
-| [pv share createReceivedShare](./createReceivedShare.md) | Create a received share in the given account. |
-| [pv share deleteReceivedShare](./deleteReceivedShare.md) | Deletes a received share. |
-| [pv share getReceivedShare](./getReceivedShare.md) | Get a received share by name. |
+| [pvw share listReceivedShares](./listReceivedShares.md) | Get a list of received shares. |
+| [pvw share createReceivedShare](./createReceivedShare.md) | Create a received share in the given account. |
+| [pvw share deleteReceivedShare](./deleteReceivedShare.md) | Deletes a received share. |
+| [pvw share getReceivedShare](./getReceivedShare.md) | Get a received share by name. |
 
 ## Received Invitations
 | Command | Description |
 | --- | --- |
-| [pv share listReceivedInvitations](./listReceivedInvitations.md) | Lists the received invitations. |
-| [pv share getReceivedInvitation](./getReceivedInvitation.md) | Gets the received invitation identified by name. |
-| [pv share rejectReceivedInvitation](./rejectReceivedInvitation.md) | Rejects the received invitation identified by name. |
+| [pvw share listReceivedInvitations](./listReceivedInvitations.md) | Lists the received invitations. |
+| [pvw share getReceivedInvitation](./getReceivedInvitation.md) | Gets the received invitation identified by name. |
+| [pvw share rejectReceivedInvitation](./rejectReceivedInvitation.md) | Rejects the received invitation identified by name. |
 
 ## Asset Mappings
 | Command | Description |
 | --- | --- |
-| [pv share listAssetMappings](./listAssetMappings.md) | List AssetMappings in a received share. |
-| [pv share createAssetMapping](./createAssetMapping.md) | Maps a source asset in the sent share to a destination asset in the received share. |
-| [pv share deleteAssetMapping](./deleteAssetMapping.md) | Delete AssetMapping in a receivedShare. |
-| [pv share getAssetMapping](./getAssetMapping.md) | Get AssetMapping in a receivedShare. |
+| [pvw share listAssetMappings](./listAssetMappings.md) | List AssetMappings in a received share. |
+| [pvw share createAssetMapping](./createAssetMapping.md) | Maps a source asset in the sent share to a destination asset in the received share. |
+| [pvw share deleteAssetMapping](./deleteAssetMapping.md) | Delete AssetMapping in a receivedShare. |
+| [pvw share getAssetMapping](./getAssetMapping.md) | Get AssetMapping in a receivedShare. |
 
 ## Assets
 | Command | Description |
 | --- | --- |
-| [pv share listAssets](./listAssets.md) | List Assets in a share. |
-| [pv share createAsset](./createAsset.md) | Adds a new asset to an existing share. |
-| [pv share deleteAsset](./deleteAsset.md) | Delete asset in a sentShare. |
-| [pv share getAsset](./getAsset.md) | Get asset in a sentShare. |
-| [pv share listReceivedAssets](./listReceivedAssets.md) | List source asset of a received share. |
+| [pvw share listAssets](./listAssets.md) | List Assets in a share. |
+| [pvw share createAsset](./createAsset.md) | Adds a new asset to an existing share. |
+| [pvw share deleteAsset](./deleteAsset.md) | Delete asset in a sentShare. |
+| [pvw share getAsset](./getAsset.md) | Get asset in a sentShare. |
+| [pvw share listReceivedAssets](./listReceivedAssets.md) | List source asset of a received share. |
 
 ## Email Registration
 | Command | Description |
 | --- | --- |
-| [pv share activateEmail](./activateEmail.md) | Activates the tenant and email combination using the activation code received. |
-| [pv share registerEmail](./registerEmail.md) | Registers the tenant and email combination for activation. |
+| [pvw share activateEmail](./activateEmail.md) | Activates the tenant and email combination using the activation code received. |
+| [pvw share registerEmail](./registerEmail.md) | Registers the tenant and email combination for activation. |
 
 ## ER Diagram #1
 
@@ -147,7 +147,7 @@ erDiagram
     receivedShares {
         string id "/receivedShares/NewShare"
         string name "NewShare"
-        string collection_referenceName "pvdemo52dg4-pv"
+        string collection_referenceName "pvdemo52dg4-pvw"
         string collection_type "CollectionReference"
         string createdAt "2022-09-02T13:28:13.1922869Z"
         string invitationId "037ac95e-98a4-4b6a-aba7-7f915ab72497"
@@ -177,7 +177,7 @@ erDiagram
         string location "uksouth"
         string mountPath ""
         string provisioningState "Succeeded"
-        string storageAccountResourceId "/subscriptions/2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0/resourceGroups/pv-7643-rg/providers/Microsoft.Storage/storageAccounts/storagedatashare01"
+        string storageAccountResourceId "/subscriptions/2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0/resourceGroups/pvw-7643-rg/providers/Microsoft.Storage/storageAccounts/storagedatashare01"
         string type "receivedShares/assetMappings"
     }
     receivedAssets {
@@ -212,7 +212,7 @@ erDiagram
         string paths "[{'containerName':'products','receiverPath':'products.csv','senderPath':'products.csv'}]"
         string provisioningState "Succeeded"
         string receiverAssetName "assetName"
-        string storageAccountResourceId "/subscriptions/2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0/resourceGroups/pv-7643-rg/providers/Microsoft.Storage/storageAccounts/storagedatashare01"
+        string storageAccountResourceId "/subscriptions/2c334b6c-e556-40ac-a4c0-c0d1d2e08ca0/resourceGroups/pvw-7643-rg/providers/Microsoft.Storage/storageAccounts/storagedatashare01"
         string type "sentShares/assets"
     }
 ```
