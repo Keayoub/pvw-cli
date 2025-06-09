@@ -1,12 +1,12 @@
-# pvw lineage csv
-[Command Reference](../../../README.md#command-reference) > [lineage](./main.md) > csv
+# pvw lineage impact
+[Command Reference](../../../README.md#command-reference) > [lineage](./main.md) > impact
 
 ## Description
 Perform operation on lineage.
 
 ## Syntax
 ```
-pvw lineage csv templates
+pvw lineage impact --entity-guid=<val> [--output-file=<val>]
 ```
 
 ## Required Arguments
@@ -21,9 +21,9 @@ No required arguments.
 - `--template`: Template type: basic, etl, column-mapping [default: basic]. (string)
 
 ## API Mapping
-Discovery Data Plane > Lineage > [Csv]()
+Discovery Data Plane > Lineage > [Impact]()
 ```
- https://{accountName}.purview.azure.com/catalog/api/atlas/v2/lineage/csv
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/lineage/impact
 ```
 
 ## Examples

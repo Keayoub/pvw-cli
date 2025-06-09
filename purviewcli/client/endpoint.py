@@ -1,6 +1,6 @@
 import sys
 import json
-from .client import PurviewClient
+from .api_client import PurviewClient
 
 class Endpoint:
     def __init__(self):

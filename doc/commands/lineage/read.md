@@ -6,7 +6,7 @@ Retrieve lineage.
 
 ## Syntax
 ```
-pvw lineage read --guid=<val> [--depth=<val> --width=<val> --direction=<val>]
+pvw lineage read --guid=<val> [--depth=<val> --width=<val> --direction=<val> --output=<val>]
 ```
 
 ## Required Arguments
@@ -14,6 +14,7 @@ pvw lineage read --guid=<val> [--depth=<val> --width=<val> --direction=<val>]
 - `--depth`: depth parameter
 - `--width`: width parameter
 - `--direction`: direction parameter
+- `--output`: output parameter
 
 ## Optional Arguments
 - `--purviewName`: Azure Purview account name. (string)

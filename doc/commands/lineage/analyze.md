@@ -1,16 +1,17 @@
-# pvw lineage csv
-[Command Reference](../../../README.md#command-reference) > [lineage](./main.md) > csv
+# pvw lineage analyze
+[Command Reference](../../../README.md#command-reference) > [lineage](./main.md) > analyze
 
 ## Description
 Perform operation on lineage.
 
 ## Syntax
 ```
-pvw lineage csv templates
+pvw lineage analyze --entity-guid=<val> [--direction=<val> --depth=<val> --output-file=<val>]
 ```
 
 ## Required Arguments
-No required arguments.
+- `--direction`: direction parameter
+- `--depth`: depth parameter
 
 ## Optional Arguments
 - `--purviewName`: Azure Purview account name. (string)
@@ -21,9 +22,9 @@ No required arguments.
 - `--template`: Template type: basic, etl, column-mapping [default: basic]. (string)
 
 ## API Mapping
-Discovery Data Plane > Lineage > [Csv]()
+Discovery Data Plane > Lineage > [Analyze]()
 ```
- https://{accountName}.purview.azure.com/catalog/api/atlas/v2/lineage/csv
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/lineage/analyze
 ```
 
 ## Examples
