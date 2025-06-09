@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > deleteAccount
 
 ## Description
-Deleteaccount operation for management
+Delete Purview account.
 
 ## Syntax
 ```
@@ -23,9 +23,9 @@ pvw management deleteAccount --subscriptionId=<val> --resourceGroupName=<val> --
 - `--objectId`: Gets or sets the object identifier of the admin. (string)
 
 ## API Mapping
- >  > []()
+Management Data Plane > Management > [Deleteaccount]()
 ```
-GET /api/management/deleteAccount
+ https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Purview/deleteAccount
 ```
 
 ## Examples

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > put
 
 ## Description
-Put operation for entity
+Create or update entity.
 
 ## Syntax
 ```
@@ -26,9 +26,9 @@ pvw entity put --guid=<val> --attrName=<val> --attrValue=<val>
 - `--typeName`: The name of the type. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Entity > [Put]()
 ```
-GET /api/entity/put
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/put
 ```
 
 ## Examples

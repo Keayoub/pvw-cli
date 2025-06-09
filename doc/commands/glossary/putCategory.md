@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > putCategory
 
 ## Description
-Putcategory operation for glossary
+Create or update glossary term or category.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw glossary putCategory --categoryGuid=<val> --payloadFile=<val>
 - `--termGuid`: The globally unique identifier for glossary term. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Glossary > [Putcategory]()
 ```
-GET /api/glossary/putCategory
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/putCategory
 ```
 
 ## Examples

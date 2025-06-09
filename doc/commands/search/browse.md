@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [search](./main.md) > browse
 
 ## Description
-Browse operation for search
+Browse catalog.
 
 ## Syntax
 ```
@@ -21,9 +21,9 @@ pvw search browse  (--entityType=<val> | --path=<val>) [--limit=<val> --offset=<
 - `--filterFile`: File path to a filter json file. (string)
 
 ## API Mapping
- >  > []()
+Discovery Data Plane > Search > [Browse]()
 ```
-GET /api/search/browse
+ https://{accountName}.purview.azure.com/catalog/api/search/browse
 ```
 
 ## Examples

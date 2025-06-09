@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > deleteClassificationRule
 
 ## Description
-Deleteclassificationrule operation for scan
+Delete data source scan.
 
 ## Syntax
 ```
@@ -27,9 +27,9 @@ pvw scan deleteClassificationRule --classificationRuleName=<val>
 - `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
- >  > []()
+Scanning Data Plane > Scan > [Deleteclassificationrule]()
 ```
-GET /api/scan/deleteClassificationRule
+ https://{accountName}.purview.azure.com/scan/api/deleteClassificationRule
 ```
 
 ## Examples

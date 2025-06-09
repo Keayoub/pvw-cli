@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > readBulkUniqueAttribute
 
 ## Description
-Readbulkuniqueattribute operation for entity
+Retrieve entity.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw entity readBulkUniqueAttribute --typeName=<val> --qualifiedName=<val>... [--
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Entity > [Readbulkuniqueattribute]()
 ```
-GET /api/entity/readBulkUniqueAttribute
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/bulk
 ```
 
 ## Examples

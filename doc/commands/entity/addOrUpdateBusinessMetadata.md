@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > addOrUpdateBusinessMetadata
 
 ## Description
-Add or update business metadata to an entity.
+Add OrUpdateBusinessMetadata for entity.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw entity addOrUpdateBusinessMetadata --guid=<val> --payloadFile=<val> [--isOve
 - `--typeName`: The name of the type. (string)
 
 ## API Mapping
- > Entity > [Add Or Update Business Metadata]()
+Catalog Data Plane > Entity > [Addorupdatebusinessmetadata]()
 ```
- https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/{guid}/businessmetadata
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/businessmetadata
 ```
 
 ## Examples

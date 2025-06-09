@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > putResourceSetRule
 
 ## Description
-Putresourcesetrule operation for account
+Create or update account.
 
 ## Syntax
 ```
@@ -20,9 +20,9 @@ pvw account putResourceSetRule --payloadFile=<val>
 - `--parentCollection`: Gets or sets the parent collection reference. (string)
 
 ## API Mapping
- >  > []()
+Account Management > Account > [Putresourcesetrule]()
 ```
-GET /api/account/putResourceSetRule
+ https://{accountName}.purview.azure.com/account/api/putResourceSetRule
 ```
 
 ## Examples

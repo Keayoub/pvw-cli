@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > getAccount
 
 ## Description
-Getaccount operation for account
+Get account.
 
 ## Syntax
 ```
@@ -21,9 +21,9 @@ No required arguments.
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Account Management > Account > [Getaccount]()
 ```
-GET /api/account/getAccount
+ https://{accountName}.purview.azure.com/account/api/getAccount
 ```
 
 ## Examples

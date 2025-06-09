@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > readTermsRelated
 
 ## Description
-Readtermsrelated operation for glossary
+Retrieve glossary term or category.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw glossary readTermsRelated --termGuid=<val> [--limit=<val> --offset=<val> --s
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Glossary > [Readtermsrelated]()
 ```
-GET /api/glossary/readTermsRelated
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/readTermsRelated
 ```
 
 ## Examples

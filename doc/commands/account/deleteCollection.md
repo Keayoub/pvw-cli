@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > deleteCollection
 
 ## Description
-Deletecollection operation for account
+Delete account.
 
 ## Syntax
 ```
@@ -20,9 +20,9 @@ pvw account deleteCollection --collectionName=<val>
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Account Management > Account > [Deletecollection]()
 ```
-GET /api/account/deleteCollection
+ https://{accountName}.purview.azure.com/account/api/deleteCollection
 ```
 
 ## Examples

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > readTermTemplateDef
 
 ## Description
-Readtermtemplatedef operation for types
+Retrieve type definition.
 
 ## Syntax
 ```
@@ -19,9 +19,9 @@ pvw types readTermTemplateDef (--guid=<val> | --name=<val>)
 - `--type`: Typedef name as search filter (classification | entity | enum | relationship | struct). (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Types > [Readtermtemplatedef]()
 ```
-GET /api/types/readTermTemplateDef
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/readTermTemplateDef
 ```
 
 ## Examples

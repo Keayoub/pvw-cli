@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) > reinstateAcceptedShare
 
 ## Description
-Reinstateacceptedshare operation for share
+Reinstate data share.
 
 ## Syntax
 ```
@@ -25,9 +25,9 @@ pvw share reinstateAcceptedShare --sentShareName=<val> --acceptedSentShareName=<
 - `--orderBy`: Sorts the results using OData syntax. (string)
 
 ## API Mapping
- >  > []()
+Share Data Plane > Share > [Reinstateacceptedshare]()
 ```
-GET /api/share/reinstateAcceptedShare
+ https://{accountName}.purview.azure.com/share/api/reinstateAcceptedShare
 ```
 
 ## Examples

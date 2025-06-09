@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) > deleteSentInvitation
 
 ## Description
-Deletesentinvitation operation for share
+Delete data share.
 
 ## Syntax
 ```
@@ -25,9 +25,9 @@ pvw share deleteSentInvitation --sentShareName=<val> --invitationName=<val>
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Share Data Plane > Share > [Deletesentinvitation]()
 ```
-GET /api/share/deleteSentInvitation
+ https://{accountName}.purview.azure.com/share/api/deleteSentInvitation
 ```
 
 ## Examples

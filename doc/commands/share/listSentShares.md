@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) > listSentShares
 
 ## Description
-Listsentshares operation for share
+List all data shares.
 
 ## Syntax
 ```
@@ -25,9 +25,9 @@ pvw share listSentShares [--skipToken=<val> --filter=<val> --orderBy=<val>]
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Share Data Plane > Share > [Listsentshares]()
 ```
-GET /api/share/listSentShares
+ https://{accountName}.purview.azure.com/share/api/listSentShares
 ```
 
 ## Examples

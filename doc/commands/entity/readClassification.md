@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > readClassification
 
 ## Description
-Readclassification operation for entity
+Retrieve entity.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw entity readClassification --guid=<val> --classificationName=<val>
 - `--typeName`: The name of the type. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Entity > [Readclassification]()
 ```
-GET /api/entity/readClassification
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/classification
 ```
 
 ## Examples

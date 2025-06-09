@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > readHeader
 
 ## Description
-Readheader operation for entity
+Retrieve entity.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw entity readHeader --guid=<val>
 - `--typeName`: The name of the type. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Entity > [Readheader]()
 ```
-GET /api/entity/readHeader
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/readHeader
 ```
 
 ## Examples

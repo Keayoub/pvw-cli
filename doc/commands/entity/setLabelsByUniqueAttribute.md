@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > setLabelsByUniqueAttribute
 
 ## Description
-Overwrite labels for an entity identified by its type and unique attributes.
+Set LabelsByUniqueAttribute for entity.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw entity setLabelsByUniqueAttribute --typeName=<val> --qualifiedName=<val> --p
 - `--name`: The name of the attribute. (string)
 
 ## API Mapping
- > Entity > [Set labels to a given entity identified by its type and unique attributes.]()
+Catalog Data Plane > Entity > [Setlabelsbyuniqueattribute]()
 ```
- https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/uniqueAttribute/type/{typeName}/labels
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/uniqueAttribute
 ```
 
 ## Examples

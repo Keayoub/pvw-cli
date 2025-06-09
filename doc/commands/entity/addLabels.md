@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > addLabels
 
 ## Description
-Append labels to an entity.
+Add Labels for entity.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw entity addLabels --guid=<val> --payloadFile=<val>
 - `--typeName`: The name of the type. (string)
 
 ## API Mapping
- > Entity > [Add given labels to a given entity.]()
+Catalog Data Plane > Entity > [Addlabels]()
 ```
- https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/{guid}/labels
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/labels
 ```
 
 ## Examples

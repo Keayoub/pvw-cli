@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) > deleteAsset
 
 ## Description
-Deleteasset operation for share
+Delete data share.
 
 ## Syntax
 ```
@@ -25,9 +25,9 @@ pvw share deleteAsset --sentShareName=<val> --assetName=<val>
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Share Data Plane > Share > [Deleteasset]()
 ```
-GET /api/share/deleteAsset
+ https://{accountName}.purview.azure.com/share/api/deleteAsset
 ```
 
 ## Examples

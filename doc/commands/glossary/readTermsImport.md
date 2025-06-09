@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > readTermsImport
 
 ## Description
-Readtermsimport operation for glossary
+Retrieve glossary term or category.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw glossary readTermsImport --operationGuid=<val>
 - `--termGuid`: The globally unique identifier for glossary term. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Glossary > [Readtermsimport]()
 ```
-GET /api/glossary/readTermsImport
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/readTermsImport
 ```
 
 ## Examples

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > readPrivateEndpoints
 
 ## Description
-Readprivateendpoints operation for management
+Retrieve Purview account.
 
 ## Syntax
 ```
@@ -23,9 +23,9 @@ pvw management readPrivateEndpoints --subscriptionId=<val> --resourceGroupName=<
 - `--objectId`: Gets or sets the object identifier of the admin. (string)
 
 ## API Mapping
- >  > []()
+Management Data Plane > Management > [Readprivateendpoints]()
 ```
-GET /api/management/readPrivateEndpoints
+ https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Purview/readPrivateEndpoints
 ```
 
 ## Examples

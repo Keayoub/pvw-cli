@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readSystemScanRuleset
 
 ## Description
-Readsystemscanruleset operation for scan
+Retrieve data source scan.
 
 ## Syntax
 ```
@@ -27,9 +27,9 @@ pvw scan readSystemScanRuleset --dataSourceType=<val>
 - `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
- >  > []()
+Scanning Data Plane > Scan > [Readsystemscanruleset]()
 ```
-GET /api/scan/readSystemScanRuleset
+ https://{accountName}.purview.azure.com/scan/api/readSystemScanRuleset
 ```
 
 ## Examples

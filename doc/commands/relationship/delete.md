@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [relationship](./main.md) > delete
 
 ## Description
-Delete operation for relationship
+Delete relationship.
 
 ## Syntax
 ```
@@ -17,9 +17,9 @@ pvw relationship delete --guid=<val>
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Relationship > [Delete]()
 ```
-GET /api/relationship/delete
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/relationship/delete
 ```
 
 ## Examples

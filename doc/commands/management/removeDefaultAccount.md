@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > removeDefaultAccount
 
 ## Description
-Removedefaultaccount operation for management
+Remove DefaultAccount for Purview account.
 
 ## Syntax
 ```
@@ -23,9 +23,9 @@ pvw management removeDefaultAccount --scopeTenantId=<val> --scopeType=<val> --sc
 - `--objectId`: Gets or sets the object identifier of the admin. (string)
 
 ## API Mapping
- >  > []()
+Management Data Plane > Management > [Removedefaultaccount]()
 ```
-GET /api/management/removeDefaultAccount
+ https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Purview/removeDefaultAccount
 ```
 
 ## Examples

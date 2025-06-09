@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readSystemScanRulesetVersion
 
 ## Description
-Readsystemscanrulesetversion operation for scan
+Retrieve data source scan.
 
 ## Syntax
 ```
@@ -28,9 +28,9 @@ pvw scan readSystemScanRulesetVersion --version=<val> --dataSourceType=<val>
 - `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
- >  > []()
+Scanning Data Plane > Scan > [Readsystemscanrulesetversion]()
 ```
-GET /api/scan/readSystemScanRulesetVersion
+ https://{accountName}.purview.azure.com/scan/api/readSystemScanRulesetVersion
 ```
 
 ## Examples

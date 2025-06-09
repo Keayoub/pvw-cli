@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > listOperations
 
 ## Description
-Listoperations operation for management
+List all Purview accounts.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ No required arguments.
 - `--objectId`: Gets or sets the object identifier of the admin. (string)
 
 ## API Mapping
- >  > []()
+Management Data Plane > Management > [Listoperations]()
 ```
-GET /api/management/listOperations
+ https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Purview/listOperations
 ```
 
 ## Examples

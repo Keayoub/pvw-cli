@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > readAccounts
 
 ## Description
-Readaccounts operation for management
+Retrieve Purview account.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw management readAccounts --subscriptionId=<val> [--resourceGroupName=<val>]
 - `--objectId`: Gets or sets the object identifier of the admin. (string)
 
 ## API Mapping
- >  > []()
+Management Data Plane > Management > [Readaccounts]()
 ```
-GET /api/management/readAccounts
+ https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Purview/readAccounts
 ```
 
 ## Examples

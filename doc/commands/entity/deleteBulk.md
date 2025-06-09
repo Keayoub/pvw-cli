@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > deleteBulk
 
 ## Description
-Deletebulk operation for entity
+Delete entity.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw entity deleteBulk --guid=<val>...
 - `--typeName`: The name of the type. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Entity > [Deletebulk]()
 ```
-GET /api/entity/deleteBulk
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/bulk
 ```
 
 ## Examples

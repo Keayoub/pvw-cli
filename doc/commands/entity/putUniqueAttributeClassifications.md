@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > putUniqueAttributeClassifications
 
 ## Description
-Putuniqueattributeclassifications operation for entity
+Create or update entity.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw entity putUniqueAttributeClassifications --typeName=<val> --qualifiedName=<v
 - `--name`: The name of the attribute. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Entity > [Putuniqueattributeclassifications]()
 ```
-GET /api/entity/putUniqueAttributeClassifications
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/uniqueAttribute
 ```
 
 ## Examples

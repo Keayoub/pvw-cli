@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > createBulk
 
 ## Description
-Createbulk operation for entity
+Create a new entity.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw entity createBulk --payloadFile=<val>
 - `--typeName`: The name of the type. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Entity > [Createbulk]()
 ```
-GET /api/entity/createBulk
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/bulk
 ```
 
 ## Examples

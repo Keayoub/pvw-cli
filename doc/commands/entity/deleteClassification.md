@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > deleteClassification
 
 ## Description
-Deleteclassification operation for entity
+Delete entity.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw entity deleteClassification --guid=<val> --classificationName=<val>
 - `--typeName`: The name of the type. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Entity > [Deleteclassification]()
 ```
-GET /api/entity/deleteClassification
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/classification
 ```
 
 ## Examples

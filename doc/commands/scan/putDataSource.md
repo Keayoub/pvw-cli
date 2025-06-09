@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > putDataSource
 
 ## Description
-Putdatasource operation for scan
+Create or update data source scan.
 
 ## Syntax
 ```
@@ -28,9 +28,9 @@ pvw scan putDataSource --dataSourceName=<val> --payloadFile=<val>
 - `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
- >  > []()
+Scanning Data Plane > Scan > [Putdatasource]()
 ```
-GET /api/scan/putDataSource
+ https://{accountName}.purview.azure.com/scan/api/putDataSource
 ```
 
 ## Examples

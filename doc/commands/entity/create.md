@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > create
 
 ## Description
-Create operation for entity
+Create a new entity.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw entity create --payloadFile=<val>
 - `--typeName`: The name of the type. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Entity > [Create]()
 ```
-GET /api/entity/create
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/create
 ```
 
 ## Examples

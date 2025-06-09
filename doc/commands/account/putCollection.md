@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > putCollection
 
 ## Description
-Putcollection operation for account
+Create or update account.
 
 ## Syntax
 ```
@@ -20,9 +20,9 @@ pvw account putCollection --friendlyName=<val> --parentCollection=<val>
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Account Management > Account > [Putcollection]()
 ```
-GET /api/account/putCollection
+ https://{accountName}.purview.azure.com/account/api/putCollection
 ```
 
 ## Examples

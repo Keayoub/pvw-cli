@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > deletePrivateEndpoint
 
 ## Description
-Deleteprivateendpoint operation for management
+Delete Purview account.
 
 ## Syntax
 ```
@@ -23,9 +23,9 @@ pvw management deletePrivateEndpoint --subscriptionId=<val> --resourceGroupName=
 - `--objectId`: Gets or sets the object identifier of the admin. (string)
 
 ## API Mapping
- >  > []()
+Management Data Plane > Management > [Deleteprivateendpoint]()
 ```
-GET /api/management/deletePrivateEndpoint
+ https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Purview/deletePrivateEndpoint
 ```
 
 ## Examples

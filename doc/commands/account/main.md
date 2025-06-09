@@ -1,28 +1,69 @@
-# Account
-[Command Reference](../../../README.md#command-reference) > account
+# pvw account
+[Command Reference](../../README.md#command-reference) > account
 
-## Account
-| Command | Description |
-| --- | --- |
-| [pvw account getAccount](./getAccount.md) | Get an account. |
-| [pvw account updateAccount](./updateAccount.md) | Updates an account. |
-| [pvw account getAccessKeys](./getAccessKeys.md) | List the authorization keys associated with this account. |
-| [pvw account regenerateAccessKeys](./regenerateAccessKeys.md) | Regenerate the authorization keys associated with this data catalog. |
+## Description
+Commands for managing account operations in Azure Purview.
 
-## Collection
-| Command | Description |
-| --- | --- |
-| [pvw account deleteCollection](./deleteCollection.md) | Delete a collection. |
-| [pvw account getChildCollectionNames](./getChildCollectionNames.md) | Lists the child collections names in the collection. |
-| [pvw account getCollection](./getCollection.md) | Get a collection. |
-| [pvw account getCollectionPath](./getCollectionPath.md) | Gets the parent name and parent friendly name chains that represent the collection path. |
-| [pvw account getCollections](./getCollections.md) | List the collections in the account. |
-| [pvw account putCollection](./putCollection.md) | Creates or updates a collection entity. |
+## Syntax
+```
+pvw account <action> [options]
+```
 
-## Resource Set Rule
-| Command | Description |
-| --- | --- |
-| [pvw account getResourceSetRule](./getResourceSetRule.md) | Get a resource set. |
-| [pvw account getResourceSetRules](./getResourceSetRules.md) | List all resource sets. |
-| [pvw account putResourceSetRule](./putResourceSetRule.md) | Creates or updates a resource set. |
-| [pvw account deleteResourceSetRule](./deleteResourceSetRule.md) | Delete a resource set. |
+## Available Actions
+
+### [deletecollection](./deletecollection.md)
+Delete account.
+
+### [deleteresourcesetrule](./deleteresourcesetrule.md)
+Delete account.
+
+### [getaccesskeys](./getaccesskeys.md)
+Get account.
+
+### [getaccount](./getaccount.md)
+Get account.
+
+### [getchildcollectionnames](./getchildcollectionnames.md)
+Get account.
+
+### [getcollection](./getcollection.md)
+Get account.
+
+### [getcollectionpath](./getcollectionpath.md)
+Get account.
+
+### [getcollections](./getcollections.md)
+Get account.
+
+### [getresourcesetrule](./getresourcesetrule.md)
+Get account.
+
+### [getresourcesetrules](./getresourcesetrules.md)
+Get account.
+
+### [putcollection](./putcollection.md)
+Create or update account.
+
+### [putresourcesetrule](./putresourcesetrule.md)
+Create or update account.
+
+### [regenerateaccesskeys](./regenerateaccesskeys.md)
+Regenerate account.
+
+### [updateaccount](./updateaccount.md)
+Update an existing account.
+
+## Examples
+
+```bash
+# List available actions
+pvw account --help
+
+# Get help for specific action
+pvw account <action> --help
+```
+
+## See Also
+
+- [Command Reference](../../README.md#command-reference)
+- [API Documentation](../api/index.html)

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > createUniqueAttributeClassifications
 
 ## Description
-Createuniqueattributeclassifications operation for entity
+Create a new entity.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw entity createUniqueAttributeClassifications --typeName=<val> --qualifiedName
 - `--name`: The name of the attribute. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Entity > [Createuniqueattributeclassifications]()
 ```
-GET /api/entity/createUniqueAttributeClassifications
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/uniqueAttribute
 ```
 
 ## Examples

@@ -2,7 +2,7 @@
 [Command Reference](../../README.md#command-reference) > types
 
 ## Description
-Commands for managing types operations in Azure Purview.
+Commands for managing type operations in Azure Purview.
 
 ## Syntax
 ```
@@ -11,8 +11,50 @@ pvw types <action> [options]
 
 ## Available Actions
 
-### [readBusinessMetadataDef](./readBusinessMetadataDef.md)
-Get the business metadata definition by GUID or its name (unique).
+### [createtypedefs](./createtypedefs.md)
+Create a new type definition.
+
+### [deletetypedef](./deletetypedef.md)
+Delete type definition.
+
+### [deletetypedefs](./deletetypedefs.md)
+Delete type definition.
+
+### [puttypedefs](./puttypedefs.md)
+Create or update type definition.
+
+### [readbusinessmetadatadef](./readbusinessmetadatadef.md)
+Retrieve type definition.
+
+### [readclassificationdef](./readclassificationdef.md)
+Retrieve type definition.
+
+### [readentitydef](./readentitydef.md)
+Retrieve type definition.
+
+### [readenumdef](./readenumdef.md)
+Retrieve type definition.
+
+### [readrelationshipdef](./readrelationshipdef.md)
+Retrieve type definition.
+
+### [readstatistics](./readstatistics.md)
+Retrieve type definition.
+
+### [readstructdef](./readstructdef.md)
+Retrieve type definition.
+
+### [readtermtemplatedef](./readtermtemplatedef.md)
+Retrieve type definition.
+
+### [readtypedef](./readtypedef.md)
+Retrieve type definition.
+
+### [readtypedefs](./readtypedefs.md)
+Retrieve type definition.
+
+### [readtypedefsheaders](./readtypedefsheaders.md)
+Retrieve type definition.
 
 ## Examples
 

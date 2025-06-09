@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > getBusinessMetadataTemplate
 
 ## Description
-Get a sample template for uploading/creating business metadata in bulk.
+Get entity.
 
 ## Syntax
 ```
@@ -25,9 +25,9 @@ No required arguments.
 - `--typeName`: The name of the type. (string)
 
 ## API Mapping
- > Entity > [Get Sample Business Metadata Template]()
+Catalog Data Plane > Entity > [Getbusinessmetadatatemplate]()
 ```
- https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/businessmetadata/import/template
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/businessmetadata
 ```
 
 ## Examples

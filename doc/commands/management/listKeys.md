@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > listKeys
 
 ## Description
-Listkeys operation for management
+List all Purview accounts.
 
 ## Syntax
 ```
@@ -23,9 +23,9 @@ pvw management listKeys --subscriptionId=<val> --resourceGroupName=<val> --accou
 - `--objectId`: Gets or sets the object identifier of the admin. (string)
 
 ## API Mapping
- >  > []()
+Management Data Plane > Management > [Listkeys]()
 ```
-GET /api/management/listKeys
+ https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Purview/listKeys
 ```
 
 ## Examples

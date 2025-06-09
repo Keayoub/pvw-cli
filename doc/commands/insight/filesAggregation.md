@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [insight](./main.md) > filesAggregation
 
 ## Description
-Filesaggregation operation for insight
+Perform operation on analytics insights.
 
 ## Syntax
 ```
@@ -17,9 +17,9 @@ No required arguments.
 - `--numberOfDays`: Trailing time period in days [default: 30]. (integer)
 
 ## API Mapping
- >  > []()
+Analytics Data Plane > Insight > [Filesaggregation]()
 ```
-GET /api/insight/filesAggregation
+ https://{accountName}.purview.azure.com/catalog/api/browse/filesAggregation
 ```
 
 ## Examples

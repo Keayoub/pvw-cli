@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > putTrigger
 
 ## Description
-Puttrigger operation for scan
+Create or update data source scan.
 
 ## Syntax
 ```
@@ -28,9 +28,9 @@ pvw scan putTrigger --dataSourceName=<val> --scanName=<val> --payloadFile=<val>
 - `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
- >  > []()
+Scanning Data Plane > Scan > [Puttrigger]()
 ```
-GET /api/scan/putTrigger
+ https://{accountName}.purview.azure.com/scan/api/putTrigger
 ```
 
 ## Examples

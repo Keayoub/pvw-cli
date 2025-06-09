@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > readRelationshipDef
 
 ## Description
-Readrelationshipdef operation for types
+Retrieve type definition.
 
 ## Syntax
 ```
@@ -19,9 +19,9 @@ pvw types readRelationshipDef (--guid=<val> | --name=<val>)
 - `--type`: Typedef name as search filter (classification | entity | enum | relationship | struct). (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Types > [Readrelationshipdef]()
 ```
-GET /api/types/readRelationshipDef
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/readRelationshipDef
 ```
 
 ## Examples

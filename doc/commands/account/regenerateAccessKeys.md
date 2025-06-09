@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > regenerateAccessKeys
 
 ## Description
-Regenerateaccesskeys operation for account
+Regenerate account.
 
 ## Syntax
 ```
@@ -20,9 +20,9 @@ pvw account regenerateAccessKeys --keyType=<val>
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Account Management > Account > [Regenerateaccesskeys]()
 ```
-GET /api/account/regenerateAccessKeys
+ https://{accountName}.purview.azure.com/account/api/regenerateAccessKeys
 ```
 
 ## Examples

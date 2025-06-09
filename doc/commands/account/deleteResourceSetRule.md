@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > deleteResourceSetRule
 
 ## Description
-Deleteresourcesetrule operation for account
+Delete account.
 
 ## Syntax
 ```
@@ -21,9 +21,9 @@ No required arguments.
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Account Management > Account > [Deleteresourcesetrule]()
 ```
-GET /api/account/deleteResourceSetRule
+ https://{accountName}.purview.azure.com/account/api/deleteResourceSetRule
 ```
 
 ## Examples

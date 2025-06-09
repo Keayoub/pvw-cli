@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [lineage](./main.md) > csv
 
 ## Description
-Csv operation for lineage
+Perform operation on lineage.
 
 ## Syntax
 ```
@@ -20,9 +20,9 @@ No required arguments.
 - `--template`: Template type: basic, etl, column-mapping [default: basic]. (string)
 
 ## API Mapping
- >  > []()
+Discovery Data Plane > Lineage > [Csv]()
 ```
-GET /api/lineage/csv
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/lineage/csv
 ```
 
 ## Examples

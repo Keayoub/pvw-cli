@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) > createAssetMapping
 
 ## Description
-Createassetmapping operation for share
+Create a new data share.
 
 ## Syntax
 ```
@@ -25,9 +25,9 @@ pvw share createAssetMapping --receivedShareName=<val> --assetMappingName=<val> 
 - `--orderBy`: Sorts the results using OData syntax. (string)
 
 ## API Mapping
- >  > []()
+Share Data Plane > Share > [Createassetmapping]()
 ```
-GET /api/share/createAssetMapping
+ https://{accountName}.purview.azure.com/share/api/createAssetMapping
 ```
 
 ## Examples

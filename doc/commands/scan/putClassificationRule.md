@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > putClassificationRule
 
 ## Description
-Putclassificationrule operation for scan
+Create or update data source scan.
 
 ## Syntax
 ```
@@ -28,9 +28,9 @@ pvw scan putClassificationRule --classificationRuleName=<val> --payloadFile=<val
 - `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
- >  > []()
+Scanning Data Plane > Scan > [Putclassificationrule]()
 ```
-GET /api/scan/putClassificationRule
+ https://{accountName}.purview.azure.com/scan/api/putClassificationRule
 ```
 
 ## Examples

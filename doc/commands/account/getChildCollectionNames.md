@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > getChildCollectionNames
 
 ## Description
-Getchildcollectionnames operation for account
+Get account.
 
 ## Syntax
 ```
@@ -20,9 +20,9 @@ pvw account getChildCollectionNames --collectionName=<val>
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Account Management > Account > [Getchildcollectionnames]()
 ```
-GET /api/account/getChildCollectionNames
+ https://{accountName}.purview.azure.com/account/api/getChildCollectionNames
 ```
 
 ## Examples

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > deleteBusinessAttribute
 
 ## Description
-Delete business metadata from an entity.
+Delete entity.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw entity deleteBusinessAttribute --guid=<val> --bmName=<val> --payloadFile=<va
 - `--typeName`: The name of the type. (string)
 
 ## API Mapping
- > Entity > [Delete Business Attributes]()
+Catalog Data Plane > Entity > [Deletebusinessattribute]()
 ```
- https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/{guid}/businessmetadata/{bmName}
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/deleteBusinessAttribute
 ```
 
 ## Examples

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > getCollectionPath
 
 ## Description
-Getcollectionpath operation for account
+Get account.
 
 ## Syntax
 ```
@@ -20,9 +20,9 @@ pvw account getCollectionPath --collectionName=<val>
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Account Management > Account > [Getcollectionpath]()
 ```
-GET /api/account/getCollectionPath
+ https://{accountName}.purview.azure.com/account/api/getCollectionPath
 ```
 
 ## Examples

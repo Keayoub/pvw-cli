@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [search](./main.md) > suggest
 
 ## Description
-Suggest operation for search
+Get suggestions for catalog.
 
 ## Syntax
 ```
@@ -21,9 +21,9 @@ pvw search suggest [--keywords=<val> --limit=<val> --filterFile=<val>]
 - `--offset`: Offset for pagination purpose [default: 0]. (integer)
 
 ## API Mapping
- >  > []()
+Discovery Data Plane > Search > [Suggest]()
 ```
-GET /api/search/suggest
+ https://{accountName}.purview.azure.com/catalog/api/search/suggest
 ```
 
 ## Examples

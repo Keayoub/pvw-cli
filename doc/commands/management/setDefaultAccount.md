@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > setDefaultAccount
 
 ## Description
-Setdefaultaccount operation for management
+Set DefaultAccount for Purview account.
 
 ## Syntax
 ```
@@ -23,9 +23,9 @@ pvw management setDefaultAccount --subscriptionId=<val> --resourceGroupName=<val
 - `--objectId`: Gets or sets the object identifier of the admin. (string)
 
 ## API Mapping
- >  > []()
+Management Data Plane > Management > [Setdefaultaccount]()
 ```
-GET /api/management/setDefaultAccount
+ https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Purview/setDefaultAccount
 ```
 
 ## Examples

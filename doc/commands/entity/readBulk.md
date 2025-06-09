@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > readBulk
 
 ## Description
-Readbulk operation for entity
+Retrieve entity.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw entity readBulk --guid=<val>... [--ignoreRelationships --minExtInfo]
 - `--typeName`: The name of the type. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Entity > [Readbulk]()
 ```
-GET /api/entity/readBulk
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/bulk
 ```
 
 ## Examples

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > putPrivateEndpoint
 
 ## Description
-Putprivateendpoint operation for management
+Create or update Purview account.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw management putPrivateEndpoint --subscriptionId=<val> --resourceGroupName=<va
 - `--objectId`: Gets or sets the object identifier of the admin. (string)
 
 ## API Mapping
- >  > []()
+Management Data Plane > Management > [Putprivateendpoint]()
 ```
-GET /api/management/putPrivateEndpoint
+ https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Purview/putPrivateEndpoint
 ```
 
 ## Examples

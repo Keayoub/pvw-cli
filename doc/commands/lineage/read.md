@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [lineage](./main.md) > read
 
 ## Description
-Read operation for lineage
+Retrieve lineage.
 
 ## Syntax
 ```
@@ -22,9 +22,9 @@ pvw lineage read --guid=<val> [--depth=<val> --width=<val> --direction=<val>]
 - `--template`: Template type: basic, etl, column-mapping [default: basic]. (string)
 
 ## API Mapping
- >  > []()
+Discovery Data Plane > Lineage > [Read]()
 ```
-GET /api/lineage/read
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/lineage/read
 ```
 
 ## Examples

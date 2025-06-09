@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > deleteTrigger
 
 ## Description
-Deletetrigger operation for scan
+Delete data source scan.
 
 ## Syntax
 ```
@@ -27,9 +27,9 @@ pvw scan deleteTrigger --dataSourceName=<val> --scanName=<val>
 - `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
- >  > []()
+Scanning Data Plane > Scan > [Deletetrigger]()
 ```
-GET /api/scan/deleteTrigger
+ https://{accountName}.purview.azure.com/scan/api/deleteTrigger
 ```
 
 ## Examples

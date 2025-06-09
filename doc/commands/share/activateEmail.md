@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) > activateEmail
 
 ## Description
-Activateemail operation for share
+Activate data share.
 
 ## Syntax
 ```
@@ -25,9 +25,9 @@ pvw share activateEmail --payloadFile=<val>
 - `--orderBy`: Sorts the results using OData syntax. (string)
 
 ## API Mapping
- >  > []()
+Share Data Plane > Share > [Activateemail]()
 ```
-GET /api/share/activateEmail
+ https://{accountName}.purview.azure.com/share/api/activateEmail
 ```
 
 ## Examples

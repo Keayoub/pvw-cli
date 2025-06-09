@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > defaultAccount
 
 ## Description
-Defaultaccount operation for management
+Perform operation on Purview account.
 
 ## Syntax
 ```
@@ -23,9 +23,9 @@ pvw management defaultAccount --scopeTenantId=<val> --scopeType=<val> --scope=<v
 - `--objectId`: Gets or sets the object identifier of the admin. (string)
 
 ## API Mapping
- >  > []()
+Management Data Plane > Management > [Defaultaccount]()
 ```
-GET /api/management/defaultAccount
+ https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Purview/defaultAccount
 ```
 
 ## Examples

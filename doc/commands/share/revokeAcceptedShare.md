@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) > revokeAcceptedShare
 
 ## Description
-Revokeacceptedshare operation for share
+Revoke data share.
 
 ## Syntax
 ```
@@ -25,9 +25,9 @@ pvw share revokeAcceptedShare --sentShareName=<val> --acceptedSentShareName=<val
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Share Data Plane > Share > [Revokeacceptedshare]()
 ```
-GET /api/share/revokeAcceptedShare
+ https://{accountName}.purview.azure.com/share/api/revokeAcceptedShare
 ```
 
 ## Examples

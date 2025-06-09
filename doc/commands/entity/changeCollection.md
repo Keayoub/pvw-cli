@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > changeCollection
 
 ## Description
-Changecollection operation for entity
+Perform operation on entity.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw entity changeCollection --collection=<val> --payloadFile=<val>
 - `--typeName`: The name of the type. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Entity > [Changecollection]()
 ```
-GET /api/entity/changeCollection
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/changeCollection
 ```
 
 ## Examples

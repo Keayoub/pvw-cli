@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > putUniqueAttribute
 
 ## Description
-Putuniqueattribute operation for entity
+Create or update entity.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw entity putUniqueAttribute --typeName=<val> --qualifiedName=<val> --payloadFi
 - `--name`: The name of the attribute. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Entity > [Putuniqueattribute]()
 ```
-GET /api/entity/putUniqueAttribute
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/uniqueAttribute
 ```
 
 ## Examples

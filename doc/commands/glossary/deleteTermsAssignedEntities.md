@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > deleteTermsAssignedEntities
 
 ## Description
-Deletetermsassignedentities operation for glossary
+Delete glossary term or category.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw glossary deleteTermsAssignedEntities --termGuid=<val> --payloadFile=<val>
 - `--sort`: ASC or DESC [default: ASC]. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Glossary > [Deletetermsassignedentities]()
 ```
-GET /api/glossary/deleteTermsAssignedEntities
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/deleteTermsAssignedEntities
 ```
 
 ## Examples

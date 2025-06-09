@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > checkNameAvailability
 
 ## Description
-Checknameavailability operation for management
+Check Purview account.
 
 ## Syntax
 ```
@@ -23,9 +23,9 @@ pvw management checkNameAvailability --subscriptionId=<val> --accountName=<val>
 - `--objectId`: Gets or sets the object identifier of the admin. (string)
 
 ## API Mapping
- >  > []()
+Management Data Plane > Management > [Checknameavailability]()
 ```
-GET /api/management/checkNameAvailability
+ https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Purview/checkNameAvailability
 ```
 
 ## Examples

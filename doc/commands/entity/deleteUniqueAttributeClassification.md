@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > deleteUniqueAttributeClassification
 
 ## Description
-Deleteuniqueattributeclassification operation for entity
+Delete entity.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw entity deleteUniqueAttributeClassification --typeName=<val> --qualifiedName=
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Entity > [Deleteuniqueattributeclassification]()
 ```
-GET /api/entity/deleteUniqueAttributeClassification
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/uniqueAttribute
 ```
 
 ## Examples

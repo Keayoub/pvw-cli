@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > putCredential
 
 ## Description
-Putcredential operation for scan
+Create or update data source scan.
 
 ## Syntax
 ```
@@ -28,9 +28,9 @@ pvw scan putCredential --credentialName=<val> --payloadFile=<val>
 - `--collectionName`: The unique collection name. (string)
 
 ## API Mapping
- >  > []()
+Scanning Data Plane > Scan > [Putcredential]()
 ```
-GET /api/scan/putCredential
+ https://{accountName}.purview.azure.com/scan/api/putCredential
 ```
 
 ## Examples

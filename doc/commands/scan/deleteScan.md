@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > deleteScan
 
 ## Description
-Deletescan operation for scan
+Delete data source scan.
 
 ## Syntax
 ```
@@ -27,9 +27,9 @@ pvw scan deleteScan --dataSourceName=<val> --scanName=<val>
 - `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
- >  > []()
+Scanning Data Plane > Scan > [Deletescan]()
 ```
-GET /api/scan/deleteScan
+ https://{accountName}.purview.azure.com/scan/api/deleteScan
 ```
 
 ## Examples

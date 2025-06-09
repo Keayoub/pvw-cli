@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [policystore](./main.md) > deleteDataPolicyScope
 
 ## Description
-Deletedatapolicyscope operation for policystore
+Delete policy.
 
 ## Syntax
 ```
@@ -20,9 +20,9 @@ pvw policystore deleteDataPolicyScope --policyName=<val> --datasource=<val>
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Policy Data Plane > Policystore > [Deletedatapolicyscope]()
 ```
-GET /api/policystore/deleteDataPolicyScope
+ https://{accountName}.purview.azure.com/policystore/api/deleteDataPolicyScope
 ```
 
 ## Examples

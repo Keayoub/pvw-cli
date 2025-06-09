@@ -11,41 +11,116 @@ pvw entity <action> [options]
 
 ## Available Actions
 
-### [addLabels](./addLabels.md)
-Append labels to an entity.
+### [addlabels](./addlabels.md)
+Add Labels for entity.
 
-### [addLabelsByUniqueAttribute](./addLabelsByUniqueAttribute.md)
-Append labels to an entity identified by its type and unique attributes.
+### [addlabelsbyuniqueattribute](./addlabelsbyuniqueattribute.md)
+Add LabelsByUniqueAttribute for entity.
 
-### [addOrUpdateBusinessAttribute](./addOrUpdateBusinessAttribute.md)
-Add or update business attributes to an entity.
+### [addorupdatebusinessattribute](./addorupdatebusinessattribute.md)
+Add OrUpdateBusinessAttribute for entity.
 
-### [addOrUpdateBusinessMetadata](./addOrUpdateBusinessMetadata.md)
-Add or update business metadata to an entity.
+### [addorupdatebusinessmetadata](./addorupdatebusinessmetadata.md)
+Add OrUpdateBusinessMetadata for entity.
 
-### [deleteBusinessAttribute](./deleteBusinessAttribute.md)
-Delete business metadata from an entity.
+### [changecollection](./changecollection.md)
+Perform operation on entity.
 
-### [deleteBusinessMetadata](./deleteBusinessMetadata.md)
-Remove business metadata from an entity.
+### [create](./create.md)
+Create a new entity.
 
-### [deleteLabels](./deleteLabels.md)
-Delete label(s) from an entity.
+### [createbulk](./createbulk.md)
+Create a new entity.
 
-### [deleteLabelsByUniqueAttribute](./deleteLabelsByUniqueAttribute.md)
-Delete label(s) from an entity identified by its type and unique attributes.
+### [createbulkclassification](./createbulkclassification.md)
+Create a new entity.
 
-### [getBusinessMetadataTemplate](./getBusinessMetadataTemplate.md)
-Get a sample template for uploading/creating business metadata in bulk.
+### [createbulksetclassifications](./createbulksetclassifications.md)
+Create a new entity.
 
-### [importBusinessMetadata](./importBusinessMetadata.md)
- Import business metadata in bulk.
+### [createclassifications](./createclassifications.md)
+Create a new entity.
 
-### [setLabels](./setLabels.md)
-Overwrite labels for an entity.
+### [createorupdatecollection](./createorupdatecollection.md)
+Create a new entity.
 
-### [setLabelsByUniqueAttribute](./setLabelsByUniqueAttribute.md)
-Overwrite labels for an entity identified by its type and unique attributes.
+### [createorupdatecollectionbulk](./createorupdatecollectionbulk.md)
+Create a new entity.
+
+### [createuniqueattributeclassifications](./createuniqueattributeclassifications.md)
+Create a new entity.
+
+### [delete](./delete.md)
+Delete entity.
+
+### [deletebulk](./deletebulk.md)
+Delete entity.
+
+### [deletebusinessattribute](./deletebusinessattribute.md)
+Delete entity.
+
+### [deletebusinessmetadata](./deletebusinessmetadata.md)
+Delete entity.
+
+### [deleteclassification](./deleteclassification.md)
+Delete entity.
+
+### [deletelabels](./deletelabels.md)
+Delete entity.
+
+### [deletelabelsbyuniqueattribute](./deletelabelsbyuniqueattribute.md)
+Delete entity.
+
+### [deleteuniqueattribute](./deleteuniqueattribute.md)
+Delete entity.
+
+### [deleteuniqueattributeclassification](./deleteuniqueattributeclassification.md)
+Delete entity.
+
+### [getbusinessmetadatatemplate](./getbusinessmetadatatemplate.md)
+Get entity.
+
+### [importbusinessmetadata](./importbusinessmetadata.md)
+Import entity.
+
+### [put](./put.md)
+Create or update entity.
+
+### [putclassifications](./putclassifications.md)
+Create or update entity.
+
+### [putuniqueattribute](./putuniqueattribute.md)
+Create or update entity.
+
+### [putuniqueattributeclassifications](./putuniqueattributeclassifications.md)
+Create or update entity.
+
+### [read](./read.md)
+Retrieve entity.
+
+### [readbulk](./readbulk.md)
+Retrieve entity.
+
+### [readbulkuniqueattribute](./readbulkuniqueattribute.md)
+Retrieve entity.
+
+### [readclassification](./readclassification.md)
+Retrieve entity.
+
+### [readclassifications](./readclassifications.md)
+Retrieve entity.
+
+### [readheader](./readheader.md)
+Retrieve entity.
+
+### [readuniqueattribute](./readuniqueattribute.md)
+Retrieve entity.
+
+### [setlabels](./setlabels.md)
+Set Labels for entity.
+
+### [setlabelsbyuniqueattribute](./setlabelsbyuniqueattribute.md)
+Set LabelsByUniqueAttribute for entity.
 
 ## Examples
 

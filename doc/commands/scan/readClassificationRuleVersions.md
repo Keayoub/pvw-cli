@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readClassificationRuleVersions
 
 ## Description
-Readclassificationruleversions operation for scan
+Retrieve data source scan.
 
 ## Syntax
 ```
@@ -27,9 +27,9 @@ pvw scan readClassificationRuleVersions --classificationRuleName=<val>
 - `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
- >  > []()
+Scanning Data Plane > Scan > [Readclassificationruleversions]()
 ```
-GET /api/scan/readClassificationRuleVersions
+ https://{accountName}.purview.azure.com/scan/api/readClassificationRuleVersions
 ```
 
 ## Examples

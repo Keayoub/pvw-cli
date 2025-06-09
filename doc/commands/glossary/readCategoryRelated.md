@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > readCategoryRelated
 
 ## Description
-Readcategoryrelated operation for glossary
+Retrieve glossary term or category.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw glossary readCategoryRelated --categoryGuid=<val>
 - `--termGuid`: The globally unique identifier for glossary term. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Glossary > [Readcategoryrelated]()
 ```
-GET /api/glossary/readCategoryRelated
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/readCategoryRelated
 ```
 
 ## Examples

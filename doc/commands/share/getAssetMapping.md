@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) > getAssetMapping
 
 ## Description
-Getassetmapping operation for share
+Get data share.
 
 ## Syntax
 ```
@@ -25,9 +25,9 @@ pvw share getAssetMapping --receivedShareName=<val> --assetMappingName=<val>
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Share Data Plane > Share > [Getassetmapping]()
 ```
-GET /api/share/getAssetMapping
+ https://{accountName}.purview.azure.com/share/api/getAssetMapping
 ```
 
 ## Examples

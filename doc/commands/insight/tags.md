@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [insight](./main.md) > tags
 
 ## Description
-Tags operation for insight
+Perform operation on analytics insights.
 
 ## Syntax
 ```
@@ -17,9 +17,9 @@ No required arguments.
 - `--numberOfDays`: Trailing time period in days [default: 30]. (integer)
 
 ## API Mapping
- >  > []()
+Analytics Data Plane > Insight > [Tags]()
 ```
-GET /api/insight/tags
+ https://{accountName}.purview.azure.com/catalog/api/browse/tags
 ```
 
 ## Examples

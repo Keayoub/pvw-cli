@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > cancelScan
 
 ## Description
-Cancelscan operation for scan
+Cancel data source scan.
 
 ## Syntax
 ```
@@ -27,9 +27,9 @@ pvw scan cancelScan --dataSourceName=<val> --scanName=<val> --runId=<val>
 - `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
- >  > []()
+Scanning Data Plane > Scan > [Cancelscan]()
 ```
-GET /api/scan/cancelScan
+ https://{accountName}.purview.azure.com/scan/api/cancelScan
 ```
 
 ## Examples

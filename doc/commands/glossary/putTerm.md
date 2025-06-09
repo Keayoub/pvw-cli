@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > putTerm
 
 ## Description
-Putterm operation for glossary
+Create or update glossary term or category.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw glossary putTerm --termGuid=<val> --payloadFile=<val> [--includeTermHierarch
 - `--sort`: ASC or DESC [default: ASC]. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Glossary > [Putterm]()
 ```
-GET /api/glossary/putTerm
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/putTerm
 ```
 
 ## Examples

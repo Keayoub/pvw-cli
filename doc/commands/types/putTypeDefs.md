@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > putTypeDefs
 
 ## Description
-Puttypedefs operation for types
+Create or update type definition.
 
 ## Syntax
 ```
@@ -19,9 +19,9 @@ pvw types putTypeDefs --payloadFile=<val>
 - `--type`: Typedef name as search filter (classification | entity | enum | relationship | struct). (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Types > [Puttypedefs]()
 ```
-GET /api/types/putTypeDefs
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/putTypeDefs
 ```
 
 ## Examples

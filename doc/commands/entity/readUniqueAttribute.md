@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > readUniqueAttribute
 
 ## Description
-Readuniqueattribute operation for entity
+Retrieve entity.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw entity readUniqueAttribute --typeName=<val> --qualifiedName=<val> [--ignoreR
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Entity > [Readuniqueattribute]()
 ```
-GET /api/entity/readUniqueAttribute
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/uniqueAttribute
 ```
 
 ## Examples

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [insight](./main.md) > scanStatusSummaryByTs
 
 ## Description
-Scanstatussummarybyts operation for insight
+Perform operation on analytics insights.
 
 ## Syntax
 ```
@@ -17,9 +17,9 @@ pvw insight scanStatusSummaryByTs [--numberOfDays=<val>]
 - `--purviewName`: Azure Purview account name. (string)
 
 ## API Mapping
- >  > []()
+Analytics Data Plane > Insight > [Scanstatussummarybyts]()
 ```
-GET /api/insight/scanStatusSummaryByTs
+ https://{accountName}.purview.azure.com/catalog/api/browse/scanStatusSummaryByTs
 ```
 
 ## Examples

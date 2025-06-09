@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [policystore](./main.md) > readDataPolicies
 
 ## Description
-Readdatapolicies operation for policystore
+Retrieve policy.
 
 ## Syntax
 ```
@@ -20,9 +20,9 @@ pvw policystore readDataPolicies [--policyName=<val>]
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Policy Data Plane > Policystore > [Readdatapolicies]()
 ```
-GET /api/policystore/readDataPolicies
+ https://{accountName}.purview.azure.com/policystore/api/readDataPolicies
 ```
 
 ## Examples

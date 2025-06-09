@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > putClassifications
 
 ## Description
-Putclassifications operation for entity
+Create or update entity.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw entity putClassifications --guid=<val> --payloadFile=<val>
 - `--typeName`: The name of the type. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Entity > [Putclassifications]()
 ```
-GET /api/entity/putClassifications
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/classification
 ```
 
 ## Examples

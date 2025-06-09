@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [relationship](./main.md) > read
 
 ## Description
-Read operation for relationship
+Retrieve relationship.
 
 ## Syntax
 ```
@@ -17,9 +17,9 @@ pvw relationship read --guid=<val> [--extendedInfo]
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Relationship > [Read]()
 ```
-GET /api/relationship/read
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/relationship/read
 ```
 
 ## Examples

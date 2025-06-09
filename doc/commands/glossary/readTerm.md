@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > readTerm
 
 ## Description
-Readterm operation for glossary
+Retrieve glossary term or category.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw glossary readTerm --termGuid=<val> [--includeTermHierarchy]
 - `--sort`: ASC or DESC [default: ASC]. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Glossary > [Readterm]()
 ```
-GET /api/glossary/readTerm
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/readTerm
 ```
 
 ## Examples

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [policystore](./main.md) > putMetadataPolicy
 
 ## Description
-Putmetadatapolicy operation for policystore
+Create or update policy.
 
 ## Syntax
 ```
@@ -18,9 +18,9 @@ pvw policystore putMetadataPolicy --policyId=<val> --payloadFile=<val>
 - `--collectionName`: The technical name of the Collection (e.g. friendlyName: Sales; name: afwbxs). (string)
 
 ## API Mapping
- >  > []()
+Policy Data Plane > Policystore > [Putmetadatapolicy]()
 ```
-GET /api/policystore/putMetadataPolicy
+ https://{accountName}.purview.azure.com/policystore/api/putMetadataPolicy
 ```
 
 ## Examples

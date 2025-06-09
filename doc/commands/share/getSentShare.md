@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) > getSentShare
 
 ## Description
-Getsentshare operation for share
+Get data share.
 
 ## Syntax
 ```
@@ -25,9 +25,9 @@ pvw share getSentShare --sentShareName=<val>
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Share Data Plane > Share > [Getsentshare]()
 ```
-GET /api/share/getSentShare
+ https://{accountName}.purview.azure.com/share/api/getSentShare
 ```
 
 ## Examples

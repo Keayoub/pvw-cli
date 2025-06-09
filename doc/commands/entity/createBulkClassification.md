@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > createBulkClassification
 
 ## Description
-Createbulkclassification operation for entity
+Create a new entity.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw entity createBulkClassification --payloadFile=<val>
 - `--typeName`: The name of the type. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Entity > [Createbulkclassification]()
 ```
-GET /api/entity/createBulkClassification
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/bulk
 ```
 
 ## Examples

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > addRootCollectionAdmin
 
 ## Description
-Addrootcollectionadmin operation for management
+Add RootCollectionAdmin for Purview account.
 
 ## Syntax
 ```
@@ -23,9 +23,9 @@ pvw management addRootCollectionAdmin --subscriptionId=<val> --resourceGroupName
 - `--privateEndpointConnectionName`: The name of the private endpoint connection. (string)
 
 ## API Mapping
- >  > []()
+Management Data Plane > Management > [Addrootcollectionadmin]()
 ```
-GET /api/management/addRootCollectionAdmin
+ https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Purview/addRootCollectionAdmin
 ```
 
 ## Examples

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > createClassifications
 
 ## Description
-Createclassifications operation for entity
+Create a new entity.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw entity createClassifications --guid=<val> --payloadFile=<val>
 - `--typeName`: The name of the type. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Entity > [Createclassifications]()
 ```
-GET /api/entity/createClassifications
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/classification
 ```
 
 ## Examples

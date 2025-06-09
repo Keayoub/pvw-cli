@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [relationship](./main.md) > create
 
 ## Description
-Create operation for relationship
+Create a new relationship.
 
 ## Syntax
 ```
@@ -17,9 +17,9 @@ pvw relationship create --payloadFile=<val>
 - `--guid`: The globally unique identifier of the relationship. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Relationship > [Create]()
 ```
-GET /api/relationship/create
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/relationship/create
 ```
 
 ## Examples

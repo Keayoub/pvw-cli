@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > createTerms
 
 ## Description
-Createterms operation for glossary
+Create a new glossary term or category.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw glossary createTerms --payloadFile=<val> [--includeTermHierarchy]
 - `--termGuid`: The globally unique identifier for glossary term. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Glossary > [Createterms]()
 ```
-GET /api/glossary/createTerms
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/createTerms
 ```
 
 ## Examples

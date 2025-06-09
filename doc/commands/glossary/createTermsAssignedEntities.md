@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > createTermsAssignedEntities
 
 ## Description
-Createtermsassignedentities operation for glossary
+Create a new glossary term or category.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw glossary createTermsAssignedEntities --termGuid=<val> --payloadFile=<val>
 - `--sort`: ASC or DESC [default: ASC]. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Glossary > [Createtermsassignedentities]()
 ```
-GET /api/glossary/createTermsAssignedEntities
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/createTermsAssignedEntities
 ```
 
 ## Examples

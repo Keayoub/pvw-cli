@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) > listAssetMappings
 
 ## Description
-Listassetmappings operation for share
+List all data shares.
 
 ## Syntax
 ```
@@ -25,9 +25,9 @@ pvw share listAssetMappings --receivedShareName=<val> [--skipToken=<val> --filte
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Share Data Plane > Share > [Listassetmappings]()
 ```
-GET /api/share/listAssetMappings
+ https://{accountName}.purview.azure.com/share/api/listAssetMappings
 ```
 
 ## Examples

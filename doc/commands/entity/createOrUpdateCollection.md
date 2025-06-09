@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > createOrUpdateCollection
 
 ## Description
-Createorupdatecollection operation for entity
+Create a new entity.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw entity createOrUpdateCollection --collection=<val> --payloadFile=<val>
 - `--typeName`: The name of the type. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Entity > [Createorupdatecollection]()
 ```
-GET /api/entity/createOrUpdateCollection
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/createOrUpdateCollection
 ```
 
 ## Examples

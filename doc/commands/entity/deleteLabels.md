@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > deleteLabels
 
 ## Description
-Delete label(s) from an entity.
+Delete entity.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw entity deleteLabels --guid=<val> --payloadFile=<val>
 - `--typeName`: The name of the type. (string)
 
 ## API Mapping
- > Entity > [Delete given labels to a given entity.]()
+Catalog Data Plane > Entity > [Deletelabels]()
 ```
- https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/{guid}/labels
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/labels
 ```
 
 ## Examples

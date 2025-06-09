@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readKeyVault
 
 ## Description
-Readkeyvault operation for scan
+Retrieve data source scan.
 
 ## Syntax
 ```
@@ -27,9 +27,9 @@ pvw scan readKeyVault --keyVaultName=<val>
 - `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
- >  > []()
+Scanning Data Plane > Scan > [Readkeyvault]()
 ```
-GET /api/scan/readKeyVault
+ https://{accountName}.purview.azure.com/scan/api/readKeyVault
 ```
 
 ## Examples

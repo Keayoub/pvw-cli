@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > readTypeDefs
 
 ## Description
-Readtypedefs operation for types
+Retrieve type definition.
 
 ## Syntax
 ```
@@ -19,9 +19,9 @@ pvw types readTypeDefs [--includeTermTemplate --type=<val>]
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Types > [Readtypedefs]()
 ```
-GET /api/types/readTypeDefs
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/readTypeDefs
 ```
 
 ## Examples

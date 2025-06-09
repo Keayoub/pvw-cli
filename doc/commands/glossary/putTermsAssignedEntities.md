@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > putTermsAssignedEntities
 
 ## Description
-Puttermsassignedentities operation for glossary
+Create or update glossary term or category.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw glossary putTermsAssignedEntities --termGuid=<val> --payloadFile=<val>
 - `--sort`: ASC or DESC [default: ASC]. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Glossary > [Puttermsassignedentities]()
 ```
-GET /api/glossary/putTermsAssignedEntities
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/putTermsAssignedEntities
 ```
 
 ## Examples

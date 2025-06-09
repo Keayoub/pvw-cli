@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > delete
 
 ## Description
-Delete operation for entity
+Delete entity.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw entity delete --guid=<val>
 - `--typeName`: The name of the type. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Entity > [Delete]()
 ```
-GET /api/entity/delete
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/delete
 ```
 
 ## Examples

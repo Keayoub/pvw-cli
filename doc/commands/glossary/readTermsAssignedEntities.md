@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > readTermsAssignedEntities
 
 ## Description
-Readtermsassignedentities operation for glossary
+Retrieve glossary term or category.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw glossary readTermsAssignedEntities --termGuid=<val> [--limit=<val> --offset=
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Glossary > [Readtermsassignedentities]()
 ```
-GET /api/glossary/readTermsAssignedEntities
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/readTermsAssignedEntities
 ```
 
 ## Examples

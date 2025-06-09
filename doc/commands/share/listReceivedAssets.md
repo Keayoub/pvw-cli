@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) > listReceivedAssets
 
 ## Description
-Listreceivedassets operation for share
+List all data shares.
 
 ## Syntax
 ```
@@ -26,9 +26,9 @@ pvw share listReceivedAssets --receivedShareName=<val> [--skipToken=<val>]
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Share Data Plane > Share > [Listreceivedassets]()
 ```
-GET /api/share/listReceivedAssets
+ https://{accountName}.purview.azure.com/share/api/listReceivedAssets
 ```
 
 ## Examples

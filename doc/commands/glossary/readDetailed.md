@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > readDetailed
 
 ## Description
-Readdetailed operation for glossary
+Retrieve glossary term or category.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw glossary readDetailed --glossaryGuid=<val> [--includeTermHierarchy]
 - `--termGuid`: The globally unique identifier for glossary term. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Glossary > [Readdetailed]()
 ```
-GET /api/glossary/readDetailed
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/readDetailed
 ```
 
 ## Examples

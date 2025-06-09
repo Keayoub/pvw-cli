@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) > listReceivedInvitations
 
 ## Description
-Listreceivedinvitations operation for share
+List all data shares.
 
 ## Syntax
 ```
@@ -25,9 +25,9 @@ pvw share listReceivedInvitations [--skipToken=<val> --filter=<val> --orderBy=<v
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Share Data Plane > Share > [Listreceivedinvitations]()
 ```
-GET /api/share/listReceivedInvitations
+ https://{accountName}.purview.azure.com/share/api/listReceivedInvitations
 ```
 
 ## Examples

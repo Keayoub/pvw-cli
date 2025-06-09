@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [account](./main.md) > updateAccount
 
 ## Description
-Updateaccount operation for account
+Update an existing account.
 
 ## Syntax
 ```
@@ -20,9 +20,9 @@ pvw account updateAccount --friendlyName=<val>
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Account Management > Account > [Updateaccount]()
 ```
-GET /api/account/updateAccount
+ https://{accountName}.purview.azure.com/account/api/updateAccount
 ```
 
 ## Examples

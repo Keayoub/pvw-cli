@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > deleteKeyVault
 
 ## Description
-Deletekeyvault operation for scan
+Delete data source scan.
 
 ## Syntax
 ```
@@ -27,9 +27,9 @@ pvw scan deleteKeyVault --keyVaultName=<val>
 - `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
- >  > []()
+Scanning Data Plane > Scan > [Deletekeyvault]()
 ```
-GET /api/scan/deleteKeyVault
+ https://{accountName}.purview.azure.com/scan/api/deleteKeyVault
 ```
 
 ## Examples

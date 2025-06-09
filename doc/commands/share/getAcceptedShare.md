@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) > getAcceptedShare
 
 ## Description
-Getacceptedshare operation for share
+Get data share.
 
 ## Syntax
 ```
@@ -25,9 +25,9 @@ pvw share getAcceptedShare --sentShareName=<val> --acceptedSentShareName=<val>
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Share Data Plane > Share > [Getacceptedshare]()
 ```
-GET /api/share/getAcceptedShare
+ https://{accountName}.purview.azure.com/share/api/getAcceptedShare
 ```
 
 ## Examples

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > readCategoriesHeaders
 
 ## Description
-Readcategoriesheaders operation for glossary
+Retrieve glossary term or category.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw glossary readCategoriesHeaders --glossaryGuid=<val> [--limit=<val> --offset=
 - `--termGuid`: The globally unique identifier for glossary term. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Glossary > [Readcategoriesheaders]()
 ```
-GET /api/glossary/readCategoriesHeaders
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/readCategoriesHeaders
 ```
 
 ## Examples

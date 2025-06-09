@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > importBusinessMetadata
 
 ## Description
-Import business metadata in bulk.
+Import entity.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw entity importBusinessMetadata --bmFile=<val>
 - `--typeName`: The name of the type. (string)
 
 ## API Mapping
- > Entity > [Import Business Attributes]()
+Catalog Data Plane > Entity > [Importbusinessmetadata]()
 ```
- https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/businessmetadata/import
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/businessmetadata
 ```
 
 ## Examples

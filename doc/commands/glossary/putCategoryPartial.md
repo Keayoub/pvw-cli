@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > putCategoryPartial
 
 ## Description
-Putcategorypartial operation for glossary
+Create or update glossary term or category.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw glossary putCategoryPartial --categoryGuid=<val> --payloadFile=<val>
 - `--termGuid`: The globally unique identifier for glossary term. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Glossary > [Putcategorypartial]()
 ```
-GET /api/glossary/putCategoryPartial
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/putCategoryPartial
 ```
 
 ## Examples

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [search](./main.md) > query
 
 ## Description
-Query operation for search
+Query catalog.
 
 ## Syntax
 ```
@@ -21,9 +21,9 @@ pvw search query [--keywords=<val> --limit=<val> --offset=<val> --filterFile=<va
 - `--path`: The path to browse the next level child entities. (string)
 
 ## API Mapping
- >  > []()
+Discovery Data Plane > Search > [Query]()
 ```
-GET /api/search/query
+ https://{accountName}.purview.azure.com/catalog/api/search/query
 ```
 
 ## Examples

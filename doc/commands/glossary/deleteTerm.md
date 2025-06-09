@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > deleteTerm
 
 ## Description
-Deleteterm operation for glossary
+Delete glossary term or category.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw glossary deleteTerm --termGuid=<val>
 - `--sort`: ASC or DESC [default: ASC]. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Glossary > [Deleteterm]()
 ```
-GET /api/glossary/deleteTerm
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/deleteTerm
 ```
 
 ## Examples

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) > deleteSentShare
 
 ## Description
-Deletesentshare operation for share
+Delete data share.
 
 ## Syntax
 ```
@@ -25,9 +25,9 @@ pvw share deleteSentShare --sentShareName=<val>
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Share Data Plane > Share > [Deletesentshare]()
 ```
-GET /api/share/deleteSentShare
+ https://{accountName}.purview.azure.com/share/api/deleteSentShare
 ```
 
 ## Examples

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > readBusinessMetadataDef
 
 ## Description
-Get the business metadata definition by GUID or its name (unique).
+Retrieve type definition.
 
 ## Syntax
 ```
@@ -19,9 +19,9 @@ pvw types readBusinessMetadataDef (--guid=<val> | --name=<val>)
 - `--type`: Typedef name as search filter (classification | entity | enum | relationship | struct). (string)
 
 ## API Mapping
- > Types > [Get the businessMetadata definition by it's name (unique).]()
+Catalog Data Plane > Types > [Readbusinessmetadatadef]()
 ```
- https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/businessmetadatadef/name/{name}
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/readBusinessMetadataDef
 ```
 
 ## Examples

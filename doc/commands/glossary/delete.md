@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > delete
 
 ## Description
-Delete operation for glossary
+Delete glossary term or category.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw glossary delete --glossaryGuid=<val>
 - `--termGuid`: The globally unique identifier for glossary term. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Glossary > [Delete]()
 ```
-GET /api/glossary/delete
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/delete
 ```
 
 ## Examples

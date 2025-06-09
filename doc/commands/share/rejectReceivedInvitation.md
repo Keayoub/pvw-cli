@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) > rejectReceivedInvitation
 
 ## Description
-Rejectreceivedinvitation operation for share
+Reject data share.
 
 ## Syntax
 ```
@@ -25,9 +25,9 @@ pvw share rejectReceivedInvitation --invitationName=<val> --payloadFile=<val>
 - `--orderBy`: Sorts the results using OData syntax. (string)
 
 ## API Mapping
- >  > []()
+Share Data Plane > Share > [Rejectreceivedinvitation]()
 ```
-GET /api/share/rejectReceivedInvitation
+ https://{accountName}.purview.azure.com/share/api/rejectReceivedInvitation
 ```
 
 ## Examples

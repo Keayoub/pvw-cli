@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > updateAccount
 
 ## Description
-Updateaccount operation for management
+Update an existing Purview account.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw management updateAccount --subscriptionId=<val> --resourceGroupName=<val> --
 - `--objectId`: Gets or sets the object identifier of the admin. (string)
 
 ## API Mapping
- >  > []()
+Management Data Plane > Management > [Updateaccount]()
 ```
-GET /api/management/updateAccount
+ https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Purview/updateAccount
 ```
 
 ## Examples

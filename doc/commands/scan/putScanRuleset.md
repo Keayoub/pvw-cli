@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > putScanRuleset
 
 ## Description
-Putscanruleset operation for scan
+Create or update data source scan.
 
 ## Syntax
 ```
@@ -28,9 +28,9 @@ pvw scan putScanRuleset --scanRulesetName=<val> --payloadFile=<val>
 - `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
- >  > []()
+Scanning Data Plane > Scan > [Putscanruleset]()
 ```
-GET /api/scan/putScanRuleset
+ https://{accountName}.purview.azure.com/scan/api/putScanRuleset
 ```
 
 ## Examples

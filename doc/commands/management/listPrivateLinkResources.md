@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > listPrivateLinkResources
 
 ## Description
-Listprivatelinkresources operation for management
+List all Purview accounts.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw management listPrivateLinkResources --subscriptionId=<val> --resourceGroupNa
 - `--objectId`: Gets or sets the object identifier of the admin. (string)
 
 ## API Mapping
- >  > []()
+Management Data Plane > Management > [Listprivatelinkresources]()
 ```
-GET /api/management/listPrivateLinkResources
+ https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Purview/listPrivateLinkResources
 ```
 
 ## Examples

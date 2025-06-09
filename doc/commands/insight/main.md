@@ -1,17 +1,48 @@
-# Insight
-[Command Reference](../../../README.md#command-reference) > insight
+# pvw insight
+[Command Reference](../../README.md#command-reference) > insight
 
-## Asset
-| Command | Description |
-| --- | --- |
-| [pvw insight assetDistribution](./assetDistribution.md) | Asset distribution by sourceType, classificationCategory, and classification. |
-| [pvw insight filesAggregation](./filesAggregation.md) | File count and size by fileType and sourceType. |
-| [pvw insight filesWithoutResourceSet](./filesWithoutResourceSet.md) | Number of files not stored in a resource set by sourceType. |
-| [pvw insight tags](./tags.md) | Number of assets by tags. |
-| [pvw insight tagsTimeSeries](./tagsTimeSeries.md) | Number of assets by tags and time period|
+## Description
+Commands for performing analytics insights operations in Azure Purview.
 
-## Scan
-| Command | Description |
-| --- | --- |
-| [pvw insight scanStatusSummary](./scanStatusSummary.md) | Total number of scans by status. |
-| [pvw insight scanStatusSummaryByTs](./scanStatusSummaryByTs.md) | Total number of scans by status and time period. |
+## Syntax
+```
+pvw insight <action> [options]
+```
+
+## Available Actions
+
+### [assetdistribution](./assetdistribution.md)
+Perform operation on analytics insights.
+
+### [filesaggregation](./filesaggregation.md)
+Perform operation on analytics insights.
+
+### [fileswithoutresourceset](./fileswithoutresourceset.md)
+Perform operation on analytics insights.
+
+### [scanstatussummary](./scanstatussummary.md)
+Perform operation on analytics insights.
+
+### [scanstatussummarybyts](./scanstatussummarybyts.md)
+Perform operation on analytics insights.
+
+### [tags](./tags.md)
+Perform operation on analytics insights.
+
+### [tagstimeseries](./tagstimeseries.md)
+Perform operation on analytics insights.
+
+## Examples
+
+```bash
+# List available actions
+pvw insight --help
+
+# Get help for specific action
+pvw insight <action> --help
+```
+
+## See Also
+
+- [Command Reference](../../README.md#command-reference)
+- [API Documentation](../api/index.html)

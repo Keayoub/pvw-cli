@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [management](./main.md) > createAccount
 
 ## Description
-Createaccount operation for management
+Create a new Purview account.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw management createAccount --subscriptionId=<val> --resourceGroupName=<val> --
 - `--objectId`: Gets or sets the object identifier of the admin. (string)
 
 ## API Mapping
- >  > []()
+Management Data Plane > Management > [Createaccount]()
 ```
-GET /api/management/createAccount
+ https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Purview/createAccount
 ```
 
 ## Examples

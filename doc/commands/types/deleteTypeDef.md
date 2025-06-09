@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > deleteTypeDef
 
 ## Description
-Deletetypedef operation for types
+Delete type definition.
 
 ## Syntax
 ```
@@ -19,9 +19,9 @@ pvw types deleteTypeDef --name=<val>
 - `--type`: Typedef name as search filter (classification | entity | enum | relationship | struct). (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Types > [Deletetypedef]()
 ```
-GET /api/types/deleteTypeDef
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/deleteTypeDef
 ```
 
 ## Examples

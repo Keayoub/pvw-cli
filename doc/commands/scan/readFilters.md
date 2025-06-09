@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readFilters
 
 ## Description
-Readfilters operation for scan
+Retrieve data source scan.
 
 ## Syntax
 ```
@@ -27,9 +27,9 @@ pvw scan readFilters --dataSourceName=<val> --scanName=<val>
 - `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
- >  > []()
+Scanning Data Plane > Scan > [Readfilters]()
 ```
-GET /api/scan/readFilters
+ https://{accountName}.purview.azure.com/scan/api/readFilters
 ```
 
 ## Examples

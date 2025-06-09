@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > deleteLabelsByUniqueAttribute
 
 ## Description
-Delete label(s) from an entity identified by its type and unique attributes.
+Delete entity.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw entity deleteLabelsByUniqueAttribute --typeName=<val> --qualifiedName=<val> 
 - `--name`: The name of the attribute. (string)
 
 ## API Mapping
- > Entity > [Delete given labels to a given entity identified by its type and unique attributes.]()
+Catalog Data Plane > Entity > [Deletelabelsbyuniqueattribute]()
 ```
- https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/uniqueAttribute/type/{typeName}/labels
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/uniqueAttribute
 ```
 
 ## Examples

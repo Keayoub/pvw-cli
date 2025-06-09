@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [policystore](./main.md) > putDataPolicy
 
 ## Description
-Putdatapolicy operation for policystore
+Create or update policy.
 
 ## Syntax
 ```
@@ -19,9 +19,9 @@ pvw policystore putDataPolicy --policyName=<val> --payloadFile=<val>
 - `--policyId`: The unique policy id. (string)
 
 ## API Mapping
- >  > []()
+Policy Data Plane > Policystore > [Putdatapolicy]()
 ```
-GET /api/policystore/putDataPolicy
+ https://{accountName}.purview.azure.com/policystore/api/putDataPolicy
 ```
 
 ## Examples

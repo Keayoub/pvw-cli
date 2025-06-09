@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) > getReceivedInvitation
 
 ## Description
-Getreceivedinvitation operation for share
+Get data share.
 
 ## Syntax
 ```
@@ -25,9 +25,9 @@ pvw share getReceivedInvitation --invitationName=<val>
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Share Data Plane > Share > [Getreceivedinvitation]()
 ```
-GET /api/share/getReceivedInvitation
+ https://{accountName}.purview.azure.com/share/api/getReceivedInvitation
 ```
 
 ## Examples

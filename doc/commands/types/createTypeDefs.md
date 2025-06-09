@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > createTypeDefs
 
 ## Description
-Createtypedefs operation for types
+Create a new type definition.
 
 ## Syntax
 ```
@@ -19,9 +19,9 @@ pvw types createTypeDefs --payloadFile=<val>
 - `--type`: Typedef name as search filter (classification | entity | enum | relationship | struct). (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Types > [Createtypedefs]()
 ```
-GET /api/types/createTypeDefs
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/createTypeDefs
 ```
 
 ## Examples

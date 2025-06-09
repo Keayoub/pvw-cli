@@ -1,72 +1,141 @@
-# Scan
-[Command Reference](../../../README.md#command-reference) > scan
+# pvw scan
+[Command Reference](../../README.md#command-reference) > scan
 
-## Classification Rule
-| Command | Description |
-| --- | --- |
-| [pvw scan deleteClassificationRule](./deleteClassificationRule.md) | Deletes a classification rule |
-| [pvw scan putClassificationRule](./putClassificationRule.md) | Creates or Updates a classification rule |
-| [pvw scan readClassificationRule](./readClassificationRule.md) | Get a classification rule |
-| [pvw scan readClassificationRules](./readClassificationRules.md) | List classification rules in Account |
-| [pvw scan readClassificationRuleVersions](./readClassificationRuleVersions.md) | Lists the rule versions of a classification rule |
-| [pvw scan tagClassificationVersion](./tagClassificationVersion.md) | Sets Classification Action on a specific classification rule version |
+## Description
+Commands for managing scanning operations in Azure Purview.
 
-## Credential
-| Command | Description |
-| --- | --- |
-| [pvw scan deleteCredential](./deleteCredential.md) | Delete a credential. |
-| [pvw scan putCredential](./putCredential.md) | Create or update a credential. |
-| [pvw scan readCredential](./readCredential.md) | Get a credential. |
+## Syntax
+```
+pvw scan <action> [options]
+```
 
-## Data Source
-| Command | Description |
-| --- | --- |
-| [pvw scan deleteDataSource](./deleteDataSource.md) | Deletes a data source |
-| [pvw scan putDataSource](./putDataSource.md) | Creates or Updates a data source |
-| [pvw scan readDataSource](./readDatasource.md) | Get a data source |
-| [pvw scan readDataSources](./readDatasources.md) | List data sources in Data catalog |
+## Available Actions
 
-## Key Vault
-| Command | Description |
-| --- | --- |
-| [pvw scan deleteKeyVault](./deleteKeyVault.md) | Deletes the key vault connection associated with the account |
-| [pvw scan putKeyVault](./putKeyVault.md) | Creates an instance of a key vault connection |
-| [pvw scan readKeyVault](./readKeyVault.md) | Gets key vault information |
-| [pvw scan readKeyVaults](./readKeyVaults.md) | List key vault connections in account |
+### [cancelscan](./cancelscan.md)
+Cancel data source scan.
 
-## Scan
-| Command | Description |
-| --- | --- |
-| [pvw scan cancelScan](./cancelScan.md) | Cancels a scan |
-| [pvw scan deleteScan](./deleteScan.md) | Deletes the scan associated with the data source |
-| [pvw scan putScan](./putScan.md) | Creates an instance of a scan |
-| [pvw scan readScan](./readScan.md) | Gets a scan information |
-| [pvw scan readScanHistory](./readScanHistory.md) | Lists the scan history of a scan |
-| [pvw scan readScans](./readScans.md) | List scans in data source |
-| [pvw scan runScan](./runScan.md) | Runs the scan |
+### [deleteclassificationrule](./deleteclassificationrule.md)
+Delete data source scan.
 
-## Scan Filter
-| Command | Description |
-| --- | --- |
-| [pvw scan putFilter](./putFilter.md) | Creates or updates a filter |
-| [pvw scan readFilters](./readFilters.md) | Get a filter |
+### [deletecredential](./deletecredential.md)
+Delete data source scan.
 
-## Scan Ruleset
-| Command | Description |
-| --- | --- |
-| [pvw scan deleteScanRuleset](./deleteScanRuleset.md) | Deletes a scan ruleset |
-| [pvw scan putScanRuleset](./putScanRuleset.md) | Creates or Updates a scan ruleset |
-| [pvw scan readScanRuleset](./readScanRuleset.md) | Get a scan ruleset |
-| [pvw scan readScanRulesets](./readScanRulesets.md) | List scan rulesets in Data catalog |
-| [pvw scan readSystemScanRuleset](./readSystemScanRuleset.md) | Get a system scan ruleset for a data source |
-| [pvw scan readSystemScanRulesetLatest](./readSystemScanRulesetLatest.md) | Get the latest version of a system scan ruleset |
-| [pvw scan readSystemScanRulesets](./readSystemScanRulesets.md) | List all system scan rulesets for an account |
-| [pvw scan readSystemScanRulesetVersion](./readSystemScanRulesetVersion.md) | Get a scan ruleset by version |
-| [pvw scan readSystemScanRulesetVersions](./readSystemScanRulesetVersions.md) | List system scan ruleset versions in Data catalog |
+### [deletedatasource](./deletedatasource.md)
+Delete data source scan.
 
-## Scan Trigger
-| Command | Description |
-| --- | --- |
-| [pvw scan deleteTrigger](./deleteTrigger.md) | Deletes the trigger associated with the scan |
-| [pvw scan putTrigger](./putTrigger.md) | Creates an instance of a trigger |
-| [pvw scan readTrigger](./readTrigger.md) | Gets trigger information |
+### [deletekeyvault](./deletekeyvault.md)
+Delete data source scan.
+
+### [deletescan](./deletescan.md)
+Delete data source scan.
+
+### [deletescanruleset](./deletescanruleset.md)
+Delete data source scan.
+
+### [deletetrigger](./deletetrigger.md)
+Delete data source scan.
+
+### [putclassificationrule](./putclassificationrule.md)
+Create or update data source scan.
+
+### [putcredential](./putcredential.md)
+Create or update data source scan.
+
+### [putdatasource](./putdatasource.md)
+Create or update data source scan.
+
+### [putfilter](./putfilter.md)
+Create or update data source scan.
+
+### [putkeyvault](./putkeyvault.md)
+Create or update data source scan.
+
+### [putscan](./putscan.md)
+Create or update data source scan.
+
+### [putscanruleset](./putscanruleset.md)
+Create or update data source scan.
+
+### [puttrigger](./puttrigger.md)
+Create or update data source scan.
+
+### [readclassificationrule](./readclassificationrule.md)
+Retrieve data source scan.
+
+### [readclassificationrules](./readclassificationrules.md)
+Retrieve data source scan.
+
+### [readclassificationruleversions](./readclassificationruleversions.md)
+Retrieve data source scan.
+
+### [readcredential](./readcredential.md)
+Retrieve data source scan.
+
+### [readdatasource](./readdatasource.md)
+Retrieve data source scan.
+
+### [readdatasources](./readdatasources.md)
+Retrieve data source scan.
+
+### [readfilters](./readfilters.md)
+Retrieve data source scan.
+
+### [readkeyvault](./readkeyvault.md)
+Retrieve data source scan.
+
+### [readkeyvaults](./readkeyvaults.md)
+Retrieve data source scan.
+
+### [readscan](./readscan.md)
+Retrieve data source scan.
+
+### [readscanhistory](./readscanhistory.md)
+Retrieve data source scan.
+
+### [readscanruleset](./readscanruleset.md)
+Retrieve data source scan.
+
+### [readscanrulesets](./readscanrulesets.md)
+Retrieve data source scan.
+
+### [readscans](./readscans.md)
+Retrieve data source scan.
+
+### [readsystemscanruleset](./readsystemscanruleset.md)
+Retrieve data source scan.
+
+### [readsystemscanrulesetlatest](./readsystemscanrulesetlatest.md)
+Retrieve data source scan.
+
+### [readsystemscanrulesets](./readsystemscanrulesets.md)
+Retrieve data source scan.
+
+### [readsystemscanrulesetversion](./readsystemscanrulesetversion.md)
+Retrieve data source scan.
+
+### [readsystemscanrulesetversions](./readsystemscanrulesetversions.md)
+Retrieve data source scan.
+
+### [readtrigger](./readtrigger.md)
+Retrieve data source scan.
+
+### [runscan](./runscan.md)
+Execute data source scan.
+
+### [tagclassificationversion](./tagclassificationversion.md)
+Perform operation on data source scan.
+
+## Examples
+
+```bash
+# List available actions
+pvw scan --help
+
+# Get help for specific action
+pvw scan <action> --help
+```
+
+## See Also
+
+- [Command Reference](../../README.md#command-reference)
+- [API Documentation](../api/index.html)

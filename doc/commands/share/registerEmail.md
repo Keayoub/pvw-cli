@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) > registerEmail
 
 ## Description
-Registeremail operation for share
+Register data share.
 
 ## Syntax
 ```
@@ -26,9 +26,9 @@ No required arguments.
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
- >  > []()
+Share Data Plane > Share > [Registeremail]()
 ```
-GET /api/share/registerEmail
+ https://{accountName}.purview.azure.com/share/api/registerEmail
 ```
 
 ## Examples

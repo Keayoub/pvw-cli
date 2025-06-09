@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readKeyVaults
 
 ## Description
-Readkeyvaults operation for scan
+Retrieve data source scan.
 
 ## Syntax
 ```
@@ -28,9 +28,9 @@ No required arguments.
 - `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
- >  > []()
+Scanning Data Plane > Scan > [Readkeyvaults]()
 ```
-GET /api/scan/readKeyVaults
+ https://{accountName}.purview.azure.com/scan/api/readKeyVaults
 ```
 
 ## Examples

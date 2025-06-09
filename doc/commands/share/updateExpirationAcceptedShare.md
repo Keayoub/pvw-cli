@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) > updateExpirationAcceptedShare
 
 ## Description
-Updateexpirationacceptedshare operation for share
+Update an existing data share.
 
 ## Syntax
 ```
@@ -25,9 +25,9 @@ pvw share updateExpirationAcceptedShare --sentShareName=<val> --acceptedSentShar
 - `--orderBy`: Sorts the results using OData syntax. (string)
 
 ## API Mapping
- >  > []()
+Share Data Plane > Share > [Updateexpirationacceptedshare]()
 ```
-GET /api/share/updateExpirationAcceptedShare
+ https://{accountName}.purview.azure.com/share/api/updateExpirationAcceptedShare
 ```
 
 ## Examples

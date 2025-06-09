@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > putKeyVault
 
 ## Description
-Putkeyvault operation for scan
+Create or update data source scan.
 
 ## Syntax
 ```
@@ -28,9 +28,9 @@ pvw scan putKeyVault --keyVaultName=<val> --payloadFile=<val>
 - `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
- >  > []()
+Scanning Data Plane > Scan > [Putkeyvault]()
 ```
-GET /api/scan/putKeyVault
+ https://{accountName}.purview.azure.com/scan/api/putKeyVault
 ```
 
 ## Examples

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [types](./main.md) > readStatistics
 
 ## Description
-Readstatistics operation for types
+Retrieve type definition.
 
 ## Syntax
 ```
@@ -20,9 +20,9 @@ No required arguments.
 - `--type`: Typedef name as search filter (classification | entity | enum | relationship | struct). (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Types > [Readstatistics]()
 ```
-GET /api/types/readStatistics
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/types/readStatistics
 ```
 
 ## Examples

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [share](./main.md) > createSentInvitation
 
 ## Description
-Createsentinvitation operation for share
+Create a new data share.
 
 ## Syntax
 ```
@@ -25,9 +25,9 @@ pvw share createSentInvitation --sentShareName=<val> --invitationName=<val> --pa
 - `--orderBy`: Sorts the results using OData syntax. (string)
 
 ## API Mapping
- >  > []()
+Share Data Plane > Share > [Createsentinvitation]()
 ```
-GET /api/share/createSentInvitation
+ https://{accountName}.purview.azure.com/share/api/createSentInvitation
 ```
 
 ## Examples

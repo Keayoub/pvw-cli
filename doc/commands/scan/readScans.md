@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > readScans
 
 ## Description
-Readscans operation for scan
+Retrieve data source scan.
 
 ## Syntax
 ```
@@ -27,9 +27,9 @@ pvw scan readScans --dataSourceName=<val>
 - `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
- >  > []()
+Scanning Data Plane > Scan > [Readscans]()
 ```
-GET /api/scan/readScans
+ https://{accountName}.purview.azure.com/scan/api/readScans
 ```
 
 ## Examples

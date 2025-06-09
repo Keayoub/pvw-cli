@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [entity](./main.md) > setLabels
 
 ## Description
-Overwrite labels for an entity.
+Set Labels for entity.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw entity setLabels --guid=<val> --payloadFile=<val>
 - `--typeName`: The name of the type. (string)
 
 ## API Mapping
- > Entity > [Set labels to a given entity.]()
+Catalog Data Plane > Entity > [Setlabels]()
 ```
- https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/guid/{guid}/labels
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/entity/labels
 ```
 
 ## Examples

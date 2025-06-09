@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [relationship](./main.md) > put
 
 ## Description
-Put operation for relationship
+Create or update relationship.
 
 ## Syntax
 ```
@@ -17,9 +17,9 @@ pvw relationship put --payloadFile=<val>
 - `--guid`: The globally unique identifier of the relationship. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Relationship > [Put]()
 ```
-GET /api/relationship/put
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/relationship/put
 ```
 
 ## Examples

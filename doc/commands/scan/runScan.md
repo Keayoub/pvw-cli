@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [scan](./main.md) > runScan
 
 ## Description
-Runscan operation for scan
+Execute data source scan.
 
 ## Syntax
 ```
@@ -28,9 +28,9 @@ pvw scan runScan --dataSourceName=<val> --scanName=<val> [--scanLevel=<val>]
 - `--credentialName`: The name of the credential. (string)
 
 ## API Mapping
- >  > []()
+Scanning Data Plane > Scan > [Runscan]()
 ```
-GET /api/scan/runScan
+ https://{accountName}.purview.azure.com/scan/api/runScan
 ```
 
 ## Examples

@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [search](./main.md) > autoComplete
 
 ## Description
-Autocomplete operation for search
+Perform operation on catalog.
 
 ## Syntax
 ```
@@ -21,9 +21,9 @@ pvw search autoComplete [--keywords=<val> --limit=<val> --filterFile=<val>]
 - `--offset`: Offset for pagination purpose [default: 0]. (integer)
 
 ## API Mapping
- >  > []()
+Discovery Data Plane > Search > [Autocomplete]()
 ```
-GET /api/search/autoComplete
+ https://{accountName}.purview.azure.com/catalog/api/search/autoComplete
 ```
 
 ## Examples

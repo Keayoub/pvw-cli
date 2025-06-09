@@ -2,7 +2,7 @@
 [Command Reference](../../../README.md#command-reference) > [glossary](./main.md) > createTermsExport
 
 ## Description
-Createtermsexport operation for glossary
+Create a new glossary term or category.
 
 ## Syntax
 ```
@@ -24,9 +24,9 @@ pvw glossary createTermsExport --glossaryGuid=<val> --termGuid=<val>... [--inclu
 - `--sort`: ASC or DESC [default: ASC]. (string)
 
 ## API Mapping
- >  > []()
+Catalog Data Plane > Glossary > [Createtermsexport]()
 ```
-GET /api/glossary/createTermsExport
+ https://{accountName}.purview.azure.com/catalog/api/atlas/v2/glossary/createTermsExport
 ```
 
 ## Examples
