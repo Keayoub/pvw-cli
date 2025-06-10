@@ -26,9 +26,6 @@ Exporting catalog data.
 ### [Governance Examples](governance-examples.md)
 Implementing data governance workflows.
 
-### [ML Integration Examples](ml-examples.md)
-Using machine learning features.
-
 ### [Monitoring Examples](monitoring-examples.md)
 Setting up monitoring and alerts.
 

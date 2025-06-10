@@ -103,10 +103,6 @@ pvw validate csv --csv-file datasets.csv --template dataset
 pvw governance check-compliance --entity-guid "entity-123"
 pvw governance compliance-report --collection "sales-data"
 
-# Machine Learning Integration
-pvw ml find-similar --entity-guid "entity-123" --threshold 0.8
-pvw ml detect-anomalies --collection "sales-data"
-
 # Real-time Monitoring
 pvw monitoring dashboard --refresh-interval 30
 pvw monitoring export-metrics --format "json"
@@ -147,7 +143,6 @@ print(response)
 ```python
 from purviewcli.client.business_rules import BusinessRulesEngine
 from purviewcli.client.monitoring_dashboard import MonitoringDashboard
-from purviewcli.client.ml_integration import IntelligentDataDiscovery
 from purviewcli.client.lineage_visualization import AdvancedLineageAnalyzer
 
 # Business Rules Engine
@@ -157,10 +152,6 @@ compliance_result = rules_engine.check_entity_compliance("entity-guid")
 # Monitoring Dashboard
 dashboard = MonitoringDashboard(client.config)
 metrics = dashboard.collect_metrics()
-
-# ML Integration
-ml_discovery = IntelligentDataDiscovery(client.config)
-similar_entities = ml_discovery.find_similar_entities("entity-guid", threshold=0.8)
 
 # Advanced Lineage
 lineage_analyzer = AdvancedLineageAnalyzer(client.config)
@@ -183,7 +174,6 @@ impact_analysis = lineage_analyzer.analyze_lineage_impact("entity-guid", max_dep
 
 **Advanced Features (v2.0):**
 - **Business Rules Engine**: Automated governance policy enforcement with customizable rules
-- **Machine Learning Integration**: AI-powered data discovery, similarity analysis, and anomaly detection
 - **Real-time Monitoring Dashboard**: Live metrics collection with alerting and performance monitoring
 - **Advanced Lineage Visualization**: Deep lineage analysis with impact assessment and gap detection
 - **Plugin System**: Extensible architecture for adding custom functionality and integrations
@@ -202,7 +192,6 @@ impact_analysis = lineage_analyzer.analyze_lineage_impact("entity-guid", max_dep
 
 **Advanced Integrations (v2.0):**
 - **Business Rules API**: Programmatic access to governance rules and compliance checking
-- **ML Integration API**: Access to machine learning capabilities for data discovery
 - **Monitoring API**: Real-time metrics collection and dashboard management
 - **Lineage Analysis API**: Advanced lineage traversal and impact analysis
 - **Plugin Management API**: Dynamic loading and execution of custom plugins

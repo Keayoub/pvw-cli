@@ -241,68 +241,7 @@ class PerformanceTestSuite:
                         results.append({'error': str(e)})
             
             return len(results)
-        
-        return bulk_metrics_collection()
-    
-    def test_ml_integration_performance(self):
-        """Test ML integration performance with large datasets"""
-        from purviewcli.client.ml_integration import IntelligentDataDiscovery, MLRecommendationEngine
-        
-        ml_discovery = IntelligentDataDiscovery(self.mock_config)
-        ml_recommendation = MLRecommendationEngine(self.mock_config)
-        
-        # Mock large dataset for ML analysis
-        mock_entities = []
-        for i in range(200):
-            mock_entities.append({
-                'guid': f'ml-entity-{i}',
-                'name': f'ml_entity_{i}',
-                'attributes': {
-                    'schema': f'schema_{i % 10}',
-                    'table_name': f'table_{i}',
-                    'column_count': i % 50 + 1,
-                    'row_count': (i + 1) * 1000,
-                    'data_type': 'structured' if i % 2 == 0 else 'unstructured'
-                }
-            })
-        
-        def bulk_ml_analysis():
-            results = []
-            
-            # Mock similarity analysis
-            mock_similarity = {
-                'similar_entities': [
-                    {'entity_guid': f'similar-{j}', 'similarity_score': 0.8 + (j * 0.01)}
-                    for j in range(10)
-                ],
-                'patterns': ['common_schema', 'similar_naming', 'data_type_match']
-            }
-            
-            # Mock recommendations
-            mock_recommendations = [
-                {'entity_guid': f'ml-entity-{i}', 'recommendation_type': 'classification', 'value': 'PII'}
-                for i in range(50)
-            ]
-            
-            with patch.object(ml_discovery, 'find_similar_entities', return_value=mock_similarity):
-                with patch.object(ml_recommendation, 'generate_recommendations', return_value=mock_recommendations):
-                    # Perform ML analysis on 50 entities
-                    for i in range(50):
-                        try:
-                            # Similarity analysis
-                            similarity_result = ml_discovery.find_similar_entities(f'ml-entity-{i}')
-                            results.append(similarity_result)
-                            
-                            # Recommendation generation
-                            if i % 10 == 0:  # Every 10th entity
-                                recommendations = ml_recommendation.generate_recommendations([f'ml-entity-{i}'])
-                                results.append(recommendations)
-                        except Exception as e:
-                            results.append({'error': str(e)})
-            
-            return len(results)
-        
-        return bulk_ml_analysis()
+          return bulk_metrics_collection()
     
     def test_lineage_analysis_performance(self):
         """Test lineage analysis performance with complex lineage graphs"""
@@ -479,19 +418,15 @@ class PerformanceTestSuite:
         # Count successful operations
         successful_operations = sum(1 for result in results if isinstance(result, dict) and 'scanId' in result)
         return successful_operations
-    
-    def test_memory_usage_under_load(self):
+      def test_memory_usage_under_load(self):
         """Test memory usage under sustained load"""
-        from purviewcli.client.ml_integration import IntelligentDataDiscovery
-        
-        ml_discovery = IntelligentDataDiscovery(self.mock_config)
         
         # Track memory usage over time
         memory_samples = []
         process = psutil.Process()
         
         def memory_intensive_operation():
-            # Simulate memory-intensive ML operations
+            # Simulate memory-intensive operations
             large_dataset = []
             for i in range(1000):
                 large_dataset.append({
@@ -505,7 +440,7 @@ class PerformanceTestSuite:
             current_memory = process.memory_info().rss / 1024 / 1024  # MB
             memory_samples.append(current_memory)
             
-            # Mock ML analysis on large dataset
+            # Mock analysis on large dataset
             mock_analysis = {
                 'processed_entities': len(large_dataset),
                 'memory_usage': current_memory,
@@ -682,13 +617,11 @@ async def main():
     
     # Performance tests
     console.print("\n[bold blue]Running Performance Tests...[/bold blue]")
-    
-    # Synchronous performance tests
+      # Synchronous performance tests
     sync_tests = [
         ("Scanning Manager Performance", test_suite.test_scanning_manager_performance),
         ("Business Rules Performance", test_suite.test_business_rules_performance),
         ("Monitoring Dashboard Performance", test_suite.test_monitoring_dashboard_performance),
-        ("ML Integration Performance", test_suite.test_ml_integration_performance),
         ("Lineage Analysis Performance", test_suite.test_lineage_analysis_performance),
         ("Plugin System Performance", test_suite.test_plugin_system_performance),
         ("Concurrent Operations Performance", test_suite.test_concurrent_operations_performance),

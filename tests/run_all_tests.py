@@ -49,7 +49,7 @@ class ComprehensiveTestRunner:
             },
             {
                 'name': 'Advanced Modules Tests',
-                'description': 'New advanced modules (ML, monitoring, etc.)',
+                'description': 'New advanced modules (monitoring, etc.)',
                 'script': 'tests/test_advanced_modules.py',
                 'category': 'advanced'
             },

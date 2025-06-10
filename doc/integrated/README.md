@@ -36,7 +36,6 @@ Code examples and sample implementations.
 | `types` | Manage type definitions | [CLI](cli/types/) \| [API](api/types/) |
 | `scan` | Manage data scanning | [CLI](cli/scanning/) \| [API](api/scan/) |
 | `governance` | Data governance features | [CLI](cli/governance/) |
-| `ml` | Machine learning integration | [CLI](cli/ml/) |
 | `monitoring` | System monitoring | [CLI](cli/monitoring/) |
 
 ## Features
@@ -45,7 +44,7 @@ Code examples and sample implementations.
 - **API Integration**: Direct integration with Azure Purview REST APIs
 - **Batch Operations**: Support for bulk data operations
 - **Export/Import**: Data export and import capabilities
-- **Advanced Analytics**: ML and governance features
+- **Advanced Analytics**: Governance and monitoring features
 - **Monitoring**: Built-in monitoring and validation tools
 
 ## Support

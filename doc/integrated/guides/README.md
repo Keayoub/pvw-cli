@@ -35,9 +35,6 @@ Performing bulk operations efficiently.
 ### [Data Governance](data-governance.md)
 Implementing data governance policies.
 
-### [ML Integration](ml-integration.md)
-Using machine learning features.
-
 ### [Monitoring & Validation](monitoring.md)
 Monitoring system health and validating data.
 

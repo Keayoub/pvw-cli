@@ -188,25 +188,7 @@ class ApiService {
   }
 
   async deleteGlossaryTerm(termId: string): Promise<AxiosResponse> {
-    return this.client.delete(`/glossary/terms/${termId}`);
-  }
-
-  // ML Integration operations
-  async getMLRecommendations(entityGuid: string): Promise<AxiosResponse> {
-    return this.client.get(`/ml/recommendations/${entityGuid}`);
-  }
-
-  async findSimilarEntities(entityGuid: string): Promise<AxiosResponse> {
-    return this.client.get(`/ml/similar/${entityGuid}`);
-  }
-
-  async detectAnomalies(): Promise<AxiosResponse> {
-    return this.client.get('/ml/anomalies');
-  }
-
-  async getPredictiveInsights(): Promise<AxiosResponse> {
-    return this.client.get('/ml/insights');
-  }
+    return this.client.delete(`/glossary/terms/${termId}`);  }
 
   // System operations
   async getSystemHealth(): Promise<AxiosResponse> {

@@ -260,22 +260,6 @@ Real-time monitoring and alerting
 
 **Description:** Export collected metrics
 
-### ml
-
-Machine learning powered analysis
-
-#### find_similar
-
-**Syntax:** `pvw ml find_similar --entity-guid=<value> [--threshold=<value>] [--output=<value>]`
-
-**Description:** Find similar datasets using ML
-
-#### recommendations
-
-**Syntax:** `pvw ml recommendations --entity-guid=<value> [--output-file=<value>]`
-
-**Description:** Generate ML-powered governance recommendations
-
 ### lineage
 
 Advanced lineage analysis and visualization

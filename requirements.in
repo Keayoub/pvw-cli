@@ -64,7 +64,7 @@ csvkit
 xlsxwriter
 openpyxl
 
-# Analytics, ML, and plotting
+# Analytics and plotting
 pandas
 numpy
 scikit-learn

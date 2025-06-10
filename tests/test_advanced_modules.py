@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Comprehensive Test Suite for  Purview CLI v2.0 Advanced Modules
-Tests all newly created advanced features including monitoring, ML integration, 
+Tests all newly created advanced features including monitoring, 
 lineage visualization, and plugin system.
 """
 
@@ -138,32 +138,7 @@ class TestAdvancedModules:
         except Exception as e:
             console.print(f"[red]Error: {str(e)}[/red]")
             return False
-    
-    def test_ml_integration_import(self):
-        """Test ML integration module import"""
-        try:
-            from purviewcli.client.ml_integration import (
-                IntelligentDataDiscovery, 
-                MLRecommendationEngine, 
-                PredictiveAnalytics
-            )
-            
-            # Test class instantiation
-            data_discovery = IntelligentDataDiscovery(self.mock_config)
-            recommendation_engine = MLRecommendationEngine(self.mock_config)
-            predictive_analytics = PredictiveAnalytics(self.mock_config)
-            
-            # Verify attributes exist
-            assert hasattr(data_discovery, 'config')
-            assert hasattr(recommendation_engine, 'generate_recommendations')
-            assert hasattr(predictive_analytics, 'predict_scan_failures')
-            
-            return True
-        except Exception as e:
-            console.print(f"[red]Error: {str(e)}[/red]")
-            return False
-    
-    def test_lineage_visualization_import(self):
+      def test_lineage_visualization_import(self):
         """Test lineage visualization module import"""
         try:
             from purviewcli.client.lineage_visualization import AdvancedLineageAnalyzer
@@ -430,13 +405,11 @@ async def main():
     console.print("="*80)
     
     test_suite = TestAdvancedModules()
-    
-    # Import and instantiation tests
+      # Import and instantiation tests
     console.print(Panel("[bold blue]Module Import Tests[/bold blue]"))
     test_suite.run_test("Scanning Operations Import", test_suite.test_scanning_operations_import)
     test_suite.run_test("Business Rules Import", test_suite.test_business_rules_import)
     test_suite.run_test("Monitoring Dashboard Import", test_suite.test_monitoring_dashboard_import)
-    test_suite.run_test("ML Integration Import", test_suite.test_ml_integration_import)
     test_suite.run_test("Lineage Visualization Import", test_suite.test_lineage_visualization_import)
     test_suite.run_test("Plugin System Import", test_suite.test_plugin_system_import)
     

@@ -11,7 +11,7 @@ The CLI is built with a modular architecture featuring:
 - **Core CLI Module** (`purviewcli.cli.cli`) - Main command structure and routing
 - **Client Library** (`purviewcli.client.*`) - API clients and operation handlers  
 - **Plugin System** (`purviewcli.plugins.*`) - Extensible plugin architecture
-- **Advanced Modules** - ML integration, monitoring, business rules, etc.
+- **Advanced Modules** - Monitoring, business rules, governance features, etc.
 
 ## Main Command Groups
 
@@ -101,12 +101,6 @@ Real-time monitoring and alerting
 - **Key Features**: Real-time dashboard, metric collection, alerting
 - **Common Operations**: start dashboard, export metrics, configure alerts
 
-#### ml
-Machine learning powered analysis
-- **Purpose**: ML-driven data discovery and recommendations
-- **Key Features**: Similarity detection, intelligent recommendations
-- **Common Operations**: find similar datasets, generate recommendations
-
 #### plugins
 Plugin system management
 - **Purpose**: Manage and execute custom plugins
@@ -195,15 +189,6 @@ pvw governance check-compliance --entity-guid <guid>
 
 # Generate compliance report
 pvw governance compliance-report --output-file compliance.json
-```
-
-### Machine Learning Integration
-```bash
-# Find similar datasets
-pvw ml find-similar --entity-guid <guid> --threshold 0.8
-
-# Generate ML recommendations
-pvw ml recommendations --entity-guid <guid>
 ```
 
 ### Real-time Monitoring

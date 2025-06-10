@@ -187,7 +187,7 @@ class PurviewEndpoints:
         'set_default_account': "/providers/Microsoft.Purview/setDefaultAccount",
         'remove_default_account': "/providers/Microsoft.Purview/removeDefaultAccount"
     }
-    
+       
     @classmethod
     def format_endpoint(cls, endpoint_template: str, **kwargs) -> str:
         """

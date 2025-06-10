@@ -13,7 +13,6 @@
 **PVW CLI v2.0** is an enhanced command-line interface and automation platform for Azure Purview, designed to:
 
 - **Automate Data Governance**: Intelligent business rules engine with automated compliance checking
-- **Enable ML-Powered Discovery**: AI-driven data discovery, similarity analysis, and anomaly detection
 - **Provide Real-time Monitoring**: Live dashboards with metrics, alerting, and performance tracking
 - **Advanced Lineage Analysis**: Deep lineage traversal with impact assessment and gap detection
 - **Extensible Architecture**: Plugin system for custom integrations and functionality
@@ -23,7 +22,7 @@
 
 **Key Added Value:**
 
-- **Intelligent Automation**: ML-powered governance with automated policy enforcement
+- **Intelligent Automation**: Automated governance with policy enforcement
 - **Enterprise Monitoring**: Real-time visibility into data governance operations
 - **Advanced Analytics**: Deep lineage analysis with impact assessment capabilities
 - **Extensibility**: Plugin architecture for custom integrations and workflows
@@ -48,7 +47,6 @@
 
 **Advanced Features (v2.0):**
 - **Business Rules API**: Programmatic access to governance rules and compliance checking
-- **ML Integration API**: Access to machine learning capabilities for data discovery and recommendations
 - **Monitoring API**: Real-time metrics collection and dashboard management
 - **Advanced Lineage API**: Deep lineage traversal and impact analysis capabilities
 - **Plugin Management API**: Dynamic loading and execution of custom plugins
@@ -57,7 +55,7 @@
 **Key Enhancements Over SDK/UI:**
 
 - **Comprehensive API Coverage**: Access all data plane and control plane APIs
-- **Intelligent Automation**: ML-powered governance with automated compliance checking
+- **Intelligent Automation**: Automated governance with compliance checking
 - **Advanced Analytics**: Real-time monitoring and performance optimization capabilities
 - **Extensible Architecture**: Plugin system for custom integrations and workflows
 - **Bulk & Parallel Operations**: Efficiently process large datasets with intelligent batching
@@ -145,21 +143,6 @@ pvw governance list-violations --severity "high" --type "ownership"
 pvw governance apply-rule --rule "data-ownership" --collection "finance"
 ```
 
-**Machine Learning Integration:**
-```bash
-# Find entities similar to a target entity
-pvw ml find-similar --entity-guid "entity-123" --threshold 0.8
-
-# Detect data anomalies using ML algorithms
-pvw ml detect-anomalies --collection "sales-data" --algorithm "isolation-forest"
-
-# Generate ML-powered governance recommendations
-pvw ml recommendations --scope "governance" --entity-guid "entity-123"
-
-# Predict potential scan failures
-pvw ml predict-failures --datasource "sql-server" --timeframe "7d"
-```
-
 **Real-time Monitoring & Analytics:**
 ```bash
 # Start live monitoring dashboard
@@ -188,9 +171,7 @@ pvw lineage visualize --entity-guid "entity-123" --direction "both" --max-depth 
 
 # Export lineage graph for external analysis
 pvw lineage export --entity-guid "entity-123" --format "graphml" --output "lineage.xml"
-
-# Infer potential relationships using ML
-pvw lineage infer-relationships --entity-guids "entity1,entity2,entity3"
+```
 ```
 
 **Plugin System & Extensibility:**
@@ -536,7 +517,7 @@ pvw entity import-csv --csv-file data.csv --config-file custom_template.json
 Use the provided automation examples:
 
 ```python
-from scripts.automation_examples import PurviewAutomation
+from purviewcli.client import PurviewAutomation
 
 automation = PurviewAutomation("your-account-name")
 
@@ -686,3 +667,22 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 ### Made with ❤️ for the Azure Purview community
+
+## PyPI Installation
+
+To install the `pvw-cli` package from PyPI, run:
+
+```bash
+pip install pvw-cli
+```
+
+
+### PyPI Example Usage
+
+After installation, you can use the CLI as follows:
+
+```bash
+pvw-cli --help
+```
+
+For detailed usage instructions, refer to the [documentation](https://example.com/docs).

@@ -28,7 +28,6 @@ The Purview CLI provides command-line access to Microsoft Purview functionality 
 - [scanning](./scanning/README.md) - Advanced scanning operations and automation (2 commands)
 - [governance](./governance/README.md) - Business rules and governance operations (2 commands)
 - [monitoring](./monitoring/README.md) - Real-time monitoring and alerting (2 commands)
-- [ml](./ml/README.md) - Machine learning powered analysis (2 commands)
 - [lineage](./lineage/README.md) - Advanced lineage analysis and visualization (2 commands)
 - [plugins](./plugins/README.md) - Plugin management and operations (3 commands)
 

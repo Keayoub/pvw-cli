@@ -12,14 +12,13 @@ The  Purview CLI v2.0 is a comprehensive enterprise-grade data governance automa
 2. [Advanced Scanning Operations](#advanced-scanning-operations)
 3. [Business Rules Engine](#business-rules-engine)
 4. [Real-time Monitoring Dashboard](#real-time-monitoring-dashboard)
-5. [Machine Learning Integration](#machine-learning-integration)
-6. [Advanced Lineage Visualization](#advanced-lineage-visualization)
-7. [Plugin System](#plugin-system)
-8. [Testing Framework](#testing-framework)
-9. [Performance Optimization](#performance-optimization)
-10. [Web UI Interface](#web-ui-interface)
-11. [API Reference](#api-reference)
-12. [Deployment Guide](#deployment-guide)
+5. [Advanced Lineage Visualization](#advanced-lineage-visualization)
+6. [Plugin System](#plugin-system)
+7. [Testing Framework](#testing-framework)
+8. [Performance Optimization](#performance-optimization)
+9. [Web UI Interface](#web-ui-interface)
+10. [API Reference](#api-reference)
+11. [Deployment Guide](#deployment-guide)
 
 ---
 
@@ -325,127 +324,6 @@ report = dashboard.generate_daily_report(
                 "severity_threshold": "high"
             }
         ]
-    }
-}
-```
-
----
-
-## Machine Learning Integration
-
-### Overview
-The ML Integration module brings intelligent automation to data governance through similarity analysis, anomaly detection, and predictive analytics.
-
-### Key Components
-
-#### 1. Intelligent Data Discovery
-- **Entity Similarity Analysis**: Find similar entities based on schema, metadata, and usage patterns
-- **Pattern Recognition**: Identify common data patterns and structures
-- **Anomaly Detection**: Detect unusual entities or data patterns
-- **Classification Prediction**: ML-powered data classification suggestions
-
-#### 2. Recommendation Engine
-- **Governance Recommendations**: Automated suggestions for data governance improvements
-- **Optimization Advice**: Performance and efficiency recommendations
-- **Policy Suggestions**: Recommended governance policies based on data analysis
-
-#### 3. Predictive Analytics
-- **Scan Failure Prediction**: Predict potential scan failures before they occur
-- **Resource Usage Forecasting**: Predict resource requirements for operations
-- **Compliance Risk Assessment**: Identify entities at risk of policy violations
-
-### CLI Commands
-
-```bash
-# Find similar entities
-pvw ml find-similar --entity-guid "entity-123" --threshold 0.8
-
-# Detect anomalies
-pvw ml detect-anomalies --collection "sales-data" --algorithm "isolation-forest"
-
-# Generate recommendations
-pvw ml recommendations --scope "governance" --entity-guid "entity-123"
-
-# Predict scan failures
-pvw ml predict-failures --datasource "sql-server" --timeframe "7d"
-
-# Train classification model
-pvw ml train-classifier --training-data "labeled-entities.json"
-```
-
-### API Usage
-
-```python
-from purviewcli.client.ml_integration import (
-    IntelligentDataDiscovery, 
-    MLRecommendationEngine, 
-    PredictiveAnalytics
-)
-
-# Initialize ML components
-data_discovery = IntelligentDataDiscovery(config)
-recommendation_engine = MLRecommendationEngine(config)
-predictive_analytics = PredictiveAnalytics(config)
-
-# Find similar entities
-similarity_results = data_discovery.find_similar_entities(
-    entity_guid="target-entity",
-    similarity_threshold=0.8,
-    max_results=10
-)
-
-# Detect anomalies
-anomalies = data_discovery.detect_anomalies(
-    entity_guids=["entity1", "entity2", "entity3"],
-    algorithm="isolation_forest"
-)
-
-# Generate recommendations
-recommendations = recommendation_engine.generate_recommendations(
-    entity_guids=["entity1", "entity2"],
-    recommendation_types=["classification", "ownership", "retention"]
-)
-
-# Predict scan failures
-failure_predictions = predictive_analytics.predict_scan_failures(
-    datasource_name="my-datasource",
-    prediction_window_days=7
-)
-```
-
-### ML Model Configuration
-
-```json
-{
-    "similarity_analysis": {
-        "algorithm": "cosine_similarity",
-        "features": [
-            "schema_similarity",
-            "name_similarity", 
-            "metadata_similarity",
-            "usage_patterns"
-        ],
-        "weights": {
-            "schema_similarity": 0.4,
-            "name_similarity": 0.3,
-            "metadata_similarity": 0.2,
-            "usage_patterns": 0.1
-        }
-    },
-    "anomaly_detection": {
-        "algorithm": "isolation_forest",
-        "contamination": 0.1,
-        "features": [
-            "entity_size",
-            "column_count",
-            "data_types",
-            "null_percentage"
-        ]
-    },
-    "classification_prediction": {
-        "model_type": "random_forest",
-        "training_data_path": "models/classification_training.json",
-        "confidence_threshold": 0.7
     }
 }
 ```

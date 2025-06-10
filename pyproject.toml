@@ -9,10 +9,10 @@ description = " Azure Purview CLI with comprehensive automation capabilities"
 readme = "README.md"
 license = "MIT"
 authors = [
-    {name = "PVW CLI Team", email = "pvw-cli@your-org.com"}
+    {name = "AYOUB KEBAILI", email = "keayoub@msnc.com"}
 ]
 maintainers = [
-    {name = "PVW CLI Team", email = "pvw-cli@your-org.com"}
+    {name = "AYOUB KEBAILI", email = "keayoub@msnc.com"}
 ]
 classifiers = [
     "Development Status :: 4 - Beta",

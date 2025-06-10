@@ -90,7 +90,7 @@ class IntegrationTestSuite:
                 # Test command groups exist
                 import click
                 ctx = click.Context(cli.cli)
-                command_groups = ['scanning', 'governance', 'monitoring', 'ml', 'lineage', 'plugins']
+                command_groups = ['scanning', 'governance', 'monitoring', 'lineage', 'plugins']
                 
                 missing_commands = []
                 for group in command_groups:

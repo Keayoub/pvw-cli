@@ -380,8 +380,8 @@ groups_with_methods = [
         'tags-time-series': 'insightTagsTimeSeries',
         'scan-status-summary': 'insightScanStatusSummary',
         'scan-status-summary-by-ts': 'insightScanStatusSummaryByTs'
-    })
-]
+    })]
+
 
 for group_name, module_name, class_name, method_mapping in groups_with_methods:
     # Create the group
@@ -408,7 +408,7 @@ for group_name, module_name, class_name, method_mapping in groups_with_methods:
                 command_func = click.option('--category-guid', help='Category GUID to delete')(command_func)
             elif cmd_name in ['delete-term', 'read-term', 'put-term']:
                 command_func = click.option('--term-guid', help='Term GUID')(command_func)
-                command_func = click.option('--include-term-hierarchy', is_flag=True, help='Include term hierarchy')(command_func)
+                command_func = click.option('--include-term-hierarchy', is_flag=True, help='Include term hierarchy')(command_func)            
             elif cmd_name in ['read-category', 'put-category-partial']:
                 command_func = click.option('--category-guid', help='Category GUID')(command_func)
                 command_func = click.option('--include-term-hierarchy', is_flag=True, help='Include term hierarchy')(command_func)

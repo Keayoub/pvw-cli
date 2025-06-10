@@ -16,9 +16,8 @@ const Analytics: React.FC = () => {
               <Typography variant="h6" gutterBottom>
                 <AnalyticsIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
                 Advanced Analytics
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                ML-powered insights and predictive analytics.
+              </Typography>              <Typography variant="body2" color="text.secondary">
+                Advanced insights and predictive analytics.
                 Features include:
                 • Usage pattern analysis
                 • Anomaly detection

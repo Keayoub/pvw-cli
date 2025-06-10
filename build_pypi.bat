@@ -5,11 +5,13 @@ echo ================================
 echo Building pvw-cli Package
 echo ================================
 
+pip install build twine
+
 REM Clean previous builds
 echo Cleaning previous builds...
-if exist build rmdir /s /q build
-if exist dist rmdir /s /q dist
-if exist *.egg-info rmdir /s /q *.egg-info
+@REM if exist build rmdir /s /q build
+@REM if exist dist rmdir /s /q dist
+@REM if exist *.egg-info rmdir /s /q *.egg-info
 
 REM Build the package
 echo Building package...
@@ -22,7 +24,7 @@ python -m twine check dist/*
 REM Test installation locally
 echo Testing local installation...
 
-for /f "delims=" %f in ('dir /b dist\*.whl') do pip install --force-reinstall dist\%f & goto done
+for /f "delims=" %f in ('dir /b dist\*.whl') do pip install dist\%f & goto done
 :done
 
 REM Test the command
