@@ -184,9 +184,9 @@ async def main():
     """Example usage of automation scripts"""
     
     # Get configuration from environment
-    account_name = os.environ.get('PURVIEW_NAME')
+    account_name = os.environ.get('PURVIEW_ACCOUNT_NAME')
     if not account_name:
-        print("Please set PURVIEW_NAME environment variable")
+        print("Please set PURVIEW_ACCOUNT_NAME environment variable")
         return
     
     region = os.environ.get('AZURE_REGION')

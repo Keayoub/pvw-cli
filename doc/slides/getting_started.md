@@ -45,13 +45,13 @@ section.left h4, section.left p {
 ---
 
 <!-- _class: left -->
-<!-- _footer: ":star: `PURVIEW_NAME` is mandatory, all other environment variables are optional." -->
+<!-- _footer: ":star: `PURVIEW_ACCOUNT_NAME` is mandatory, all other environment variables are optional." -->
 
 #### Environment Variables
 
 |Environment Variable|Description|
 |:---|:---|
-|`PURVIEW_NAME` (:star:)|Azure Purview account name.|
+|`PURVIEW_ACCOUNT_NAME` (:star:)|Azure Purview account name.|
 |`AZURE_CLIENT_ID`|The Azure AD tenant(directory) ID.|
 |`AZURE_TENANT_ID`|Client(application) ID of an App Registration.|
 |`AZURE_CLIENT_SECRET`|Client secret generated for the App Registration.|

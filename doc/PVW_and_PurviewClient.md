@@ -73,7 +73,7 @@ Or copy `purviewcli/client/client.py` into your project and install dependencies
 ### 1. Configure Authentication
 Set environment variables for your Purview account:
 ```bash
-export PURVIEW_NAME=your-purview-account
+export PURVIEW_ACCOUNT_NAME=your-purview-account
 export AZURE_REGION=  # (optional: 'china', 'usgov', etc.)
 ```
 Authenticate using Azure CLI (`az login`), Managed Identity, or Service Principal.

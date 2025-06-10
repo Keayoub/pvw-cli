@@ -175,7 +175,7 @@ class ConfigManager:
             return profile.account_name
         
         # 3. Environment variable
-        env_account = os.environ.get('PURVIEW_NAME')
+        env_account = os.environ.get('PURVIEW_ACCOUNT_NAME')
         if env_account:
             return env_account
         
@@ -183,7 +183,7 @@ class ConfigManager:
     
     def create_profile_from_env(self, name: str = 'default') -> Optional[PurviewProfile]:
         """Create profile from environment variables"""
-        account_name = os.environ.get('PURVIEW_NAME')
+        account_name = os.environ.get('PURVIEW_ACCOUNT_NAME')
         if not account_name:
             return None
         
@@ -206,7 +206,7 @@ class EnvironmentHelper:
     @staticmethod
     def setup_environment(profile: PurviewProfile):
         """Setup environment variables from profile"""
-        os.environ['PURVIEW_NAME'] = profile.account_name
+        os.environ['PURVIEW_ACCOUNT_NAME'] = profile.account_name
         
         if profile.tenant_id:
             os.environ['AZURE_TENANT_ID'] = profile.tenant_id
@@ -224,7 +224,7 @@ class EnvironmentHelper:
             'tenant_id': os.environ.get('AZURE_TENANT_ID', 'Not set'),
             'client_id': os.environ.get('AZURE_CLIENT_ID', 'Not set'),
             'region': os.environ.get('AZURE_REGION', 'public'),
-            'purview_account': os.environ.get('PURVIEW_NAME', 'Not set')
+            'purview_account': os.environ.get('PURVIEW_ACCOUNT_NAME', 'Not set')
         }
 
 # Global config manager instance

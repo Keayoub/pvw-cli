@@ -36,32 +36,30 @@ class PurviewEndpoints:
         'classifications': f"{DATAMAP_BASE}/{ATLAS_V2}/entity/guid/{{guid}}/classifications",
         'header': f"{DATAMAP_BASE}/{ATLAS_V2}/entity/guid/{{guid}}/header",
         'audit': f"{DATAMAP_BASE}/{ATLAS_V2}/entity/{{guid}}/audit",
-        'labels': f"{DATAMAP_BASE}/{ATLAS_V2}/entity/guid/{{guid}}/labels",
-        'business_metadata': f"{DATAMAP_BASE}/{ATLAS_V2}/entity/guid/{{guid}}/businessmetadata"
+        'labels': f"{DATAMAP_BASE}/{ATLAS_V2}/entity/guid/{{guid}}/labels",        'business_metadata': f"{DATAMAP_BASE}/{ATLAS_V2}/entity/guid/{{guid}}/businessmetadata"
     }
     
-    # === GLOSSARY ENDPOINTS (Data Map) ===
+    # === GLOSSARY ENDPOINTS (Catalog) ===
     GLOSSARY = {
-        'base': f"{DATAMAP_BASE}/{ATLAS_V2}/glossary",
-        'categories': f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/categories",
-        'category': f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/category",
-        'terms': f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/terms",
-        'term': f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/term",
-        'detailed': f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/{{glossaryGuid}}/detailed",
-        'partial': f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/{{glossaryGuid}}/partial",
-        'category_partial': f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/category/{{categoryGuid}}/partial",
-        'term_partial': f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/term/{{termGuid}}/partial",
-        'category_related': f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/category/{{categoryGuid}}/related",
-        'category_terms': f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/category/{{categoryGuid}}/terms",
-        'term_assigned_entities': f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/terms/{{termGuid}}/assignedEntities",
-        'term_related': f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/terms/{{termGuid}}/related",
-        'categories_headers': f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/{{glossaryGuid}}/categories/headers",
-        'terms_headers': f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/{{glossaryGuid}}/terms/headers",
-        'terms_export': f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/{{glossaryGuid}}/terms/export",
-        # Special endpoints for import operations
-        'terms_import': f"{DATAMAP_BASE}/glossary/{{glossaryGuid}}/terms/import",
-        'terms_import_by_name': f"{DATAMAP_BASE}/glossary/name/{{glossaryName}}/terms/import",
-        'terms_import_operation': f"{DATAMAP_BASE}/glossary/terms/import/{{operationGuid}}"
+        'base': f"{CATALOG_BASE}/{ATLAS_V2}/glossary",
+        'categories': f"{CATALOG_BASE}/{ATLAS_V2}/glossary/categories",
+        'category': f"{CATALOG_BASE}/{ATLAS_V2}/glossary/category",
+        'terms': f"{CATALOG_BASE}/{ATLAS_V2}/glossary/terms",
+        'term': f"{CATALOG_BASE}/{ATLAS_V2}/glossary/term",
+        'detailed': f"{CATALOG_BASE}/{ATLAS_V2}/glossary/{{glossaryGuid}}/detailed",
+        'partial': f"{CATALOG_BASE}/{ATLAS_V2}/glossary/{{glossaryGuid}}/partial",
+        'category_partial': f"{CATALOG_BASE}/{ATLAS_V2}/glossary/category/{{categoryGuid}}/partial",
+        'term_partial': f"{CATALOG_BASE}/{ATLAS_V2}/glossary/term/{{termGuid}}/partial",
+        'category_related': f"{CATALOG_BASE}/{ATLAS_V2}/glossary/category/{{categoryGuid}}/related",
+        'category_terms': f"{CATALOG_BASE}/{ATLAS_V2}/glossary/category/{{categoryGuid}}/terms",
+        'term_assigned_entities': f"{CATALOG_BASE}/{ATLAS_V2}/glossary/terms/{{termGuid}}/assignedEntities",
+        'term_related': f"{CATALOG_BASE}/{ATLAS_V2}/glossary/terms/{{termGuid}}/related",
+        'categories_headers': f"{CATALOG_BASE}/{ATLAS_V2}/glossary/{{glossaryGuid}}/categories/headers",
+        'terms_headers': f"{CATALOG_BASE}/{ATLAS_V2}/glossary/{{glossaryGuid}}/terms/headers",
+        'terms_export': f"{CATALOG_BASE}/{ATLAS_V2}/glossary/{{glossaryGuid}}/terms/export",        # Special endpoints for import operations
+        'terms_import': f"{CATALOG_BASE}/glossary/{{glossaryGuid}}/terms/import",
+        'terms_import_by_name': f"{CATALOG_BASE}/glossary/name/{{glossaryName}}/terms/import",
+        'terms_import_operation': f"{CATALOG_BASE}/glossary/terms/import/{{operationGuid}}"
     }
     
     # === TYPES ENDPOINTS (Data Map) ===

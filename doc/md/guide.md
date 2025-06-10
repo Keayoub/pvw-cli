@@ -40,7 +40,7 @@ docker build -t purviewcli https://raw.githubusercontent.com/tayganr/purviewcli/
 
 2. Start container by injecting environment variables. Note: You will need to update the environment variables.
 ```
-docker run --name pvw-cli-docker -d -e "PURVIEW_NAME=<your_purview_account_name>" -e "AZURE_CLIENT_ID=<your_client_id>" -e "AZURE_CLIENT_SECRET=<your_client_secret>" -e "AZURE_TENANT_ID=<your_azure_tenant_id>" purviewcli
+docker run --name pvw-cli-docker -d -e "PURVIEW_ACCOUNT_NAME=<your_purview_account_name>" -e "AZURE_CLIENT_ID=<your_client_id>" -e "AZURE_CLIENT_SECRET=<your_client_secret>" -e "AZURE_TENANT_ID=<your_azure_tenant_id>" purviewcli
 ```
 
 3. Start a bash shell in the container.
@@ -53,7 +53,7 @@ docker exec -it pvw-cli-docker bash
 1. Install purviewcli (e.g. `pip install purviewcli`).
 
 2. [OPTIONAL] Set environment variable(s).
-    *  `PURVIEW_NAME`
+    *  `PURVIEW_ACCOUNT_NAME`
     * `AZURE_CLIENT_ID`
     * `AZURE_TENANT_ID`
     * `AZURE_CLIENT_SECRET`

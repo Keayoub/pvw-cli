@@ -1,5 +1,7 @@
 # PURVIEW CLI v2.0 - Comprehensive Azure Purview Automation & Data Governance
 
+> 🎯 **LATEST UPDATE (June 2025):** HTTP 404 "Tenant not registered" errors have been completely resolved! All endpoints now use correct Microsoft Purview API paths. See [HTTP_404_FIX_SUMMARY.md](HTTP_404_FIX_SUMMARY.md) for details.
+
 ## PVW CLI & PurviewClient: Advanced Azure Purview Automation Platform
 
 **PVW CLI v2.0** and the **PurviewClient** Python library provide a powerful, enterprise-grade automation platform for Azure Purview. This comprehensive suite enables advanced data catalog management, intelligent governance automation, real-time monitoring, and deep integration with CI/CD, scripting, and data engineering workflows.
@@ -101,7 +103,7 @@ Or copy `purviewcli/client/client.py` into your project and install dependencies
 Set environment variables for your Purview account:
 
 ```bash
-export PURVIEW_NAME=your-purview-account
+export PURVIEW_ACCOUNT_NAME=your-purview-account
 export AZURE_REGION=  # (optional: 'china', 'usgov', etc.)
 ```
 
@@ -374,15 +376,15 @@ print(response)
 
 ```bash
 # Windows (Command Prompt)
-set PURVIEW_NAME=your-purview-account
+set PURVIEW_ACCOUNT_NAME=your-purview-account
 set AZURE_REGION=  # Leave empty for public Azure, use 'china' or 'usgov' for other clouds
 
 # macOS/Linux (Terminal)
-export PURVIEW_NAME=your-purview-account
+export PURVIEW_ACCOUNT_NAME=your-purview-account
 export AZURE_REGION=  # Leave empty for public Azure
 
 # PowerShell
-$env:PURVIEW_NAME = "your-purview-account"
+$env:PURVIEW_ACCOUNT_NAME = "your-purview-account"
 $env:AZURE_REGION = ""
 ```
 
@@ -600,7 +602,7 @@ await automation.bulk_glossary_setup("terms.csv", "assignments.csv")
     pvw entity import-csv --csv-file $(Pipeline.Workspace)/entities.csv --template dataset
   displayName: 'Import Data Catalog Entities'
   env:
-    PURVIEW_NAME: $(PURVIEW_ACCOUNT_NAME)
+    PURVIEW_ACCOUNT_NAME: $(PURVIEW_ACCOUNT_NAME)
 ```
 
 ### Jupyter Notebook Integration
