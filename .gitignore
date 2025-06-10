@@ -26,3 +26,5 @@ pvw.exe
 pvw.spec
 nginx/
 
+web-ui/node_modules/
+
