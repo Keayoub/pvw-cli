@@ -16,7 +16,7 @@ The  Purview CLI v2.0 is a comprehensive enterprise-grade data governance automa
 6. [Plugin System](#plugin-system)
 7. [Testing Framework](#testing-framework)
 8. [Performance Optimization](#performance-optimization)
-9. [Web UI Interface](#web-ui-interface)
+9. [Separate Web UI Project](#separate-web-ui-project)
 10. [API Reference](#api-reference)
 11. [Deployment Guide](#deployment-guide)
 
@@ -44,9 +44,6 @@ pvw account getAccount --profile production
 
 # Start monitoring dashboard
 pvw monitoring dashboard --realtime
-
-# Run ML-powered data discovery
-pvw ml find-similar --entity-guid <guid>
 
 # Access web UI
 pvw ui start --port 8080
@@ -471,7 +468,7 @@ The Plugin System provides an extensible architecture for adding custom function
 #### 2. Classification Plugins
 - Custom classification algorithms
 - Domain-specific classifiers
-- Machine learning models
+- Rule-based classifiers
 - Rule-based classifiers
 
 #### 3. Export Plugins
@@ -620,300 +617,47 @@ plugin_info = plugin_manager.get_plugin_info("my_plugin")
 
 ---
 
-## Web UI Interface
+## Separate Web UI Project
 
 ### Overview
-The  Purview CLI v2.0 includes a modern web-based user interface that provides an intuitive, interactive dashboard for data governance operations. The web UI complements the CLI by offering visual analytics, real-time monitoring, and simplified management workflows.
+The Web UI and backend components for Purview CLI have been moved to a separate project for better architectural separation and independent development.
 
-### Key Features
+### Project Location
+The Web UI and backend components are now maintained in a separate project located at:
+```
+C:\Dvlp\Purview\Purview_WebUI
+```
 
-#### 1. Interactive Dashboard
-- **Real-time Metrics**: Live visualization of scan progress, entity counts, and system health
-- **Data Lineage Graphs**: Interactive lineage visualization with drag-and-drop navigation
-- **Classification Analytics**: Visual breakdown of data classifications and sensitivity levels
-- **Compliance Monitoring**: Dashboard for governance rules and compliance status
+### Features Available in Separate Project
+The separate Web UI project includes:
 
-#### 2. Visual Data Discovery
-- **Entity Explorer**: Browse and search entities with rich metadata display
-- **Relationship Viewer**: Interactive relationship mapping between data assets
-- **Smart Search**: ML-powered search with similarity recommendations
-- **Bulk Operations**: Visual interface for batch operations and workflows
-
-#### 3. Management Console
-- **Scan Management**: Schedule, monitor, and configure scans through web interface
-- **Rule Configuration**: Visual rule builder for governance policies
-- **User Management**: Role-based access control and permission management
-- **System Configuration**: Environment and connection management
-
-#### 4. Analytics & Reporting
-- **Custom Dashboards**: Drag-and-drop dashboard builder with widgets
-- **Report Generator**: Interactive report creation with export capabilities
-- **Trend Analysis**: Historical data analysis with charting and visualization
-- **Alert Management**: Visual alert configuration and notification settings
+- **Interactive Dashboard**: Real-time metrics, data lineage graphs, and compliance monitoring
+- **Visual Data Discovery**: Entity explorer, relationship viewer, and smart search capabilities  
+- **Management Console**: Scan management, rule configuration, and system administration
+- **Analytics & Reporting**: Custom dashboards, report generation, and trend analysis
 
 ### Architecture
+- **Frontend**: React 18+ with TypeScript, Material-UI, and D3.js visualizations
+- **Backend API**: FastAPI with OAuth 2.0/Azure AD integration
+- **Real-time Features**: WebSocket support for live updates
+- **Security**: RBAC, CSRF protection, and comprehensive audit logging
 
-#### Frontend Technology Stack
-- **Framework**: React 18+ with TypeScript
-- **State Management**: Redux Toolkit for application state
-- **UI Components**: Material-UI (MUI) for consistent design system
-- **Data Visualization**: D3.js and Recharts for charts and graphs
-- **Real-time Updates**: Socket.io for live data streaming
-- **Routing**: React Router for single-page application navigation
-
-#### Backend API
-- **Framework**: FastAPI for high-performance REST API
-- **Authentication**: OAuth 2.0 / Azure AD integration
-- **Real-time**: WebSocket support for live updates
-- **Caching**: Redis for session and data caching
-- **Documentation**: Auto-generated OpenAPI/Swagger documentation
-
-#### Security Features
-- **Authentication**: Multi-factor authentication support
-- **Authorization**: Role-based access control (RBAC)
-- **Security Headers**: CSRF protection, CORS configuration
-- **Data Encryption**: TLS/SSL encryption for all communications
-- **Audit Logging**: Comprehensive audit trail for all user actions
+### Integration with CLI
+The Web UI project integrates with this CLI project by:
+- Using the same Azure Purview APIs and authentication
+- Sharing configuration and environment variables
+- Providing visual interfaces for CLI operations
+- Offering complementary functionality to command-line workflows
 
 ### Getting Started
+To use the Web UI components:
 
-#### Prerequisites
-```bash
-# Install Node.js 18+ and Python 3.8+
-node --version  # Should be 18+
-python --version  # Should be 3.8+
+1. Navigate to the separate project: `cd C:\Dvlp\Purview\Purview_WebUI`
+2. Follow the setup instructions in that project's README.md
+3. Configure the same Azure Purview credentials used by this CLI
+4. Access the web interface for visual data governance operations
 
-# Install CLI dependencies
-pip install -r requirements_enhanced.txt
-
-# Install web UI dependencies
-cd web-ui
-npm install
-```
-
-#### Quick Setup
-```bash
-# Start the backend API server
-pvw web start-api --port 8000
-
-# Start the frontend development server
-cd web-ui
-npm start
-
-# Access the web interface
-# Navigate to http://localhost:3000
-```
-
-#### Production Deployment
-```bash
-# Build production frontend
-cd web-ui
-npm run build
-
-# Start production server
-pvw web start --production --port 80
-
-# Or use Docker
-docker-compose up -d
-```
-
-### Web UI Components
-
-#### 1. Dashboard Views
-
-**Executive Dashboard**
-- High-level KPIs and metrics
-- Data governance scorecard
-- Compliance status overview
-- Recent activity timeline
-
-**Operational Dashboard**
-- Real-time scan monitoring
-- System performance metrics
-- Alert and notification center
-- Task queue and job status
-
-**Analytics Dashboard**
-- Data classification distribution
-- Lineage impact analysis
-- Usage patterns and trends
-- Quality metrics and scores
-
-#### 2. Data Explorer
-
-**Entity Browser**
-- Hierarchical data asset navigation
-- Advanced filtering and search
-- Metadata viewer with rich formatting
-- Relationship explorer with graph view
-
-**Lineage Visualizer**
-- Interactive lineage graphs
-- Impact analysis tools
-- Critical path highlighting
-- Export and sharing capabilities
-
-#### 3. Management Interfaces
-
-**Scan Manager**
-- Visual scan configuration wizard
-- Schedule management calendar
-- Progress monitoring with logs
-- Results analysis and reporting
-
-**Governance Center**
-- Rule builder with visual editor
-- Policy template library
-- Compliance monitoring dashboard
-- Exception management workflow
-
-**Admin Console**
-- User and role management
-- System configuration panels
-- Integration setup wizards
-- Maintenance and diagnostics
-
-### API Integration
-
-#### REST API Endpoints
-```typescript
-// Entity management
-GET    /api/v1/entities
-POST   /api/v1/entities
-PUT    /api/v1/entities/{id}
-DELETE /api/v1/entities/{id}
-
-// Scanning operations
-GET    /api/v1/scans
-POST   /api/v1/scans
-GET    /api/v1/scans/{id}/status
-POST   /api/v1/scans/{id}/start
-
-// Lineage and relationships
-GET    /api/v1/lineage/{entityId}
-GET    /api/v1/relationships
-POST   /api/v1/relationships
-
-// Analytics and reporting
-GET    /api/v1/analytics/metrics
-GET    /api/v1/reports
-POST   /api/v1/reports/generate
-```
-
-#### WebSocket Events
-```typescript
-// Real-time updates
-socket.on('scan_progress', (data) => {
-  updateScanProgress(data);
-});
-
-socket.on('entity_created', (entity) => {
-  addEntityToCache(entity);
-});
-
-socket.on('alert_triggered', (alert) => {
-  showNotification(alert);
-});
-```
-
-### Configuration
-
-#### Environment Variables
-```bash
-# Backend configuration
-PURVIEW_API_URL=https://your-purview.catalog.purview.azure.com
-AZURE_CLIENT_ID=your-client-id
-AZURE_CLIENT_SECRET=your-client-secret
-AZURE_TENANT_ID=your-tenant-id
-
-# Web UI configuration
-REACT_APP_API_URL=http://localhost:8000
-REACT_APP_ENABLE_ANALYTICS=true
-REACT_APP_REFRESH_INTERVAL=30000
-```
-
-#### Feature Flags
-```json
-{
-  "features": {
-    "realtime_updates": true,
-    "advanced_analytics": true,
-    "ml_recommendations": true,
-    "bulk_operations": true,
-    "export_capabilities": true,
-    "custom_dashboards": true
-  }
-}
-```
-
-### Customization
-
-#### Theme Configuration
-```typescript
-// Custom theme example
-const customTheme = {
-  palette: {
-    primary: { main: '#1976d2' },
-    secondary: { main: '#dc004e' },
-    background: { default: '#f5f5f5' }
-  },
-  typography: {
-    fontFamily: 'Roboto, Arial, sans-serif'
-  },
-  components: {
-    // Custom component overrides
-  }
-};
-```
-
-#### Widget Development
-```typescript
-// Custom dashboard widget
-interface WidgetProps {
-  title: string;
-  data: any[];
-  config: WidgetConfig;
-}
-
-const CustomWidget: React.FC<WidgetProps> = ({ title, data, config }) => {
-  return (
-    <Card>
-      <CardHeader title={title} />
-      <CardContent>
-        {/* Custom widget content */}
-      </CardContent>
-    </Card>
-  );
-};
-```
-
-### Performance Optimization
-
-#### Frontend Optimization
-- **Code Splitting**: Dynamic imports for route-based splitting
-- **Memoization**: React.memo and useMemo for expensive operations
-- **Virtual Scrolling**: Efficient rendering of large data sets
-- **Caching**: Service worker caching for offline capability
-
-#### Backend Optimization
-- **Connection Pooling**: Database and API connection management
-- **Response Caching**: Redis-based caching for frequent queries
-- **Pagination**: Efficient data fetching with cursor-based pagination
-- **Compression**: Gzip compression for API responses
-
-### Monitoring and Analytics
-
-#### User Analytics
-- **Usage Tracking**: Page views, feature adoption, user flows
-- **Performance Metrics**: Load times, error rates, user satisfaction
-- **A/B Testing**: Feature flag-based testing capabilities
-- **Feedback Collection**: In-app feedback and rating systems
-
-#### System Monitoring
-- **Health Checks**: API endpoint monitoring and alerting
-- **Performance Metrics**: Response times, throughput, error rates
-- **Resource Usage**: Memory, CPU, and network utilization
-- **Log Aggregation**: Centralized logging with search capabilities
+For detailed setup instructions, architecture details, and API documentation, refer to the documentation in the `Purview_WebUI` project.
 
 ---
 

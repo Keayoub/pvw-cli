@@ -57,54 +57,24 @@ class IntegrationTestSuite:
         console.print("\n[bold blue]Testing CLI Module Integration[/bold blue]")
         
         try:
-            from purviewcli.cli.enhanced_cli import PurviewCLI
+            from purviewcli.cli import cli            # Test CLI module has command groups
+            import click
+            ctx = click.Context(cli.cli)
+            command_groups = ['scanning', 'governance', 'monitoring', 'lineage', 'plugins']
             
-            # Test CLI initialization with all modules
-            cli = PurviewCLI()
+            missing_commands = []
+            for group in command_groups:
+                if group not in cli.cli.commands:
+                    missing_commands.append(group)
             
-            # Verify all managers are initialized
-            required_attrs = [
-                'scanning_manager',
-                'business_rules_engine',
-                'monitoring_dashboard',
-                'ml_discovery_engine',
-                'ml_recommendation_engine',
-                'lineage_analyzer',
-                'plugin_manager'
-            ]
-            
-            missing_attrs = []
-            for attr in required_attrs:
-                if not hasattr(cli, attr):
-                    missing_attrs.append(attr)
-            
-            if missing_attrs:
+            if missing_commands:
                 self.log_test_result(
                     "CLI Module Integration",
                     False,
-                    f"Missing attributes: {', '.join(missing_attrs)}"
+                    f"Missing command groups: {', '.join(missing_commands)}"
                 )
             else:
                 self.log_test_result("CLI Module Integration", True)
-                
-                # Test command groups exist
-                import click
-                ctx = click.Context(cli.cli)
-                command_groups = ['scanning', 'governance', 'monitoring', 'lineage', 'plugins']
-                
-                missing_commands = []
-                for group in command_groups:
-                    if group not in cli.cli.commands:
-                        missing_commands.append(group)
-                
-                if missing_commands:
-                    self.log_test_result(
-                        "CLI Command Groups",
-                        False,
-                        f"Missing command groups: {', '.join(missing_commands)}"
-                    )
-                else:
-                    self.log_test_result("CLI Command Groups", True)
         
         except Exception as e:
             self.log_test_result("CLI Module Integration", False, str(e))
@@ -158,122 +128,7 @@ class IntegrationTestSuite:
         
         except Exception as e:
             self.log_test_result("Scanning → Monitoring Workflow", False, str(e))
-    
-    async def test_ml_to_governance_workflow(self):
-        """Test workflow from ML recommendations to governance rules"""
-        console.print("\n[bold blue]Testing ML → Governance Workflow[/bold blue]")
-        
-        try:
-            from purviewcli.client.ml_integration import MLRecommendationEngine
-            from purviewcli.client.business_rules import BusinessRulesEngine
-            
-            # Initialize modules
-            ml_engine = MLRecommendationEngine(self.mock_config)
-            rules_engine = BusinessRulesEngine(self.mock_config)
-            
-            # Mock ML recommendations
-            mock_recommendations = [
-                {
-                    'type': 'classification',
-                    'entity_guid': 'test-guid-1',
-                    'recommendation': 'PII',
-                    'confidence': 0.95
-                },
-                {
-                    'type': 'ownership',
-                    'entity_guid': 'test-guid-2', 
-                    'recommendation': 'data-team@company.com',
-                    'confidence': 0.85
-                }
-            ]
-            
-            with patch.object(ml_engine, 'generate_recommendations', return_value=mock_recommendations):
-                # Generate ML recommendations
-                recommendations = ml_engine.generate_recommendations(['test-guid-1', 'test-guid-2'])
-                
-                # Verify recommendations generated
-                assert len(recommendations) == 2
-                assert recommendations[0]['type'] == 'classification'
-                
-                # Mock governance rule evaluation
-                mock_entity_data = {
-                    'guid': 'test-guid-1',
-                    'name': 'test_entity',
-                    'classifications': ['PII'],  # Applied from ML recommendation
-                    'owner': 'data-team@company.com'
-                }
-                
-                with patch.object(rules_engine, '_get_entity_data', return_value=mock_entity_data):
-                    # Check compliance after ML recommendations applied
-                    compliance_result = rules_engine.check_entity_compliance('test-guid-1')
-                    
-                    # Verify compliance check includes ML-suggested classifications
-                    assert 'violations' in compliance_result
-                    
-                    self.log_test_result("ML → Governance Workflow", True)
-        
-        except Exception as e:
-            self.log_test_result("ML → Governance Workflow", False, str(e))
-    
-    async def test_lineage_to_ml_workflow(self):
-        """Test workflow from lineage analysis to ML insights"""
-        console.print("\n[bold blue]Testing Lineage → ML Workflow[/bold blue]")
-        
-        try:
-            from purviewcli.client.lineage_visualization import AdvancedLineageAnalyzer
-            from purviewcli.client.ml_integration import IntelligentDataDiscovery
-            
-            # Initialize modules
-            lineage_analyzer = AdvancedLineageAnalyzer(self.mock_config)
-            ml_discovery = IntelligentDataDiscovery(self.mock_config)
-            
-            # Mock lineage data
-            mock_lineage = {
-                'entity_guid': 'test-guid-1',
-                'upstream_entities': ['upstream-1', 'upstream-2'],
-                'downstream_entities': ['downstream-1'],
-                'lineage_depth': 3,
-                'critical_path': True
-            }
-            
-            with patch.object(lineage_analyzer, 'analyze_lineage_impact', return_value=mock_lineage):
-                # Analyze lineage impact
-                lineage_result = lineage_analyzer.analyze_lineage_impact('test-guid-1')
-                
-                # Verify lineage analysis
-                assert lineage_result['lineage_depth'] == 3
-                assert lineage_result['critical_path'] is True
-                
-                # Use lineage info for ML similarity analysis
-                entities_to_analyze = (
-                    lineage_result['upstream_entities'] + 
-                    lineage_result['downstream_entities'] + 
-                    [lineage_result['entity_guid']]
-                )
-                
-                # Mock ML similarity analysis
-                mock_similarity = {
-                    'similar_entities': [
-                        {'entity_guid': 'similar-1', 'similarity_score': 0.92},
-                        {'entity_guid': 'similar-2', 'similarity_score': 0.87}
-                    ],
-                    'patterns': ['common_schema', 'similar_naming']
-                }
-                
-                with patch.object(ml_discovery, 'find_similar_entities', return_value=mock_similarity):
-                    # Find similar entities based on lineage
-                    similarity_result = ml_discovery.find_similar_entities('test-guid-1')
-                    
-                    # Verify ML analysis using lineage context
-                    assert len(similarity_result['similar_entities']) == 2
-                    assert similarity_result['similar_entities'][0]['similarity_score'] > 0.9
-                    
-                    self.log_test_result("Lineage → ML Workflow", True)
-        
-        except Exception as e:
-            self.log_test_result("Lineage → ML Workflow", False, str(e))
-    
-    async def test_plugin_system_integration(self):
+      async def test_plugin_system_integration(self):
         """Test plugin system integration with other modules"""
         console.print("\n[bold blue]Testing Plugin System Integration[/bold blue]")
         
@@ -331,23 +186,19 @@ class IntegrationTestSuite:
         
         except Exception as e:
             self.log_test_result("Plugin System Integration", False, str(e))
-    
-    async def test_end_to_end_data_governance_workflow(self):
+      async def test_end_to_end_data_governance_workflow(self):
         """Test complete end-to-end data governance workflow"""
         console.print("\n[bold blue]Testing End-to-End Data Governance Workflow[/bold blue]")
         
         try:
-            # Import all required modules
+            # Import required modules
             from purviewcli.client.scanning_operations import ScanningManager
-            from purviewcli.client.ml_integration import MLRecommendationEngine, IntelligentDataDiscovery
             from purviewcli.client.business_rules import BusinessRulesEngine
             from purviewcli.client.lineage_visualization import AdvancedLineageAnalyzer
             from purviewcli.client.monitoring_dashboard import MonitoringDashboard
             
             # Initialize all modules
             scanning_manager = ScanningManager(self.mock_config)
-            ml_recommendation = MLRecommendationEngine(self.mock_config)
-            ml_discovery = IntelligentDataDiscovery(self.mock_config)
             rules_engine = BusinessRulesEngine(self.mock_config)
             lineage_analyzer = AdvancedLineageAnalyzer(self.mock_config)
             monitoring_dashboard = MonitoringDashboard(self.mock_config)
@@ -363,81 +214,66 @@ class IntegrationTestSuite:
                 mock_scan.return_value = mock_scan_result
                 scan_result = await scanning_manager.start_scan('e2e-datasource')
                 
-                # Step 2: ML analysis of discovered entities
-                mock_ml_analysis = {
-                    'entity-1': {'type': 'table', 'predicted_classification': 'PII', 'confidence': 0.9},
-                    'entity-2': {'type': 'table', 'predicted_classification': 'Financial', 'confidence': 0.85},
-                    'entity-3': {'type': 'column', 'predicted_classification': 'Public', 'confidence': 0.7}
+                # Step 2: Apply governance rules to discovered entities
+                mock_recommendations = [
+                    {'entity_guid': 'entity-1', 'action': 'apply_classification', 'value': 'PII'},
+                    {'entity_guid': 'entity-2', 'action': 'set_owner', 'value': 'finance-team@company.com'}
+                ]
+                
+                # Step 3: Apply recommendations and check compliance
+                mock_entity_data = {
+                    'guid': 'entity-1',
+                    'name': 'customer_data',
+                    'classifications': ['PII'],
+                    'owner': 'data-team@company.com'
                 }
                 
-                with patch.object(ml_discovery, 'analyze_entities', return_value=mock_ml_analysis):
-                    ml_results = ml_discovery.analyze_entities(scan_result['entitiesDiscovered'])
+                with patch.object(rules_engine, '_get_entity_data', return_value=mock_entity_data):
+                    compliance_check = rules_engine.check_entity_compliance('entity-1')
                     
-                    # Step 3: Generate governance recommendations
-                    mock_recommendations = [
-                        {'entity_guid': 'entity-1', 'action': 'apply_classification', 'value': 'PII'},
-                        {'entity_guid': 'entity-2', 'action': 'set_owner', 'value': 'finance-team@company.com'}
-                    ]
+                    # Step 4: Analyze lineage impact
+                    mock_lineage_impact = {
+                        'entity_guid': 'entity-1',
+                        'impact_score': 0.8,
+                        'affected_entities': 15,
+                        'critical_path': True
+                    }
                     
-                    with patch.object(ml_recommendation, 'generate_recommendations', return_value=mock_recommendations):
-                        recommendations = ml_recommendation.generate_recommendations(['entity-1', 'entity-2'])
+                    with patch.object(lineage_analyzer, 'analyze_lineage_impact', return_value=mock_lineage_impact):
+                        lineage_impact = lineage_analyzer.analyze_lineage_impact('entity-1')
                         
-                        # Step 4: Apply recommendations and check compliance
-                        mock_entity_data = {
-                            'guid': 'entity-1',
-                            'name': 'customer_data',
-                            'classifications': ['PII'],  # Applied from recommendation
-                            'owner': 'data-team@company.com'
+                        # Step 5: Monitor overall governance health
+                        mock_final_metrics = {
+                            'total_entities': len(scan_result['entitiesDiscovered']),
+                            'classification_coverage': 0.9,
+                            'compliance_score': 0.85,
+                            'lineage_completeness': 0.8
                         }
                         
-                        with patch.object(rules_engine, '_get_entity_data', return_value=mock_entity_data):
-                            compliance_check = rules_engine.check_entity_compliance('entity-1')
+                        with patch.object(monitoring_dashboard, 'collect_metrics', return_value={'metrics': mock_final_metrics}):
+                            final_metrics = monitoring_dashboard.collect_metrics()
                             
-                            # Step 5: Analyze lineage impact
-                            mock_lineage_impact = {
-                                'entity_guid': 'entity-1',
-                                'impact_score': 0.8,
-                                'affected_entities': 15,
-                                'critical_path': True
-                            }
+                            # Verify end-to-end workflow
+                            workflow_success = (
+                                scan_result['status'] == 'Completed' and
+                                len(mock_recommendations) == 2 and
+                                'violations' in compliance_check and
+                                lineage_impact['impact_score'] > 0 and
+                                final_metrics['metrics']['compliance_score'] > 0.8
+                            )
                             
-                            with patch.object(lineage_analyzer, 'analyze_lineage_impact', return_value=mock_lineage_impact):
-                                lineage_impact = lineage_analyzer.analyze_lineage_impact('entity-1')
-                                
-                                # Step 6: Monitor overall governance health
-                                mock_final_metrics = {
-                                    'total_entities': len(scan_result['entitiesDiscovered']),
-                                    'classification_coverage': 0.9,
-                                    'compliance_score': 0.85,
-                                    'lineage_completeness': 0.8
-                                }
-                                
-                                with patch.object(monitoring_dashboard, 'collect_metrics', return_value={'metrics': mock_final_metrics}):
-                                    final_metrics = monitoring_dashboard.collect_metrics()
-                                    
-                                    # Verify end-to-end workflow
-                                    workflow_success = (
-                                        scan_result['status'] == 'Completed' and
-                                        len(ml_results) == 3 and
-                                        len(recommendations) == 2 and
-                                        'violations' in compliance_check and
-                                        lineage_impact['impact_score'] > 0 and
-                                        final_metrics['metrics']['compliance_score'] > 0.8
-                                    )
-                                    
-                                    if workflow_success:
-                                        self.log_test_result("End-to-End Data Governance Workflow", True)
-                                    else:
-                                        self.log_test_result(
-                                            "End-to-End Data Governance Workflow", 
-                                            False, 
-                                            "Workflow validation failed"
-                                        )
+                            if workflow_success:
+                                self.log_test_result("End-to-End Data Governance Workflow", True)
+                            else:
+                                self.log_test_result(
+                                    "End-to-End Data Governance Workflow", 
+                                    False, 
+                                    "Workflow validation failed"
+                                )
         
         except Exception as e:
             self.log_test_result("End-to-End Data Governance Workflow", False, str(e))
-    
-    async def test_configuration_consistency(self):
+      async def test_configuration_consistency(self):
         """Test configuration consistency across all modules"""
         console.print("\n[bold blue]Testing Configuration Consistency[/bold blue]")
         
@@ -446,7 +282,6 @@ class IntegrationTestSuite:
             from purviewcli.client.scanning_operations import ScanningManager
             from purviewcli.client.business_rules import BusinessRulesEngine
             from purviewcli.client.monitoring_dashboard import MonitoringDashboard
-            from purviewcli.client.ml_integration import MLRecommendationEngine
             from purviewcli.client.lineage_visualization import AdvancedLineageAnalyzer
             
             # Test same config across all modules
@@ -455,12 +290,10 @@ class IntegrationTestSuite:
                 {'account_name': 'another-purview', 'endpoint': 'https://another.purview.azure.com'},
                 {}  # Empty config test
             ]
-            
-            modules_classes = [
+              modules_classes = [
                 ('ScanningManager', ScanningManager),
                 ('BusinessRulesEngine', BusinessRulesEngine),
                 ('MonitoringDashboard', MonitoringDashboard),
-                ('MLRecommendationEngine', MLRecommendationEngine),
                 ('AdvancedLineageAnalyzer', AdvancedLineageAnalyzer)
             ]
             
@@ -590,13 +423,10 @@ async def main():
     console.print("="*80)
     
     test_suite = IntegrationTestSuite()
-    
-    # Run all integration tests
+      # Run all integration tests
     integration_tests = [
         test_suite.test_cli_module_integration,
         test_suite.test_scanning_to_monitoring_workflow,
-        test_suite.test_ml_to_governance_workflow,
-        test_suite.test_lineage_to_ml_workflow,
         test_suite.test_plugin_system_integration,
         test_suite.test_end_to_end_data_governance_workflow,
         test_suite.test_configuration_consistency,

@@ -23,8 +23,7 @@ class PurviewEndpoints:
     SEARCH_V1 = "v1"
     PREVIEW_VERSION = "2021-05-01-preview"
     MANAGEMENT_VERSION = "2021-07-01"
-    
-    # === ENTITY ENDPOINTS (Data Map) ===
+      # === ENTITY ENDPOINTS (Data Map) ===
     ENTITY = {
         'base': f"{DATAMAP_BASE}/{ATLAS_V2}/entity",
         'bulk': f"{DATAMAP_BASE}/{ATLAS_V2}/entity/bulk",
@@ -36,7 +35,12 @@ class PurviewEndpoints:
         'classifications': f"{DATAMAP_BASE}/{ATLAS_V2}/entity/guid/{{guid}}/classifications",
         'header': f"{DATAMAP_BASE}/{ATLAS_V2}/entity/guid/{{guid}}/header",
         'audit': f"{DATAMAP_BASE}/{ATLAS_V2}/entity/{{guid}}/audit",
-        'labels': f"{DATAMAP_BASE}/{ATLAS_V2}/entity/guid/{{guid}}/labels",        'business_metadata': f"{DATAMAP_BASE}/{ATLAS_V2}/entity/guid/{{guid}}/businessmetadata"
+        'labels': f"{DATAMAP_BASE}/{ATLAS_V2}/entity/guid/{{guid}}/labels",
+        'business_metadata': f"{DATAMAP_BASE}/{ATLAS_V2}/entity/guid/{{guid}}/businessmetadata",
+        'business_metadata_import': f"{DATAMAP_BASE}/{ATLAS_V2}/entity/businessmetadata/import",
+        'business_metadata_template': f"{DATAMAP_BASE}/{ATLAS_V2}/entity/businessmetadata/import/template",
+        'business_metadata_bulk': f"{DATAMAP_BASE}/{ATLAS_V2}/entity/businessmetadata/bulk",
+        'business_metadata_export': f"{DATAMAP_BASE}/{ATLAS_V2}/entity/businessmetadata/export"
     }
     
     # === GLOSSARY ENDPOINTS (Catalog) ===
@@ -79,11 +83,16 @@ class PurviewEndpoints:
         'base': f"{DATAMAP_BASE}/{ATLAS_V2}/relationship",
         'guid': f"{DATAMAP_BASE}/{ATLAS_V2}/relationship/guid/{{guid}}"
     }
-    
-    # === LINEAGE ENDPOINTS (Data Map) ===
+      # === LINEAGE ENDPOINTS (Data Map) ===
     LINEAGE = {
         'guid': f"{DATAMAP_BASE}/{ATLAS_V2}/lineage/{{guid}}",
-        'unique_attribute': f"{DATAMAP_BASE}/{ATLAS_V2}/lineage/uniqueAttribute/type/{{typeName}}"
+        'unique_attribute': f"{DATAMAP_BASE}/{ATLAS_V2}/lineage/uniqueAttribute/type/{{typeName}}",
+        'bulk': f"{DATAMAP_BASE}/{ATLAS_V2}/lineage/bulk",
+        'bulk_update': f"{DATAMAP_BASE}/{ATLAS_V2}/lineage/bulk",
+        'next': f"{DATAMAP_BASE}/{ATLAS_V2}/lineage/{{guid}}/next",
+        'impact': f"{DATAMAP_BASE}/{ATLAS_V2}/lineage/{{guid}}/impact",
+        'downstream': f"{DATAMAP_BASE}/{ATLAS_V2}/lineage/{{guid}}/downstream",
+        'upstream': f"{DATAMAP_BASE}/{ATLAS_V2}/lineage/{{guid}}/upstream"
     }
     
     # === SEARCH ENDPOINTS ===
@@ -118,8 +127,7 @@ class PurviewEndpoints:
         'integration_runtime': f"{SCAN_BASE}/integrationruntimes/{{integrationRuntimeName}}",
         'integration_runtime_auth': f"{SCAN_BASE}/integrationruntimes/{{integrationRuntimeName}}/listAuthKeys"
     }
-    
-    # === ACCOUNT ENDPOINTS (Catalog) ===
+      # === ACCOUNT ENDPOINTS (Catalog) ===
     ACCOUNT = {
         'account': f"{CATALOG_BASE}/account",
         'collections': f"{CATALOG_BASE}/collections",
@@ -129,6 +137,18 @@ class PurviewEndpoints:
         'access_keys': f"{CATALOG_BASE}/account/keys",
         'resource_set_rules': f"{CATALOG_BASE}/account/resourceSetRuleConfigs",
         'resource_set_rule': f"{CATALOG_BASE}/account/resourceSetRuleConfigs/defaultResourceSetRuleConfig"
+    }
+    
+    # === COLLECTIONS ENDPOINTS (Official API Mapping) ===
+    COLLECTIONS = {
+        'base': f"{CATALOG_BASE}/collections",
+        'collection': f"{CATALOG_BASE}/collections/{{collectionName}}",
+        'collection_path': f"{CATALOG_BASE}/collections/{{collectionName}}/getCollectionPath",
+        'child_collection_names': f"{CATALOG_BASE}/collections/{{collectionName}}/getChildCollectionNames",
+        'collection_move': f"{CATALOG_BASE}/collections/{{collectionName}}/moveHere",
+        'collection_admin_add': f"{CATALOG_BASE}/collections/{{collectionName}}/admins/{{adminObjectId}}",
+        'collection_admin_remove': f"{CATALOG_BASE}/collections/{{collectionName}}/admins/{{adminObjectId}}",
+        'collection_admins': f"{CATALOG_BASE}/collections/{{collectionName}}/admins"
     }
     
     # === INSIGHT ENDPOINTS (Catalog) ===

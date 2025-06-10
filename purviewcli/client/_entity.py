@@ -222,63 +222,55 @@ class Entity(Endpoint):
         self.params = {'api-version':'2022-03-01-preview'}
         self.payload = get_json(args, '--payloadFile')
 
-    # Labels
+    # Enhanced Business Metadata Operations
     @decorator
-    def entityAddLabels(self, args):
-        guid = args['--guid'][0]
-        self.method = 'PUT'
-        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.ENTITY['labels'], guid=guid)
-        self.params = {'api-version':'2022-03-01-preview'}
-        self.payload = get_json(args, '--payloadFile')
-
-    @decorator
-    def entityDeleteLabels(self, args):
-        guid = args['--guid'][0]
-        self.method = 'DELETE'
-        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.ENTITY['labels'], guid=guid)
-        self.params = {'api-version':'2022-03-01-preview'}
-        self.payload = get_json(args, '--payloadFile')
-
-    @decorator
-    def entitySetLabels(self, args):
-        guid = args['--guid'][0]
+    def entityBulkUpdateBusinessMetadata(self, args):
+        """Bulk update business metadata across multiple entities"""
         self.method = 'POST'
-        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.ENTITY['labels'], guid=guid)
+        self.endpoint = PurviewEndpoints.ENTITY['business_metadata_bulk']
         self.params = {'api-version':'2022-03-01-preview'}
         self.payload = get_json(args, '--payloadFile')
 
     @decorator
-    def entityAddLabelsByUniqueAttribute(self, args):
-        typeName = args['--typeName']
-        qualifiedName = args['--qualifiedName']
-        self.method = 'PUT'
-        self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{typeName}/labels'
+    def entityExportBusinessMetadata(self, args):
+        """Export business metadata to CSV format"""
+        self.method = 'GET'
+        self.endpoint = PurviewEndpoints.ENTITY['business_metadata_export']
         self.params = {
             'api-version':'2022-03-01-preview',
-            'attr:qualifiedName': qualifiedName
+            'format': args.get('--format', 'csv'),
+            'collectionName': args.get('--collectionName')
         }
-        self.payload = get_json(args, '--payloadFile')
 
     @decorator
-    def entityDeleteLabelsByUniqueAttribute(self, args):
-        typeName = args['--typeName']
-        qualifiedName = args['--qualifiedName']
-        self.method = 'DELETE'
-        self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{typeName}/labels'
-        self.params = {
-            'api-version':'2022-03-01-preview',
-            'attr:qualifiedName': qualifiedName
-        }
-        self.payload = get_json(args, '--payloadFile')
-
-    @decorator
-    def entitySetLabelsByUniqueAttribute(self, args):
-        typeName = args['--typeName']
-        qualifiedName = args['--qualifiedName']
+    def entityValidateBusinessMetadata(self, args):
+        """Validate business metadata template before import"""
         self.method = 'POST'
-        self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{typeName}/labels'
-        self.params = {
-            'api-version':'2022-03-01-preview',
-            'attr:qualifiedName': qualifiedName
-        }
+        self.endpoint = f'{PurviewEndpoints.ENTITY["business_metadata_import"]}/validate'
+        self.params = {'api-version':'2022-03-01-preview'}
+        self.files = {'file': open(args["--bmFile"], 'rb')}
+
+    @decorator
+    def entityGetBusinessMetadataStatus(self, args):
+        """Get status of business metadata import operation"""
+        operationId = args['--operationId']
+        self.method = 'GET'
+        self.endpoint = f'{PurviewEndpoints.ENTITY["business_metadata_import"]}/operations/{operationId}'
+        self.params = {'api-version':'2022-03-01-preview'}
+
+    @decorator
+    def entitySearchBusinessMetadata(self, args):
+        """Search entities by business metadata attributes"""
+        self.method = 'POST'
+        self.endpoint = f'{PurviewEndpoints.DATAMAP_BASE}/{PurviewEndpoints.ATLAS_V2}/search/businessmetadata'
+        self.params = {'api-version':'2022-03-01-preview'}
         self.payload = get_json(args, '--payloadFile')
+
+    @decorator
+    def entityGetBusinessMetadataStatistics(self, args):
+        """Get business metadata usage statistics"""
+        self.method = 'GET'
+        self.endpoint = f'{PurviewEndpoints.DATAMAP_BASE}/{PurviewEndpoints.ATLAS_V2}/entity/businessmetadata/statistics'
+        self.params = {'api-version':'2022-03-01-preview'}
+        if args.get('--collectionName'):
+            self.params['collectionName'] = args['--collectionName']

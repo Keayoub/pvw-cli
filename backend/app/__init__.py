@@ -1,1 +1,0 @@
-#  Purview CLI Backend Application

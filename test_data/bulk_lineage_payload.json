@@ -1,0 +1,27 @@
+{
+  "entities": [
+    {
+      "typeName": "Process",
+      "attributes": {
+        "qualifiedName": "test-etl-process-04c1471b",
+        "name": "Test Customer Data ETL",
+        "description": "Test ETL process for validation"
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "typeName": "DataFlow",
+      "end1": {
+        "guid": "source-entity-6352344c"
+      },
+      "end2": {
+        "guid": "target-entity-225f9e11"
+      },
+      "attributes": {
+        "name": "Test Data Flow",
+        "confidence": 0.95
+      }
+    }
+  ]
+}

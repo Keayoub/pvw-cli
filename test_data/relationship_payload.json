@@ -1,0 +1,16 @@
+{
+  "typeName": "DataFlow",
+  "end1": {
+    "guid": "source-table-03ec18f7",
+    "typeName": "DataSet"
+  },
+  "end2": {
+    "guid": "target-table-288a5676",
+    "typeName": "DataSet"
+  },
+  "attributes": {
+    "name": "Test Lineage Relationship",
+    "confidence": 0.9,
+    "description": "Test relationship for endpoint validation"
+  }
+}

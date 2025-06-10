@@ -1,5 +1,6 @@
-# Verification Script for  Purview CLI v2.0
-# Comprehensive testing of frontend and backend integration
+# Verification Script for Purview CLI v2.0
+# Testing CLI functionality and core components
+# Note: Web UI and backend components are now in separate Purview_WebUI project
 
 param(
     [switch]$Detailed,  # Show detailed test results

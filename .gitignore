@@ -19,17 +19,9 @@ doc/boilerplate/temp
 __pycache__
 AzuriteConfig
 __azurite_db_table__.json
-web-ui/node_modules/
-web-ui/dist/
-web-ui/.cache/
-web-ui/.env
-web-ui/.vscode/
-web-ui/.idea/
-web-ui/.DS_Store
-web-ui/.gitignore
-web-ui/.eslintcache
 
-backend/.env
+# Note: Web UI and backend components have been moved to separate project
+# at C:\Dvlp\Purview\Purview_WebUI
 pvw.exe
 pvw.spec
 nginx/

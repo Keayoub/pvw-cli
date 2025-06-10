@@ -54,14 +54,16 @@ class Account(Endpoint):
     @decorator
     def accountDeleteCollection(self, args):
         self.method = 'DELETE'
-        self.endpoint = f"/collections/{args['--collectionName']}"
+        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.COLLECTIONS['collection'], collectionName=args['--collectionName'])
         self.params = {"api-version": "2019-11-01-preview"}
 
     @decorator
     def accountPutCollection(self, args):
-        collectionName = get_random_string(6)
+        collectionName = args.get('--collectionName')
+        if not collectionName:
+            collectionName = get_random_string(6)
         self.method = 'PUT'
-        self.endpoint = f"/collections/{collectionName}"
+        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.COLLECTIONS['collection'], collectionName=collectionName)
         self.params = {"api-version": "2019-11-01-preview"}
         self.payload = {
             "friendlyName": f"{args['--friendlyName']}",
@@ -71,6 +73,65 @@ class Account(Endpoint):
                 "type": "CollectionReference"
             }
         }
+    
+    @decorator
+    def accountCreateCollection(self, args):
+        """Create a new collection with specified parameters"""
+        collectionName = args.get('--collectionName') or get_random_string(6)
+        self.method = 'PUT'
+        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.COLLECTIONS['collection'], collectionName=collectionName)
+        self.params = {"api-version": "2019-11-01-preview"}
+        payload_data = get_json(args, '--payloadFile') if args.get('--payloadFile') else {}
+        self.payload = {
+            "friendlyName": args.get('--friendlyName', collectionName),
+            "name": collectionName,
+            "parentCollection": {
+                "referenceName": args.get('--parentCollection', 'root'),
+                "type": "CollectionReference"
+            },
+            **payload_data
+        }
+    
+    @decorator
+    def accountUpdateCollection(self, args):
+        """Update an existing collection"""
+        self.method = 'PATCH'
+        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.COLLECTIONS['collection'], collectionName=args['--collectionName'])
+        self.params = {"api-version": "2019-11-01-preview"}
+        self.payload = get_json(args, '--payloadFile')
+    
+    @decorator
+    def accountMoveCollection(self, args):
+        """Move entities to a different collection"""
+        self.method = 'POST'
+        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.COLLECTIONS['collection_move'], collectionName=args['--collectionName'])
+        self.params = {"api-version": "2019-11-01-preview"}
+        self.payload = get_json(args, '--payloadFile')
+    
+    @decorator
+    def accountGetCollectionAdmins(self, args):
+        """Get collection administrators"""
+        self.method = 'GET'
+        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.COLLECTIONS['collection_admins'], collectionName=args['--collectionName'])
+        self.params = {"api-version": "2019-11-01-preview"}
+    
+    @decorator
+    def accountAddCollectionAdmin(self, args):
+        """Add collection administrator"""
+        self.method = 'PUT'
+        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.COLLECTIONS['collection_admin_add'], 
+                                                        collectionName=args['--collectionName'],
+                                                        adminObjectId=args['--adminObjectId'])
+        self.params = {"api-version": "2019-11-01-preview"}
+    
+    @decorator
+    def accountRemoveCollectionAdmin(self, args):
+        """Remove collection administrator"""
+        self.method = 'DELETE'
+        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.COLLECTIONS['collection_admin_remove'], 
+                                                        collectionName=args['--collectionName'],
+                                                        adminObjectId=args['--adminObjectId'])
+        self.params = {"api-version": "2019-11-01-preview"}
 
     @decorator
     def accountGetAccessKeys(self, args):

@@ -16,9 +16,10 @@
 - **Provide Real-time Monitoring**: Live dashboards with metrics, alerting, and performance tracking
 - **Advanced Lineage Analysis**: Deep lineage traversal with impact assessment and gap detection
 - **Extensible Architecture**: Plugin system for custom integrations and functionality
-- **Web UI Interface**: Modern web dashboard for visual data governance operations
 - **Bulk Operations**: Import/export thousands of entities, relationships, or glossary terms efficiently
 - **CSV Lineage Processing**: Create and manage complex lineage relationships from CSV files
+
+> **Note:** Web UI and backend components are available in a separate project at `C:\Dvlp\Purview\Purview_WebUI`
 
 **Key Added Value:**
 
@@ -26,7 +27,6 @@
 - **Enterprise Monitoring**: Real-time visibility into data governance operations
 - **Advanced Analytics**: Deep lineage analysis with impact assessment capabilities
 - **Extensibility**: Plugin architecture for custom integrations and workflows
-- **Visual Interface**: Web-based dashboard complementing CLI operations
 - **Compliance Automation**: Automated governance rules with violation detection and remediation
 - **Performance Optimization**: Advanced scanning, monitoring, and resource management
 - **Developer Experience**: Rich CLI output, progress tracking, and comprehensive error diagnostics
@@ -50,7 +50,8 @@
 - **Monitoring API**: Real-time metrics collection and dashboard management
 - **Advanced Lineage API**: Deep lineage traversal and impact analysis capabilities
 - **Plugin Management API**: Dynamic loading and execution of custom plugins
-- **Web UI API**: Backend services for the web-based governance dashboard
+
+> **Note:** Web UI and backend API services are available in the separate `Purview_WebUI` project
 
 **Key Enhancements Over SDK/UI:**
 
@@ -201,17 +202,7 @@ pvw lineage_csv templates --output-dir "templates" --type "all"
 pvw lineage_csv validate --input-file "lineage.csv" --schema "standard"
 ```
 
-**Web UI Interface:**
-```bash
-# Start web-based governance dashboard
-pvw ui start --port 8080
-
-# Start API backend for web interface
-pvw web start-api --port 8000
-
-# Access full-stack deployment
-pvw web start --production --port 80
-```
+> **Note:** Web UI commands have been moved to the separate `Purview_WebUI` project
 
 ```bash
 pvw entity import-csv --csv-file datasets.csv --template dataset
@@ -301,7 +292,7 @@ print(response)
 
 ---
 
-**PVW CLI and PurviewClient empower data engineers, stewards, and architects to automate, scale, and enhance their Azure Purview experience far beyond the web UI.**
+**PVW CLI and PurviewClient empower data engineers, stewards, and architects to automate, scale, and enhance their Azure Purview experience with powerful command-line and programmatic capabilities.**
 
 ## Key Features
 
