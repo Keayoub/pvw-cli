@@ -15,6 +15,7 @@ import logging
 
 from .api_client import PurviewClient
 from .endpoint import Endpoint, decorator
+from .endpoints import PurviewEndpoints
 
 logger = logging.getLogger(__name__)
 
@@ -187,7 +188,7 @@ class Lineage(Endpoint):
     def lineageRead(self, args):
         """Read lineage information for an entity"""
         self.method = 'GET'
-        self.endpoint = f'/api/atlas/v2/lineage/{args["--guid"]}'
+        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.LINEAGE['guid'], guid=args["--guid"])
         self.params = {
             'depth': args.get('--depth', 3),
             'width': args.get('--width', 6),
@@ -201,7 +202,7 @@ class Lineage(Endpoint):
     def lineageReadNext(self, args):
         """Read next page of lineage results"""
         self.method = 'GET'
-        self.endpoint = f'/api/lineage/{args["--guid"]}/next/'
+        self.endpoint = f'/catalog/api/lineage/{args["--guid"]}/next/'
         self.params = {
           'direction': args['--direction'],
           'getDerivedLineage': 'true',
@@ -214,7 +215,7 @@ class Lineage(Endpoint):
     def lineageAnalyze(self, args):
         """Advanced lineage analysis endpoint"""
         self.method = 'GET'
-        self.endpoint = f'/api/atlas/v2/lineage/{args["--guid"]}/analyze'
+        self.endpoint = f'{PurviewEndpoints.format_endpoint(PurviewEndpoints.LINEAGE["guid"], guid=args["--guid"])}/analyze'
         self.params = {
             'depth': args.get('--depth', 3),
             'direction': args.get('--direction', 'BOTH'),
@@ -225,7 +226,7 @@ class Lineage(Endpoint):
     def lineageImpact(self, args):
         """Impact analysis endpoint"""
         self.method = 'GET'
-        self.endpoint = f'/api/atlas/v2/lineage/{args["--guid"]}/impact'
+        self.endpoint = f'{PurviewEndpoints.format_endpoint(PurviewEndpoints.LINEAGE["guid"], guid=args["--guid"])}/impact'
         self.params = {
             'direction': args.get('--direction', 'OUTPUT'),
             'maxDepth': args.get('--depth', 5)
@@ -235,7 +236,7 @@ class Lineage(Endpoint):
     def lineageCSVProcess(self, args):
         """Process CSV lineage relationships"""
         self.method = 'POST'
-        self.endpoint = '/api/atlas/v2/lineage/csv/process'
+        self.endpoint = f'{PurviewEndpoints.DATAMAP_BASE}/{PurviewEndpoints.ATLAS_V2}/lineage/csv/process'
         self.params = {
             'batch-size': args.get('--batch-size', 100),
             'validate-entities': args.get('--validate-entities', False),
@@ -247,14 +248,14 @@ class Lineage(Endpoint):
     def lineageCSVValidate(self, args):
         """Validate CSV lineage file format"""
         self.method = 'POST'
-        self.endpoint = '/api/atlas/v2/lineage/csv/validate'
+        self.endpoint = f'{PurviewEndpoints.DATAMAP_BASE}/{PurviewEndpoints.ATLAS_V2}/lineage/csv/validate'
         self.params = {}
 
     @decorator
     def lineageCSVSample(self, args):
         """Generate sample CSV lineage file"""
         self.method = 'GET'
-        self.endpoint = '/api/atlas/v2/lineage/csv/sample'
+        self.endpoint = f'{PurviewEndpoints.DATAMAP_BASE}/{PurviewEndpoints.ATLAS_V2}/lineage/csv/sample'
         self.params = {
             'num-samples': args.get('--num-samples', 10),
             'template': args.get('--template', 'basic')
@@ -264,7 +265,7 @@ class Lineage(Endpoint):
     def lineageCSVTemplates(self, args):
         """Get available CSV lineage templates"""
         self.method = 'GET'
-        self.endpoint = '/api/atlas/v2/lineage/csv/templates'
+        self.endpoint = f'{PurviewEndpoints.DATAMAP_BASE}/{PurviewEndpoints.ATLAS_V2}/lineage/csv/templates'
         self.params = {}
 
 

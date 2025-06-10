@@ -1,4 +1,5 @@
 from .endpoint import Endpoint, decorator, get_json
+from .endpoints import PurviewEndpoints
 
 class Search(Endpoint):
     def __init__(self):
@@ -8,8 +9,8 @@ class Search(Endpoint):
     @decorator
     def searchQuery(self, args):
         self.method = 'POST'
-        self.endpoint = '/api/search/query'
-        self.params = {"api-version": "2021-05-01-preview"}
+        self.endpoint = PurviewEndpoints.SEARCH['query']
+        self.params = PurviewEndpoints.get_api_version_params('search')
         self.payload = {
             'keywords': args['--keywords'],
             'limit': args['--limit'],
@@ -21,8 +22,8 @@ class Search(Endpoint):
     @decorator
     def searchAutoComplete(self, args):
         self.method = 'POST'
-        self.endpoint = '/api/search/autocomplete'
-        self.params = {"api-version": "2021-05-01-preview"}
+        self.endpoint = PurviewEndpoints.SEARCH['autocomplete']
+        self.params = PurviewEndpoints.get_api_version_params('search')
         self.payload = {
             "keywords": args['--keywords'],
             "filter": get_json(args,'--filterFile'),
@@ -32,8 +33,8 @@ class Search(Endpoint):
     @decorator
     def searchSuggest(self, args):
         self.method = 'POST'
-        self.endpoint = '/api/search/suggest'
-        self.params = {"api-version": "2021-05-01-preview"}
+        self.endpoint = PurviewEndpoints.SEARCH['suggest']
+        self.params = PurviewEndpoints.get_api_version_params('search')
         self.payload = {
             "keywords": args['--keywords'],
             "filter": get_json(args,'--filterFile'),
@@ -43,8 +44,8 @@ class Search(Endpoint):
     @decorator
     def searchBrowse(self, args):
         self.method = 'POST'
-        self.endpoint = '/api/browse'
-        self.params = {"api-version": "2021-05-01-preview"}
+        self.endpoint = PurviewEndpoints.SEARCH['browse']
+        self.params = PurviewEndpoints.get_api_version_params('search')
         self.payload = {
             "entityType": args['--entityType'],
             "path": args['--path'],

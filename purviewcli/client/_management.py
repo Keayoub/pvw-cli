@@ -1,5 +1,6 @@
 import uuid
 from .endpoint import Endpoint, decorator, get_json
+from .endpoints import PurviewEndpoints
 
 class Management(Endpoint):
     def __init__(self):
@@ -9,43 +10,54 @@ class Management(Endpoint):
     @decorator
     def managementListOperations(self, args):
         self.method = 'GET'
-        self.endpoint = '/providers/Microsoft.Purview/operations'
-        self.params = {'api-version': '2020-12-01-preview'}
+        self.endpoint = PurviewEndpoints.MANAGEMENT['operations']
+        self.params = PurviewEndpoints.get_api_version_params('management')
    
     @decorator
     def managementCheckNameAvailability(self, args):
         self.method = 'POST'
-        self.endpoint = f'/subscriptions/{args["--subscriptionId"]}/providers/Microsoft.Purview/checkNameAvailability'
-        self.params = {'api-version': '2020-12-01-preview'}
+        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.MANAGEMENT['check_name_availability'], subscriptionId=args["--subscriptionId"])
+        self.params = PurviewEndpoints.get_api_version_params('management')
         self.payload = {'name': args['--accountName'], 'type': 'Microsoft.Purview/accounts'}
     
     @decorator
     def managementReadAccounts(self, args):
         self.method = 'GET'
         if args["--resourceGroupName"] is None:
-            self.endpoint = f'/subscriptions/{args["--subscriptionId"]}/providers/Microsoft.Purview/accounts'
+            self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.MANAGEMENT['accounts'], subscriptionId=args["--subscriptionId"])
         else:
-            self.endpoint = f'/subscriptions/{args["--subscriptionId"]}/resourceGroups/{args["--resourceGroupName"]}/providers/Microsoft.Purview/accounts'
-        self.params = {'api-version': '2020-12-01-preview'}
+            self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.MANAGEMENT['accounts_by_rg'], 
+                                                           subscriptionId=args["--subscriptionId"], 
+                                                           resourceGroupName=args["--resourceGroupName"])
+        self.params = PurviewEndpoints.get_api_version_params('management')
 
     @decorator
     def managementReadAccount(self, args):
         self.method = 'GET'
-        self.endpoint = f'/subscriptions/{args["--subscriptionId"]}/resourceGroups/{args["--resourceGroupName"]}/providers/Microsoft.Purview/accounts/{args["--accountName"]}'
-        self.params = {'api-version': '2020-12-01-preview'}
+        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.MANAGEMENT['account'], 
+                                                       subscriptionId=args["--subscriptionId"],
+                                                       resourceGroupName=args["--resourceGroupName"],
+                                                       accountName=args["--accountName"])
+        self.params = PurviewEndpoints.get_api_version_params('management')
     
     @decorator
     def managementCreateAccount(self, args):
         self.method = 'PUT'
-        self.endpoint = f'/subscriptions/{args["--subscriptionId"]}/resourceGroups/{args["--resourceGroupName"]}/providers/Microsoft.Purview/accounts/{args["--accountName"]}'
-        self.params = {'api-version': '2021-07-01'}
+        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.MANAGEMENT['account'], 
+                                                       subscriptionId=args["--subscriptionId"],
+                                                       resourceGroupName=args["--resourceGroupName"],
+                                                       accountName=args["--accountName"])
+        self.params = PurviewEndpoints.get_api_version_params('management')
         self.payload = get_json(args, '--payloadFile')
     
     @decorator
     def managementDeleteAccount(self, args):
         self.method = 'DELETE'
-        self.endpoint = f'/subscriptions/{args["--subscriptionId"]}/resourceGroups/{args["--resourceGroupName"]}/providers/Microsoft.Purview/accounts/{args["--accountName"]}'
-        self.params = {'api-version': '2020-12-01-preview'}
+        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.MANAGEMENT['account'], 
+                                                       subscriptionId=args["--subscriptionId"],
+                                                       resourceGroupName=args["--resourceGroupName"],
+                                                       accountName=args["--accountName"])
+        self.params = PurviewEndpoints.get_api_version_params('management')
     
     @decorator
     def managementListKeys(self, args):

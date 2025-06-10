@@ -1,4 +1,5 @@
 from .endpoint import Endpoint, decorator, get_json
+from .endpoints import PurviewEndpoints
 
 class Entity(Endpoint):
     def __init__(self):
@@ -8,96 +9,96 @@ class Entity(Endpoint):
     @decorator
     def entityCreate(self, args):
         self.method = 'POST'
-        self.endpoint = '/api/atlas/v2/entity'
+        self.endpoint = PurviewEndpoints.ENTITY['base']
         self.payload = get_json(args, '--payloadFile')
 
     @decorator
     def entityDeleteBulk(self, args):
         self.method = 'DELETE'
         self.headers = {'Content-Type':'application/json'}
-        self.endpoint = '/api/atlas/v2/entity/bulk'
+        self.endpoint = PurviewEndpoints.ENTITY['bulk']
         self.params = {'guid': args['--guid']}
 
     @decorator
     def entityReadBulk(self, args):
         self.method = 'GET'
-        self.endpoint = '/api/atlas/v2/entity/bulk'
+        self.endpoint = PurviewEndpoints.ENTITY['bulk']
         self.params = {'guid': args['--guid'], 'ignoreRelationships': str(args['--ignoreRelationships']).lower(), 'minExtInfo': str(args['--minExtInfo']).lower()}
 
     @decorator
     def entityCreateBulk(self, args):
         self.method = 'POST'
-        self.endpoint = '/api/atlas/v2/entity/bulk'
+        self.endpoint = PurviewEndpoints.ENTITY['bulk']
         self.payload = get_json(args, '--payloadFile')
 
     @decorator
     def entityCreateBulkClassification(self, args):
         # Associates a classification to multiple entities in bulk.
         self.method = 'POST'
-        self.endpoint = '/api/atlas/v2/entity/bulk/classification'
+        self.endpoint = PurviewEndpoints.ENTITY['bulk_classification']
         self.payload = get_json(args, '--payloadFile')
 
     @decorator
     def entityCreateBulkSetClassifications(self, args):
         # Set classifications on entities in bulk (Classification -< Entities).
         self.method = 'POST'
-        self.endpoint = '/api/atlas/v2/entity/bulk/setClassifications'
+        self.endpoint = PurviewEndpoints.ENTITY['bulk_set_classifications']
         self.payload = get_json(args, '--payloadFile')
 
     @decorator
     def entityDelete(self, args):
         self.method = 'DELETE'
-        self.endpoint = f'/api/atlas/v2/entity/guid/{args["--guid"][0]}'
+        self.endpoint = f'{PurviewEndpoints.ENTITY["guid"]}/{args["--guid"][0]}'
 
     @decorator
     def entityRead(self, args):
         self.method = 'GET'
-        self.endpoint = f'/api/atlas/v2/entity/guid/{args["--guid"][0]}'
+        self.endpoint = f'{PurviewEndpoints.ENTITY["guid"]}/{args["--guid"][0]}'
         self.params = {'ignoreRelationships': str(args['--ignoreRelationships']).lower(), 'minExtInfo': str(args['--minExtInfo']).lower()}
 
     @decorator
     def entityPut(self, args):
         self.method = 'PUT'
-        self.endpoint = f'/api/atlas/v2/entity/guid/{args["--guid"][0]}'
+        self.endpoint = f'{PurviewEndpoints.ENTITY["guid"]}/{args["--guid"][0]}'
         self.params = {'name': args['--attrName']}
         self.payload = args['--attrValue']
 
     @decorator
     def entityDeleteClassification(self, args):
         self.method = 'DELETE'
-        self.endpoint = f'/api/atlas/v2/entity/guid/{args["--guid"][0]}/classification/{args["--classificationName"]}'
+        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.ENTITY['classification'], guid=args["--guid"][0]) + f'/{args["--classificationName"]}'
 
     @decorator
     def entityReadClassification(self, args):
         self.method = 'GET'
-        self.endpoint = f'/api/atlas/v2/entity/guid/{args["--guid"][0]}/classification/{args["--classificationName"]}'
+        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.ENTITY['classification'], guid=args["--guid"][0]) + f'/{args["--classificationName"]}'
 
     @decorator
     def entityReadClassifications(self, args):
         self.method = 'GET'
-        self.endpoint = f'/api/atlas/v2/entity/guid/{args["--guid"][0]}/classifications'
+        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.ENTITY['classifications'], guid=args["--guid"][0])
 
     @decorator
     def entityCreateClassifications(self, args):
         self.method = 'POST'
-        self.endpoint = f'/api/atlas/v2/entity/guid/{args["--guid"][0]}/classifications'
+        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.ENTITY['classifications'], guid=args["--guid"][0])
         self.payload = get_json(args, '--payloadFile')
 
     @decorator
     def entityPutClassifications(self, args):
         self.method = 'PUT'
-        self.endpoint = f'/api/atlas/v2/entity/guid/{args["--guid"][0]}/classifications'
+        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.ENTITY['classifications'], guid=args["--guid"][0])
         self.payload = get_json(args, '--payloadFile')
 
     @decorator
     def entityReadHeader(self, args):
         self.method = 'GET'
-        self.endpoint = f'/api/atlas/v2/entity/guid/{args["--guid"][0]}/header'
+        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.ENTITY['header'], guid=args["--guid"][0])
 
     @decorator
     def entityReadBulkUniqueAttribute(self, args):
         self.method = 'GET'
-        self.endpoint = f'/api/atlas/v2/entity/bulk/uniqueAttribute/type/{args["--typeName"]}'
+        self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}/bulk'
         self.params = {'ignoreRelationships': str(args['--ignoreRelationships']).lower(), 'minExtInfo': str(args['--minExtInfo']).lower()}
         counter = 0
         self.params = {}
@@ -109,39 +110,39 @@ class Entity(Endpoint):
     @decorator
     def entityReadUniqueAttribute(self, args):
         self.method = 'GET'
-        self.endpoint = f'/api/atlas/v2/entity/uniqueAttribute/type/{args["--typeName"]}'
+        self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}'
         self.params = {'attr:qualifiedName': args['--qualifiedName'], 'ignoreRelationships': str(args['--ignoreRelationships']).lower(), 'minExtInfo': str(args['--minExtInfo']).lower()}
 
     @decorator
     def entityDeleteUniqueAttribute(self, args):
         self.method = 'DELETE'
-        self.endpoint = f'/api/atlas/v2/entity/uniqueAttribute/type/{args["--typeName"]}'
+        self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}'
         self.params = { 'attr:qualifiedName': args["--qualifiedName"]}
 
     @decorator
     def entityPutUniqueAttribute(self, args):
         self.method = 'PUT'
-        self.endpoint = f'/api/atlas/v2/entity/uniqueAttribute/type/{args["--typeName"]}'
+        self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}'
         self.payload = get_json(args, '--payloadFile')
         self.params = { 'attr:qualifiedName': args["--qualifiedName"]}
 
     @decorator
     def entityDeleteUniqueAttributeClassification(self, args):
         self.method = 'DELETE'
-        self.endpoint = f'/api/atlas/v2/entity/uniqueAttribute/type/{args["--typeName"]}/classification/{args["--classificationName"]}'
+        self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}/classification/{args["--classificationName"]}'
         self.params = { 'attr:qualifiedName': args["--qualifiedName"]}
 
     @decorator
     def entityCreateUniqueAttributeClassifications(self, args):
         self.method = 'POST'
-        self.endpoint = f'/api/atlas/v2/entity/uniqueAttribute/type/{args["--typeName"]}/classifications'
+        self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}/classifications'
         self.payload = get_json(args, '--payloadFile')
         self.params = { 'attr:qualifiedName': args["--qualifiedName"]}
 
     @decorator
     def entityPutUniqueAttributeClassifications(self, args):
         self.method = 'PUT'
-        self.endpoint = f'/api/atlas/v2/entity/uniqueAttribute/type/{args["--typeName"]}/classifications'
+        self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}/classifications'
         self.payload = get_json(args, '--payloadFile')
         self.params = { 'attr:qualifiedName': args["--qualifiedName"]}
 
@@ -149,7 +150,7 @@ class Entity(Endpoint):
     def entityCreateOrUpdateCollection(self, args):
         collection = args['--collection']
         self.method = 'POST'
-        self.endpoint = f'/api/collections/{collection}/entity'
+        self.endpoint = f'/catalog/api/collections/{collection}/entity'
         self.payload = get_json(args, '--payloadFile')
         self.params = {'api-version':'2021-05-01-preview'}
 
@@ -157,7 +158,7 @@ class Entity(Endpoint):
     def entityCreateOrUpdateCollectionBulk(self, args):
         collection = args['--collection']
         self.method = 'POST'
-        self.endpoint = f'/api/collections/{collection}/entity/bulk'
+        self.endpoint = f'/catalog/api/collections/{collection}/entity/bulk'
         self.payload = get_json(args, '--payloadFile')
         self.params = {'api-version':'2021-05-01-preview'}
 
@@ -165,7 +166,7 @@ class Entity(Endpoint):
     def entityChangeCollection(self, args):
         collection = args['--collection']
         self.method = 'POST'
-        self.endpoint = f'/api/collections/{collection}/entity/moveHere'
+        self.endpoint = f'/catalog/api/collections/{collection}/entity/moveHere'
         self.payload = get_json(args, '--payloadFile')
         self.params = {'api-version':'2021-05-01-preview'}
 
@@ -173,14 +174,14 @@ class Entity(Endpoint):
     @decorator
     def entityImportBusinessMetadata(self, args):
         self.method = 'POST'
-        self.endpoint = f'/api/atlas/v2/entity/businessmetadata/import'
+        self.endpoint = f'{PurviewEndpoints.DATAMAP_BASE}/{PurviewEndpoints.ATLAS_V2}/entity/businessmetadata/import'
         self.params = {'api-version':'2022-03-01-preview'}
         self.files = {'file': open(args["--bmFile"], 'rb')}
 
     @decorator
     def entityGetBusinessMetadataTemplate(self, args):
         self.method = 'GET'
-        self.endpoint = f'/api/atlas/v2/entity/businessmetadata/import/template'
+        self.endpoint = f'{PurviewEndpoints.DATAMAP_BASE}/{PurviewEndpoints.ATLAS_V2}/entity/businessmetadata/import/template'
         self.params = {'api-version':'2022-03-01-preview'}
 
     @decorator
@@ -188,7 +189,7 @@ class Entity(Endpoint):
         guid = args['--guid'][0]
         isOverwrite = args['--isOverwrite']
         self.method = 'POST'
-        self.endpoint = f'/api/atlas/v2/entity/guid/{guid}/businessmetadata'
+        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.ENTITY['business_metadata'], guid=guid)
         self.params = {
             'api-version':'2022-03-01-preview',
             'isOverwrite': isOverwrite
@@ -199,7 +200,7 @@ class Entity(Endpoint):
     def entityDeleteBusinessMetadata(self, args):
         guid = args['--guid'][0]
         self.method = 'DELETE'
-        self.endpoint = f'/api/atlas/v2/entity/guid/{guid}/businessmetadata'
+        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.ENTITY['business_metadata'], guid=guid)
         self.params = {'api-version':'2022-03-01-preview'}
         self.payload = get_json(args, '--payloadFile')
 
@@ -208,7 +209,7 @@ class Entity(Endpoint):
         guid = args['--guid'][0]
         bmName = args['--bmName']
         self.method = 'POST'
-        self.endpoint = f'/api/atlas/v2/entity/guid/{guid}/businessmetadata/{bmName}'
+        self.endpoint = f'{PurviewEndpoints.format_endpoint(PurviewEndpoints.ENTITY["business_metadata"], guid=guid)}/{bmName}'
         self.params = {'api-version':'2022-03-01-preview'}
         self.payload = get_json(args, '--payloadFile')
 
@@ -217,7 +218,7 @@ class Entity(Endpoint):
         guid = args['--guid'][0]
         bmName = args['--bmName']
         self.method = 'DELETE'
-        self.endpoint = f'/api/atlas/v2/entity/guid/{guid}/businessmetadata/{bmName}'
+        self.endpoint = f'{PurviewEndpoints.format_endpoint(PurviewEndpoints.ENTITY["business_metadata"], guid=guid)}/{bmName}'
         self.params = {'api-version':'2022-03-01-preview'}
         self.payload = get_json(args, '--payloadFile')
 
@@ -226,7 +227,7 @@ class Entity(Endpoint):
     def entityAddLabels(self, args):
         guid = args['--guid'][0]
         self.method = 'PUT'
-        self.endpoint = f'/api/atlas/v2/entity/guid/{guid}/labels'
+        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.ENTITY['labels'], guid=guid)
         self.params = {'api-version':'2022-03-01-preview'}
         self.payload = get_json(args, '--payloadFile')
 
@@ -234,7 +235,7 @@ class Entity(Endpoint):
     def entityDeleteLabels(self, args):
         guid = args['--guid'][0]
         self.method = 'DELETE'
-        self.endpoint = f'/api/atlas/v2/entity/guid/{guid}/labels'
+        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.ENTITY['labels'], guid=guid)
         self.params = {'api-version':'2022-03-01-preview'}
         self.payload = get_json(args, '--payloadFile')
 
@@ -242,7 +243,7 @@ class Entity(Endpoint):
     def entitySetLabels(self, args):
         guid = args['--guid'][0]
         self.method = 'POST'
-        self.endpoint = f'/api/atlas/v2/entity/guid/{guid}/labels'
+        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.ENTITY['labels'], guid=guid)
         self.params = {'api-version':'2022-03-01-preview'}
         self.payload = get_json(args, '--payloadFile')
 
@@ -251,7 +252,7 @@ class Entity(Endpoint):
         typeName = args['--typeName']
         qualifiedName = args['--qualifiedName']
         self.method = 'PUT'
-        self.endpoint = f'/api/atlas/v2/entity/uniqueAttribute/type/{typeName}/labels'
+        self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{typeName}/labels'
         self.params = {
             'api-version':'2022-03-01-preview',
             'attr:qualifiedName': qualifiedName
@@ -263,7 +264,7 @@ class Entity(Endpoint):
         typeName = args['--typeName']
         qualifiedName = args['--qualifiedName']
         self.method = 'DELETE'
-        self.endpoint = f'/api/atlas/v2/entity/uniqueAttribute/type/{typeName}/labels'
+        self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{typeName}/labels'
         self.params = {
             'api-version':'2022-03-01-preview',
             'attr:qualifiedName': qualifiedName
@@ -275,7 +276,7 @@ class Entity(Endpoint):
         typeName = args['--typeName']
         qualifiedName = args['--qualifiedName']
         self.method = 'POST'
-        self.endpoint = f'/api/atlas/v2/entity/uniqueAttribute/type/{typeName}/labels'
+        self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{typeName}/labels'
         self.params = {
             'api-version':'2022-03-01-preview',
             'attr:qualifiedName': qualifiedName

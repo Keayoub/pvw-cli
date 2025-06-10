@@ -1,4 +1,5 @@
 from .endpoint import Endpoint, decorator, get_json
+from .endpoints import PurviewEndpoints
 import random
 import string
 
@@ -14,13 +15,13 @@ class Account(Endpoint):
     @decorator
     def accountGetAccount(self, args):
         self.method = 'GET'
-        self.endpoint = '/'
+        self.endpoint = PurviewEndpoints.ACCOUNT['account']
         self.params = {"api-version": "2019-11-01-preview"}
 
     @decorator
     def accountUpdateAccount(self, args):
         self.method = 'PATCH'
-        self.endpoint = '/'
+        self.endpoint = PurviewEndpoints.ACCOUNT['account']
         self.params = {"api-version": "2019-11-01-preview"}
         self.payload = {
             "friendlyName": f"{args['--friendlyName']}"
@@ -29,25 +30,25 @@ class Account(Endpoint):
     @decorator
     def accountGetCollections(self, args):
         self.method = 'GET'
-        self.endpoint = '/collections'
+        self.endpoint = PurviewEndpoints.ACCOUNT['collections']
         self.params = {"api-version": "2019-11-01-preview"}
 
     @decorator
     def accountGetCollection(self, args):
         self.method = 'GET'
-        self.endpoint = f"/collections/{args['--collectionName']}"
+        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.ACCOUNT['collection'], collectionName=args['--collectionName'])
         self.params = {"api-version": "2019-11-01-preview"}
 
     @decorator
     def accountGetCollectionPath(self, args):
         self.method = 'GET'
-        self.endpoint = f"/collections/{args['--collectionName']}/getCollectionPath"
+        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.ACCOUNT['collection_path'], collectionName=args['--collectionName'])
         self.params = {"api-version": "2019-11-01-preview"}
 
     @decorator
     def accountGetChildCollectionNames(self, args):
         self.method = 'GET'
-        self.endpoint = f"/collections/{args['--collectionName']}/getChildCollectionNames"
+        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.ACCOUNT['child_collection_names'], collectionName=args['--collectionName'])
         self.params = {"api-version": "2019-11-01-preview"}
 
     @decorator
