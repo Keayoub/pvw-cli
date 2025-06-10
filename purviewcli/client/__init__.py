@@ -1,1 +1,1 @@
-from .api_client import *
+from .api_client import PurviewClient

@@ -1,6 +1,7 @@
 import sys
 import json
-from .api_client import PurviewClient
+import os
+from .sync_client import SyncPurviewClient, SyncPurviewConfig
 
 class Endpoint:
     def __init__(self):
@@ -13,12 +14,36 @@ class Endpoint:
         self.headers = {}
 
 def get_data(http_dict):
-    client = PurviewClient()
-    client.set_region(http_dict['app'])
-    client.set_account(http_dict['app'])
-    client.set_token(http_dict['app'])
-    data = client.http_get(http_dict['app'], http_dict['method'], http_dict['endpoint'], http_dict['params'], http_dict['payload'], http_dict['files'], http_dict['headers'])
-    return data
+    """Execute HTTP request using SyncPurviewClient"""
+    try:
+        # Get account name from environment or use default
+        account_name = os.getenv('PURVIEW_ACCOUNT_NAME', http_dict.get('account_name', 'test-purview-account'))
+        
+        # Create config
+        config = SyncPurviewConfig(
+            account_name=account_name,
+            azure_region=os.getenv('AZURE_REGION', 'public')
+        )
+        
+        # Create synchronous client
+        client = SyncPurviewClient(config)
+        
+        # Make the request
+        result = client.make_request(
+            method=http_dict.get('method', 'GET'),
+            endpoint=http_dict.get('endpoint', '/'),
+            params=http_dict.get('params'),
+            json=http_dict.get('payload')
+        )
+        
+        return result
+        
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Error in real mode: {str(e)}",
+            "data": None
+        }
 
 def get_json(args, param):
     response = None
