@@ -12,29 +12,11 @@ azure-purview-scanning
 # Azure AI / Agentic
 semantic-kernel
 
-# Web and API (FastAPI CLI)
-fastapi
-uvicorn[standard]
-httpx
-websockets
-python-multipart
-python-jose[cryptography]
-passlib[bcrypt]
-email-validator
-
-# Async support
+# Async support (CLI operations)
 aiohttp
-aiofiles
+httpx
 aiocsv
 asyncio-throttle
-
-# Database
-sqlalchemy
-psycopg2-binary
-
-# Redis and Task queue
-redis
-celery
 
 # CLI and TUI Enhancements
 click
@@ -87,5 +69,3 @@ pytest-mock
 mypy
 black
 coverage
-aiosqlite
-asyncpg

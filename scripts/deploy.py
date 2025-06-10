@@ -1,5 +1,6 @@
-#  Purview CLI v2.0 - Production Deployment Script
-# Comprehensive deployment automation for production environments
+# Purview CLI v2.0 - CLI-Focused Deployment Script
+# Deployment automation for CLI-only environments
+# Note: Web UI and backend deployment has been moved to Purview_WebUI project
 
 import os
 import sys
@@ -20,7 +21,12 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 class DeploymentManager:
-    """Manages production deployment of  Purview CLI"""
+    """
+    Manages deployment of Purview CLI for CLI-only environments.
+    
+    Note: This script has been simplified to focus on CLI deployment only.
+    For web UI and backend deployment, see the separate Purview_WebUI project.
+    """
     
     def __init__(self, environment: str = "production"):
         self.environment = environment
