@@ -19,7 +19,7 @@ doc/boilerplate/temp
 __pycache__
 AzuriteConfig
 __azurite_db_table__.json
-test_env_vars.bat
+test_env.bat
 # Note: Web UI and backend components have been moved to separate project
 # at C:\Dvlp\Purview\Purview_WebUI
 pvw.exe

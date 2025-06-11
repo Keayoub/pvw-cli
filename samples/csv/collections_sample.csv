@@ -1,0 +1,5 @@
+collectionName,friendlyName,description,parentCollection
+marketing-collection,Marketing Data,Collection for marketing data assets,youraccountname
+sales-collection,Sales Analytics,Collection for sales analytics and reports,youraccountname
+finance-collection,Finance Data,Collection for financial data and compliance,youraccountname
+hr-subcollection,HR Analytics,Sub-collection under marketing for HR data,marketing-collection

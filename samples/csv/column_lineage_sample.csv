@@ -1,0 +1,6 @@
+source_entity_guid,target_entity_guid,source_column,target_column,transformation_logic,confidence_score
+source-table-001,target-table-001,col_1_source,col_1_target,DIRECT,0.85
+source-table-002,target-table-002,col_2_source,col_2_target,UPPER(source),0.95
+source-table-003,target-table-003,col_3_source,col_3_target,CONCAT(a,b),0.85
+source-table-004,target-table-004,col_4_source,col_4_target,DIRECT,0.95
+source-table-005,target-table-005,col_5_source,col_5_target,UPPER(source),0.85

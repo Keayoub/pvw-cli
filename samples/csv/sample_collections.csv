@@ -1,0 +1,7 @@
+collectionName,friendlyName,description,parentCollection,collectionPath,level,systemData_createdAt,systemData_lastModifiedAt,systemData_createdBy
+qk9uwo,Global,Global Collections created by UI,fabricpurviewdemoaccount,qk9uwo,0,2025-05-22T20:27:53.0680819Z,2025-05-22T20:27:53.068082Z,75d058e8-ac84-4d33-b01c-54a8d3cbbac1
+evaeaq,CustomLineage,CustomLineage collection,fabricpurviewdemoaccount,evaeaq,0,2025-06-04T19:51:35.7828863Z,2025-06-04T19:51:35.7828864Z,75d058e8-ac84-4d33-b01c-54a8d3cbbac1
+marketing-collection,Marketing Data,Collection for marketing data assets,evaeaq,marketing-collection,0,2025-06-11T03:21:34.0960499Z,2025-06-11T03:21:34.09605Z,75d058e8-ac84-4d33-b01c-54a8d3cbbac1
+sales-collection,Sales Analytics,Collection for sales analytics and reports,evaeaq,sales-collection,0,2025-06-11T03:21:39.247391Z,2025-06-11T03:21:39.247391Z,75d058e8-ac84-4d33-b01c-54a8d3cbbac1
+finance-collection,Finance Data,Collection for financial data and compliance,evaeaq,finance-collection,0,2025-06-11T03:21:44.6702002Z,2025-06-11T03:21:44.6702002Z,75d058e8-ac84-4d33-b01c-54a8d3cbbac1
+hr-subcollection,HR Analytics,Sub-collection under marketing for HR data,evaeaq,hr-subcollection,0,2025-06-11T03:21:58.7420026Z,2025-06-11T03:21:58.7420027Z,75d058e8-ac84-4d33-b01c-54a8d3cbbac1

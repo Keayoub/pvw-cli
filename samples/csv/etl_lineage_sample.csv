@@ -1,0 +1,6 @@
+source_entity_guid,target_entity_guid,process_name,transformation_type,owner,schedule,metadata
+source-table-001,target-table-001,Daily_ETL_Job_1,aggregation,data-team,daily,"{""tool"": ""spark"", ""cluster"": ""prod"", ""sla_hours"": 4}"
+source-table-002,target-table-002,Daily_ETL_Job_2,filter,data-team,daily,"{""tool"": ""spark"", ""cluster"": ""prod"", ""sla_hours"": 4}"
+source-table-003,target-table-003,Daily_ETL_Job_3,join,data-team,daily,"{""tool"": ""spark"", ""cluster"": ""prod"", ""sla_hours"": 4}"
+source-table-004,target-table-004,Daily_ETL_Job_4,aggregation,data-team,daily,"{""tool"": ""spark"", ""cluster"": ""prod"", ""sla_hours"": 4}"
+source-table-005,target-table-005,Daily_ETL_Job_5,filter,data-team,daily,"{""tool"": ""spark"", ""cluster"": ""prod"", ""sla_hours"": 4}"

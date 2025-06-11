@@ -1,0 +1,11 @@
+source_entity_guid,target_entity_guid,relationship_type,process_name,description,confidence_score,owner,metadata
+source-guid-000,target-guid-000,DataFlow,ETL_Process_0,Data transformation process 0,0.8,data-engineering-team,"{""tool"": ""spark"", ""job_id"": ""job_0"", ""run_date"": ""2025-06-10""}"
+source-guid-001,target-guid-001,DataFlow,ETL_Process_1,Data transformation process 1,0.9,data-engineering-team,"{""tool"": ""spark"", ""job_id"": ""job_1"", ""run_date"": ""2025-06-10""}"
+source-guid-002,target-guid-002,DataFlow,ETL_Process_2,Data transformation process 2,1.0,data-engineering-team,"{""tool"": ""spark"", ""job_id"": ""job_2"", ""run_date"": ""2025-06-10""}"
+source-guid-003,target-guid-003,DataFlow,ETL_Process_3,Data transformation process 3,0.8,data-engineering-team,"{""tool"": ""spark"", ""job_id"": ""job_3"", ""run_date"": ""2025-06-10""}"
+source-guid-004,target-guid-004,DataFlow,ETL_Process_4,Data transformation process 4,0.9,data-engineering-team,"{""tool"": ""spark"", ""job_id"": ""job_4"", ""run_date"": ""2025-06-10""}"
+source-guid-005,target-guid-005,DataFlow,ETL_Process_5,Data transformation process 5,1.0,data-engineering-team,"{""tool"": ""spark"", ""job_id"": ""job_5"", ""run_date"": ""2025-06-10""}"
+source-guid-006,target-guid-006,DataFlow,ETL_Process_6,Data transformation process 6,0.8,data-engineering-team,"{""tool"": ""spark"", ""job_id"": ""job_6"", ""run_date"": ""2025-06-10""}"
+source-guid-007,target-guid-007,DataFlow,ETL_Process_7,Data transformation process 7,0.9,data-engineering-team,"{""tool"": ""spark"", ""job_id"": ""job_7"", ""run_date"": ""2025-06-10""}"
+source-guid-008,target-guid-008,DataFlow,ETL_Process_8,Data transformation process 8,1.0,data-engineering-team,"{""tool"": ""spark"", ""job_id"": ""job_8"", ""run_date"": ""2025-06-10""}"
+source-guid-009,target-guid-009,DataFlow,ETL_Process_9,Data transformation process 9,0.8,data-engineering-team,"{""tool"": ""spark"", ""job_id"": ""job_9"", ""run_date"": ""2025-06-10""}"
