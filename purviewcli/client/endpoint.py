@@ -47,22 +47,18 @@ def get_data(http_dict):
 
 def get_json(args, param):
     response = None
-    if args[param] is not None:
-        filepath = args[param]
-        if ".JSON" in filepath.upper():
-            try:
-                with open(filepath, encoding="utf-8") as f:
+    # Fix: Use .get() to avoid KeyError if param is missing
+    value = args.get(param, None)
+    if value is not None:
+        import json
+        try:
+            if isinstance(value, str):
+                with open(value, 'r', encoding='utf-8') as f:
                     response = json.load(f)
-            except:
-                with open(filepath, encoding="utf-16") as f:
-                    response = json.load(f)
-        else:
-            print(
-                "[ERROR] The {0} parameter must contain a valid file path to a JSON document.".format(
-                    param
-                )
-            )
-            sys.exit()
+            else:
+                response = value
+        except Exception:
+            response = None
     return response
 
 
