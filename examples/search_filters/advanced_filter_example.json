@@ -1,0 +1,36 @@
+{
+  "and": [
+    {
+      "condition": {
+        "field": "objectType",
+        "operator": "in",
+        "value": ["Tables", "Views"]
+      }
+    },
+    {
+      "or": [
+        {
+          "condition": {
+            "field": "classification",
+            "operator": "eq",
+            "value": "PII"
+          }
+        },
+        {
+          "condition": {
+            "field": "classification",
+            "operator": "eq",
+            "value": "Confidential"
+          }
+        }
+      ]
+    },
+    {
+      "condition": {
+        "field": "assetType",
+        "operator": "contains",
+        "value": "SQL"
+      }
+    }
+  ]
+}

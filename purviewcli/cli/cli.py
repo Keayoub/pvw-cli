@@ -79,9 +79,7 @@ def create_endpoint_command(client_module_name, client_class_name, method_name, 
                 method_args["--sort"] = kwargs.get("sort", "ASC")  # Default sort
                 method_args["--ignoreTermsAndCategories"] = kwargs.get(
                     "ignore_terms_and_categories", False
-                )
-
-                # Handle specific parameter requirements for different glossary methods
+                )  # Handle specific parameter requirements for different glossary methods
                 if any(word in method_name.lower() for word in ["category", "term"]):
                     if "categoryGuid" in method_name or "termGuid" in method_name:
                         method_args["--categoryGuid"] = kwargs.get("category_guid")
@@ -94,6 +92,86 @@ def create_endpoint_command(client_module_name, client_class_name, method_name, 
 
                 if any(word in method_name.lower() for word in ["create", "put", "update"]):
                     method_args["--payloadFile"] = kwargs.get("payload_file")
+
+            # For search methods, handle comprehensive parameter mapping
+            elif "search" in method_name.lower():
+                # Basic search parameters
+                method_args["--keywords"] = kwargs.get("keywords", "")
+                method_args["--limit"] = kwargs.get("limit", 50)
+                method_args["--offset"] = kwargs.get("offset", 0)
+
+                # Search-specific parameters
+                method_args["--filterFile"] = kwargs.get("filter_file")
+                method_args["--facets-file"] = kwargs.get("facets_file")
+                method_args["--objectTypes"] = kwargs.get("object_types")
+                method_args["--objectType"] = kwargs.get("object_type")
+                method_args["--collection"] = kwargs.get("collection")
+                method_args["--orderBy"] = kwargs.get("order_by")
+                method_args["--sortDirection"] = kwargs.get("sort_direction")
+                method_args["--includeFacets"] = kwargs.get("include_facets", False)
+                method_args["--continuationToken"] = kwargs.get("continuation_token")
+
+                # Advanced search parameters
+                method_args["--businessMetadata"] = kwargs.get("business_metadata")
+                method_args["--classifications"] = kwargs.get("classifications")
+                method_args["--termAssignments"] = kwargs.get("term_assignments")
+
+                # Faceted search parameters
+                method_args["--facetFields"] = kwargs.get("facet_fields")
+                method_args["--facetCount"] = kwargs.get("facet_count")
+                method_args["--facetSort"] = kwargs.get("facet_sort")
+
+                # Time-based search parameters
+                method_args["--createdAfter"] = kwargs.get("created_after")
+                method_args["--createdBefore"] = kwargs.get("created_before")
+                method_args["--modifiedAfter"] = kwargs.get("modified_after")
+                method_args["--modifiedBefore"] = kwargs.get("modified_before")
+
+                # Entity type search parameters
+                method_args["--entityTypes"] = kwargs.get("entity_types")
+                method_args["--entityType"] = kwargs.get("entity_type")
+                method_args["--typeAttributes"] = kwargs.get("type_attributes")
+
+                # Browse parameters
+                method_args["--path"] = kwargs.get("path")
+                method_args["--includeSubPaths"] = kwargs.get("include_sub_paths", False)
+
+                # Autocomplete/suggest parameters
+                method_args["--fuzzy"] = kwargs.get("fuzzy", False)
+                method_args["--objectType"] = kwargs.get("object_type")
+                method_args["--collection"] = kwargs.get("collection")
+                method_args["--orderBy"] = kwargs.get("order_by")
+                method_args["--sortDirection"] = kwargs.get("sort_direction")
+                method_args["--includeFacets"] = kwargs.get("include_facets", False)
+                method_args["--continuationToken"] = kwargs.get("continuation_token")
+
+                # Advanced search parameters
+                method_args["--businessMetadata"] = kwargs.get("business_metadata")
+                method_args["--classifications"] = kwargs.get("classifications")
+                method_args["--termAssignments"] = kwargs.get("term_assignments")
+
+                # Faceted search parameters
+                method_args["--facetFields"] = kwargs.get("facet_fields")
+                method_args["--facetCount"] = kwargs.get("facet_count")
+                method_args["--facetSort"] = kwargs.get("facet_sort")
+
+                # Time-based search parameters
+                method_args["--createdAfter"] = kwargs.get("created_after")
+                method_args["--createdBefore"] = kwargs.get("created_before")
+                method_args["--modifiedAfter"] = kwargs.get("modified_after")
+                method_args["--modifiedBefore"] = kwargs.get("modified_before")
+
+                # Entity type search parameters
+                method_args["--entityTypes"] = kwargs.get("entity_types")
+                method_args["--entityType"] = kwargs.get("entity_type")
+                method_args["--typeAttributes"] = kwargs.get("type_attributes")
+
+                # Browse parameters
+                method_args["--path"] = kwargs.get("path")
+                method_args["--includeSubPaths"] = kwargs.get("include_sub_paths", False)
+
+                # Autocomplete/suggest parameters
+                method_args["--fuzzy"] = kwargs.get("fuzzy", False)
 
             else:
                 # For other methods, convert parameters as provided
@@ -384,6 +462,10 @@ groups_with_methods = [
             "browse": "searchBrowse",
             "query": "searchQuery",
             "suggest": "searchSuggest",
+            "advanced": "searchAdvancedQuery",
+            "faceted": "searchFaceted",
+            "timerange": "searchByTime",
+            "entitytype": "searchByEntityType",
         },
     ),
     (
@@ -448,53 +530,219 @@ groups_with_methods = [
     ),
 ]
 
-# Entity commands (from our previous analysis)
+# Entity commands - Complete Official API Implementation
+# Based on Microsoft Purview Entity API specification and _entity.py implementation
 entity_commands = [
-    "add-classification",
-    "add-classifications",
-    "add-labels",
-    "add-or-update-business-metadata",
-    "bulk-update-business-metadata",
-    "create",
-    "delete",
-    "delete-business-metadata",
-    "delete-by-unique-attribute",
-    "delete-bulk",
-    "delete-classification",
-    "export-business-metadata",
-    "export-to-csv",
-    "get-business-metadata-statistics",
-    "get-business-metadata-status",
-    "import-business-metadata",
-    "import-from-csv",
-    "partial-update-by-unique-attribute",
-    "purge-deleted",
-    "read",
-    "read-bulk",
-    "read-classification",
-    "read-classifications",
-    "read-header",
-    "read-sample",
-    "read-unique-attribute",
-    "remove-labels",
-    "search-business-metadata",
-    "set-labels",
-    "update",
-    "update-classification",
-    "update-classifications",
-    "validate-business-metadata",
+    # Core CRUD Operations
+    "create-or-update",  # entityCreateOrUpdate (Official API: Create Or Update)
+    "create",  # entityCreate (Alias for CreateOrUpdate)
+    "read",  # entityRead (Official API: Get)
+    "update",  # entityUpdate (Alias for CreateOrUpdate)
+    "delete",  # entityDelete (Official API: Delete)
+    # Bulk Operations
+    "bulk-create-or-update",  # entityBulkCreateOrUpdate (Official API: Bulk Create Or Update)
+    "create-bulk",  # entityCreateBulk (Alias for BulkCreateOrUpdate)
+    "read-bulk",  # entityReadBulk (Official API: List By Guids)
+    "delete-bulk",  # entityDeleteBulk (Official API: Bulk Delete)
+    # Unique Attribute Operations
+    "read-unique-attribute",  # entityReadUniqueAttribute (Official API: Get By Unique Attributes)
+    "read-bulk-unique-attribute",  # entityReadBulkUniqueAttribute (Official API: List By Unique Attributes)
+    "delete-unique-attribute",  # entityDeleteUniqueAttribute (Official API: Delete By Unique Attribute)
+    "partial-update-by-unique-attribute",  # entityPartialUpdateByUniqueAttribute (Official API: Partial Update By Unique Attributes)
+    # Entity Header Operations
+    "read-header",  # entityReadHeader (Official API: Get Header)
+    # Partial Update Operations
+    "partial-update-attribute",  # entityPartialUpdateAttribute (Official API: Partial Update Attribute By Guid)
+    # Classification Operations - GUID-based
+    "add-classification",  # entityAddClassification (Official API: Add Classification)
+    "bulk-set-classifications",  # entityBulkSetClassifications (Official API: Bulk Set Classifications)
+    "add-classifications",  # entityAddClassifications (Official API: Add Classifications)
+    "read-classification",  # entityReadClassification (Official API: Get Classification)
+    "read-classifications",  # entityReadClassifications (Official API: Get Classifications)
+    "update-classifications",  # entityUpdateClassifications (Official API: Update Classifications)
+    "delete-classification",  # entityDeleteClassification (Official API: Remove Classification)
+    # Classification Operations - Unique Attribute-based
+    "add-classifications-by-unique-attribute",  # entityAddClassificationsByUniqueAttribute (Official API: Add Classifications By Unique Attribute)
+    "update-classifications-by-unique-attribute",  # entityUpdateClassificationsByUniqueAttribute (Official API: Update Classifications By Unique Attribute)
+    "delete-classification-by-unique-attribute",  # entityDeleteClassificationByUniqueAttribute (Official API: Remove Classification By Unique Attribute)
+    # Label Operations - GUID-based
+    "add-labels",  # entityAddLabels (Official API: Add Label)
+    "set-labels",  # entitySetLabels (Official API: Set Labels)
+    "remove-labels",  # entityRemoveLabels (Official API: Remove Labels)
+    # Label Operations - Unique Attribute-based
+    "add-labels-by-unique-attribute",  # entityAddLabelsByUniqueAttribute (Official API: Add Labels By Unique Attribute)
+    "set-labels-by-unique-attribute",  # entitySetLabelsByUniqueAttribute (Official API: Set Labels By Unique Attribute)
+    "remove-labels-by-unique-attribute",  # entityRemoveLabelsByUniqueAttribute (Official API: Remove Labels By Unique Attribute)
+    # Collection Operations
+    "move-entities-to-collection",  # entityMoveEntitiesToCollection (Official API: Move Entities To Collection)
+    # Business Metadata Operations
+    "add-or-update-business-metadata",  # entityAddOrUpdateBusinessMetadata (Official API: Add Or Update Business Metadata)
+    "add-or-update-business-metadata-attributes",  # entityAddOrUpdateBusinessMetadataAttributes (Official API: Add Or Update Business Metadata Attributes)
+    "remove-business-metadata",  # entityRemoveBusinessMetadata (Official API: Remove Business Metadata)
+    "remove-business-metadata-attributes",  # entityRemoveBusinessMetadataAttributes (Official API: Remove Business Metadata Attributes)
+    "import-business-metadata",  # entityImportBusinessMetadata (Official API: Import Business Metadata)
+    "get-business-metadata-template",  # entityGetBusinessMetadataTemplate (Official API: Get Sample Business Metadata Template)
+    # Sample Operations
+    "read-sample",  # entityReadSample (Official API: Get Sample)
+    # Legacy Collection Operations (Deprecated but maintained for backward compatibility)
+    "create-or-update-collection",  # entityCreateOrUpdateCollection (Legacy)
+    "create-or-update-collection-bulk",  # entityCreateOrUpdateCollectionBulk (Legacy)
+    "change-collection",  # entityChangeCollection (Legacy)
+    # Legacy Method Names (Deprecated but maintained for backward compatibility)
+    "put",  # entityPut (Legacy: use partial-update-attribute)
+    "create-classifications",  # entityCreateClassifications (Legacy: use add-classifications)
+    "put-classifications",  # entityPutClassifications (Legacy: use update-classifications)
+    "put-unique-attribute",  # entityPutUniqueAttribute (Legacy: use partial-update-by-unique-attribute)
+    "create-unique-attribute-classifications",  # entityCreateUniqueAttributeClassifications (Legacy: use add-classifications-by-unique-attribute)
+    "put-unique-attribute-classifications",  # entityPutUniqueAttributeClassifications (Legacy: use update-classifications-by-unique-attribute)
 ]
 
 for cmd_name in entity_commands:
-    method_name = f'entity{cmd_name.replace("-", "")}'
+    # Convert command name to method name (camelCase)
+    method_name = f'entity{"".join(word.capitalize() for word in cmd_name.split("-"))}'
     command_func = create_endpoint_command("_entity", "Entity", method_name, cmd_name)
 
-    # Add appropriate options
-    if any(word in cmd_name for word in ["read", "get", "delete"]):
-        command_func = click.option("--guid", help="Entity GUID")(command_func)
-    if any(word in cmd_name for word in ["create", "update"]):
-        command_func = click.option("--payload-file", help="JSON payload file")(command_func)
-    if "read" in cmd_name:
+    # Add specific options based on command type and parameters
+
+    # GUID-based operations
+    if (
+        any(
+            word in cmd_name
+            for word in [
+                "read",
+                "delete",
+                "add-classifications",
+                "update-classifications",
+                "add-labels",
+                "set-labels",
+                "remove-labels",
+                "read-classification",
+                "read-classifications",
+                "delete-classification",
+                "read-header",
+                "partial-update-attribute",
+                "add-or-update-business-metadata",
+                "remove-business-metadata",
+                "read-sample",
+            ]
+        )
+        and "unique-attribute" not in cmd_name
+        and "bulk" not in cmd_name
+    ):
+        command_func = click.option("--guid", help="Entity GUID", required=True)(command_func)
+
+    # Bulk operations with GUID list
+    elif "bulk" in cmd_name and cmd_name in ["read-bulk", "delete-bulk"]:
+        command_func = click.option(
+            "--guid", multiple=True, help="Entity GUIDs (multiple allowed)", required=True
+        )(command_func)
+
+    # Unique attribute operations
+    elif "unique-attribute" in cmd_name:
+        command_func = click.option("--type-name", help="Entity type name", required=True)(
+            command_func
+        )
+        command_func = click.option("--qualified-name", help="Qualified name", required=True)(
+            command_func
+        )
+
+    # Bulk unique attribute operations
+    if "read-bulk-unique-attribute" in cmd_name:
+        command_func = click.option(
+            "--qualified-name",
+            multiple=True,
+            help="Qualified names (multiple allowed)",
+            required=True,
+        )(command_func)
+
+    # Classification-specific parameters
+    if (
+        "classification" in cmd_name
+        and "delete-classification" in cmd_name
+        and "unique-attribute" not in cmd_name
+    ):
+        command_func = click.option(
+            "--classification-name", help="Classification name", required=True
+        )(command_func)
+    elif "delete-classification-by-unique-attribute" in cmd_name:
+        command_func = click.option(
+            "--classification-name", help="Classification name", required=True
+        )(command_func)
+
+    # Business metadata operations
+    if "business-metadata-attributes" in cmd_name:
+        command_func = click.option("--bm-name", help="Business metadata name", required=True)(
+            command_func
+        )
+    elif "add-or-update-business-metadata" in cmd_name:
+        command_func = click.option(
+            "--is-overwrite", is_flag=True, help="Overwrite existing metadata"
+        )(command_func)
+    elif "import-business-metadata" in cmd_name:
+        command_func = click.option("--bm-file", help="Business metadata file", required=True)(
+            command_func
+        )
+
+    # Partial update operations
+    if "partial-update-attribute" in cmd_name:
+        command_func = click.option("--attr-name", help="Attribute name", required=True)(
+            command_func
+        )
+        command_func = click.option("--attr-value", help="Attribute value", required=True)(
+            command_func
+        )
+
+    # Collection operations
+    if "collection" in cmd_name:
+        if cmd_name in [
+            "create-or-update-collection",
+            "create-or-update-collection-bulk",
+            "change-collection",
+        ]:
+            command_func = click.option("--collection", help="Collection name", required=True)(
+                command_func
+            )
+
+    # Operations that require payload files
+    if (
+        any(
+            word in cmd_name
+            for word in [
+                "create",
+                "update",
+                "add-classifications",
+                "set-labels",
+                "remove-labels",
+                "add-or-update-business-metadata",
+                "remove-business-metadata",
+                "move-entities-to-collection",
+                "bulk-create-or-update",
+                "bulk-set-classifications",
+            ]
+        )
+        and "template" not in cmd_name
+        and "import" not in cmd_name
+    ):
+        command_func = click.option("--payload-file", help="JSON payload file", required=True)(
+            command_func
+        )
+
+    # Read operations with optional parameters
+    if "read" in cmd_name and cmd_name in [
+        "read",
+        "read-unique-attribute",
+        "read-bulk",
+        "read-bulk-unique-attribute",
+    ]:
+        command_func = click.option(
+            "--ignore-relationships", is_flag=True, help="Ignore relationships"
+        )(command_func)
+        command_func = click.option("--min-ext-info", is_flag=True, help="Minimal extended info")(
+            command_func
+        )
+
+    # Output format for read operations
+    if "read" in cmd_name or "get" in cmd_name:
         command_func = click.option(
             "--output", type=click.Choice(["json", "table"]), default="json", help="Output format"
         )(command_func)
@@ -612,6 +860,148 @@ for group_name, module_name, class_name, method_mapping in groups_with_methods:
                 )(command_func)
                 command_func = click.option(
                     "--include-metadata", is_flag=True, default=True, help="Include system metadata"
+                )(command_func)
+
+        elif group_name == "search":
+            # Search commands with comprehensive parameter support
+            # Basic parameters for all search commands
+            command_func = click.option("--keywords", help="Keywords to search for")(command_func)
+            command_func = click.option(
+                "--limit", type=int, default=50, help="Maximum number of results"
+            )(command_func)
+
+            if cmd_name == "query":
+                command_func = click.option(
+                    "--offset", type=int, default=0, help="Offset for pagination"
+                )(command_func)
+                command_func = click.option("--filter-file", help="Path to filter JSON file")(
+                    command_func
+                )
+                command_func = click.option("--facets-file", help="Path to facets JSON file")(
+                    command_func
+                )
+                command_func = click.option("--object-types", help="Comma-separated object types")(
+                    command_func
+                )
+                command_func = click.option("--collection", help="Collection name to scope search")(
+                    command_func
+                )
+                command_func = click.option("--order-by", help="Field to sort by")(command_func)
+                command_func = click.option(
+                    "--sort-direction",
+                    type=click.Choice(["asc", "desc"]),
+                    default="asc",
+                    help="Sort direction",
+                )(command_func)
+                command_func = click.option(
+                    "--include-facets", is_flag=True, help="Include facet information"
+                )(command_func)
+                command_func = click.option(
+                    "--continuation-token", help="Token for large result sets"
+                )(command_func)
+
+            elif cmd_name == "advanced":
+                command_func = click.option(
+                    "--offset", type=int, default=0, help="Offset for pagination"
+                )(command_func)
+                command_func = click.option(
+                    "--business-metadata", help="Business metadata JSON or file path"
+                )(command_func)
+                command_func = click.option(
+                    "--classifications", help="Comma-separated classification names"
+                )(command_func)
+                command_func = click.option(
+                    "--term-assignments", help="Glossary term assignment filter"
+                )(command_func)
+                command_func = click.option("--object-types", help="Comma-separated object types")(
+                    command_func
+                )
+                command_func = click.option("--collection", help="Collection name to scope search")(
+                    command_func
+                )
+
+            elif cmd_name == "faceted":
+                command_func = click.option(
+                    "--facet-fields",
+                    default="objectType,classification,term,assetType",
+                    help="Comma-separated facet fields",
+                )(command_func)
+                command_func = click.option(
+                    "--facet-count", type=int, default=20, help="Max facet values per field"
+                )(command_func)
+                command_func = click.option(
+                    "--facet-sort",
+                    type=click.Choice(["count", "value"]),
+                    default="count",
+                    help="Facet sorting",
+                )(command_func)
+                command_func = click.option("--object-types", help="Comma-separated object types")(
+                    command_func
+                )
+                command_func = click.option("--collection", help="Collection name to scope search")(
+                    command_func
+                )
+
+            elif cmd_name == "timerange":
+                command_func = click.option("--created-after", help="ISO 8601 datetime filter")(
+                    command_func
+                )
+                command_func = click.option("--created-before", help="ISO 8601 datetime filter")(
+                    command_func
+                )
+                command_func = click.option("--modified-after", help="ISO 8601 datetime filter")(
+                    command_func
+                )
+                command_func = click.option("--modified-before", help="ISO 8601 datetime filter")(
+                    command_func
+                )
+                command_func = click.option("--object-types", help="Comma-separated object types")(
+                    command_func
+                )
+
+            elif cmd_name == "entitytype":
+                command_func = click.option("--entity-types", help="Comma-separated entity types")(
+                    command_func
+                )
+                command_func = click.option(
+                    "--type-attributes", help="Type attributes JSON or file path"
+                )(command_func)
+                command_func = click.option("--collection", help="Collection name to scope search")(
+                    command_func
+                )
+
+            elif cmd_name == "autocomplete":
+                command_func = click.option("--filter-file", help="Path to filter JSON file")(
+                    command_func
+                )
+                command_func = click.option("--object-type", help="Single object type filter")(
+                    command_func
+                )
+
+            elif cmd_name == "suggest":
+                command_func = click.option("--filter-file", help="Path to filter JSON file")(
+                    command_func
+                )
+                command_func = click.option("--fuzzy", is_flag=True, help="Enable fuzzy matching")(
+                    command_func
+                )
+                command_func = click.option("--object-type", help="Single object type filter")(
+                    command_func
+                )
+
+            elif cmd_name == "browse":
+                command_func = click.option("--entity-type", help="Entity type to browse")(
+                    command_func
+                )
+                command_func = click.option("--path", help="Path to browse")(command_func)
+                command_func = click.option(
+                    "--offset", type=int, default=0, help="Offset for pagination"
+                )(command_func)
+                command_func = click.option("--collection", help="Collection name to scope search")(
+                    command_func
+                )
+                command_func = click.option(
+                    "--include-sub-paths", is_flag=True, help="Include sub-paths"
                 )(command_func)
 
         else:

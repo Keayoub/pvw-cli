@@ -15,7 +15,6 @@ usage:
     pvw account regenerateAccessKeys --keyType=<val>
     pvw account updateAccount --friendlyName=<val>
 
-
 options:
     --purviewName=<val>           [string] Azure Purview account name.
     --collectionName=<val>        [string] The technical name of the collection.

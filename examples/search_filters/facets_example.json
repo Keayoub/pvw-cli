@@ -1,0 +1,27 @@
+[
+  {
+    "field": "objectType",
+    "count": 20,
+    "sort": "count"
+  },
+  {
+    "field": "classification",
+    "count": 15,
+    "sort": "count"
+  },
+  {
+    "field": "assetType",
+    "count": 25,
+    "sort": "value"
+  },
+  {
+    "field": "term",
+    "count": 10,
+    "sort": "count"
+  },
+  {
+    "field": "contactId",
+    "count": 5,
+    "sort": "value"
+  }
+]

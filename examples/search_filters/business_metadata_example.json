@@ -1,0 +1,18 @@
+{
+  "Department": {
+    "operator": "eq",
+    "value": "Finance"
+  },
+  "Owner": {
+    "operator": "eq", 
+    "value": "john.doe@company.com"
+  },
+  "DataClassification": {
+    "operator": "in",
+    "value": ["Sensitive", "Confidential"]
+  },
+  "Project": {
+    "operator": "contains",
+    "value": "CustomerAnalytics"
+  }
+}

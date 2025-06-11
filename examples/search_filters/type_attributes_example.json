@@ -1,0 +1,14 @@
+{
+  "TableSchema": {
+    "hasColumns": true,
+    "minColumnCount": 5
+  },
+  "DatabaseProperties": {
+    "engine": "SQL Server",
+    "version": "2019"
+  },
+  "FileProperties": {
+    "format": "parquet",
+    "compressionType": "snappy"
+  }
+}
