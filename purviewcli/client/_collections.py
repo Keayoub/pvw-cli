@@ -43,9 +43,11 @@ class Collections(Endpoint):
     def collectionsGetCollection(self, args):
         """Get Collection - Official API Operation"""
         self.method = "GET"
+
         self.endpoint = PurviewEndpoints.format_endpoint(
             PurviewEndpoints.COLLECTIONS["collection"], collectionName=args["--collectionName"]
         )
+        print(self.endpoint)
         self.params = PurviewEndpoints.get_api_version_params("collections")
 
     @decorator
@@ -56,15 +58,21 @@ class Collections(Endpoint):
         self.endpoint = PurviewEndpoints.format_endpoint(
             PurviewEndpoints.COLLECTIONS["collection"], collectionName=collection_name
         )
-        self.params = PurviewEndpoints.get_api_version_params("collections")        # Build payload according to official API specification for creation
+        self.params = PurviewEndpoints.get_api_version_params("collections")
+        # Build payload according to official API specification for creation
         if args.get("--payloadFile"):
             self.payload = get_json(args, "--payloadFile")
         else:
             import os
+
             self.payload = {
                 "friendlyName": args.get("--friendlyName", collection_name),
                 "description": args.get("--description", ""),
-                "parentCollection": {"referenceName": args.get("--parentCollection", os.getenv("PURVIEW_ACCOUNT_NAME"))},
+                "parentCollection": {
+                    "referenceName": args.get(
+                        "--parentCollection", os.getenv("PURVIEW_ACCOUNT_NAME")
+                    )
+                },
             }
 
     @decorator
@@ -78,15 +86,21 @@ class Collections(Endpoint):
         self.endpoint = PurviewEndpoints.format_endpoint(
             PurviewEndpoints.COLLECTIONS["collection"], collectionName=collection_name
         )
-        self.params = PurviewEndpoints.get_api_version_params("collections")        # Build payload according to official API specification for update
+        self.params = PurviewEndpoints.get_api_version_params("collections")
+        # Build payload according to official API specification for update
         if args.get("--payloadFile"):
             self.payload = get_json(args, "--payloadFile")
         else:
             import os
+
             self.payload = {
                 "friendlyName": args.get("--friendlyName", collection_name),
                 "description": args.get("--description", ""),
-                "parentCollection": {"referenceName": args.get("--parentCollection", os.getenv("PURVIEW_ACCOUNT_NAME"))},
+                "parentCollection": {
+                    "referenceName": args.get(
+                        "--parentCollection", os.getenv("PURVIEW_ACCOUNT_NAME")
+                    )
+                },
             }
 
     @decorator
@@ -97,15 +111,21 @@ class Collections(Endpoint):
         self.endpoint = PurviewEndpoints.format_endpoint(
             PurviewEndpoints.COLLECTIONS["collection"], collectionName=collection_name
         )
-        self.params = PurviewEndpoints.get_api_version_params("collections")        # Build payload according to official API specification
+        self.params = PurviewEndpoints.get_api_version_params("collections")
+        # Build payload according to official API specification
         if args.get("--payloadFile"):
             self.payload = get_json(args, "--payloadFile")
         else:
             import os
+
             self.payload = {
                 "friendlyName": args.get("--friendlyName", collection_name),
                 "description": args.get("--description", ""),
-                "parentCollection": {"referenceName": args.get("--parentCollection", os.getenv("PURVIEW_ACCOUNT_NAME"))},
+                "parentCollection": {
+                    "referenceName": args.get(
+                        "--parentCollection", os.getenv("PURVIEW_ACCOUNT_NAME")
+                    )
+                },
             }
 
     @decorator
@@ -236,7 +256,9 @@ class Collections(Endpoint):
                 # Remove empty values to use defaults
                 collection_args = {k: v for k, v in collection_args.items() if v and v.strip()}
 
-                print(f"📝 Creating/updating collection: {collection_name} (parent: {parent_collection_name})")
+                print(
+                    f"📝 Creating/updating collection: {collection_name} (parent: {parent_collection_name})"
+                )
 
                 # Use existing method to create or update collection
                 result = self.collectionsCreateOrUpdateCollection(collection_args)
