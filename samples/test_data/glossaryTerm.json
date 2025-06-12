@@ -1,0 +1,12 @@
+{
+    "qualifiedName": "Finance.Customer",
+    "name": "Customer",
+    "shortDescription": "A person or company that purchases products or services.",
+    "longDescription": "A customer is an individual or entity...",
+    "glossaryGuid": "40ff4b88-d362-490f-be5f-eab4cb4d7ac1",
+    "status": "Approved",
+    "anchor": {
+      "displayText": "Finance Glossary",
+      "glossaryGuid": "40ff4b88-d362-490f-be5f-eab4cb4d7ac1"
+    }
+  }

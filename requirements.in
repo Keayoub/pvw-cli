@@ -1,6 +1,5 @@
 # Core dependencies
 requests
-docopt
 azure-identity
 azure-core
 
@@ -8,9 +7,6 @@ azure-core
 azure-mgmt-purview
 azure-purview-catalog
 azure-purview-scanning
-
-# Azure AI / Agentic
-semantic-kernel
 
 # Async support (CLI operations)
 aiohttp

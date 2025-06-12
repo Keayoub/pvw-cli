@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Client",
+    "shortDescription": "Une personne ou entité ayant effectué un achat.",
+    "longDescription": "Un client est une personne physique ou morale ayant acquis un produit ou service.",
+    "anchor": {
+      "glossaryGuid": "40ff4b88-d362-490f-be5f-eab4cb4d7ac1"
+    },
+    "status": "Approved"
+  },
+  {
+    "name": "Produit",
+    "shortDescription": "Un bien ou service proposé à la vente.",
+    "longDescription": "Un produit est une unité de valeur proposée par l'entreprise à ses clients.",
+    "anchor": {
+      "glossaryGuid": "40ff4b88-d362-490f-be5f-eab4cb4d7ac1"
+    },
+    "status": "Draft"
+  }
+]

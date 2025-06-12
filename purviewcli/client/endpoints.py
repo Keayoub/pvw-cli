@@ -90,8 +90,6 @@ class PurviewEndpoints:
     LINEAGE = {
         "guid": f"{DATAMAP_BASE}/{ATLAS_V2}/lineage/{{guid}}",
         "unique_attribute": f"{DATAMAP_BASE}/{ATLAS_V2}/lineage/uniqueAttribute/type/{{typeName}}",
-        "bulk": f"{DATAMAP_BASE}/{ATLAS_V2}/lineage/bulk",
-        "bulk_update": f"{DATAMAP_BASE}/{ATLAS_V2}/lineage/bulk",
         "next": f"{DATAMAP_BASE}/{ATLAS_V2}/lineage/{{guid}}/next",
         "impact": f"{DATAMAP_BASE}/{ATLAS_V2}/lineage/{{guid}}/impact",
         "downstream": f"{DATAMAP_BASE}/{ATLAS_V2}/lineage/{{guid}}/downstream",

@@ -57,11 +57,21 @@ For more advanced usage, see the sections below or visit the [documentation](htt
 
 ## Installation
 
-```bash
-pip install pvw-cli
-```
+You can install PVW CLI in two ways:
 
-Or for development:
+1. **From PyPI (recommended for most users):**
+
+   ```bash
+   pip install pvw-cli
+   ```
+
+2. **Directly from the GitHub repository (for latest/dev version):**
+
+   ```bash
+   pip install git+https://github.com/Keayoub/Purview_cli.git
+   ```
+
+Or for development (editable install):
 
 ```bash
 git clone https://github.com/Keayoub/Purview_cli.git
@@ -190,7 +200,7 @@ See `tests/test_search_examples.py` for ready-to-run pytest examples covering al
 
 ## Contributing & Support
 
-- [Documentation](https://github.com/Keayoub/Purview_cli/blob/main/README.md)
+- [Documentation](https://github.com/Keayoub/Purview_cli/blob/main/doc/README.md)
 - [Issue Tracker](https://github.com/Keayoub/Purview_cli/issues)
 - [Email Support](mailto:keayoub@msn.com)
 
