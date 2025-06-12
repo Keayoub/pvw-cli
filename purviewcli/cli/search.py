@@ -16,15 +16,16 @@ options:
   --facets-file=<val>     [string]  File path to a facets json file.
 
 """
+# Search CLI for Purview Data Map API (Atlas v2)
+"""
+CLI for advanced search and discovery
+"""
 import click
 from purviewcli.client._search import Search
 
 @click.group()
 def search():
-    """
-    Search data assets and metadata in Azure Purview.
-    All search operations are exposed as modular Click-based commands for full CLI visibility.
-    """
+    """Search and discover assets"""
     pass
 
 def _invoke_search_method(method_name, **kwargs):
@@ -71,5 +72,57 @@ def query(keywords, limit, offset, filterfile, facets_file):
 def suggest(keywords, limit, filterfile):
     """Get search suggestions"""
     _invoke_search_method('searchSuggest', keywords=keywords, limit=limit, filterFile=filterfile)
+
+@search.command()
+@click.option('--keywords', required=False)
+@click.option('--limit', required=False, type=int, default=25)
+@click.option('--offset', required=False, type=int, default=0)
+@click.option('--filterFile', required=False, type=click.Path(exists=True))
+@click.option('--facets-file', required=False, type=click.Path(exists=True))
+@click.option('--facetFields', required=False, help='Comma-separated facet fields (e.g., objectType,classification)')
+@click.option('--facetCount', required=False, type=int, help='Facet count per field')
+@click.option('--facetSort', required=False, type=str, help='Facet sort order (e.g., count, value)')
+def faceted(keywords, limit, offset, filterfile, facets_file, facetfields, facetcount, facetsort):
+    """Run a faceted search"""
+    _invoke_search_method(
+        'searchFaceted',
+        keywords=keywords,
+        limit=limit,
+        offset=offset,
+        filterFile=filterfile,
+        facets_file=facets_file,
+        facetFields=facetfields,
+        facetCount=facetcount,
+        facetSort=facetsort
+    )
+
+@search.command()
+@click.option('--keywords', required=False)
+@click.option('--limit', required=False, type=int, default=25)
+@click.option('--offset', required=False, type=int, default=0)
+@click.option('--filterFile', required=False, type=click.Path(exists=True))
+@click.option('--facets-file', required=False, type=click.Path(exists=True))
+@click.option('--businessMetadata', required=False, type=click.Path(exists=True), help='Path to business metadata JSON file')
+@click.option('--classifications', required=False, help='Comma-separated classifications')
+@click.option('--termAssignments', required=False, help='Comma-separated term assignments')
+def advanced(keywords, limit, offset, filterfile, facets_file, businessmetadata, classifications, termassignments):
+    """Run an advanced search query"""
+    # Load business metadata JSON if provided
+    business_metadata_content = None
+    if businessmetadata:
+        import json
+        with open(businessmetadata, 'r', encoding='utf-8') as f:
+            business_metadata_content = json.load(f)
+    _invoke_search_method(
+        'searchAdvancedQuery',
+        keywords=keywords,
+        limit=limit,
+        offset=offset,
+        filterFile=filterfile,
+        facets_file=facets_file,
+        businessMetadata=business_metadata_content,
+        classifications=classifications,
+        termAssignments=termassignments
+    )
 
 __all__ = ['search']

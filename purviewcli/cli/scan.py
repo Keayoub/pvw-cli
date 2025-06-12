@@ -41,14 +41,16 @@ Usage:
 Options:
   -h --help                        Show this help message and exit
 """
+# Scan CLI for Purview Data Map API (Atlas v2)
+"""
+CLI for managing scans, scan rulesets, triggers, and scan runs
+"""
 import click
 from purviewcli.client._scan import Scan
 
 @click.group()
 def scan():
-    """Manage scanning operations in Azure Purview.
-    All scan operations are exposed as modular Click-based commands for full CLI visibility.
-    """
+    """Manage scans and related resources"""
     pass
 
 # Helper to invoke Scan methods
@@ -309,5 +311,49 @@ def runscan(datasourcename, scanname, scanlevel):
 def tagclassificationversion(classificationrulename, classificationruleversion, action):
     """Tag a classification rule version"""
     _invoke_scan_method('scanTagClassificationVersion', classificationRuleName=classificationrulename, classificationRuleVersion=classificationruleversion, action=action)
+
+@scan.command()
+def list():
+    """List all scans (TODO: add filtering options)"""
+    # TODO: Call Scan().scanReadScans()
+    pass
+
+@scan.command()
+def read():
+    """Read a scan by name"""
+    # TODO: Call Scan().scanReadScan()
+    pass
+
+@scan.command()
+def create():
+    """Create a new scan"""
+    # TODO: Call Scan().scanPutScan()
+    pass
+
+@scan.command()
+def update():
+    """Update an existing scan"""
+    # TODO: Call Scan().scanPutScan()
+    pass
+
+@scan.command()
+def delete():
+    """Delete a scan by name"""
+    # TODO: Call Scan().scanDeleteScan()
+    pass
+
+@scan.command()
+def run():
+    """Run a scan"""
+    # TODO: Call Scan().scanRunScan()
+    pass
+
+@scan.command()
+def cancel():
+    """Cancel a running scan"""
+    # TODO: Call Scan().scanCancelScan()
+    pass
+
+# TODO: Add commands for rulesets, triggers, scan history, etc.
 
 __all__ = ['scan']

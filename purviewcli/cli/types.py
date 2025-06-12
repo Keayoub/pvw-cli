@@ -25,16 +25,17 @@ options:
   --type=<val>            [string]  Typedef name as search filter (classification | entity | enum | relationship | struct).
 
 """
+# Types CLI for Purview Data Map API (Atlas v2)
+"""
+CLI for managing types (schemas, entity types, relationship types, classification types, business metadata types)
+"""
 import json
 import click
 from purviewcli.client._types import Types
 
 @click.group()
 def types():
-    """
-    Manage type definitions in Azure Purview.
-    All type operations are exposed as modular Click-based commands for full CLI visibility.
-    """
+    """Manage types (schemas, entity types, relationship types, etc.)"""
     pass
 
 @types.command()

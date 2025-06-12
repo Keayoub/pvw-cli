@@ -27,6 +27,7 @@ Options:
 import click
 import json
 from rich.console import Console
+from purviewcli.client._glossary import Glossary
 
 console = Console()
 
@@ -44,7 +45,6 @@ def glossary():
 def create(payload_file):
     """Create a new glossary"""
     try:
-        from purviewcli.client._glossary import Glossary
         client = Glossary()
         args = {'--payloadFile': payload_file}
         result = client.glossaryCreate(args)
@@ -57,7 +57,6 @@ def create(payload_file):
 def create_categories(payload_file):
     """Create multiple glossary categories"""
     try:
-        from purviewcli.client._glossary import Glossary
         client = Glossary()
         args = {'--payloadFile': payload_file}
         result = client.glossaryCreateCategories(args)
@@ -70,7 +69,6 @@ def create_categories(payload_file):
 def create_category(payload_file):
     """Create a single glossary category"""
     try:
-        from purviewcli.client._glossary import Glossary
         client = Glossary()
         args = {'--payloadFile': payload_file}
         result = client.glossaryCreateCategory(args)
@@ -84,7 +82,6 @@ def create_category(payload_file):
 def create_term(payload_file, include_term_hierarchy):
     """Create a single glossary term"""
     try:
-        from purviewcli.client._glossary import Glossary
         client = Glossary()
         args = {'--payloadFile': payload_file, '--includeTermHierarchy': include_term_hierarchy}
         result = client.glossaryCreateTerm(args)
@@ -98,7 +95,6 @@ def create_term(payload_file, include_term_hierarchy):
 def create_terms(payload_file, include_term_hierarchy):
     """Create multiple glossary terms"""
     try:
-        from purviewcli.client._glossary import Glossary
         client = Glossary()
         args = {'--payloadFile': payload_file, '--includeTermHierarchy': include_term_hierarchy}
         result = client.glossaryCreateTerms(args)
@@ -113,7 +109,6 @@ def create_terms(payload_file, include_term_hierarchy):
 def delete(glossary_guid):
     """Delete a glossary"""
     try:
-        from purviewcli.client._glossary import Glossary
         client = Glossary()
         args = {'--glossaryGuid': glossary_guid}
         result = client.glossaryDelete(args)
@@ -126,7 +121,6 @@ def delete(glossary_guid):
 def delete_category(category_guid):
     """Delete a glossary category"""
     try:
-        from purviewcli.client._glossary import Glossary
         client = Glossary()
         args = {'--categoryGuid': category_guid}
         result = client.glossaryDeleteCategory(args)
@@ -139,7 +133,6 @@ def delete_category(category_guid):
 def delete_term(term_guid):
     """Delete a glossary term"""
     try:
-        from purviewcli.client._glossary import Glossary
         client = Glossary()
         args = {'--termGuid': term_guid}
         result = client.glossaryDeleteTerm(args)
@@ -155,7 +148,6 @@ def delete_term(term_guid):
 def put(glossary_guid, payload_file):
     """Update a glossary"""
     try:
-        from purviewcli.client._glossary import Glossary
         client = Glossary()
         args = {'--glossaryGuid': glossary_guid, '--payloadFile': payload_file}
         result = client.glossaryPut(args)
@@ -169,7 +161,6 @@ def put(glossary_guid, payload_file):
 def put_category(category_guid, payload_file):
     """Update a glossary category"""
     try:
-        from purviewcli.client._glossary import Glossary
         client = Glossary()
         args = {'--categoryGuid': category_guid, '--payloadFile': payload_file}
         result = client.glossaryPutCategory(args)
@@ -183,7 +174,6 @@ def put_category(category_guid, payload_file):
 def put_category_partial(category_guid, payload_file):
     """Partially update a glossary category"""
     try:
-        from purviewcli.client._glossary import Glossary
         client = Glossary()
         args = {'--categoryGuid': category_guid, '--payloadFile': payload_file}
         result = client.glossaryPutCategoryPartial(args)
@@ -198,7 +188,6 @@ def put_category_partial(category_guid, payload_file):
 def put_partial(glossary_guid, payload_file, include_term_hierarchy):
     """Partially update a glossary"""
     try:
-        from purviewcli.client._glossary import Glossary
         client = Glossary()
         args = {'--glossaryGuid': glossary_guid, '--payloadFile': payload_file, '--includeTermHierarchy': include_term_hierarchy}
         result = client.glossaryPutPartial(args)
@@ -213,7 +202,6 @@ def put_partial(glossary_guid, payload_file, include_term_hierarchy):
 def put_term(term_guid, payload_file, include_term_hierarchy):
     """Update a glossary term"""
     try:
-        from purviewcli.client._glossary import Glossary
         client = Glossary()
         args = {'--termGuid': term_guid, '--payloadFile': payload_file, '--includeTermHierarchy': include_term_hierarchy}
         result = client.glossaryPutTerm(args)
@@ -228,7 +216,6 @@ def put_term(term_guid, payload_file, include_term_hierarchy):
 def put_term_partial(term_guid, payload_file, include_term_hierarchy):
     """Partially update a glossary term"""
     try:
-        from purviewcli.client._glossary import Glossary
         client = Glossary()
         args = {'--termGuid': term_guid, '--payloadFile': payload_file, '--includeTermHierarchy': include_term_hierarchy}
         result = client.glossaryPutTermPartial(args)
@@ -242,7 +229,6 @@ def put_term_partial(term_guid, payload_file, include_term_hierarchy):
 def put_terms_assigned_entities(term_guid, payload_file):
     """Assign entities to a glossary term"""
     try:
-        from purviewcli.client._glossary import Glossary
         client = Glossary()
         args = {'--termGuid': term_guid, '--payloadFile': payload_file}
         result = client.glossaryPutTermsAssignedEntities(args)
@@ -255,7 +241,6 @@ def put_terms_assigned_entities(term_guid, payload_file):
 
 def _read_glossaries_impl(glossary_guid, limit, offset, sort, ignore_terms_and_categories):
     try:
-        from purviewcli.client._glossary import Glossary
         client = Glossary()
         args = {
             '--glossaryGuid': glossary_guid,
@@ -297,7 +282,6 @@ def list_glossaries(limit, offset, sort, ignore_terms_and_categories):
 def read_categories(glossary_guid, limit, offset, sort):
     """Read glossary categories"""
     try:
-        from purviewcli.client._glossary import Glossary
         client = Glossary()
         args = {'--glossaryGuid': glossary_guid, '--limit': limit, '--offset': offset, '--sort': sort}
         result = client.glossaryReadCategories(args)
@@ -313,7 +297,6 @@ def read_categories(glossary_guid, limit, offset, sort):
 def read_categories_headers(glossary_guid, limit, offset, sort):
     """Read glossary categories headers"""
     try:
-        from purviewcli.client._glossary import Glossary
         client = Glossary()
         args = {'--glossaryGuid': glossary_guid, '--limit': limit, '--offset': offset, '--sort': sort}
         result = client.glossaryReadCategoriesHeaders(args)
@@ -329,7 +312,6 @@ def read_categories_headers(glossary_guid, limit, offset, sort):
 def read_category(category_guid, limit, offset, sort):
     """Read a glossary category"""
     try:
-        from purviewcli.client._glossary import Glossary
         client = Glossary()
         args = {'--categoryGuid': category_guid, '--limit': limit, '--offset': offset, '--sort': sort}
         result = client.glossaryReadCategory(args)
@@ -342,7 +324,6 @@ def read_category(category_guid, limit, offset, sort):
 def read_category_related(category_guid):
     """Read related terms of a glossary category"""
     try:
-        from purviewcli.client._glossary import Glossary
         client = Glossary()
         args = {'--categoryGuid': category_guid}
         result = client.glossaryReadCategoryRelated(args)
@@ -358,7 +339,6 @@ def read_category_related(category_guid):
 def read_category_terms(category_guid, limit, offset, sort):
     """Read terms of a glossary category"""
     try:
-        from purviewcli.client._glossary import Glossary
         client = Glossary()
         args = {'--categoryGuid': category_guid, '--limit': limit, '--offset': offset, '--sort': sort}
         result = client.glossaryReadCategoryTerms(args)
@@ -372,7 +352,6 @@ def read_category_terms(category_guid, limit, offset, sort):
 def read_detailed(glossary_guid, include_term_hierarchy):
     """Read detailed information of a glossary"""
     try:
-        from purviewcli.client._glossary import Glossary
         client = Glossary()
         args = {'--glossaryGuid': glossary_guid, '--includeTermHierarchy': include_term_hierarchy}
         result = client.glossaryReadDetailed(args)
@@ -386,7 +365,6 @@ def read_detailed(glossary_guid, include_term_hierarchy):
 def read_term(term_guid, include_term_hierarchy):
     """Read a glossary term"""
     try:
-        from purviewcli.client._glossary import Glossary
         client = Glossary()
         args = {'--termGuid': term_guid, '--includeTermHierarchy': include_term_hierarchy}
         result = client.glossaryReadTerm(args)
@@ -404,7 +382,6 @@ def read_term(term_guid, include_term_hierarchy):
 def read_terms(glossary_guid, limit, offset, sort, ext_info, include_term_hierarchy):
     """Read glossary terms"""
     try:
-        from purviewcli.client._glossary import Glossary
         client = Glossary()
         args = {'--glossaryGuid': glossary_guid, '--limit': limit, '--offset': offset, '--sort': sort, '--extInfo': ext_info, '--includeTermHierarchy': include_term_hierarchy}
         result = client.glossaryReadTerms(args)
@@ -420,7 +397,6 @@ def read_terms(glossary_guid, limit, offset, sort, ext_info, include_term_hierar
 def read_terms_assigned_entities(term_guid, limit, offset, sort):
     """Read assigned entities of a glossary term"""
     try:
-        from purviewcli.client._glossary import Glossary
         client = Glossary()
         args = {'--termGuid': term_guid, '--limit': limit, '--offset': offset, '--sort': sort}
         result = client.glossaryReadTermsAssignedEntities(args)
@@ -436,7 +412,6 @@ def read_terms_assigned_entities(term_guid, limit, offset, sort):
 def read_terms_headers(glossary_guid, limit, offset, sort):
     """Read glossary terms headers"""
     try:
-        from purviewcli.client._glossary import Glossary
         client = Glossary()
         args = {'--glossaryGuid': glossary_guid, '--limit': limit, '--offset': offset, '--sort': sort}
         result = client.glossaryReadTermsHeaders(args)
@@ -449,7 +424,6 @@ def read_terms_headers(glossary_guid, limit, offset, sort):
 def read_terms_import(operation_guid):
     """Read the result of a terms import operation"""
     try:
-        from purviewcli.client._glossary import Glossary
         client = Glossary()
         args = {'--operationGuid': operation_guid}
         result = client.glossaryReadTermsImport(args)
@@ -465,7 +439,6 @@ def read_terms_import(operation_guid):
 def read_terms_related(term_guid, limit, offset, sort):
     """Read related terms of a glossary term"""
     try:
-        from purviewcli.client._glossary import Glossary
         client = Glossary()
         args = {'--termGuid': term_guid, '--limit': limit, '--offset': offset, '--sort': sort}
         result = client.glossaryReadTermsRelated(args)
