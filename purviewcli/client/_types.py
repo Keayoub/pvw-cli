@@ -1,5 +1,6 @@
 from .endpoint import Endpoint, decorator, get_json
 from .endpoints import PurviewEndpoints
+import json
 
 class Types(Endpoint):
     def __init__(self):
@@ -104,6 +105,50 @@ class Types(Endpoint):
     def typesReadStatistics(self, args):
         self.method = 'GET'
         self.endpoint = f'{PurviewEndpoints.TYPES["base"]}/statistics'
+
+    def createBusinessMetadataDef(self, args):
+        """Create a business metadata definition via POST."""
+        payload_file = args.get('--payloadFile')
+        with open(payload_file, 'r', encoding='utf-8') as f:
+            payload = json.load(f)
+        url = self.endpoints.business_metadata_defs()
+        return self._post(url, payload)
+
+    def updateBusinessMetadataDef(self, args):
+        """Update a business metadata definition via PUT."""
+        payload_file = args.get('--payloadFile')
+        with open(payload_file, 'r', encoding='utf-8') as f:
+            payload = json.load(f)
+        url = self.endpoints.business_metadata_defs()
+        return self._put(url, payload)
+
+    def deleteBusinessMetadataDef(self, args):
+        """Delete a business metadata definition by name via DELETE."""
+        name = args.get('--name')
+        url = self.endpoints.business_metadata_def_by_name(name)
+        return self._delete(url)
+
+    def createTermTemplateDef(self, args):
+        """Create a term template definition via POST."""
+        payload_file = args.get('--payloadFile')
+        with open(payload_file, 'r', encoding='utf-8') as f:
+            payload = json.load(f)
+        url = self.endpoints.term_template_defs()
+        return self._post(url, payload)
+
+    def updateTermTemplateDef(self, args):
+        """Update a term template definition via PUT."""
+        payload_file = args.get('--payloadFile')
+        with open(payload_file, 'r', encoding='utf-8') as f:
+            payload = json.load(f)
+        url = self.endpoints.term_template_defs()
+        return self._put(url, payload)
+
+    def deleteTermTemplateDef(self, args):
+        """Delete a term template definition by name via DELETE."""
+        name = args.get('--name')
+        url = self.endpoints.term_template_def_by_name(name)
+        return self._delete(url)
 
     # NOT SUPPORTED IN AZURE PURVIEW
     # @decorator

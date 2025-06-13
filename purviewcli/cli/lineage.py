@@ -283,6 +283,127 @@ def create_bulk(ctx, json_file):
         console.print(f"[red]✗ Error executing lineage create-bulk: {str(e)}[/red]")
 
 
+@lineage.command(name="analyze-column")
+@click.option('--guid', required=True, help='The globally unique identifier of the entity')
+@click.option('--column-name', required=True, help='The name of the column to analyze')
+@click.option('--direction', default='BOTH', help='The direction of the lineage: INPUT, OUTPUT or BOTH')
+@click.option('--depth', type=int, default=3, help='The number of hops for lineage')
+@click.option('--output', default='json', help='Output format: json, table')
+@click.pass_context
+def analyze_column(ctx, guid, column_name, direction, depth, output):
+    """Analyze column-level lineage for a specific entity and column"""
+    try:
+        if ctx.obj.get("mock"):
+            console.print("[yellow]🎭 Mock: lineage analyze-column command[/yellow]")
+            console.print(f"[dim]GUID: {guid}, Column: {column_name}, Direction: {direction}, Depth: {depth}[/dim]")
+            console.print("[green]✓ Mock lineage analyze-column completed successfully[/green]")
+            return
+
+        args = {
+            "--guid": guid,
+            "--columnName": column_name,
+            "--direction": direction,
+            "--depth": depth,
+            "--output": output,
+        }
+
+        from purviewcli.client._lineage import Lineage
+        lineage_client = Lineage()
+        result = lineage_client.lineageAnalyzeColumn(args)
+
+        if result:
+            console.print("[green]✓ Column-level lineage analysis completed successfully[/green]")
+            console.print(json.dumps(result, indent=2))
+        else:
+            console.print("[yellow]⚠ Column-level lineage analysis completed with no result[/yellow]")
+
+    except Exception as e:
+        console.print(f"[red]✗ Error executing lineage analyze-column: {str(e)}[/red]")
+
+
+@lineage.command(name="partial")
+@click.option('--guid', required=True, help='The globally unique identifier of the entity')
+@click.option('--columns', help='Comma-separated list of columns to restrict lineage to (optional)')
+@click.option('--relationship-types', help='Comma-separated list of relationship types to include (optional)')
+@click.option('--depth', type=int, default=3, help='The number of hops for lineage')
+@click.option('--direction', default='BOTH', help='The direction of the lineage: INPUT, OUTPUT or BOTH')
+@click.option('--output', default='json', help='Output format: json, table')
+@click.pass_context
+def partial_lineage(ctx, guid, columns, relationship_types, depth, direction, output):
+    """Query partial lineage for an entity (filter by columns/relationship types)"""
+    try:
+        if ctx.obj.get("mock"):
+            console.print("[yellow]🎭 Mock: lineage partial command[/yellow]")
+            console.print(f"[dim]GUID: {guid}, Columns: {columns}, Types: {relationship_types}, Depth: {depth}, Direction: {direction}[/dim]")
+            console.print("[green]✓ Mock lineage partial completed successfully[/green]")
+            return
+
+        args = {
+            "--guid": guid,
+            "--columns": columns,
+            "--relationshipTypes": relationship_types,
+            "--depth": depth,
+            "--direction": direction,
+            "--output": output,
+        }
+
+        from purviewcli.client._lineage import Lineage
+        lineage_client = Lineage()
+        # Assume backend supports filtering; if not, filter result in CLI
+        result = lineage_client.lineageRead(args)
+        if columns or relationship_types:
+            # Filter result in CLI if backend does not support
+            def filter_fn(rel):
+                col_ok = True
+                type_ok = True
+                if columns:
+                    col_list = [c.strip() for c in columns.split(",") if c.strip()]
+                    col_ok = any(
+                        (rel.get("source_column") in col_list or rel.get("target_column") in col_list)
+                        for rel in result.get("relations", [])
+                    )
+                if relationship_types:
+                    type_list = [t.strip() for t in relationship_types.split(",") if t.strip()]
+                    type_ok = rel.get("relationship_type") in type_list
+                return col_ok and type_ok
+            if "relations" in result:
+                result["relations"] = [rel for rel in result["relations"] if filter_fn(rel)]
+        if result:
+            console.print("[green]✓ Partial lineage query completed successfully[/green]")
+            console.print(json.dumps(result, indent=2))
+        else:
+            console.print("[yellow]⚠ Partial lineage query completed with no result[/yellow]")
+    except Exception as e:
+        console.print(f"[red]✗ Error executing lineage partial: {str(e)}[/red]")
+
+
+@lineage.command(name="impact-report")
+@click.option('--entity-guid', required=True, help='Entity GUID for impact analysis')
+@click.option('--output-file', help='Export impact report to file (JSON)')
+@click.pass_context
+def impact_report(ctx, entity_guid, output_file):
+    """Generate and export a detailed lineage impact analysis report"""
+    try:
+        if ctx.obj.get("mock"):
+            console.print("[yellow]🎭 Mock: lineage impact-report command[/yellow]")
+            console.print(f"[dim]Entity GUID: {entity_guid}, Output File: {output_file}[/dim]")
+            console.print("[green]✓ Mock lineage impact-report completed successfully[/green]")
+            return
+        from purviewcli.client.lineage_visualization import LineageReporting, AdvancedLineageAnalyzer
+        from purviewcli.client.api_client import PurviewClient
+        analyzer = AdvancedLineageAnalyzer(PurviewClient())
+        reporting = LineageReporting(analyzer)
+        import asyncio
+        report = asyncio.run(reporting.generate_impact_report(entity_guid, output_file or f"impact_report_{entity_guid}.json"))
+        console.print("[green]✓ Impact analysis report generated successfully[/green]")
+        if output_file:
+            console.print(f"[cyan]Report saved to {output_file}[/cyan]")
+        else:
+            console.print(json.dumps(report, indent=2))
+    except Exception as e:
+        console.print(f"[red]✗ Error executing lineage impact-report: {str(e)}[/red]")
+
+
 # Remove the duplicate registration and ensure only one 'import' command is registered
 # lineage.add_command(import_cmd, name='import')
 

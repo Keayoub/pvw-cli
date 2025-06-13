@@ -1489,5 +1489,270 @@ def read_sample(ctx, guid):
         console.print(f"[red]✗ Error executing entity read-sample: {str(e)}[/red]")
 
 
+@entity.command()
+@click.option("--csv-file", required=True, type=click.Path(exists=True), help="CSV file with GUID and classificationName columns")
+@click.option("--batch-size", default=100, help="Batch size for API calls")
+@click.pass_context
+def bulk_classify_csv(ctx, csv_file, batch_size):
+    """Bulk classify entities from a CSV file (guid, classificationName columns)"""
+    import pandas as pd
+    import tempfile
+    from purviewcli.client._entity import Entity
+    try:
+        if ctx.obj.get("mock"):
+            console.print("[yellow]🎭 Mock: entity bulk-classify-csv command[/yellow]")
+            console.print(f"[dim]CSV File: {csv_file}[/dim]")
+            console.print("[green]✓ Mock entity bulk-classify-csv completed successfully[/green]")
+            return
+
+        df = pd.read_csv(csv_file)
+        if "guid" not in df.columns or "classificationName" not in df.columns:
+            console.print("[red]✗ CSV must contain 'guid' and 'classificationName' columns[/red]")
+            return
+        entity_client = Entity()
+        total = len(df)
+        success, failed = 0, 0
+        errors = []
+        for i in range(0, total, batch_size):
+            batch = df.iloc[i:i+batch_size]
+            payload = {
+                "entities": [
+                    {
+                        "guid": str(row["guid"]),
+                        "classifications": [{"typeName": str(row["classificationName"])}]
+                    }
+                    for _, row in batch.iterrows()
+                ]
+            }
+            with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as tmpf:
+                import json
+                json.dump(payload, tmpf, indent=2)
+                tmpf.flush()
+                payload_file = tmpf.name
+            try:
+                args = {"--payloadFile": payload_file}
+                result = entity_client.entityAddClassification(args)
+                if result and (not isinstance(result, dict) or result.get("status") != "error"):
+                    success += len(batch)
+                else:
+                    failed += len(batch)
+                    errors.append(f"Batch {i//batch_size+1}: {result}")
+            except Exception as e:
+                failed += len(batch)
+                errors.append(f"Batch {i//batch_size+1}: {str(e)}")
+            finally:
+                import os
+                os.remove(payload_file)
+        console.print(f"[green]✓ Bulk classification completed. Success: {success}, Failed: {failed}[/green]")
+        if errors:
+            console.print("[red]Errors:[/red]")
+            for err in errors:
+                console.print(f"[red]- {err}[/red]")
+    except Exception as e:
+        console.print(f"[red]✗ Error executing entity bulk-classify-csv: {str(e)}[/red]")
+
+
+# === BULK ENTITY CSV OPERATIONS ===
+
+@entity.command()
+@click.option("--csv-file", required=True, type=click.Path(exists=True), help="CSV file with entity attributes (typeName, qualifiedName, ...)")
+@click.option("--batch-size", default=100, help="Batch size for API calls")
+@click.option("--dry-run", is_flag=True, help="Preview entities to be created without making changes")
+@click.option("--error-csv", type=click.Path(), help="CSV file to write failed rows (optional)")
+@click.pass_context
+def bulk_create_csv(ctx, csv_file, batch_size, dry_run, error_csv):
+    """Bulk create entities from a CSV file (typeName, qualifiedName, ... columns)"""
+    import pandas as pd
+    import tempfile
+    import os
+    from purviewcli.client._entity import Entity
+    try:
+        if ctx.obj.get("mock"):
+            console.print("[yellow]🎭 Mock: entity bulk-create-csv command[/yellow]")
+            console.print(f"[dim]CSV File: {csv_file}[/dim]")
+            console.print("[green]✓ Mock entity bulk-create-csv completed successfully[/green]")
+            return
+
+        df = pd.read_csv(csv_file)
+        if "typeName" not in df.columns or "qualifiedName" not in df.columns:
+            console.print("[red]✗ CSV must contain at least 'typeName' and 'qualifiedName' columns[/red]")
+            return
+        entity_client = Entity()
+        total = len(df)
+        success, failed = 0, 0
+        errors = []
+        failed_rows = []
+        for i in range(0, total, batch_size):
+            batch = df.iloc[i:i+batch_size]
+            payload = {
+                "entities": [
+                    {col: row[col] for col in batch.columns if pd.notnull(row[col])}
+                    for _, row in batch.iterrows()
+                ]
+            }
+            if dry_run:
+                console.print(f"[blue]DRY RUN: Would create batch {i//batch_size+1} with {len(batch)} entities[/blue]")
+                continue
+            with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as tmpf:
+                import json
+                json.dump(payload, tmpf, indent=2)
+                tmpf.flush()
+                payload_file = tmpf.name
+            try:
+                args = {"--payloadFile": payload_file}
+                result = entity_client.entityBulkCreate(args)
+                if result and (not isinstance(result, dict) or result.get("status") != "error"):
+                    success += len(batch)
+                else:
+                    failed += len(batch)
+                    errors.append(f"Batch {i//batch_size+1}: {result}")
+                    failed_rows.extend(batch.to_dict(orient="records"))
+            except Exception as e:
+                failed += len(batch)
+                errors.append(f"Batch {i//batch_size+1}: {str(e)}")
+                failed_rows.extend(batch.to_dict(orient="records"))
+            finally:
+                os.remove(payload_file)
+        console.print(f"[green]✓ Bulk create completed. Success: {success}, Failed: {failed}[/green]")
+        if errors:
+            console.print("[red]Errors:[/red]")
+            for err in errors:
+                console.print(f"[red]- {err}[/red]")
+        if error_csv and failed_rows:
+            pd.DataFrame(failed_rows).to_csv(error_csv, index=False)
+            console.print(f"[yellow]✗ Failed rows written to {error_csv}[/yellow]")
+    except Exception as e:
+        console.print(f"[red]✗ Error executing entity bulk-create-csv: {str(e)}[/red]")
+
+
+@entity.command()
+@click.option("--csv-file", required=True, type=click.Path(exists=True), help="CSV file with GUID and attributes to update")
+@click.option("--batch-size", default=100, help="Batch size for API calls")
+@click.option("--dry-run", is_flag=True, help="Preview entities to be updated without making changes")
+@click.option("--error-csv", type=click.Path(), help="CSV file to write failed rows (optional)")
+@click.pass_context
+def bulk_update_csv(ctx, csv_file, batch_size, dry_run, error_csv):
+    """Bulk update entities from a CSV file (guid, attributes...)"""
+    import pandas as pd
+    import tempfile
+    import os
+    import json
+    from purviewcli.client._entity import Entity
+    try:
+        if ctx.obj.get("mock"):
+            console.print("[yellow]🎭 Mock: entity bulk-update-csv command[/yellow]")
+            console.print(f"[dim]CSV File: {csv_file}[/dim]")
+            console.print("[green]✓ Mock entity bulk-update-csv completed successfully[/green]")
+            return
+
+        df = pd.read_csv(csv_file)
+        if "guid" not in df.columns:
+            console.print("[red]✗ CSV must contain 'guid' column[/red]")
+            return
+        entity_client = Entity()
+        total = len(df)
+        success, failed = 0, 0
+        errors = []
+        failed_rows = []
+        for i in range(0, total, batch_size):
+            batch = df.iloc[i:i+batch_size]
+            payload = {
+                "entities": [
+                    {col: row[col] for col in batch.columns if pd.notnull(row[col])}
+                    for _, row in batch.iterrows()
+                ]
+            }
+            if dry_run:
+                console.print(f"[blue]DRY RUN: Would update batch {i//batch_size+1} with {len(batch)} entities[/blue]")
+                continue
+            with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as tmpf:
+                json.dump(payload, tmpf, indent=2)
+                tmpf.flush()
+                payload_file = tmpf.name
+            try:
+                args = {"--payloadFile": payload_file}
+                result = entity_client.entityBulkUpdate(args)
+                if result and (not isinstance(result, dict) or result.get("status") != "error"):
+                    success += len(batch)
+                else:
+                    failed += len(batch)
+                    errors.append(f"Batch {i//batch_size+1}: {result}")
+                    failed_rows.extend(batch.to_dict(orient="records"))
+            except Exception as e:
+                failed += len(batch)
+                errors.append(f"Batch {i//batch_size+1}: {str(e)}")
+                failed_rows.extend(batch.to_dict(orient="records"))
+            finally:
+                os.remove(payload_file)
+        console.print(f"[green]✓ Bulk update completed. Success: {success}, Failed: {failed}[/green]")
+        if errors:
+            console.print("[red]Errors:[/red]")
+            for err in errors:
+                console.print(f"[red]- {err}[/red]")
+        if error_csv and failed_rows:
+            pd.DataFrame(failed_rows).to_csv(error_csv, index=False)
+            console.print(f"[yellow]✗ Failed rows written to {error_csv}[/yellow]")
+    except Exception as e:
+        console.print(f"[red]✗ Error executing entity bulk-update-csv: {str(e)}[/red]")
+
+
+@entity.command()
+@click.option("--csv-file", required=True, type=click.Path(exists=True), help="CSV file with GUIDs to delete")
+@click.option("--batch-size", default=100, help="Batch size for API calls")
+@click.option("--dry-run", is_flag=True, help="Preview entities to be deleted without making changes")
+@click.option("--error-csv", type=click.Path(), help="CSV file to write failed rows (optional)")
+@click.pass_context
+def bulk_delete_csv(ctx, csv_file, batch_size, dry_run, error_csv):
+    """Bulk delete entities from a CSV file (guid column)"""
+    import pandas as pd
+    import os
+    from purviewcli.client._entity import Entity
+    try:
+        if ctx.obj.get("mock"):
+            console.print("[yellow]🎭 Mock: entity bulk-delete-csv command[/yellow]")
+            console.print(f"[dim]CSV File: {csv_file}[/dim]")
+            console.print("[green]✓ Mock entity bulk-delete-csv completed successfully[/green]")
+            return
+
+        df = pd.read_csv(csv_file)
+        if "guid" not in df.columns:
+            console.print("[red]✗ CSV must contain 'guid' column[/red]")
+            return
+        entity_client = Entity()
+        total = len(df)
+        success, failed = 0, 0
+        errors = []
+        failed_rows = []
+        for i in range(0, total, batch_size):
+            batch = df.iloc[i:i+batch_size]
+            guids = [str(row["guid"]) for _, row in batch.iterrows() if pd.notnull(row["guid"])]
+            if dry_run:
+                console.print(f"[blue]DRY RUN: Would delete batch {i//batch_size+1} with {len(guids)} entities[/blue]")
+                continue
+            try:
+                args = {"--guid": guids}
+                result = entity_client.entityBulkDelete(args)
+                if result and (not isinstance(result, dict) or result.get("status") != "error"):
+                    success += len(guids)
+                else:
+                    failed += len(guids)
+                    errors.append(f"Batch {i//batch_size+1}: {result}")
+                    failed_rows.extend(batch.to_dict(orient="records"))
+            except Exception as e:
+                failed += len(guids)
+                errors.append(f"Batch {i//batch_size+1}: {str(e)}")
+                failed_rows.extend(batch.to_dict(orient="records"))
+        console.print(f"[green]✓ Bulk delete completed. Success: {success}, Failed: {failed}[/green]")
+        if errors:
+            console.print("[red]Errors:[/red]")
+            for err in errors:
+                console.print(f"[red]- {err}[/red]")
+        if error_csv and failed_rows:
+            pd.DataFrame(failed_rows).to_csv(error_csv, index=False)
+            console.print(f"[yellow]✗ Failed rows written to {error_csv}[/yellow]")
+    except Exception as e:
+        console.print(f"[red]✗ Error executing entity bulk-delete-csv: {str(e)}[/red]")
+
+
 # Make the entity group available for import
 __all__ = ["entity"]

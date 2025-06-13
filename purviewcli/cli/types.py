@@ -24,11 +24,35 @@ options:
   --payloadFile=<val>     [string]  File path to a valid JSON document.
   --type=<val>            [string]  Typedef name as search filter (classification | entity | enum | relationship | struct).
 
+Advanced Workflows & API Mapping:
+---------------------------------
+- Bulk Operations: Use `create_typedefs`, `put_typedefs`, and `delete_typedefs` to manage multiple type definitions at once via JSON files. These map to Atlas v2 Data Map API bulk endpoints (typesCreateTypeDefs, typesPutTypeDefs, typesDeleteTypeDefs).
+- Per-Type Reads: Use `read_classification_def`, `read_entity_def`, `read_enum_def`, `read_relationship_def`, `read_struct_def`, `read_business_metadata_def`, `read_term_template_def` for fine-grained inspection of type definitions. These map to Atlas v2 endpoints for each type.
+- Filtering: Use `read_typedefs` and `read_typedefs_headers` with `--type` and `--include-term-template` to filter results, mapping to Atlas v2's flexible type listing APIs.
+- Statistics: Use `read_statistics` to get a summary of type system state (maps to typesReadStatistics).
+- Error Handling: For bulk operations, errors are reported in the CLI output. For advanced error reporting (e.g., failed items to file), see future roadmap.
+- API Coverage: This CLI covers all read operations and bulk create/update/delete. For per-type create/update/delete, use JSON payloads with the bulk endpoints. For advanced features (versioning, validation, dry-run), monitor API updates and CLI roadmap.
+
+Examples:
+---------
+# Bulk create/update type definitions from a JSON file
+pvw types createTypeDefs --payloadFile=types.json
+
+# Delete a single type definition by name
+pvw types deleteTypeDef --name=MyEntityType
+
+# Read all entity type definitions
+pvw types readTypeDefs --type=entity
+
+# Read a classification definition by GUID
+pvw types readClassificationDef --guid=1234-5678
+
+# Read type system statistics
+pvw types readStatistics
+
+For more advanced examples and templates, see the documentation in `doc/commands/types/` and sample JSON in `samples/json/`.
 """
-# Types CLI for Purview Data Map API (Atlas v2)
-"""
-CLI for managing types (schemas, entity types, relationship types, classification types, business metadata types)
-"""
+
 import json
 import click
 from purviewcli.client._types import Types
@@ -223,6 +247,78 @@ def read_typedefs_headers(include_term_template, type_):
         args = {'--includeTermTemplate': include_term_template, '--type': type_}
         client = Types()
         result = client.typesReadTypeDefsHeaders(args)
+        click.echo(json.dumps(result, indent=2))
+    except Exception as e:
+        click.echo(f"Error: {e}")
+
+@types.command()
+@click.option('--payload-file', type=click.Path(exists=True), required=True, help='File path to a valid JSON document')
+def create_business_metadata_def(payload_file):
+    """Create business metadata definition from a JSON file"""
+    try:
+        args = {'--payloadFile': payload_file}
+        client = Types()
+        result = client.createBusinessMetadataDef(args)
+        click.echo(json.dumps(result, indent=2))
+    except Exception as e:
+        click.echo(f"Error: {e}")
+
+@types.command()
+@click.option('--payload-file', type=click.Path(exists=True), required=True, help='File path to a valid JSON document')
+def update_business_metadata_def(payload_file):
+    """Update business metadata definition from a JSON file"""
+    try:
+        args = {'--payloadFile': payload_file}
+        client = Types()
+        result = client.updateBusinessMetadataDef(args)
+        click.echo(json.dumps(result, indent=2))
+    except Exception as e:
+        click.echo(f"Error: {e}")
+
+@types.command()
+@click.option('--name', required=True, help='Name of the business metadata definition to delete')
+def delete_business_metadata_def(name):
+    """Delete a business metadata definition by name"""
+    try:
+        args = {'--name': name}
+        client = Types()
+        result = client.deleteBusinessMetadataDef(args)
+        click.echo(json.dumps(result, indent=2))
+    except Exception as e:
+        click.echo(f"Error: {e}")
+
+@types.command()
+@click.option('--payload-file', type=click.Path(exists=True), required=True, help='File path to a valid JSON document')
+def create_term_template_def(payload_file):
+    """Create term template definition from a JSON file"""
+    try:
+        args = {'--payloadFile': payload_file}
+        client = Types()
+        result = client.createTermTemplateDef(args)
+        click.echo(json.dumps(result, indent=2))
+    except Exception as e:
+        click.echo(f"Error: {e}")
+
+@types.command()
+@click.option('--payload-file', type=click.Path(exists=True), required=True, help='File path to a valid JSON document')
+def update_term_template_def(payload_file):
+    """Update term template definition from a JSON file"""
+    try:
+        args = {'--payloadFile': payload_file}
+        client = Types()
+        result = client.updateTermTemplateDef(args)
+        click.echo(json.dumps(result, indent=2))
+    except Exception as e:
+        click.echo(f"Error: {e}")
+
+@types.command()
+@click.option('--name', required=True, help='Name of the term template definition to delete')
+def delete_term_template_def(name):
+    """Delete a term template definition by name"""
+    try:
+        args = {'--name': name}
+        client = Types()
+        result = client.deleteTermTemplateDef(args)
         click.echo(json.dumps(result, indent=2))
     except Exception as e:
         click.echo(f"Error: {e}")
