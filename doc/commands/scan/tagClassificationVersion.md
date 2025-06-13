@@ -15,7 +15,7 @@ pvw scan tagClassificationVersion --classificationRuleName=<val> --classificatio
 - `--action`: action parameter
 
 ## Optional Arguments
-- `--purviewName`: Azure Purview account name. (string)
+- `--purviewName`: Microsoft Purview account name. (string)
 - `--dataSourceName`: Name of the data source. (string)
 - `--scanName`: Name of the scan. (string)
 - `--scanRulesetName`: Name of the scan ruleset. (string)

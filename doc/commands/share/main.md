@@ -2,7 +2,7 @@
 [Command Reference](../../README.md#command-reference) > share
 
 ## Description
-Commands for managing share operations in Azure Purview.
+Commands for managing share operations in Microsoft Purview.
 
 ## Syntax
 ```

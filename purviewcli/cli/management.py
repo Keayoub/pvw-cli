@@ -36,8 +36,7 @@ from purviewcli.client._management import Management
 @click.group()
 def management():
     """
-    Manage metastore operations in Azure Purview.
-    All management operations are exposed as modular Click-based commands for full CLI visibility.
+    Manage metastore operations in Microsoft Purview.
     """
     pass
 

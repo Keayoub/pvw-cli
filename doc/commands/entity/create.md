@@ -13,7 +13,7 @@ pvw entity create --payloadFile=<val>
 - `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-- `--purviewName`: Azure Purview account name. (string)
+- `--purviewName`: Microsoft Purview account name. (string)
 - `--bmFile`: File path to a valid business metadata template CSV file. (string)
 - `--bmName`: BusinessMetadata name. (string)
 - `--classificationName`: The name of the classification. (string)

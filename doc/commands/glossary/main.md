@@ -2,7 +2,7 @@
 [Command Reference](../../README.md#command-reference) > glossary
 
 ## Description
-Commands for managing glossary operations in Azure Purview.
+Commands for managing glossary operations in Microsoft Purview.
 
 ## Syntax
 ```

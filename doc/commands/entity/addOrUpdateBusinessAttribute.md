@@ -15,7 +15,7 @@ pvw entity addOrUpdateBusinessAttribute --guid=<val> --bmName=<val> --payloadFil
 - `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-- `--purviewName`: Azure Purview account name. (string)
+- `--purviewName`: Microsoft Purview account name. (string)
 - `--bmFile`: File path to a valid business metadata template CSV file. (string)
 - `--classificationName`: The name of the classification. (string)
 - `--collection`: The collection unique name. (string)

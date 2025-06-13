@@ -1,6 +1,6 @@
 """
- Azure Purview API Client
-Supports the latest Azure Purview REST API specifications with comprehensive automation capabilities
+ Microsoft Purview API Client
+Supports the latest Microsoft Purview REST API specifications with comprehensive automation capabilities
 """
 
 import json

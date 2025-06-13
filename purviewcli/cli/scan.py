@@ -1,7 +1,5 @@
 """
-Manage scan operations in Azure Purview using modular Click-based commands.
-
-All scan operations are exposed as modular Click-based commands for full CLI visibility and maintainability.
+Manage scan operations in Microsoft Purview using modular Click-based commands.
 
 Usage:
   scan cancel-scan                 Cancel a scan run

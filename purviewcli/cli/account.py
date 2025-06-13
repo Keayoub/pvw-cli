@@ -1,8 +1,6 @@
 """
 Manage Purview account and collections using modular Click-based commands.
 
-All account operations are exposed as modular Click-based commands for full CLI visibility and maintainability.
-
 Usage:
   account get-account           Get account information
   account get-access-keys       Get account access keys
@@ -29,7 +27,6 @@ console = Console()
 def account(ctx):
     """
     Manage Purview account and collections.
-    All account operations are exposed as modular Click-based commands for full CLI visibility.
     """
     pass
 

@@ -13,7 +13,7 @@ This portal provides a structured, user-friendly entry point to all documentatio
 ## Quick Start
 
 - [Installation](guides/installation.md): How to install the CLI
-- [Configuration](guides/configuration.md): Set up your Azure Purview connection
+- [Configuration](guides/configuration.md): Set up your Microsoft Purview connection
 - [Quickstart](guides/quickstart.md): Learn the essential commands
 
 ## Command Groups

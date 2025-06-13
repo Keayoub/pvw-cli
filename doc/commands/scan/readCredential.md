@@ -14,7 +14,7 @@ pvw scan readCredential [--credentialName=<val>]
 
 ## Optional Arguments
 - `--credentialName`: credentialName parameter (optional)
-- `--purviewName`: Azure Purview account name. (string)
+- `--purviewName`: Microsoft Purview account name. (string)
 - `--action`: Allowed values: Delete or Keep. (string)
 - `--classificationRuleName`: Name of the classification rule. (string)
 - `--classificationRuleVersion`: Version of the classification rule. (integer)

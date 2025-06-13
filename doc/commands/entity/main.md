@@ -2,7 +2,7 @@
 [Command Reference](../../README.md#command-reference) > entity
 
 ## Description
-Commands for managing entity operations in Azure Purview.
+Commands for managing entity operations in Microsoft Purview.
 
 ## Syntax
 ```

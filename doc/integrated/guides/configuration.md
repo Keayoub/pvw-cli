@@ -1,7 +1,7 @@
 # Configuration Guide
 
 ## Setting Up Authentication
-Configure your Azure Purview connection settings.
+Configure your Microsoft Purview connection settings.
 
 ### Using Environment Variables
 ```bash

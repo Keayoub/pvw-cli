@@ -2,7 +2,7 @@
 [Command Reference](../../README.md#command-reference) > policystore
 
 ## Description
-Commands for managing policy store operations in Azure Purview.
+Commands for managing policy store operations in Microsoft Purview.
 
 ## Syntax
 ```

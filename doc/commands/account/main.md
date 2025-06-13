@@ -2,7 +2,7 @@
 [Command Reference](../../README.md#command-reference) > account
 
 ## Description
-Commands for managing account operations in Azure Purview.
+Commands for managing account operations in Microsoft Purview.
 
 ## Syntax
 ```

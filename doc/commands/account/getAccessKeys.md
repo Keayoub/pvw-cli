@@ -13,7 +13,7 @@ pvw account getAccessKeys
 No required arguments.
 
 ## Optional Arguments
-- `--purviewName`: Azure Purview account name. (string)
+- `--purviewName`: Microsoft Purview account name. (string)
 - `--collectionName`: The technical name of the collection. (string)
 - `--keyType`: The access key type. (string)
 - `--friendlyName`: The friendly name for the azure resource. (string)

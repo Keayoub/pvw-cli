@@ -13,7 +13,7 @@ pvw account regenerateAccessKeys --keyType=<val>
 - `--keyType`: keyType parameter
 
 ## Optional Arguments
-- `--purviewName`: Azure Purview account name. (string)
+- `--purviewName`: Microsoft Purview account name. (string)
 - `--collectionName`: The technical name of the collection. (string)
 - `--friendlyName`: The friendly name for the azure resource. (string)
 - `--parentCollection`: Gets or sets the parent collection reference. (string)

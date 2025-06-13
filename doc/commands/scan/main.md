@@ -2,7 +2,7 @@
 [Command Reference](../../README.md#command-reference) > scan
 
 ## Description
-Commands for managing scanning operations in Azure Purview.
+Commands for managing scanning operations in Microsoft Purview.
 
 ## Syntax
 ```

@@ -1,5 +1,5 @@
 """
-Collections Management Client for Azure Purview
+Collections Management Client for Microsoft Purview
 Based on official API: https://learn.microsoft.com/en-us/rest/api/purview/accountdataplane/collections
 API Version: 2019-11-01-preview
 
@@ -316,7 +316,7 @@ class Collections(Endpoint):
         import pandas as pd
         from datetime import datetime
 
-        print("📤 Fetching collections from Azure Purview...")
+        print("📤 Fetching collections from Microsoft Purview...")
 
         # Step 1: Use existing collectionsGetCollections method
         collections_data = self.collectionsGetCollections({})

@@ -45,7 +45,7 @@ This file provides guidance to help you generate code and suggestions that align
     - Each CLI command should delegate to a service in the `purviewcli/client/` layer.
     - Ensure CLI commands are discoverable and provide helpful usage messages.
 
-- **Integration with Azure Purview:**  
+- **Integration with Microsoft Purview:**  
     - Use official SDKs and REST APIs.
     - Encapsulate all Azure-specific logic in the `integrations/` directory.
     - Isolate external dependencies to simplify testing and maintenance.
@@ -88,7 +88,7 @@ This file provides guidance to help you generate code and suggestions that align
 
 ## Copilot-Specific Guidance
 
-- When generating code for Azure or Azure Purview:
+- When generating code for Azure or Microsoft Purview:
     - Use Azure tools and follow Azure code generation, deployment, and Azure Functions best practices.
     - Encapsulate Azure-specific logic in the `plugins/` directory.
     - Use mocks for Azure integrations in tests.

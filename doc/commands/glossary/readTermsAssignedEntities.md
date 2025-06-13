@@ -16,7 +16,7 @@ pvw glossary readTermsAssignedEntities --termGuid=<val> [--limit=<val> --offset=
 - `--sort`: sort parameter
 
 ## Optional Arguments
-- `--purviewName`: Azure Purview account name. (string)
+- `--purviewName`: Microsoft Purview account name. (string)
 - `--categoryGuid`: The globally unique identifier of the category. (string)
 - `--glossaryGuid`: The globally unique identifier for glossary. (string)
 - `--glossaryName`: The name of the glossary. (string)

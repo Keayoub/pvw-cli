@@ -2,7 +2,7 @@
 [Command Reference](../../README.md#command-reference) > relationship
 
 ## Description
-Commands for managing relationship operations in Azure Purview.
+Commands for managing relationship operations in Microsoft Purview.
 
 ## Syntax
 ```

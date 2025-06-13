@@ -8,8 +8,8 @@
     "qualifiedName": "Term ABC@Glossary",
     "resources": [
         {
-            "displayName": "Azure Purview",
-            "url": "https://aka.ms/AzurePurview"
+            "displayName": "Microsoft Purview",
+            "url": "https://aka.ms/MicrosoftPurview"
         }
     ],
     "status": "Draft"

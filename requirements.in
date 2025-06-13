@@ -3,7 +3,7 @@ requests
 azure-identity
 azure-core
 
-# Azure Purview SDK
+# Microsoft Purview SDK
 azure-mgmt-purview
 azure-purview-catalog
 azure-purview-scanning

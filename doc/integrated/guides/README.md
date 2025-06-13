@@ -8,7 +8,7 @@ Step-by-step guides for using the Purview CLI effectively.
 How to install and set up the Purview CLI tool.
 
 ### [Configuration Guide](configuration.md)
-Configuring your connection to Azure Purview.
+Configuring your connection to Microsoft Purview.
 
 ### [Quick Start Guide](quickstart.md)
 Get up and running quickly with essential commands.

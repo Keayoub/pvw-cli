@@ -15,7 +15,7 @@ pvw entity deleteUniqueAttributeClassification --typeName=<val> --qualifiedName=
 - `--classificationName`: classificationName parameter
 
 ## Optional Arguments
-- `--purviewName`: Azure Purview account name. (string)
+- `--purviewName`: Microsoft Purview account name. (string)
 - `--bmFile`: File path to a valid business metadata template CSV file. (string)
 - `--bmName`: BusinessMetadata name. (string)
 - `--collection`: The collection unique name. (string)

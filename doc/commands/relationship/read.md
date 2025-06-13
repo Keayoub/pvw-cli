@@ -13,7 +13,7 @@ pvw relationship read --guid=<val> [--extendedInfo]
 - `--guid`: guid parameter
 
 ## Optional Arguments
-- `--purviewName`: Azure Purview account name. (string)
+- `--purviewName`: Microsoft Purview account name. (string)
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping

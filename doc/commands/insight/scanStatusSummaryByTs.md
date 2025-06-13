@@ -14,7 +14,7 @@ pvw insight scanStatusSummaryByTs [--numberOfDays=<val>]
 
 ## Optional Arguments
 - `--numberOfDays`: numberOfDays parameter (optional)
-- `--purviewName`: Azure Purview account name. (string)
+- `--purviewName`: Microsoft Purview account name. (string)
 
 ## API Mapping
 Analytics Data Plane > Insight > [Scanstatussummarybyts]()

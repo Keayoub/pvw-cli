@@ -14,7 +14,7 @@ pvw types readStructDef (--guid=<val> | --name=<val>)
 - `--name`: name parameter
 
 ## Optional Arguments
-- `--purviewName`: Azure Purview account name. (string)
+- `--purviewName`: Microsoft Purview account name. (string)
 - `--payloadFile`: File path to a valid JSON document. (string)
 - `--type`: Typedef name as search filter (classification | entity | enum | relationship | struct). (string)
 

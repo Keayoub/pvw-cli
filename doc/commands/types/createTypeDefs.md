@@ -13,7 +13,7 @@ pvw types createTypeDefs --payloadFile=<val>
 - `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-- `--purviewName`: Azure Purview account name. (string)
+- `--purviewName`: Microsoft Purview account name. (string)
 - `--guid`: The globally unique identifier. (string)
 - `--name`: The name of the definition. (string)
 - `--type`: Typedef name as search filter (classification | entity | enum | relationship | struct). (string)

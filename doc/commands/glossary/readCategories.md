@@ -16,7 +16,7 @@ pvw glossary readCategories --glossaryGuid=<val> [--limit=<val> --offset=<val> -
 - `--sort`: sort parameter
 
 ## Optional Arguments
-- `--purviewName`: Azure Purview account name. (string)
+- `--purviewName`: Microsoft Purview account name. (string)
 - `--categoryGuid`: The globally unique identifier of the category. (string)
 - `--glossaryName`: The name of the glossary. (string)
 - `--operationGuid`: The globally unique identifier for async operation/job. (string)

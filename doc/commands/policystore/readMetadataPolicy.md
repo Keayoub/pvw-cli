@@ -14,7 +14,7 @@ pvw policystore readMetadataPolicy (--collectionName=<val> | --policyId=<val>)
 - `--policyId`: policyId parameter
 
 ## Optional Arguments
-- `--purviewName`: Azure Purview account name. (string)
+- `--purviewName`: Microsoft Purview account name. (string)
 - `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping

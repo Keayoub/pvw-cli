@@ -6,7 +6,7 @@ usage:
     pvw search suggest [--keywords=<val> --limit=<val> --filterFile=<val>]
 
 options:
-  --purviewName=<val>     [string]  Azure Purview account name.
+  --purviewName=<val>     [string]  Microsoft Purview account name.
   --keywords=<val>        [string]  The keywords applied to all searchable fields.
   --entityType=<val>      [string]  The entity type to browse as the root level entry point.
   --path=<val>            [string]  The path to browse the next level child entities.

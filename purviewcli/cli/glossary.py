@@ -1,8 +1,6 @@
 """
 Manage Purview glossaries, categories, and terms using modular Click-based commands.
 
-All glossary operations are exposed as modular Click-based commands for full CLI visibility and maintainability.
-
 Usage:
   glossary create                  Create a new glossary
   glossary create-categories       Create multiple glossary categories
@@ -34,7 +32,6 @@ console = Console()
 @click.group()
 def glossary():
     """Manage Purview glossaries, categories, and terms
-    All glossary operations are exposed as modular Click-based commands for full CLI visibility and maintainability.
     """
     pass
 

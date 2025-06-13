@@ -13,7 +13,7 @@ pvw types readTypeDefsHeaders [--includeTermTemplate --type=<val>]
 - `--type`: type parameter
 
 ## Optional Arguments
-- `--purviewName`: Azure Purview account name. (string)
+- `--purviewName`: Microsoft Purview account name. (string)
 - `--guid`: The globally unique identifier. (string)
 - `--name`: The name of the definition. (string)
 - `--payloadFile`: File path to a valid JSON document. (string)

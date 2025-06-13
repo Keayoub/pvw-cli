@@ -2,7 +2,7 @@
 [Command Reference](../../README.md#command-reference) > search
 
 ## Description
-Commands for performing search operations in Azure Purview.
+Commands for performing search operations in Microsoft Purview.
 
 ## Syntax
 ```

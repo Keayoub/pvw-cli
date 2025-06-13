@@ -14,7 +14,7 @@ pvw glossary putCategoryPartial --categoryGuid=<val> --payloadFile=<val>
 - `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-- `--purviewName`: Azure Purview account name. (string)
+- `--purviewName`: Microsoft Purview account name. (string)
 - `--glossaryGuid`: The globally unique identifier for glossary. (string)
 - `--glossaryName`: The name of the glossary. (string)
 - `--limit`: The page size - by default there is no paging [default: 1000]. (integer)

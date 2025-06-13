@@ -53,8 +53,7 @@ from purviewcli.client._share import Share
 
 @click.group()
 def share():
-    """Manage data sharing in Azure Purview.
-    All share operations are exposed as modular Click-based commands for full CLI visibility.
+    """Manage data sharing in Microsoft Purview.
     """
     pass
 

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pvw-cli"
 version = "2.0.0"
-description = " Azure Purview CLI with comprehensive automation capabilities"
+description = " Microsoft Purview CLI with comprehensive automation capabilities"
 readme = "README.md"
 license = "MIT"
 authors = [

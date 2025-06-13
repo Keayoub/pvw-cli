@@ -14,7 +14,7 @@ pvw account putCollection --friendlyName=<val> --parentCollection=<val>
 - `--parentCollection`: parentCollection parameter
 
 ## Optional Arguments
-- `--purviewName`: Azure Purview account name. (string)
+- `--purviewName`: Microsoftsoft Purview account name. (string)
 - `--collectionName`: The technical name of the collection. (string)
 - `--keyType`: The access key type. (string)
 - `--payloadFile`: File path to a valid JSON document. (string)

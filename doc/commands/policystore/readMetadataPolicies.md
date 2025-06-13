@@ -13,7 +13,7 @@ pvw policystore readMetadataPolicies
 No required arguments.
 
 ## Optional Arguments
-- `--purviewName`: Azure Purview account name. (string)
+- `--purviewName`: Microsoft Purview account name. (string)
 - `--collectionName`: The technical name of the Collection (e.g. friendlyName: Sales; name: afwbxs). (string)
 - `--policyId`: The unique policy id. (string)
 - `--payloadFile`: File path to a valid JSON document. (string)

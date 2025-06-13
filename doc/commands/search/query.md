@@ -16,7 +16,7 @@ pvw search query [--keywords=<val> --limit=<val> --offset=<val> --filterFile=<va
 - `--filterFile`: filterFile parameter
 
 ## Optional Arguments
-- `--purviewName`: Azure Purview account name. (string)
+- `--purviewName`: Microsoft Purview account name. (string)
 - `--entityType`: The entity type to browse as the root level entry point. (string)
 - `--path`: The path to browse the next level child entities. (string)
 

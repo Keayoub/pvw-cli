@@ -393,7 +393,7 @@ class Glossary(Endpoint):
         import pandas as pd
         from datetime import datetime
 
-        print("📤 Fetching glossaries from Azure Purview...")
+        print("📤 Fetching glossaries from Microsoft Purview...")
 
         # Step 1: Get all glossaries
         glossaries_data = self.glossaryRead({"--glossaryGuid": None, "--limit": 1000, "--offset": 0, "--sort": "ASC", "--ignoreTermsAndCategories": False})

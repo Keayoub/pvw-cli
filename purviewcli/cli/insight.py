@@ -1,8 +1,6 @@
 """
 Access Purview insight reports and analytics using modular Click-based commands.
 
-All insight operations are exposed as modular Click-based commands for full CLI visibility and maintainability.
-
 Usage:
   insight asset-distribution           Show asset distribution insight
   insight files-aggregation            Show files aggregation insight
@@ -27,7 +25,6 @@ console = Console()
 def insight():
     """
     Access Purview insight reports and analytics.
-    All insight operations are exposed as modular Click-based commands for full CLI visibility.
     """
     pass
 

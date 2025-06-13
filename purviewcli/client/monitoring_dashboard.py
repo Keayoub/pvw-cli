@@ -1,5 +1,5 @@
 """
-Real-time Monitoring Dashboard for Azure Purview
+Real-time Monitoring Dashboard for Microsoft Purview
 Provides live monitoring, metrics collection, and alerting capabilities
 """
 

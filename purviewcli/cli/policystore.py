@@ -1,7 +1,5 @@
 """
-Manage policy store operations in Azure Purview using modular Click-based commands.
-
-All policy store operations are exposed as modular Click-based commands for full CLI visibility and maintainability.
+Manage policy store operations in Microsoft Purview using modular Click-based commands.
 
 Usage:
   policystore deleteDataPolicy         Delete a data policy
@@ -25,8 +23,7 @@ from purviewcli.client._policystore import Policystore
 @click.group()
 def policystore():
     """
-    Manage policy store operations in Azure Purview.
-    All policy store operations are exposed as modular Click-based commands for full CLI visibility.
+    Manage policy store operations in Microsoft Purview.
     """
     pass
 

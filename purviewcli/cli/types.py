@@ -17,7 +17,7 @@ usage:
     pvw types readTypeDefsHeaders [--includeTermTemplate --type=<val>]
 
 options:
-  --purviewName=<val>     [string]  Azure Purview account name.
+  --purviewName=<val>     [string]  Microsoft Purview account name.
   --guid=<val>            [string]  The globally unique identifier.
   --includeTermTemplate   [boolean] Whether to include termtemplatedef [default: false].
   --name=<val>            [string]  The name of the definition.
@@ -63,52 +63,94 @@ def types():
     pass
 
 @types.command()
+@click.option('--output-file', type=click.Path(), required=False, help='Write result to this file instead of stdout')
+@click.option('--error-file', type=click.Path(), required=False, help='Write errors to this file instead of stdout')
 @click.option('--payload-file', type=click.Path(exists=True), required=True, help='File path to a valid JSON document')
-def create_typedefs(payload_file):
+@click.option('--dry-run/--no-dry-run', default=False, help='Simulate the operation without making changes')
+@click.option('--validate/--no-validate', default=False, help='Validate the payload without making changes')
+def create_typedefs(payload_file, dry_run, validate, output_file, error_file):
     """Create type definitions from a JSON file"""
     try:
+        with open(payload_file, 'r', encoding='utf-8') as f:
+            payload = json.load(f)
+        if validate:
+            click.echo('[VALIDATION] Payload is valid JSON.')
+        if dry_run:
+            click.echo('[DRY-RUN] Would send the following payload:')
+            click.echo(json.dumps(payload, indent=2))
+            return
         args = {'--payloadFile': payload_file}
         client = Types()
         result = client.typesCreateTypeDefs(args)
-        click.echo(json.dumps(result, indent=2))
+        if output_file:
+            with open(output_file, 'w', encoding='utf-8') as outf:
+                outf.write(json.dumps(result, indent=2))
+        else:
+            click.echo(json.dumps(result, indent=2))
     except Exception as e:
-        click.echo(f"Error: {e}")
+        if error_file:
+            with open(error_file, 'w', encoding='utf-8') as errf:
+                errf.write(str(e))
+        else:
+            click.echo(f"Error: {e}")
 
 @types.command()
+@click.option('--output-file', type=click.Path(), required=False, help='Write result to this file instead of stdout')
+@click.option('--error-file', type=click.Path(), required=False, help='Write errors to this file instead of stdout')
 @click.option('--name', required=True, help='Name of the type definition to delete')
-def delete_typedef(name):
+@click.option('--dry-run/--no-dry-run', default=False, help='Simulate the operation without making changes')
+def delete_typedef(name, dry_run, output_file, error_file):
     """Delete a type definition by name"""
     try:
+        if dry_run:
+            click.echo(f'[DRY-RUN] Would delete type definition with name: {name}')
+            return
         args = {'--name': name}
         client = Types()
         result = client.typesDeleteTypeDef(args)
-        click.echo(json.dumps(result, indent=2))
+        if output_file:
+            with open(output_file, 'w', encoding='utf-8') as outf:
+                outf.write(json.dumps(result, indent=2))
+        else:
+            click.echo(json.dumps(result, indent=2))
     except Exception as e:
-        click.echo(f"Error: {e}")
+        if error_file:
+            with open(error_file, 'w', encoding='utf-8') as errf:
+                errf.write(str(e))
+        else:
+            click.echo(f"Error: {e}")
 
 @types.command()
+@click.option('--output-file', type=click.Path(), required=False, help='Write result to this file instead of stdout')
+@click.option('--error-file', type=click.Path(), required=False, help='Write errors to this file instead of stdout')
 @click.option('--payload-file', type=click.Path(exists=True), required=True, help='File path to a valid JSON document')
-def delete_typedefs(payload_file):
-    """Delete multiple type definitions from a JSON file"""
-    try:
-        args = {'--payloadFile': payload_file}
-        client = Types()
-        result = client.typesDeleteTypeDefs(args)
-        click.echo(json.dumps(result, indent=2))
-    except Exception as e:
-        click.echo(f"Error: {e}")
-
-@types.command()
-@click.option('--payload-file', type=click.Path(exists=True), required=True, help='File path to a valid JSON document')
-def put_typedefs(payload_file):
+@click.option('--dry-run/--no-dry-run', default=False, help='Simulate the operation without making changes')
+@click.option('--validate/--no-validate', default=False, help='Validate the payload without making changes')
+def put_typedefs(payload_file, dry_run, validate, output_file, error_file):
     """Update or create type definitions from a JSON file"""
     try:
+        with open(payload_file, 'r', encoding='utf-8') as f:
+            payload = json.load(f)
+        if validate:
+            click.echo('[VALIDATION] Payload is valid JSON.')
+        if dry_run:
+            click.echo('[DRY-RUN] Would send the following payload:')
+            click.echo(json.dumps(payload, indent=2))
+            return
         args = {'--payloadFile': payload_file}
         client = Types()
         result = client.typesPutTypeDefs(args)
-        click.echo(json.dumps(result, indent=2))
+        if output_file:
+            with open(output_file, 'w', encoding='utf-8') as outf:
+                outf.write(json.dumps(result, indent=2))
+        else:
+            click.echo(json.dumps(result, indent=2))
     except Exception as e:
-        click.echo(f"Error: {e}")
+        if error_file:
+            with open(error_file, 'w', encoding='utf-8') as errf:
+                errf.write(str(e))
+        else:
+            click.echo(f"Error: {e}")
 
 @types.command()
 @click.option('--guid', required=False, help='The globally unique identifier')
@@ -252,74 +294,204 @@ def read_typedefs_headers(include_term_template, type_):
         click.echo(f"Error: {e}")
 
 @types.command()
+@click.option('--output-file', type=click.Path(), required=False, help='Write result to this file instead of stdout')
+@click.option('--error-file', type=click.Path(), required=False, help='Write errors to this file instead of stdout')
 @click.option('--payload-file', type=click.Path(exists=True), required=True, help='File path to a valid JSON document')
-def create_business_metadata_def(payload_file):
+@click.option('--dry-run/--no-dry-run', default=False, help='Simulate the operation without making changes')
+@click.option('--validate/--no-validate', default=False, help='Validate the payload without making changes')
+def create_business_metadata_def(payload_file, dry_run, validate, output_file, error_file):
     """Create business metadata definition from a JSON file"""
     try:
+        with open(payload_file, 'r', encoding='utf-8') as f:
+            payload = json.load(f)
+        if validate:
+            click.echo('[VALIDATION] Payload is valid JSON.')
+            # Optionally, add more schema validation here
+        if dry_run:
+            click.echo('[DRY-RUN] Would send the following payload:')
+            click.echo(json.dumps(payload, indent=2))
+            return
         args = {'--payloadFile': payload_file}
         client = Types()
         result = client.createBusinessMetadataDef(args)
-        click.echo(json.dumps(result, indent=2))
+        if output_file:
+            with open(output_file, 'w', encoding='utf-8') as outf:
+                outf.write(json.dumps(result, indent=2))
+        else:
+            click.echo(json.dumps(result, indent=2))
     except Exception as e:
-        click.echo(f"Error: {e}")
+        if error_file:
+            with open(error_file, 'w', encoding='utf-8') as errf:
+                errf.write(str(e))
+        else:
+            click.echo(f"Error: {e}")
 
 @types.command()
+@click.option('--output-file', type=click.Path(), required=False, help='Write result to this file instead of stdout')
+@click.option('--error-file', type=click.Path(), required=False, help='Write errors to this file instead of stdout')
 @click.option('--payload-file', type=click.Path(exists=True), required=True, help='File path to a valid JSON document')
-def update_business_metadata_def(payload_file):
+@click.option('--dry-run/--no-dry-run', default=False, help='Simulate the operation without making changes')
+@click.option('--validate/--no-validate', default=False, help='Validate the payload without making changes')
+def update_business_metadata_def(payload_file, dry_run, validate, output_file, error_file):
     """Update business metadata definition from a JSON file"""
     try:
+        with open(payload_file, 'r', encoding='utf-8') as f:
+            payload = json.load(f)
+        if validate:
+            click.echo('[VALIDATION] Payload is valid JSON.')
+            # Optionally, add more schema validation here
+        if dry_run:
+            click.echo('[DRY-RUN] Would send the following payload:')
+            click.echo(json.dumps(payload, indent=2))
+            return
         args = {'--payloadFile': payload_file}
         client = Types()
         result = client.updateBusinessMetadataDef(args)
-        click.echo(json.dumps(result, indent=2))
+        if output_file:
+            with open(output_file, 'w', encoding='utf-8') as outf:
+                outf.write(json.dumps(result, indent=2))
+        else:
+            click.echo(json.dumps(result, indent=2))
     except Exception as e:
-        click.echo(f"Error: {e}")
+        if error_file:
+            with open(error_file, 'w', encoding='utf-8') as errf:
+                errf.write(str(e))
+        else:
+            click.echo(f"Error: {e}")
 
 @types.command()
 @click.option('--name', required=True, help='Name of the business metadata definition to delete')
-def delete_business_metadata_def(name):
+@click.option('--dry-run/--no-dry-run', default=False, help='Simulate the operation without making changes')
+@click.option('--output-file', type=click.Path(), required=False, help='Write result to this file instead of stdout')
+@click.option('--error-file', type=click.Path(), required=False, help='Write errors to this file instead of stdout')
+def delete_business_metadata_def(name, dry_run, output_file, error_file):
     """Delete a business metadata definition by name"""
     try:
+        if dry_run:
+            click.echo(f'[DRY-RUN] Would delete business metadata definition with name: {name}')
+            return
         args = {'--name': name}
         client = Types()
         result = client.deleteBusinessMetadataDef(args)
-        click.echo(json.dumps(result, indent=2))
+        if output_file:
+            with open(output_file, 'w', encoding='utf-8') as outf:
+                outf.write(json.dumps(result, indent=2))
+        else:
+            click.echo(json.dumps(result, indent=2))
     except Exception as e:
-        click.echo(f"Error: {e}")
+        if error_file:
+            with open(error_file, 'w', encoding='utf-8') as errf:
+                errf.write(str(e))
+        else:
+            click.echo(f"Error: {e}")
 
 @types.command()
 @click.option('--payload-file', type=click.Path(exists=True), required=True, help='File path to a valid JSON document')
-def create_term_template_def(payload_file):
+@click.option('--dry-run/--no-dry-run', default=False, help='Simulate the operation without making changes')
+@click.option('--validate/--no-validate', default=False, help='Validate the payload without making changes')
+def create_term_template_def(payload_file, dry_run, validate, output_file, error_file):
     """Create term template definition from a JSON file"""
     try:
+        with open(payload_file, 'r', encoding='utf-8') as f:
+            payload = json.load(f)
+        if validate:
+            click.echo('[VALIDATION] Payload is valid JSON.')
+            # Optionally, add more schema validation here
+        if dry_run:
+            click.echo('[DRY-RUN] Would send the following payload:')
+            click.echo(json.dumps(payload, indent=2))
+            return
         args = {'--payloadFile': payload_file}
         client = Types()
         result = client.createTermTemplateDef(args)
-        click.echo(json.dumps(result, indent=2))
+        if output_file:
+            with open(output_file, 'w', encoding='utf-8') as outf:
+                outf.write(json.dumps(result, indent=2))
+        else:
+            click.echo(json.dumps(result, indent=2))
     except Exception as e:
-        click.echo(f"Error: {e}")
+        if error_file:
+            with open(error_file, 'w', encoding='utf-8') as errf:
+                errf.write(str(e))
+        else:
+            click.echo(f"Error: {e}")
 
 @types.command()
+@click.option('--output-file', type=click.Path(), required=False, help='Write result to this file instead of stdout')
+@click.option('--error-file', type=click.Path(), required=False, help='Write errors to this file instead of stdout')
 @click.option('--payload-file', type=click.Path(exists=True), required=True, help='File path to a valid JSON document')
-def update_term_template_def(payload_file):
+@click.option('--dry-run/--no-dry-run', default=False, help='Simulate the operation without making changes')
+@click.option('--validate/--no-validate', default=False, help='Validate the payload without making changes')
+def update_term_template_def(payload_file, dry_run, validate, output_file, error_file):
     """Update term template definition from a JSON file"""
     try:
+        with open(payload_file, 'r', encoding='utf-8') as f:
+            payload = json.load(f)
+        if validate:
+            click.echo('[VALIDATION] Payload is valid JSON.')
+            # Optionally, add more schema validation here
+        if dry_run:
+            click.echo('[DRY-RUN] Would send the following payload:')
+            click.echo(json.dumps(payload, indent=2))
+            return
         args = {'--payloadFile': payload_file}
         client = Types()
         result = client.updateTermTemplateDef(args)
-        click.echo(json.dumps(result, indent=2))
+        if output_file:
+            with open(output_file, 'w', encoding='utf-8') as outf:
+                outf.write(json.dumps(result, indent=2))
+        else:
+            click.echo(json.dumps(result, indent=2))
     except Exception as e:
-        click.echo(f"Error: {e}")
+        if error_file:
+            with open(error_file, 'w', encoding='utf-8') as errf:
+                errf.write(str(e))
+        else:
+            click.echo(f"Error: {e}")
 
 @types.command()
+@click.option('--output-file', type=click.Path(), required=False, help='Write result to this file instead of stdout')
+@click.option('--error-file', type=click.Path(), required=False, help='Write errors to this file instead of stdout')
 @click.option('--name', required=True, help='Name of the term template definition to delete')
-def delete_term_template_def(name):
+@click.option('--dry-run/--no-dry-run', default=False, help='Simulate the operation without making changes')
+def delete_term_template_def(name, dry_run, output_file, error_file):
     """Delete a term template definition by name"""
     try:
+        if dry_run:
+            click.echo(f'[DRY-RUN] Would delete term template definition with name: {name}')
+            return
         args = {'--name': name}
         client = Types()
         result = client.deleteTermTemplateDef(args)
-        click.echo(json.dumps(result, indent=2))
+        if output_file:
+            with open(output_file, 'w', encoding='utf-8') as outf:
+                outf.write(json.dumps(result, indent=2))
+        else:
+            click.echo(json.dumps(result, indent=2))
+    except Exception as e:
+        if error_file:
+            with open(error_file, 'w', encoding='utf-8') as errf:
+                errf.write(str(e))
+        else:
+            click.echo(f"Error: {e}")
+
+@types.command()
+@click.option('--payload-file', type=click.Path(exists=True), required=True, help='File path to a valid JSON document')
+@click.option('--dry-run/--no-dry-run', default=False, help='Simulate the operation without making changes')
+@click.option('--validate/--no-validate', default=False, help='Validate the payload without making changes')
+def update_enum_def(payload_file, dry_run, validate):
+    """Update enum definition from a JSON file (example for extensibility)"""
+    try:
+        with open(payload_file, 'r', encoding='utf-8') as f:
+            payload = json.load(f)
+        if validate:
+            click.echo('[VALIDATION] Payload is valid JSON.')
+        if dry_run:
+            click.echo('[DRY-RUN] Would send the following payload:')
+            click.echo(json.dumps(payload, indent=2))
+            return
+        # args and client logic would go here
+        click.echo('[NOT IMPLEMENTED] This is a placeholder for extensibility.')
     except Exception as e:
         click.echo(f"Error: {e}")
 

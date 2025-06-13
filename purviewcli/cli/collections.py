@@ -1,7 +1,5 @@
 """
-Manage collections in Azure Purview using modular Click-based commands.
-
-All collection operations are exposed as modular Click-based commands for full CLI visibility and maintainability.
+Manage collections in Microsoft Purview using modular Click-based commands.
 
 Usage:
   collections create         Create a new collection
@@ -23,8 +21,8 @@ from purviewcli.client._collections import Collections
 @click.group()
 def collections():
     """
-    Manage collections in Azure Purview.
-    All collection operations are exposed as modular Click-based commands for full CLI visibility.
+    Manage collections in Microsoft Purview.
+    
     """
     pass
 

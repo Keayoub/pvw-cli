@@ -67,7 +67,7 @@ class SyncPurviewClient:
             raise Exception(f"Failed to get authentication token: {str(e)}")
 
     def make_request(self, method: str, endpoint: str, **kwargs) -> Dict:
-        """Make actual HTTP request to Azure Purview"""
+        """Make actual HTTP request to Microsoft Purview"""
         try:
             # Get authentication token
             if not self._token:

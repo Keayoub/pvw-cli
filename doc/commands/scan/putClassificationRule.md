@@ -14,7 +14,7 @@ pvw scan putClassificationRule --classificationRuleName=<val> --payloadFile=<val
 - `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-- `--purviewName`: Azure Purview account name. (string)
+- `--purviewName`: Microsoft Purview account name. (string)
 - `--action`: Allowed values: Delete or Keep. (string)
 - `--classificationRuleVersion`: Version of the classification rule. (integer)
 - `--dataSourceName`: Name of the data source. (string)

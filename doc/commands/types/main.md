@@ -2,7 +2,7 @@
 [Command Reference](../../README.md#command-reference) > types
 
 ## Description
-Commands for managing type operations in Azure Purview.
+Commands for managing type operations in Microsoft Purview.
 
 ## Syntax
 ```

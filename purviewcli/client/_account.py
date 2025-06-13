@@ -1,5 +1,5 @@
 """
-Account Management Client for Azure Purview
+Account Management Client for Microsoft Purview
 Based on official API: https://learn.microsoft.com/en-us/rest/api/purview/accountdataplane/accounts
 API Version: 2019-11-01-preview
 

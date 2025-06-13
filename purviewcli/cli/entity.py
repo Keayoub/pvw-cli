@@ -1,7 +1,5 @@
 """
-Manage entities in Azure Purview using modular Click-based commands.
-
-All entity operations are exposed as modular Click-based commands for full CLI visibility and maintainability.
+Manage entities in Microsoft Purview using modular Click-based commands.
 
 Usage:
   entity create                Create a new entity
@@ -25,8 +23,7 @@ console = Console()
 @click.pass_context
 def entity(ctx):
     """
-    Manage entities in Azure Purview.
-    All entity operations are exposed as modular Click-based commands for full CLI visibility.
+    Manage entities in Microsoft Purview.
     """
     pass
 
@@ -1111,6 +1108,35 @@ def set_labels_by_attribute(ctx, type_name, qualified_name, payload_file):
 
 
 @entity.command()
+@click.option(
+    "--payload-file",
+    required=True,
+    type=click.Path(exists=True),
+    help="File path to a valid JSON document containing bulk label data",
+)
+@click.pass_context
+def bulk_remove_labels(ctx, payload_file):
+    """Remove labels from multiple entities in bulk (by GUID)"""
+    try:
+        if ctx.obj.get("mock"):
+            console.print("[yellow]🎭 Mock: entity bulk-remove-labels command[/yellow]")
+            console.print(f"[dim]Payload File: {payload_file}[/dim]")
+            console.print("[green]✓ Mock entity bulk-remove-labels completed successfully[/green]")
+            return
+        args = {"--payloadFile": payload_file}
+        from purviewcli.client._entity import Entity
+        entity_client = Entity()
+        result = entity_client.entityBulkRemoveLabels(args)
+        if result:
+            console.print("[green]✓ Entity bulk-remove-labels completed successfully[/green]")
+            console.print(json.dumps(result, indent=2))
+        else:
+            console.print("[yellow]⚠ Entity bulk-remove-labels completed with no result[/yellow]")
+    except Exception as e:
+        console.print(f"[red]✗ Error executing entity bulk-remove-labels: {str(e)}[/red]")
+
+
+@entity.command()
 @click.option("--type-name", required=True, help="The name of the entity type")
 @click.option("--qualified-name", required=True, help="The qualified name of the entity")
 @click.option(
@@ -1120,40 +1146,25 @@ def set_labels_by_attribute(ctx, type_name, qualified_name, payload_file):
     help="File path to a valid JSON document containing label data",
 )
 @click.pass_context
-def remove_labels_by_attribute(ctx, type_name, qualified_name, payload_file):
-    """Remove labels by unique attribute"""
+def bulk_remove_labels_by_attribute(ctx, type_name, qualified_name, payload_file):
+    """Remove labels from multiple entities in bulk (by unique attribute)"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity remove-labels-by-attribute command[/yellow]")
-            console.print(f"[dim]Type: {type_name}, Qualified Name: {qualified_name}[/dim]")
-            console.print(
-                "[green]✓ Mock entity remove-labels-by-attribute completed successfully[/green]"
-            )
+            console.print("[yellow]🎭 Mock: entity bulk-remove-labels-by-attribute command[/yellow]")
+            console.print(f"[dim]Type: {type_name}, Qualified Name: {qualified_name}, Payload File: {payload_file}[/dim]")
+            console.print("[green]✓ Mock entity bulk-remove-labels-by-attribute completed successfully[/green]")
             return
-
-        args = {
-            "--typeName": type_name,
-            "--qualifiedName": qualified_name,
-            "--payloadFile": payload_file,
-        }
-
+        args = {"--typeName": type_name, "--qualifiedName": qualified_name, "--payloadFile": payload_file}
         from purviewcli.client._entity import Entity
-
         entity_client = Entity()
-        result = entity_client.entityRemoveLabelsByUniqueAttribute(args)
-
+        result = entity_client.entityBulkRemoveLabelsByUniqueAttribute(args)
         if result:
-            console.print(
-                "[green]✓ Entity remove-labels-by-attribute completed successfully[/green]"
-            )
+            console.print("[green]✓ Entity bulk-remove-labels-by-attribute completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print(
-                "[yellow]⚠ Entity remove-labels-by-attribute completed with no result[/yellow]"
-            )
-
+            console.print("[yellow]⚠ Entity bulk-remove-labels-by-attribute completed with no result[/yellow]")
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity remove-labels-by-attribute: {str(e)}[/red]")
+        console.print(f"[red]✗ Error executing entity bulk-remove-labels-by-attribute: {str(e)}[/red]")
 
 
 # === BUSINESS METADATA OPERATIONS ===

@@ -2,7 +2,7 @@
 [Command Reference](../../README.md#command-reference) > management
 
 ## Description
-Commands for managing metastore operations in Azure Purview.
+Commands for managing metastore operations in Microsoft Purview.
 
 ## Syntax
 ```

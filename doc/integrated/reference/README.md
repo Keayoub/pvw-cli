@@ -33,3 +33,8 @@ All supported environment variables.
 
 ### [Error Code Reference](error-codes.md)
 Complete list of error codes and their meanings.
+
+## Data Product Command Group
+
+### [data-product](../../commands/data-product.md)
+Advanced data product management (create, import, classification, label, glossary, lineage, status, etc.)

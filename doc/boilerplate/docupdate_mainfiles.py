@@ -46,20 +46,20 @@ def read_csv_commands():
 def get_group_description(group):
     """Get appropriate description for each command group"""
     descriptions = {
-        'account': 'Commands for managing account operations in Azure Purview.',
-        'entity': 'Commands for managing entity operations in Azure Purview.',
-        'glossary': 'Commands for managing glossary operations in Azure Purview.',
-        'insight': 'Commands for performing analytics insights operations in Azure Purview.',
-        'lineage': 'Commands for managing lineage operations in Azure Purview.',
-        'management': 'Commands for managing metastore operations in Azure Purview.',
-        'policystore': 'Commands for managing policy store operations in Azure Purview.',
-        'relationship': 'Commands for managing relationship operations in Azure Purview.',
-        'scan': 'Commands for managing scanning operations in Azure Purview.',
-        'search': 'Commands for performing search operations in Azure Purview.',
-        'share': 'Commands for managing share operations in Azure Purview.',
-        'types': 'Commands for managing type operations in Azure Purview.'
+        'account': 'Commands for managing account operations in Microsoft Purview.',
+        'entity': 'Commands for managing entity operations in Microsoft Purview.',
+        'glossary': 'Commands for managing glossary operations in Microsoft Purview.',
+        'insight': 'Commands for performing analytics insights operations in Microsoft Purview.',
+        'lineage': 'Commands for managing lineage operations in Microsoft Purview.',
+        'management': 'Commands for managing metastore operations in Microsoft Purview.',
+        'policystore': 'Commands for managing policy store operations in Microsoft Purview.',
+        'relationship': 'Commands for managing relationship operations in Microsoft Purview.',
+        'scan': 'Commands for managing scanning operations in Microsoft Purview.',
+        'search': 'Commands for performing search operations in Microsoft Purview.',
+        'share': 'Commands for managing share operations in Microsoft Purview.',
+        'types': 'Commands for managing type operations in Microsoft Purview.'
     }
-    return descriptions.get(group, f'Commands for managing {group} operations in Azure Purview.')
+    return descriptions.get(group, f'Commands for managing {group} operations in Microsoft Purview.')
 
 def generate_main_md(group, commands):
     """Generate main.md content for a command group"""

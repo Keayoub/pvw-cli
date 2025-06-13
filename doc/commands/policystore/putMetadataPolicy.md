@@ -14,7 +14,7 @@ pvw policystore putMetadataPolicy --policyId=<val> --payloadFile=<val>
 - `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-- `--purviewName`: Azure Purview account name. (string)
+- `--purviewName`: Microsoft Purview account name. (string)
 - `--collectionName`: The technical name of the Collection (e.g. friendlyName: Sales; name: afwbxs). (string)
 
 ## API Mapping

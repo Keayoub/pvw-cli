@@ -13,7 +13,7 @@ pvw relationship put --payloadFile=<val>
 - `--payloadFile`: payloadFile parameter
 
 ## Optional Arguments
-- `--purviewName`: Azure Purview account name. (string)
+- `--purviewName`: Microsoft Purview account name. (string)
 - `--guid`: The globally unique identifier of the relationship. (string)
 
 ## API Mapping

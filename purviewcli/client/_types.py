@@ -150,7 +150,7 @@ class Types(Endpoint):
         url = self.endpoints.term_template_def_by_name(name)
         return self._delete(url)
 
-    # NOT SUPPORTED IN AZURE PURVIEW
+    # NOT SUPPORTED IN Microsoft Purview
     # @decorator
     # def typesReadBusinessmetadataDef(self, args):
     #     self.method = 'GET'

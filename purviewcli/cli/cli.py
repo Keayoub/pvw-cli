@@ -93,6 +93,11 @@ def register_individual_cli_modules(main_group):
         main_group.add_command(collections)
     except ImportError as e:
         console.print(f"[yellow]⚠ Could not import collections CLI module: {e}[/yellow]")
+    try:
+        from purviewcli.cli.data_product import data_product
+        main_group.add_command(data_product)
+    except ImportError as e:
+        console.print(f"[yellow]⚠ Could not import data_product CLI module: {e}[/yellow]")
 
 
 @click.group()

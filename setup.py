@@ -55,7 +55,7 @@ setup(
         "Topic :: Database",
         "Topic :: Internet :: WWW/HTTP",
     ],
-    keywords='azure purview cli data catalog governance automation pvw',
+    keywords='microsoft purview cli data catalog governance automation pvw',
     entry_points={
         'console_scripts': [
             'pvw = purviewcli.cli.cli:main'

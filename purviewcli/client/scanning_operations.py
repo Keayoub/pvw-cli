@@ -1,5 +1,5 @@
 """
- Scanning Operations Module for Azure Purview
+ Scanning Operations Module for Microsoft Purview
 Provides comprehensive scanning automation and management capabilities
 """
 

@@ -13,7 +13,7 @@ pvw entity importBusinessMetadata --bmFile=<val>
 - `--bmFile`: bmFile parameter
 
 ## Optional Arguments
-- `--purviewName`: Azure Purview account name. (string)
+- `--purviewName`: Microsoft Purview account name. (string)
 - `--bmName`: BusinessMetadata name. (string)
 - `--classificationName`: The name of the classification. (string)
 - `--collection`: The collection unique name. (string)

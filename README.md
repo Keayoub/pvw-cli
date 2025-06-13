@@ -1,7 +1,25 @@
-# PURVIEW CLI v2.0 - Azure Purview Automation & Data Governance
+# PURVIEW CLI v2.0 - Microsoft Purview Automation & Data Governance
 
 > **LATEST UPDATE (June 2025):**
+> - Major: Advanced Data Product Management (see new `data-product` command group)
 > - Enhanced Discovery Query/Search support (see below for usage).
+
+---
+
+## What is PVW CLI?
+
+**PVW CLI v2.0** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* including:
+
+- Entity management (create, update, bulk, import/export)
+- Glossary and term management
+- Lineage operations
+- Collection and account management
+- Advanced search and discovery
+- Data product management (new, see below)
+- Classification, label, and status management
+- And more (see command reference)
+
+The CLI is designed for data engineers, stewards, architects, and platform teams to automate, scale, and enhance their Microsoft Purview experience.
 
 ---
 
@@ -45,7 +63,7 @@ For more advanced usage, see the sections below or visit the [documentation](htt
 
 ## Overview
 
-**PVW CLI v2.0** is a modern command-line interface and Python library for Azure Purview, enabling:
+**PVW CLI v2.0** is a modern command-line interface and Python library for Microsoft Purview, enabling:
 
 - Advanced data catalog search and discovery
 - Bulk import/export of entities, glossary terms, and lineage
@@ -125,6 +143,58 @@ pip install -e .
 
 ---
 
+## Authentication
+
+PVW CLI supports multiple authentication methods for connecting to Microsoft Purview, powered by Azure Identity's `DefaultAzureCredential`. This allows you to use the CLI securely in local development, CI/CD, and production environments.
+
+### 1. Azure CLI Authentication (Recommended for Interactive Use)
+
+- Run `az login` to authenticate interactively with your Azure account.
+- The CLI will automatically use your Azure CLI credentials.
+
+### 2. Service Principal Authentication (Recommended for Automation/CI/CD)
+
+Set the following environment variables before running any PVW CLI command:
+
+- `AZURE_CLIENT_ID` (your Azure AD app registration/client ID)
+- `AZURE_TENANT_ID` (your Azure AD tenant ID)
+- `AZURE_CLIENT_SECRET` (your client secret)
+
+**Example (Windows):**
+
+```cmd
+set AZURE_CLIENT_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+set AZURE_TENANT_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+set AZURE_CLIENT_SECRET=your-client-secret
+```
+
+**Example (Linux/macOS):**
+
+```bash
+export AZURE_CLIENT_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+export AZURE_TENANT_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+export AZURE_CLIENT_SECRET=your-client-secret
+```
+
+### 3. Managed Identity (for Azure VMs, App Services, etc.)
+
+If running in Azure with a managed identity, no extra configuration is needed. The CLI will use the managed identity automatically.
+
+### 4. Visual Studio/VS Code Authentication
+
+If you are signed in to Azure in Visual Studio or VS Code, `DefaultAzureCredential` can use those credentials as a fallback.
+
+---
+
+**Note:**
+- The CLI will try all supported authentication methods in order. The first one that works will be used.
+- For most automation and CI/CD scenarios, service principal authentication is recommended.
+- For local development, Azure CLI authentication is easiest.
+
+For more details, see the [Azure Identity documentation](https://learn.microsoft.com/en-us/python/api/overview/azure/identity-readme?view=azure-python).
+
+---
+
 ## Search Command (Discovery Query API)
 
 The PVW CLI provides advanced search using the latest Microsoft Purview Discovery Query API:
@@ -187,6 +257,32 @@ See `tests/test_search_examples.py` for ready-to-run pytest examples covering al
 
 ---
 
+## Data Product Management (Advanced)
+
+PVW CLI now includes a powerful `data-product` command group for advanced data product lifecycle management. This is in addition to the CLI's support for all core Purview APIs.
+
+See [`doc/commands/data-product.md`](doc/commands/data-product.md) for full documentation and examples.
+
+### Example Commands
+
+```bash
+# Create a data product
+pvw data-product create --qualified-name="product.test.1" --name="Test Product" --description="A test data product"
+
+# Add classification and label
+pvw data-product add-classification --qualified-name="product.test.1" --classification="PII"
+pvw data-product add-label --qualified-name="product.test.1" --label="gold"
+
+# Link glossary term
+data-product link-glossary --qualified-name="product.test.1" --term="Customer"
+
+# Set status and show lineage
+data-product set-status --qualified-name="product.test.1" --status="active"
+data-product show-lineage --qualified-name="product.test.1"
+```
+
+---
+
 ## Core Features
 
 - **Discovery Query/Search**: Flexible, advanced search for all catalog assets
@@ -206,4 +302,4 @@ See `tests/test_search_examples.py` for ready-to-run pytest examples covering al
 
 ---
 
-**PVW CLI empowers data engineers, stewards, and architects to automate, scale, and enhance their Azure Purview experience with powerful command-line and programmatic capabilities.**
+**PVW CLI empowers data engineers, stewards, and architects to automate, scale, and enhance their Microsoft Purview experience with powerful command-line and programmatic capabilities.**

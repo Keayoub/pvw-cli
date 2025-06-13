@@ -16,7 +16,7 @@ pvw search browse  (--entityType=<val> | --path=<val>) [--limit=<val> --offset=<
 - `--offset`: offset parameter
 
 ## Optional Arguments
-- `--purviewName`: Azure Purview account name. (string)
+- `--purviewName`: Microsoft Purview account name. (string)
 - `--keywords`: The keywords applied to all searchable fields. (string)
 - `--filterFile`: File path to a filter json file. (string)
 

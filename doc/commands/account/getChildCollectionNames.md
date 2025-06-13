@@ -13,7 +13,7 @@ pvw account getChildCollectionNames --collectionName=<val>
 - `--collectionName`: collectionName parameter
 
 ## Optional Arguments
-- `--purviewName`: Azure Purview account name. (string)
+- `--purviewName`: Microsoft Purview account name. (string)
 - `--keyType`: The access key type. (string)
 - `--friendlyName`: The friendly name for the azure resource. (string)
 - `--parentCollection`: Gets or sets the parent collection reference. (string)

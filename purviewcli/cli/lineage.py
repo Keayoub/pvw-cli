@@ -1,7 +1,5 @@
 """
-Manage lineage operations in Azure Purview using modular Click-based commands.
-
-All lineage operations are exposed as modular Click-based commands for full CLI visibility and maintainability.
+Manage lineage operations in Microsoft Purview using modular Click-based commands.
 
 Usage:
   lineage read                  Read lineage information for an entity
@@ -30,8 +28,7 @@ console = Console()
 @click.pass_context
 def lineage(ctx):
     """
-    Manage lineage in Azure Purview.
-    All lineage operations are exposed as modular Click-based commands for full CLI visibility.
+    Manage lineage in Microsoft Purview.
     """
     pass
 
@@ -402,6 +399,51 @@ def impact_report(ctx, entity_guid, output_file):
             console.print(json.dumps(report, indent=2))
     except Exception as e:
         console.print(f"[red]✗ Error executing lineage impact-report: {str(e)}[/red]")
+
+
+@lineage.command(name="read-by-attribute")
+@click.option('--type-name', required=True, help='The name of the entity type')
+@click.option('--qualified-name', required=True, help='The qualified name of the entity')
+@click.option('--depth', type=int, default=3, help='The number of hops for lineage')
+@click.option('--width', type=int, default=6, help='The number of max expanding width in lineage')
+@click.option('--direction', default='BOTH', help='The direction of the lineage: INPUT, OUTPUT or BOTH')
+@click.option('--offset', type=int, default=0, help='Offset for paginated traversal (if supported)')
+@click.option('--limit', type=int, default=100, help='Limit for paginated traversal (if supported)')
+@click.option('--output', default='json', help='Output format: json, table')
+@click.pass_context
+def read_by_attribute(ctx, type_name, qualified_name, depth, width, direction, offset, limit, output):
+    """Read lineage for an entity by unique attribute (type and qualifiedName) with direction, depth, and pagination support."""
+    try:
+        if ctx.obj.get("mock"):
+            console.print("[yellow]🎭 Mock: lineage read-by-attribute command[/yellow]")
+            console.print(f"[dim]Type: {type_name}, Qualified Name: {qualified_name}[/dim]")
+            console.print(f"[dim]Depth: {depth}, Width: {width}, Direction: {direction}, Offset: {offset}, Limit: {limit}[/dim]")
+            console.print("[green]✓ Mock lineage read-by-attribute completed successfully[/green]")
+            return
+
+        args = {
+            "--typeName": type_name,
+            "--qualifiedName": qualified_name,
+            "--depth": depth,
+            "--width": width,
+            "--direction": direction,
+            "--offset": offset,
+            "--limit": limit,
+            "--output": output,
+        }
+
+        from purviewcli.client._lineage import Lineage
+        lineage_client = Lineage()
+        result = lineage_client.lineageReadUniqueAttribute(args)
+
+        if result:
+            console.print("[green]✓ Lineage read-by-attribute completed successfully[/green]")
+            console.print(json.dumps(result, indent=2))
+        else:
+            console.print("[yellow]⚠ Lineage read-by-attribute completed with no result[/yellow]")
+
+    except Exception as e:
+        console.print(f"[red]✗ Error executing lineage read-by-attribute: {str(e)}[/red]")
 
 
 # Remove the duplicate registration and ensure only one 'import' command is registered

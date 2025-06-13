@@ -1,5 +1,5 @@
 """
-Advanced Lineage Visualization for Azure Purview
+Advanced Lineage Visualization for Microsoft Purview
 Provides comprehensive data lineage analysis, visualization, and impact assessment
 """
 

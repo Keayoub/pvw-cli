@@ -13,7 +13,7 @@ pvw insight filesAggregation
 No required arguments.
 
 ## Optional Arguments
-- `--purviewName`: Azure Purview account name. (string)
+- `--purviewName`: Microsoft Purview account name. (string)
 - `--numberOfDays`: Trailing time period in days [default: 30]. (integer)
 
 ## API Mapping

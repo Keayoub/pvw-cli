@@ -2,7 +2,7 @@
 [Command Reference](../../README.md#command-reference) > insight
 
 ## Description
-Commands for performing analytics insights operations in Azure Purview.
+Commands for performing analytics insights operations in Microsoft Purview.
 
 ## Syntax
 ```

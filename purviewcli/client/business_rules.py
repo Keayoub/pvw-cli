@@ -1,5 +1,5 @@
 """
-Business Rules Engine for Azure Purview
+Business Rules Engine for Microsoft Purview
 Provides automated governance policy enforcement and compliance checking
 """
 

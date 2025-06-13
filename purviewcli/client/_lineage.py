@@ -1,5 +1,5 @@
 """
-Comprehensive Lineage Module for Azure Purview
+Comprehensive Lineage Module for Microsoft Purview
 Supports both traditional lineage operations and CSV-based bulk lineage creation
 """
 
@@ -60,7 +60,7 @@ class LineageProcessingResult:
 
 class CSVLineageProcessor:
     """
-    CSV processor for creating custom lineage relationships in Azure Purview
+    CSV processor for creating custom lineage relationships in Microsoft Purview
 
     Usage:
         lineage csv process <csv_file> [--batch-size=<val> --validate-entities --create-missing-entities --progress]
