@@ -2,6 +2,15 @@ import click
 import os
 from purviewcli.client._domain import Domain
 
+
+def get_endpoint_and_token(ctx):
+    """Get endpoint and token from context or environment variables."""
+    endpoint = ctx.obj.get("endpoint") or os.environ.get("PURVIEW_ENDPOINT")
+    token = ctx.obj.get("token") or os.environ.get("PURVIEW_TOKEN")
+    if not endpoint or not token:
+        raise click.ClickException("[ERROR] Endpoint and token must be set via CLI options or environment variables (PURVIEW_ENDPOINT, PURVIEW_TOKEN).")
+    return endpoint, token
+
 @click.group(help="Manage governance domains in Microsoft Purview using the official Governance Domain API. Domains are business-level groupings for stewardship, policy, and reporting. Use this command to create, list, and manage governance domains visible in the Purview Governance Domains section.")
 def domain():
     pass
@@ -14,12 +23,9 @@ def domain():
 @click.pass_context
 def create(ctx, domain_name, friendly_name, description, collection):
     """Create a new governance domain and optionally map it to a collection."""
-    endpoint = ctx.obj.get("endpoint")
-    token = ctx.obj.get("token")
     try:
-        # Domain client will use environment variables if endpoint/token not provided
+        endpoint, token = get_endpoint_and_token(ctx)
         domain_client = Domain(endpoint, token)
-        # Create the domain using the correct API and friendlyName
         result = domain_client.create_domain(domain_name, friendly_name, description)
         click.echo(f"[SUCCESS] Governance domain created: {result}")
         if collection:
@@ -31,10 +37,8 @@ def create(ctx, domain_name, friendly_name, description, collection):
 @click.pass_context
 def list(ctx):
     """List all governance domains."""
-    endpoint = ctx.obj.get("endpoint")
-    token = ctx.obj.get("token")
     try:
-        # Domain client will use environment variables if endpoint/token not provided
+        endpoint, token = get_endpoint_and_token(ctx)
         domain_client = Domain(endpoint, token)
         result = domain_client.list_domains()
         click.echo(result)
@@ -46,10 +50,8 @@ def list(ctx):
 @click.pass_context
 def get(ctx, domain_name):
     """Get a governance domain by name."""
-    endpoint = ctx.obj.get("endpoint")
-    token = ctx.obj.get("token")
     try:
-        # Domain client will use environment variables if endpoint/token not provided
+        endpoint, token = get_endpoint_and_token(ctx)
         domain_client = Domain(endpoint, token)
         result = domain_client.get_domain(domain_name)
         click.echo(result)
@@ -63,10 +65,8 @@ def get(ctx, domain_name):
 @click.pass_context
 def update(ctx, domain_name, friendly_name, description):
     """Update a governance domain's friendly name and/or description."""
-    endpoint = ctx.obj.get("endpoint")
-    token = ctx.obj.get("token")
     try:
-        # Domain client will use environment variables if endpoint/token not provided
+        endpoint, token = get_endpoint_and_token(ctx)
         domain_client = Domain(endpoint, token)
         result = domain_client.update_domain(domain_name, friendly_name, description)
         click.echo(result)
@@ -78,10 +78,8 @@ def update(ctx, domain_name, friendly_name, description):
 @click.pass_context
 def delete(ctx, domain_name):
     """Delete a governance domain by name."""
-    endpoint = ctx.obj.get("endpoint")
-    token = ctx.obj.get("token")
     try:
-        # Domain client will use environment variables if endpoint/token not provided
+        endpoint, token = get_endpoint_and_token(ctx)
         domain_client = Domain(endpoint, token)
         result = domain_client.delete_domain(domain_name)
         click.echo(result)
