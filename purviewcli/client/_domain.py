@@ -1,3 +1,14 @@
+"""
+Governance Domain Management Client for Microsoft Purview
+Based on official API: https://learn.microsoft.com/en-us/rest/api/purview/catalogdataplane/domains
+API Version: 2024-03-01-preview
+
+Implements:
+- Create, list, get, update, and delete governance domains
+- Uses endpoints from purviewcli.client.endpoints (PurviewEndpoints)
+- Compatible with CLI global endpoint/token options
+"""
+
 from purviewcli.client.endpoints import PurviewEndpoints
 import requests
 

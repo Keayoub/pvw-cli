@@ -1,4 +1,4 @@
-# Verification Script for Purview CLI v2.0
+# Verification Script for Purview CLI v1.0.0
 # Testing CLI functionality and core components
 # Note: Web UI and backend components are now in separate Purview_WebUI project
 
@@ -305,7 +305,7 @@ function Show-Summary {
 }
 
 # Main execution
-Write-Host "[*]  Purview CLI v2.0 - Stack Verification" -ForegroundColor $Magenta
+Write-Host "[*]  Purview CLI v1.0.0 - Stack Verification" -ForegroundColor $Magenta
 Write-Host "=================================================" -ForegroundColor $Magenta
 
 $results = @()

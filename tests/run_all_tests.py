@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Comprehensive Test Runner for  Purview CLI v2.0
+Comprehensive Test Runner for  Purview CLI v1.0.0
 Executes all test suites and provides unified reporting
 """
 
@@ -316,7 +316,7 @@ class ComprehensiveTestRunner:
     def generate_detailed_report(self):
         """Generate detailed test execution report"""
         console.print("\n" + "="*80)
-        console.print(Panel("[bold blue] Purview CLI v2.0 - Comprehensive Test Report[/bold blue]"))
+        console.print(Panel("[bold blue] Purview CLI v1.0.0 - Comprehensive Test Report[/bold blue]"))
         
         summary = self.generate_test_summary()
         
@@ -475,7 +475,7 @@ class ComprehensiveTestRunner:
     
     async def run_all_tests(self):
         """Run all test suites"""
-        console.print("[bold green] Purview CLI v2.0 - Comprehensive Test Execution[/bold green]")
+        console.print("[bold green] Purview CLI v1.0.0 - Comprehensive Test Execution[/bold green]")
         console.print("="*80)
         
         self.start_time = datetime.now()

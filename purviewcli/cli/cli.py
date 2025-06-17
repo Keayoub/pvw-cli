@@ -87,11 +87,11 @@ def register_individual_cli_modules(main_group):
         from purviewcli.cli.types import types
         main_group.add_command(types)
     except ImportError as e:
-        console.print(f"[yellow]⚠ Could not import types CLI module: {e}[/yellow]")
+        console.print(f"[yellow]⚠ Could not import types CLI module: {e}[/yellow]")    
     try:
         from purviewcli.cli.collections import collections
         main_group.add_command(collections, name="collections")
-        main_group.add_command(collections, name="domain")  # Alias for domain
+        # Removed domain alias to avoid conflicts with dedicated domain module
     except ImportError as e:
         console.print(f"[yellow]⚠ Could not import collections CLI module: {e}[/yellow]")
     try:

@@ -1,4 +1,4 @@
-# PURVIEW CLI v2.0 - Microsoft Purview Automation & Data Governance
+# PURVIEW CLI v1.0.0 - Microsoft Purview Automation & Data Governance
 
 > **LATEST UPDATE (June 2025):**
 > - Major: Advanced Data Product Management (see new `data-product` command group)
@@ -8,7 +8,7 @@
 
 ## What is PVW CLI?
 
-**PVW CLI v2.0** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* including:
+**PVW CLI v1.0.0** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* including:
 
 - Entity management (create, update, bulk, import/export)
 - Glossary and term management
@@ -63,7 +63,7 @@ For more advanced usage, see the sections below or visit the [documentation](htt
 
 ## Overview
 
-**PVW CLI v2.0** is a modern command-line interface and Python library for Microsoft Purview, enabling:
+**PVW CLI v1.0.0** is a modern command-line interface and Python library for Microsoft Purview, enabling:
 
 - Advanced data catalog search and discovery
 - Bulk import/export of entities, glossary terms, and lineage
