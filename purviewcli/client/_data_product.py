@@ -29,13 +29,11 @@ class DataProduct:
             for field in required_fields:
                 if not product.get(field):
                     raise ValueError(f"Missing required field '{field}' in row: {product}")
+            # Always use typeName DataSet (Purview default)
+            attributes = {k: v for k, v in product.items() if k != "typeName"}
             entity = {
-                "typeName": product.get("typeName", "DataSet"),
-                "attributes": {
-                    "qualifiedName": product["qualifiedName"],
-                    "name": product.get("name", product["qualifiedName"]),
-                    "description": product.get("description", "")
-                },
+                "typeName": "DataSet",
+                "attributes": attributes
             }
             entities.append(entity)
         # Write the bulk payload to a temp file (always as {"entities": [...]})

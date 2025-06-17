@@ -1595,12 +1595,10 @@ def bulk_create_csv(ctx, csv_file, batch_size, dry_run, error_csv):
         failed_rows = []
         for i in range(0, total, batch_size):
             batch = df.iloc[i:i+batch_size]
-            payload = {
-                "entities": [
-                    {col: row[col] for col in batch.columns if pd.notnull(row[col])}
-                    for _, row in batch.iterrows()
-                ]
-            }
+            # Map each row to the correct Purview entity format
+            from purviewcli.client._entity import map_flat_entity_to_purview_entity
+            entities = [map_flat_entity_to_purview_entity(row) for _, row in batch.iterrows()]
+            payload = {"entities": entities}
             if dry_run:
                 console.print(f"[blue]DRY RUN: Would create batch {i//batch_size+1} with {len(batch)} entities[/blue]")
                 continue

@@ -92,10 +92,7 @@ class Entity(Endpoint):
         """Delete a list of entities in bulk (Official API: Bulk Delete)"""
         self.method = "DELETE"
         self.endpoint = PurviewEndpoints.ENTITY["bulk"]
-        self.params = {
-            **PurviewEndpoints.get_api_version_params("datamap"),
-            "guid": args["--guid"]
-        }
+        self.params = {**PurviewEndpoints.get_api_version_params("datamap"), "guid": args["--guid"]}
 
     @decorator
     def entityReadBulk(self, args):
@@ -133,11 +130,11 @@ class Entity(Endpoint):
             "ignoreRelationships": str(args.get("--ignoreRelationships", False)).lower(),
             "minExtInfo": str(args.get("--minExtInfo", False)).lower(),
         }
-        
+
         # Add unique attributes
         for counter, qualifiedName in enumerate(args["--qualifiedName"]):
             params[f"attr_{counter}:qualifiedName"] = qualifiedName
-        
+
         self.params = params
 
     @decorator
@@ -147,7 +144,7 @@ class Entity(Endpoint):
         self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}'
         self.params = {
             **PurviewEndpoints.get_api_version_params("datamap"),
-            "attr:qualifiedName": args["--qualifiedName"]
+            "attr:qualifiedName": args["--qualifiedName"],
         }
 
     @decorator
@@ -157,7 +154,7 @@ class Entity(Endpoint):
         self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}'
         self.params = {
             **PurviewEndpoints.get_api_version_params("datamap"),
-            "attr:qualifiedName": args["--qualifiedName"]
+            "attr:qualifiedName": args["--qualifiedName"],
         }
         self.payload = get_json(args, "--payloadFile")
 
@@ -181,7 +178,7 @@ class Entity(Endpoint):
         self.endpoint = f'{PurviewEndpoints.ENTITY["guid"]}/{args["--guid"][0]}'
         self.params = {
             **PurviewEndpoints.get_api_version_params("datamap"),
-            "name": args["--attrName"]
+            "name": args["--attrName"],
         }
         self.payload = args["--attrValue"]
 
@@ -373,10 +370,12 @@ class Entity(Endpoint):
     def entityAddClassificationsByUniqueAttribute(self, args):
         """Add classification by unique attribute (Official API: Add Classifications By Unique Attribute)"""
         self.method = "POST"
-        self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}/classifications'
+        self.endpoint = (
+            f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}/classifications'
+        )
         self.params = {
             **PurviewEndpoints.get_api_version_params("datamap"),
-            "attr:qualifiedName": args["--qualifiedName"]
+            "attr:qualifiedName": args["--qualifiedName"],
         }
         self.payload = get_json(args, "--payloadFile")
 
@@ -415,10 +414,12 @@ class Entity(Endpoint):
     def entityUpdateClassificationsByUniqueAttribute(self, args):
         """Update classification by unique attribute (Official API: Update Classifications By Unique Attribute)"""
         self.method = "PUT"
-        self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}/classifications'
+        self.endpoint = (
+            f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}/classifications'
+        )
         self.params = {
             **PurviewEndpoints.get_api_version_params("datamap"),
-            "attr:qualifiedName": args["--qualifiedName"]
+            "attr:qualifiedName": args["--qualifiedName"],
         }
         self.payload = get_json(args, "--payloadFile")
 
@@ -441,7 +442,7 @@ class Entity(Endpoint):
         self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}/classification/{args["--classificationName"]}'
         self.params = {
             **PurviewEndpoints.get_api_version_params("datamap"),
-            "attr:qualifiedName": args["--qualifiedName"]
+            "attr:qualifiedName": args["--qualifiedName"],
         }
 
     # === LABEL OPERATIONS ===
@@ -463,7 +464,7 @@ class Entity(Endpoint):
         self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}/labels'
         self.params = {
             **PurviewEndpoints.get_api_version_params("datamap"),
-            "attr:qualifiedName": args["--qualifiedName"]
+            "attr:qualifiedName": args["--qualifiedName"],
         }
         self.payload = get_json(args, "--payloadFile")
 
@@ -484,7 +485,7 @@ class Entity(Endpoint):
         self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}/labels'
         self.params = {
             **PurviewEndpoints.get_api_version_params("datamap"),
-            "attr:qualifiedName": args["--qualifiedName"]
+            "attr:qualifiedName": args["--qualifiedName"],
         }
         self.payload = get_json(args, "--payloadFile")
 
@@ -505,7 +506,7 @@ class Entity(Endpoint):
         self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}/labels'
         self.params = {
             **PurviewEndpoints.get_api_version_params("datamap"),
-            "attr:qualifiedName": args["--qualifiedName"]
+            "attr:qualifiedName": args["--qualifiedName"],
         }
         self.payload = get_json(args, "--payloadFile")
 
@@ -530,8 +531,8 @@ class Entity(Endpoint):
             PurviewEndpoints.ENTITY["business_metadata"], guid=guid
         )
         self.params = {
-            **PurviewEndpoints.get_api_version_params("datamap"), 
-            "isOverwrite": str(args.get("--isOverwrite", False)).lower()
+            **PurviewEndpoints.get_api_version_params("datamap"),
+            "isOverwrite": str(args.get("--isOverwrite", False)).lower(),
         }
         self.payload = get_json(args, "--payloadFile")
 
@@ -594,7 +595,7 @@ class Entity(Endpoint):
         self.params = PurviewEndpoints.get_api_version_params("datamap")
 
     # === LEGACY COMPATIBILITY METHODS (Deprecated but maintained for backward compatibility) ===
-    
+
     # Collection operations (legacy)
     @decorator
     def entityCreateOrUpdateCollection(self, args):
@@ -638,7 +639,7 @@ class Entity(Endpoint):
         entity = {"typeName": row.get("typeName", "DataSet"), "attributes": {}}
         for k, v in row.items():
             if k != "typeName":
-    ^            entity["attributes"][k] = v
+                entity["attributes"][k] = v
         return entity
 
     # Example usage in your CSV import logic:

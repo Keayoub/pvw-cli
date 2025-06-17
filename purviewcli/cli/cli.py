@@ -99,16 +99,23 @@ def register_individual_cli_modules(main_group):
         main_group.add_command(data_product)
     except ImportError as e:
         console.print(f"[yellow]⚠ Could not import data_product CLI module: {e}[/yellow]")
+    try:
+        from purviewcli.cli.domain import domain
+        main_group.add_command(domain)
+    except ImportError as e:
+        console.print(f"[yellow]⚠ Could not import domain CLI module: {e}[/yellow]")
 
 
 @click.group()
 @click.option("--version", is_flag=True, help="Show the current version and exit.")
 @click.option("--profile", help="Configuration profile to use")
 @click.option("--account-name", help="Override Purview account name")
+@click.option("--endpoint", help="Purview account endpoint (e.g. https://<your-account>.purview.azure.com)")
+@click.option("--token", help="Azure AD access token for authentication")
 @click.option("--debug", is_flag=True, help="Enable debug mode")
 @click.option("--mock", is_flag=True, help="Mock mode - simulate commands without real API calls")
 @click.pass_context
-def main(ctx, version, profile, account_name, debug, mock):
+def main(ctx, version, profile, account_name, endpoint, token, debug, mock):
     """
     Purview CLI with profile management and automation.
     All command groups are registered as modular Click-based modules for full CLI visibility.
@@ -132,6 +139,8 @@ def main(ctx, version, profile, account_name, debug, mock):
     ctx.obj["profile"] = profile
     ctx.obj["debug"] = debug
     ctx.obj["mock"] = mock
+    ctx.obj["endpoint"] = endpoint
+    ctx.obj["token"] = token
 
 # Register all Click-based CLI modules after main is defined
 register_individual_cli_modules(main)
