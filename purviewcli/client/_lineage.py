@@ -315,7 +315,7 @@ class Lineage(Endpoint):
         import os
         import tempfile
 
-        csv_file = args.get("<csv_file>") or args.get("csv_file") or args.get("csv")
+        csv_file = args.get("csv_file") or args.get("<csv_file>") or args.get("csv")
         if not csv_file or not os.path.exists(csv_file):
             raise ValueError(f"CSV file not found: {csv_file}")
 
@@ -366,33 +366,87 @@ class Lineage(Endpoint):
         os.remove(payload_file)
         return result
 
-    @decorator
     def lineageCSVValidate(self, args):
-        """Validate CSV lineage file format"""
-        self.method = "POST"
-        self.endpoint = (
-            f"{PurviewEndpoints.DATAMAP_BASE}/{PurviewEndpoints.ATLAS_V2}/lineage/csv/validate"
-        )
-        self.params = {}
+        """Validate CSV lineage file format locally (no API call)"""
+        import pandas as pd
+        import os
+        csv_file = args.get("csv_file") or args.get("<csv_file>") or args.get("csv")
+        if not csv_file or not os.path.exists(csv_file):
+            return {"success": False, "error": f"CSV file not found: {csv_file}"}
+        try:
+            df = pd.read_csv(csv_file)
+        except Exception as e:
+            msg = str(e) or "Unknown error reading CSV file."
+            return {"success": False, "error": f"Failed to read CSV: {type(e).__name__}: {msg}"}
 
-    @decorator
+        # Required columns
+        required = set(CSVLineageProcessor.REQUIRED_COLUMNS)
+        missing = required - set(df.columns)
+        if missing:
+            return {"success": False, "error": f"Missing required columns: {', '.join(missing)}"}
+        if df.empty:
+            return {"success": False, "error": "CSV file is empty."}
+        # Optionally, add more validation here (e.g., check for NaNs, data types, etc.)
+        return {"success": True, "rows": len(df), "columns": list(df.columns)}
+
     def lineageCSVSample(self, args):
-        """Generate sample CSV lineage file"""
-        self.method = "GET"
-        self.endpoint = (
-            f"{PurviewEndpoints.DATAMAP_BASE}/{PurviewEndpoints.ATLAS_V2}/lineage/csv/sample"
-        )
-        self.params = {
-            "num-samples": args.get("--num-samples", 10),
-            "template": args.get("--template", "basic"),
-        }
+        """Generate sample CSV lineage file locally using templates"""
+        import csv
+        import os
+        output_file = args.get("--output-file")
+        num_samples = int(args.get("--num-samples", 10))
+        template = args.get("--template", "basic")
+
+        if not output_file or not isinstance(output_file, str):
+            return {"success": False, "error": "Output file path is missing or invalid."}
+        try:
+            output_file = os.path.abspath(output_file)
+        except Exception as e:
+            msg = str(e) or "Unknown error resolving output file path."
+            return {"success": False, "error": f"Failed to resolve output file path: {type(e).__name__}: {msg}"}
+
+        # Select template
+        try:
+            if template == "basic":
+                tpl = LineageCSVTemplates.get_basic_template()
+            elif template == "etl":
+                tpl = LineageCSVTemplates.get_etl_template()
+            elif template == "column-mapping":
+                tpl = LineageCSVTemplates.get_column_mapping_template()
+            else:
+                return {"success": False, "error": f"Unknown template: {template}"}
+        except Exception as e:
+            msg = str(e) or "Unknown error selecting template."
+            return {"success": False, "error": f"Template selection failed: {type(e).__name__}: {msg}"}
+
+        columns = tpl["columns"]
+        sample_data = tpl["sample_data"]
+        rows = (sample_data * ((num_samples + len(sample_data) - 1) // len(sample_data)))[:num_samples]
+
+        # Write to CSV
+        try:
+            with open(output_file, mode="w", newline="", encoding="utf-8") as csvfile:
+                writer = csv.DictWriter(csvfile, fieldnames=columns)
+                writer.writeheader()
+                for row in rows:
+                    writer.writerow({col: row.get(col, "") for col in columns})
+            return {"success": True, "output_file": output_file, "num_samples": num_samples, "template": template}
+        except Exception as e:
+            msg = str(e) or "Unknown error writing CSV file."
+            return {"success": False, "error": f"{type(e).__name__}: {msg}"}
+
+        # Defensive: If any other dict is returned (e.g., from a decorator), normalize it
+        result = locals().get('result')
+        if isinstance(result, dict) and 'status' in result and 'message' in result:
+            return {"success": False, "error": result['message']}
+        return {"success": False, "error": "Unknown error in lineageCSVSample."}
 
     @decorator
     def lineageCSVTemplates(self, args):
         """Get available CSV lineage templates"""
         self.method = "GET"
         self.endpoint = (
-            f"{PurviewEndpoints.DATAMAP_BASE}/{PurviewEndpoints.ATLAS_V2}/lineage/csv/templates"
+            f"{PurviewEndpoints.DATAMAP_BASE}/{PurviewEndpoints.ATLAS_API}/lineage/csv/templates"
         )
         self.params = {}
 
@@ -415,10 +469,17 @@ class Lineage(Endpoint):
 
     @decorator
     def lineageBulkCreate(self, args):
-        """Create multiple lineage relationships in bulk (Official API)"""
+        """Create multiple lineage relationships in bulk (Official API). Ensures payload is a list or dict with 'entities'."""
         self.method = "POST"
         self.endpoint = PurviewEndpoints.LINEAGE["bulk"]
-        self.payload = get_json(args, "--payloadFile")
+        payload = get_json(args, "--payloadFile")
+        # Accept either a list of relationships or a dict with 'entities' key
+        if isinstance(payload, dict) and "entities" in payload:
+            self.payload = payload
+        elif isinstance(payload, list):
+            self.payload = {"entities": payload}
+        else:
+            raise ValueError("Lineage bulk payload must be a list of relationships or a dict with 'entities' key.")
         self.params = {
             "ignoreRelationships": str(args.get("--ignoreRelationships", False)).lower(),
             "minExtInfo": str(args.get("--minExtInfo", False)).lower(),
@@ -426,10 +487,16 @@ class Lineage(Endpoint):
 
     @decorator
     def lineageBulkUpdate(self, args):
-        """Update multiple lineage relationships in bulk"""
+        """Update multiple lineage relationships in bulk. Ensures payload is a list or dict with 'entities'."""
         self.method = "PUT"
         self.endpoint = PurviewEndpoints.LINEAGE["bulk_update"]
-        self.payload = get_json(args, "--payloadFile")
+        payload = get_json(args, "--payloadFile")
+        if isinstance(payload, dict) and "entities" in payload:
+            self.payload = payload
+        elif isinstance(payload, list):
+            self.payload = {"entities": payload}
+        else:
+            raise ValueError("Lineage bulk update payload must be a list of relationships or a dict with 'entities' key.")
         self.params = {
             "ignoreRelationships": str(args.get("--ignoreRelationships", False)).lower(),
             "minExtInfo": str(args.get("--minExtInfo", False)).lower(),
@@ -517,7 +584,7 @@ class Lineage(Endpoint):
         """Get lineage metrics and statistics"""
         self.method = "GET"
         self.endpoint = (
-            f"{PurviewEndpoints.DATAMAP_BASE}/{PurviewEndpoints.ATLAS_V2}/lineage/metrics"
+            f"{PurviewEndpoints.DATAMAP_BASE}/{PurviewEndpoints.ATLAS_API}/lineage/metrics"
         )
         self.params = {
             "entityGuid": args.get("--guid"),
@@ -525,4 +592,12 @@ class Lineage(Endpoint):
             "includeDerivedLineage": "true",
         }
 
-    # ...existing CSV processing methods...
+    @decorator
+    def get_lineage_by_guid(self, args):
+        """Get lineage information for an entity by GUID"""
+        self.method = 'GET'
+        guid = args.get('--guid')
+        direction = args.get('--direction', 'BOTH')
+        depth = args.get('--depth', 3)
+        self.endpoint = PurviewEndpoints.LINEAGE['guid'].format(guid=guid)
+        self.params = {'direction': direction, 'depth': depth}

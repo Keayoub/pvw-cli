@@ -1,11 +1,5 @@
 typeName,qualifiedName,displayName,description,owner,source,collection
-DataSet,//mystorage/data/customers.csv@myaccount,Customer Dataset,Customer data from CRM system,data-team,CRM,CustomLineage
-DataSet,//mystorage/data/orders.csv@myaccount,Orders Dataset,Order transaction data,data-team,ERP,CustomLineage
-DataSet,//mystorage/data/products.csv@myaccount,Products Dataset,Product catalog information,product-team,PIM,CustomLineage
-Table,//mydb/sales/customer_dim@myserver,Customer Dimension,Processed customer dimension table,analytics-team,ETL,sales-collection
-Table,//mydb/sales/order_fact@myserver,Order Facts,Order transaction fact table,analytics-team,ETL,sales-collection
-View,//mydb/reports/customer_summary@myserver,Customer Summary,Aggregated customer metrics,reporting-team,SQL,sales-collection
-Process,//etl/customer_processing@mycluster,Customer ETL Process,Daily customer data processing job,etl-team,Spark,CustomLineage
-Process,//etl/order_processing@mycluster,Order ETL Process,Hourly order data processing job,etl-team,Spark,CustomLineage
-Column,//mydb/sales/customer_dim/customer_id@myserver,Customer ID,Unique customer identifier,data-team,Database,sales-collection
-Column,//mydb/sales/customer_dim/customer_name@myserver,Customer Name,Full customer name,data-team,Database,sales-collection
+DataSet,//storage/data/sales.csv@myaccount,Sales Dataset,Sales data from POS,data-team,POS,sales-collection
+DataSet,//storage/data/marketing.csv@myaccount,Marketing Dataset,Marketing campaign data,marketing-team,CRM,marketing-collection
+DataSet,//storage/data/finance.csv@myaccount,Finance Dataset,Financial transactions,finance-team,ERP,finance-collection
+DataSet,//storage/data/hr.csv@myaccount,HR Dataset,HR employee data,hr-team,HR,hr-collection

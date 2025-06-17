@@ -90,7 +90,8 @@ def register_individual_cli_modules(main_group):
         console.print(f"[yellow]⚠ Could not import types CLI module: {e}[/yellow]")
     try:
         from purviewcli.cli.collections import collections
-        main_group.add_command(collections)
+        main_group.add_command(collections, name="collections")
+        main_group.add_command(collections, name="domain")  # Alias for domain
     except ImportError as e:
         console.print(f"[yellow]⚠ Could not import collections CLI module: {e}[/yellow]")
     try:
@@ -101,16 +102,24 @@ def register_individual_cli_modules(main_group):
 
 
 @click.group()
+@click.option("--version", is_flag=True, help="Show the current version and exit.")
 @click.option("--profile", help="Configuration profile to use")
 @click.option("--account-name", help="Override Purview account name")
 @click.option("--debug", is_flag=True, help="Enable debug mode")
 @click.option("--mock", is_flag=True, help="Mock mode - simulate commands without real API calls")
 @click.pass_context
-def main(ctx, profile, account_name, debug, mock):
+def main(ctx, version, profile, account_name, debug, mock):
     """
     Purview CLI with profile management and automation.
     All command groups are registered as modular Click-based modules for full CLI visibility.
     """
+    if version:
+        try:
+            from purviewcli import __version__
+            click.echo(f"Purview CLI version: {__version__}")
+        except ImportError:
+            click.echo("Purview CLI version: unknown")
+        ctx.exit()
     ctx.ensure_object(dict)
 
     if debug:

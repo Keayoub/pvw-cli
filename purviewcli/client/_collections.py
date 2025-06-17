@@ -433,3 +433,40 @@ class Collections(Endpoint):
         except Exception as e:
             print(f"❌ Error creating CSV file: {str(e)}")
             return {"status": "error", "message": f"Failed to create CSV: {str(e)}"}
+
+    @no_api_call_decorator
+    def importCollectionsFromCSV(self, args):
+        """Import collections from a CSV file and create them using collectionsCreateCollection."""
+        import pandas as pd
+        import os
+
+        csv_file = (
+            args.get("csvfile")
+            or args.get("--csvfile")
+            or args.get("csv_file")
+            or args.get("--csv-file")
+        )
+        if not csv_file or not os.path.exists(csv_file):
+            raise ValueError(f"CSV file path is required and must exist. Got: {csv_file}")
+
+        df = pd.read_csv(csv_file)
+
+        required_columns = ["collectionName", "friendlyName"]
+        missing_columns = [col for col in required_columns if col not in df.columns]
+        if missing_columns:
+            raise ValueError(f"Missing required columns: {missing_columns}")
+
+        results = []
+        for _, row in df.iterrows():
+            args = {
+                '--collectionName': row['collectionName'],
+                '--friendlyName': row['friendlyName'],
+                '--description': row.get('description', ''),
+                '--parentCollection': row.get('parentCollection', os.getenv("PURVIEW_ACCOUNT_NAME", "root")),                
+            }
+            try:
+                result = self.collectionsCreateCollection(args)
+                results.append({'collection': row['collectionName'], 'status': 'success', 'result': result})
+            except Exception as e:
+                results.append({'collection': row['collectionName'], 'status': 'error', 'error': str(e)})
+        return results

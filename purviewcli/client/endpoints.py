@@ -10,6 +10,17 @@ class PurviewEndpoints:
     Based on the latest Microsoft Purview REST API documentation
     """
 
+    # === API VERSION CONSTANTS ===
+    API_VERSION = {
+        "atlas_api": "atlas/v2",
+        "search_v1": "v1",
+        "preview": "2024-03-01-preview",
+        "management": "2021-12-01",
+        "datamap": "2024-03-01-preview",
+        "collections": "2019-11-01-preview",
+        "share": "2023-05-30-preview",
+    }
+
     # Base API paths for different services
     DATAMAP_BASE = "/datamap/api"
     CATALOG_BASE = "/catalog/api"
@@ -19,81 +30,82 @@ class PurviewEndpoints:
     SHARE_BASE = "/share"
     MANAGEMENT_BASE = ""  
     # Management uses Azure Resource Manager APIs
-    # API Versions - Updated to latest
-    ATLAS_V2 = "atlas/v2"
-    SEARCH_V1 = "v1"
-    PREVIEW_VERSION = "2024-03-01-preview"  # Updated to latest
-    MANAGEMENT_VERSION = "2021-12-01"  # Updated to stable version
-    DATAMAP_VERSION = "2024-03-01-preview"  # Specific for Data Map API
-    COLLECTIONS_VERSION = "2019-11-01-preview"  # Specific for Collections API    # === ENTITY ENDPOINTS (Data Map) ===
+
+    # Use version constants throughout
+    ATLAS_API = API_VERSION["atlas_api"]
+    SEARCH_V1 = API_VERSION["search_v1"]
+    PREVIEW_VERSION = API_VERSION["preview"]
+    MANAGEMENT_VERSION = API_VERSION["management"]
+    DATAMAP_VERSION = API_VERSION["datamap"]
+    COLLECTIONS_VERSION = API_VERSION["collections"]
+    SHARE_VERSION = API_VERSION["share"]
+
+    # === ENTITY ENDPOINTS (Data Map) ===
     ENTITY = {
-        "base": f"{DATAMAP_BASE}/{ATLAS_V2}/entity",
-        "bulk": f"{DATAMAP_BASE}/{ATLAS_V2}/entity/bulk",
-        "bulk_classification": f"{DATAMAP_BASE}/{ATLAS_V2}/entity/bulk/classification",
-        "bulk_set_classifications": f"{DATAMAP_BASE}/{ATLAS_V2}/entity/bulk/setClassifications",
-        "guid": f"{DATAMAP_BASE}/{ATLAS_V2}/entity/guid",
-        "unique_attribute": f"{DATAMAP_BASE}/{ATLAS_V2}/entity/uniqueAttribute/type",
-        "classification": f"{DATAMAP_BASE}/{ATLAS_V2}/entity/guid/{{guid}}/classification",
-        "classifications": f"{DATAMAP_BASE}/{ATLAS_V2}/entity/guid/{{guid}}/classifications",
-        "header": f"{DATAMAP_BASE}/{ATLAS_V2}/entity/guid/{{guid}}/header",
-        "audit": f"{DATAMAP_BASE}/{ATLAS_V2}/entity/{{guid}}/audit",
-        "labels": f"{DATAMAP_BASE}/{ATLAS_V2}/entity/guid/{{guid}}/labels",
-        "business_metadata": f"{DATAMAP_BASE}/{ATLAS_V2}/entity/guid/{{guid}}/businessmetadata",
-        "business_metadata_import": f"{DATAMAP_BASE}/{ATLAS_V2}/entity/businessmetadata/import",
-        "business_metadata_template": f"{DATAMAP_BASE}/{ATLAS_V2}/entity/businessmetadata/import/template",
-        "business_metadata_bulk": f"{DATAMAP_BASE}/{ATLAS_V2}/entity/businessmetadata/bulk",
-        "business_metadata_export": f"{DATAMAP_BASE}/{ATLAS_V2}/entity/businessmetadata/export",
+        "base": f"{DATAMAP_BASE}/{ATLAS_API}/entity",
+        "bulk": f"{DATAMAP_BASE}/{ATLAS_API}/entity/bulk",
+        "bulk_classification": f"{DATAMAP_BASE}/{ATLAS_API}/entity/bulk/classification",
+        "bulk_set_classifications": f"{DATAMAP_BASE}/{ATLAS_API}/entity/bulk/setClassifications",
+        "guid": f"{DATAMAP_BASE}/{ATLAS_API}/entity/guid",
+        "unique_attribute": f"{DATAMAP_BASE}/{ATLAS_API}/entity/uniqueAttribute/type",
+        "classification": f"{DATAMAP_BASE}/{ATLAS_API}/entity/guid/{{guid}}/classification",
+        "classifications": f"{DATAMAP_BASE}/{ATLAS_API}/entity/guid/{{guid}}/classifications",
+        "header": f"{DATAMAP_BASE}/{ATLAS_API}/entity/guid/{{guid}}/header",
+        "audit": f"{DATAMAP_BASE}/{ATLAS_API}/entity/{{guid}}/audit",
+        "labels": f"{DATAMAP_BASE}/{ATLAS_API}/entity/guid/{{guid}}/labels",
+        "business_metadata": f"{DATAMAP_BASE}/{ATLAS_API}/entity/guid/{{guid}}/businessmetadata",
+        "business_metadata_import": f"{DATAMAP_BASE}/{ATLAS_API}/entity/businessmetadata/import",
+        "business_metadata_template": f"{DATAMAP_BASE}/{ATLAS_API}/entity/businessmetadata/import/template",
+        "business_metadata_bulk": f"{DATAMAP_BASE}/{ATLAS_API}/entity/businessmetadata/bulk",
+        "business_metadata_export": f"{DATAMAP_BASE}/{ATLAS_API}/entity/businessmetadata/export",
         # New endpoints from 2024-03-01-preview
-        "move_to": f"{DATAMAP_BASE}/{ATLAS_V2}/entity/moveTo",
-        "provenance_info": f"{DATAMAP_BASE}/{ATLAS_V2}/entity/{{guid}}/provenanceinfo",
-        "sample": f"{DATAMAP_BASE}/{ATLAS_V2}/entity/{{guid}}/sample",
+        "move_to": f"{DATAMAP_BASE}/{ATLAS_API}/entity/moveTo",
+        "provenance_info": f"{DATAMAP_BASE}/{ATLAS_API}/entity/{{guid}}/provenanceinfo",
+        "sample": f"{DATAMAP_BASE}/{ATLAS_API}/entity/{{guid}}/sample",
     }  
     # === GLOSSARY ENDPOINTS (Data Map API - Fixed for 2024-03-01-preview) ===
     GLOSSARY = {
-        "base": f"{DATAMAP_BASE}/{ATLAS_V2}/glossary",  # Fixed: Use DATAMAP_BASE instead of CATALOG_BASE
-        "categories": f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/categories",
-        "category": f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/category",
-        "terms": f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/terms",
-        "term": f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/term",
-        "detailed": f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/{{glossaryGuid}}/detailed",
-        "partial": f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/{{glossaryGuid}}/partial",
-        "category_partial": f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/category/{{categoryGuid}}/partial",
-        "term_partial": f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/term/{{termGuid}}/partial",
-        "category_related": f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/category/{{categoryGuid}}/related",
-        "category_terms": f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/category/{{categoryGuid}}/terms",
-        "term_assigned_entities": f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/terms/{{termGuid}}/assignedEntities",
-        "term_related": f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/terms/{{termGuid}}/related",
-        "categories_headers": f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/{{glossaryGuid}}/categories/headers",
-        "terms_headers": f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/{{glossaryGuid}}/terms/headers",
-        "terms_export": f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/{{glossaryGuid}}/terms/export",
+        "base": f"{DATAMAP_BASE}/{ATLAS_API}/glossary",  # Fixed: Use DATAMAP_BASE instead of CATALOG_BASE
+        "categories": f"{DATAMAP_BASE}/{ATLAS_API}/glossary/categories",
+        "category": f"{DATAMAP_BASE}/{ATLAS_API}/glossary/category",
+        "terms": f"{DATAMAP_BASE}/{ATLAS_API}/glossary/terms",
+        "term": f"{DATAMAP_BASE}/{ATLAS_API}/glossary/term",
+        "detailed": f"{DATAMAP_BASE}/{ATLAS_API}/glossary/{{glossaryGuid}}/detailed",
+        "partial": f"{DATAMAP_BASE}/{ATLAS_API}/glossary/{{glossaryGuid}}/partial",
+        "category_partial": f"{DATAMAP_BASE}/{ATLAS_API}/glossary/category/{{categoryGuid}}/partial",
+        "term_partial": f"{DATAMAP_BASE}/{ATLAS_API}/glossary/term/{{termGuid}}/partial",
+        "category_related": f"{DATAMAP_BASE}/{ATLAS_API}/glossary/category/{{categoryGuid}}/related",
+        "category_terms": f"{DATAMAP_BASE}/{ATLAS_API}/glossary/category/{{categoryGuid}}/terms",
+        "term_assigned_entities": f"{DATAMAP_BASE}/{ATLAS_API}/glossary/terms/{{termGuid}}/assignedEntities",
+        "term_related": f"{DATAMAP_BASE}/{ATLAS_API}/glossary/terms/{{termGuid}}/related",
+        "categories_headers": f"{DATAMAP_BASE}/{ATLAS_API}/glossary/{{glossaryGuid}}/categories/headers",
+        "terms_headers": f"{DATAMAP_BASE}/{ATLAS_API}/glossary/{{glossaryGuid}}/terms/headers",
+        "terms_export": f"{DATAMAP_BASE}/{ATLAS_API}/glossary/{{glossaryGuid}}/terms/export",
         # Import endpoints - using Data Map API
-        "terms_import": f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/{{glossaryGuid}}/terms/import",
-        "terms_import_by_name": f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/name/{{glossaryName}}/terms/import",
-        "terms_import_operation": f"{DATAMAP_BASE}/{ATLAS_V2}/glossary/terms/import/{{operationGuid}}",
+        "terms_import": f"{DATAMAP_BASE}/{ATLAS_API}/glossary/{{glossaryGuid}}/terms/import",
+        "terms_import_by_name": f"{DATAMAP_BASE}/{ATLAS_API}/glossary/name/{{glossaryName}}/terms/import",
+        "terms_import_operation": f"{DATAMAP_BASE}/{ATLAS_API}/glossary/terms/import/{{operationGuid}}",
     }
 
     # === TYPES ENDPOINTS (Data Map) ===
     TYPES = {
-        "base": f"{DATAMAP_BASE}/{ATLAS_V2}/types",
-        "businessmetadatadef": f"{DATAMAP_BASE}/{ATLAS_V2}/types/businessmetadatadef",
-        "classificationdef": f"{DATAMAP_BASE}/{ATLAS_V2}/types/classificationdef",
-        "entitydef": f"{DATAMAP_BASE}/{ATLAS_V2}/types/entitydef",
-        "enumdef": f"{DATAMAP_BASE}/{ATLAS_V2}/types/enumdef",
-        "relationshipdef": f"{DATAMAP_BASE}/{ATLAS_V2}/types/relationshipdef",
-        "structdef": f"{DATAMAP_BASE}/{ATLAS_V2}/types/structdef",
-        "typedef": f"{DATAMAP_BASE}/{ATLAS_V2}/types/typedef",
+        "base": f"{DATAMAP_BASE}/{ATLAS_API}/types",
+        "businessmetadatadef": f"{DATAMAP_BASE}/{ATLAS_API}/types/businessmetadatadef",
+        "classificationdef": f"{DATAMAP_BASE}/{ATLAS_API}/types/classificationdef",
+        "entitydef": f"{DATAMAP_BASE}/{ATLAS_API}/types/entitydef",
+        "enumdef": f"{DATAMAP_BASE}/{ATLAS_API}/types/enumdef",
+        "relationshipdef": f"{DATAMAP_BASE}/{ATLAS_API}/types/relationshipdef",
+        "structdef": f"{DATAMAP_BASE}/{ATLAS_API}/types/structdef",
+        "typedef": f"{DATAMAP_BASE}/{ATLAS_API}/types/typedef",
     }  # === RELATIONSHIP ENDPOINTS (Data Map) ===
     RELATIONSHIP = {
-        "base": f"{DATAMAP_BASE}/{ATLAS_V2}/relationship",
-        "guid": f"{DATAMAP_BASE}/{ATLAS_V2}/relationship/guid/{{guid}}",
-    }  # === LINEAGE ENDPOINTS (Data Map) ===
+        "base": f"{DATAMAP_BASE}/{ATLAS_API}/relationship",
+        "guid": f"{DATAMAP_BASE}/{ATLAS_API}/relationship/guid/{{guid}}",    }  # === LINEAGE ENDPOINTS (Data Map) ===
     LINEAGE = {
-        "guid": f"{DATAMAP_BASE}/{ATLAS_V2}/lineage/{{guid}}",
-        "unique_attribute": f"{DATAMAP_BASE}/{ATLAS_V2}/lineage/uniqueAttribute/type/{{typeName}}",
-        "next": f"{DATAMAP_BASE}/{ATLAS_V2}/lineage/{{guid}}/next",
-        "impact": f"{DATAMAP_BASE}/{ATLAS_V2}/lineage/{{guid}}/impact",
-        "downstream": f"{DATAMAP_BASE}/{ATLAS_V2}/lineage/{{guid}}/downstream",
-        "upstream": f"{DATAMAP_BASE}/{ATLAS_V2}/lineage/{{guid}}/upstream",
+        "guid": f"{DATAMAP_BASE}/{ATLAS_API}/lineage/{{guid}}",
+        "unique_attribute": f"{DATAMAP_BASE}/{ATLAS_API}/lineage/uniqueAttribute/type/{{typeName}}",
+        "bulk": f"{DATAMAP_BASE}/{ATLAS_API}/relationship/bulk",
+        "bulk_update": f"{DATAMAP_BASE}/{ATLAS_API}/relationship/bulk",
     }
 
     # === SEARCH ENDPOINTS ===

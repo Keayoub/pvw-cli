@@ -1,0 +1,5 @@
+qualifiedName,name,description,domain
+sales-dp@sales-collection,Sales Data Product,Sales data product,Sales
+marketing-dp@marketing-collection,Marketing Data Product,Marketing data product,Marketing
+finance-dp@finance-collection,Finance Data Product,Finance data product,Finance
+hr-dp@hr-collection,HR Data Product,HR data product,HR

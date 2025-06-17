@@ -17,21 +17,36 @@ class Glossary(Endpoint):
 
     @decorator
     def glossaryCreate(self, args):
+        """Create a glossary. Ensures payload is a valid JSON object."""
         self.method = 'POST'
         self.endpoint = PurviewEndpoints.GLOSSARY['base']
-        self.payload = get_json(args, '--payloadFile')
+        payload = get_json(args, '--payloadFile')
+        if not isinstance(payload, dict):
+            raise ValueError("Glossary payload must be a JSON object (dict). Got: {}".format(type(payload)))
+        self.payload = payload
 
     @decorator
     def glossaryCreateCategories(self, args):
+        """Create multiple glossary categories. Ensures payload is a valid JSON array or wraps as needed."""
         self.method = 'POST'
         self.endpoint = PurviewEndpoints.GLOSSARY['categories']
-        self.payload = get_json(args, '--payloadFile')
+        payload = get_json(args, '--payloadFile')
+        if isinstance(payload, list):
+            self.payload = {"categories": payload}
+        elif isinstance(payload, dict) and "categories" in payload:
+            self.payload = payload
+        else:
+            raise ValueError("Glossary categories payload must be a list or a dict with 'categories' key.")
 
     @decorator
     def glossaryCreateCategory(self, args):
+        """Create a single glossary category. Ensures payload is a valid JSON object."""
         self.method = 'POST'
         self.endpoint = PurviewEndpoints.GLOSSARY['category']
-        self.payload = get_json(args, '--payloadFile')
+        payload = get_json(args, '--payloadFile')
+        if not isinstance(payload, dict):
+            raise ValueError("Glossary category payload must be a JSON object (dict). Got: {}".format(type(payload)))
+        self.payload = payload
 
     @decorator
     def glossaryDeleteCategory(self, args):
@@ -69,9 +84,13 @@ class Glossary(Endpoint):
 
     @decorator
     def glossaryCreateTerm(self, args):
+        """Create a single glossary term. Ensures payload is a valid JSON object."""
         self.method = 'POST'
         self.endpoint = PurviewEndpoints.GLOSSARY['term']
-        self.payload = get_json(args, '--payloadFile')
+        payload = get_json(args, '--payloadFile')
+        if not isinstance(payload, dict):
+            raise ValueError("Glossary term payload must be a JSON object (dict). Got: {}".format(type(payload)))
+        self.payload = payload
         self.params = {'includeTermHierarchy': args['--includeTermHierarchy']}
 
     @decorator
@@ -101,9 +120,16 @@ class Glossary(Endpoint):
 
     @decorator
     def glossaryCreateTerms(self, args):
+        """Create multiple glossary terms. Ensures payload is a valid JSON array or wraps as needed."""
         self.method = 'POST'
         self.endpoint = PurviewEndpoints.GLOSSARY['terms']
-        self.payload = get_json(args, '--payloadFile')
+        payload = get_json(args, '--payloadFile')
+        if isinstance(payload, list):
+            self.payload = {"terms": payload}
+        elif isinstance(payload, dict) and "terms" in payload:
+            self.payload = payload
+        else:
+            raise ValueError("Glossary terms payload must be a list or a dict with 'terms' key.")
         self.params = {'includeTermHierarchy': args['--includeTermHierarchy']}
 
     @decorator

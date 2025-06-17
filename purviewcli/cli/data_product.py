@@ -17,22 +17,23 @@ def data_product():
 def import_data_products(csv_file, dry_run):
     """Import data products from a CSV file."""
     try:
-        with open(csv_file, 'r', encoding='utf-8') as f:
-            reader = csv.DictReader(f)
-            products = list(reader)
-        if dry_run:
-            console.print(f"[yellow]Dry run: {len(products)} data products would be imported.[/yellow]")
-            for p in products[:5]:
-                console.print(json.dumps(p, indent=2))
-            if len(products) > 5:
-                console.print(f"...and {len(products)-5} more.")
-            return
         data_product_client = DataProduct()
-        results = data_product_client.import_from_csv(products)
+        results = data_product_client.import_from_csv_file(csv_file, dry_run=dry_run)
+        if dry_run:
+            msg = f"Dry run: {len(results)} data products would be imported."
+            print(msg)
+            for p in results[:5]:
+                print(json.dumps(p, indent=2))
+            if len(results) > 5:
+                print(f"...and {len(results)-5} more.")
+            return
         for qualified_name, result in results:
-            console.print(f"[green]✓ Imported:[/green] {qualified_name}")
+            if isinstance(result, dict) and result.get("status") == "error":
+                print(f"ERROR: Failed to import {qualified_name}: {result.get('message', 'Unknown error')}")
+            else:
+                print(f"SUCCESS: Imported {qualified_name}")
     except Exception as e:
-        console.print(f"[red]✗ Error importing data products: {str(e)}[/red]")
+        print(f"ERROR: Error importing data products: {str(e)}")
 
 @data_product.command()
 @click.option('--qualified-name', required=True, help="Qualified name of the data product")
@@ -42,8 +43,12 @@ def create(qualified_name, name, description):
     """Create a new data product."""
     data_product_client = DataProduct()
     result = data_product_client.create(qualified_name, name, description)
-    console.print(f"[green]✓ Created:[/green] {qualified_name}")
-    console.print(json.dumps(result, indent=2))
+    # Check for error in result and print accordingly
+    if isinstance(result, dict) and result.get("status") == "error":
+        print(f"ERROR: {result.get('message', 'Failed to create data product.')}")
+    else:
+        print(f"SUCCESS: Created {qualified_name}")
+        print(json.dumps(result, indent=2))
 
 @data_product.command()
 @click.option('--qualified-name', required=True, help="Qualified name of the data product")
@@ -59,7 +64,7 @@ def delete(qualified_name):
     """Delete a data product."""
     data_product_client = DataProduct()
     result = data_product_client.delete(qualified_name)
-    console.print(f"[green]✓ Deleted:[/green] {qualified_name}")
+    console.print(f"[green]DELETED:[/green] {qualified_name}")
     console.print(json.dumps(result, indent=2))
 
 @data_product.command()
@@ -76,7 +81,7 @@ def add_classification(qualified_name, classification):
     """Add a classification to a data product."""
     data_product_client = DataProduct()
     result = data_product_client.add_classification(qualified_name, classification)
-    console.print(f"[green]✓ Classification added:[/green] {classification} to {qualified_name}")
+    console.print(f"[green]CLASSIFICATION ADDED:[/green] {classification} to {qualified_name}")
     console.print(json.dumps(result, indent=2))
 
 @data_product.command()
@@ -86,7 +91,7 @@ def remove_classification(qualified_name, classification):
     """Remove a classification from a data product."""
     data_product_client = DataProduct()
     result = data_product_client.remove_classification(qualified_name, classification)
-    console.print(f"[green]✓ Classification removed:[/green] {classification} from {qualified_name}")
+    console.print(f"[green]CLASSIFICATION REMOVED:[/green] {classification} from {qualified_name}")
     console.print(json.dumps(result, indent=2))
 
 @data_product.command()
@@ -96,7 +101,7 @@ def add_label(qualified_name, label):
     """Add a label to a data product."""
     data_product_client = DataProduct()
     result = data_product_client.add_label(qualified_name, label)
-    console.print(f"[green]✓ Label added:[/green] {label} to {qualified_name}")
+    console.print(f"[green]LABEL ADDED:[/green] {label} to {qualified_name}")
     console.print(json.dumps(result, indent=2))
 
 @data_product.command()
@@ -106,7 +111,7 @@ def remove_label(qualified_name, label):
     """Remove a label from a data product."""
     data_product_client = DataProduct()
     result = data_product_client.remove_label(qualified_name, label)
-    console.print(f"[green]✓ Label removed:[/green] {label} from {qualified_name}")
+    console.print(f"[green]LABEL REMOVED:[/green] {label} from {qualified_name}")
     console.print(json.dumps(result, indent=2))
 
 @data_product.command()
@@ -116,7 +121,7 @@ def link_glossary(qualified_name, term):
     """Link a glossary term to a data product."""
     data_product_client = DataProduct()
     result = data_product_client.link_glossary(qualified_name, term)
-    console.print(f"[green]✓ Glossary term linked:[/green] {term} to {qualified_name}")
+    console.print(f"[green]GLOSSARY TERM LINKED:[/green] {term} to {qualified_name}")
     console.print(json.dumps(result, indent=2))
 
 @data_product.command()
@@ -134,5 +139,5 @@ def set_status(qualified_name, status):
     """Set the status of a data product."""
     data_product_client = DataProduct()
     result = data_product_client.set_status(qualified_name, status)
-    console.print(f"[green]✓ Status set:[/green] {status} for {qualified_name}")
+    console.print(f"[green]STATUS SET:[/green] {status} for {qualified_name}")
     console.print(json.dumps(result, indent=2))

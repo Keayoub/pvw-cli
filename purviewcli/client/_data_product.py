@@ -1,28 +1,63 @@
 import json
+import tempfile
+import os
+import csv
 from purviewcli.client._entity import Entity
 
 class DataProduct:
     """Client for managing data products in Microsoft Purview."""
+    
     def __init__(self):
         self.entity_client = Entity()
 
     def import_from_csv(self, products):
-        results = []
+        with open("import_from_csv_debug.log", "a") as logf:
+            logf.write(f"products type: {type(products)}\n")
+            if products:
+                logf.write(f"first product type: {type(products[0])}\n")
+                logf.write(f"first product: {products[0]}\n")
+        if not isinstance(products, list):
+            raise TypeError(f"Expected a list, got: {type(products)} with value: {products}")
+        if not products or not isinstance(products[0], dict):
+            raise TypeError(
+                f"Expected a list of dicts, got: {type(products[0])} with value: {products[0]}"
+            )
+        required_fields = ["qualifiedName"]
+        entities = []
         for product in products:
-            payload = {
-                "typeName": product.get("typeName", "DataProduct"),
+            # Validate required fields
+            for field in required_fields:
+                if not product.get(field):
+                    raise ValueError(f"Missing required field '{field}' in row: {product}")
+            entity = {
+                "typeName": product.get("typeName", "DataSet"),
                 "attributes": {
                     "qualifiedName": product["qualifiedName"],
                     "name": product.get("name", product["qualifiedName"]),
                     "description": product.get("description", "")
                 },
-                # Add more fields as needed
             }
-            # The entity client expects a file, so we serialize to a temp file or pass dict if supported
-            # Here, we assume entityCreate can accept a dict for --payloadFile
-            result = self.entity_client.entityCreate({"--payloadFile": payload})
-            results.append((product["qualifiedName"], result))
-        return results
+            entities.append(entity)
+        # Write the bulk payload to a temp file (always as {"entities": [...]})
+        bulk_payload = {"entities": entities}
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as tmpf:
+            json.dump(bulk_payload, tmpf, indent=2)
+            tmpf.flush()
+            payload_file = tmpf.name
+        try:
+            result = self.entity_client.entityCreateBulk({"--payloadFile": payload_file})
+            return [(e["attributes"]["qualifiedName"], result) for e in entities]
+        finally:
+            os.remove(payload_file)
+
+    def import_from_csv_file(self, csv_file_path, dry_run=False):
+        """Load data products from a CSV file and import them. If dry_run is True, return the parsed products only."""
+        with open(csv_file_path, 'r', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            products = list(reader)
+        if dry_run:
+            return products
+        return self.import_from_csv(products)
 
     def create(self, qualified_name, name=None, description=None, type_name="DataProduct"):
         """Create a single data product entity."""
@@ -34,7 +69,16 @@ class DataProduct:
                 "description": description or ""
             },
         }
-        return self.entity_client.entityCreate({"--payloadFile": payload})
+        # Write payload to temp file since entity client expects a file path
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as tmpf:
+            json.dump(payload, tmpf, indent=2)
+            tmpf.flush()
+            payload_file = tmpf.name
+        
+        try:
+            return self.entity_client.entityCreate({"--payloadFile": payload_file})
+        finally:
+            os.remove(payload_file)
 
     def list(self, type_name="DataProduct"):
         """List all data products (by typeName)."""

@@ -443,5 +443,24 @@ def read_terms_related(term_guid, limit, offset, sort):
     except Exception as e:
         console.print(f"[red]✗ Error: {e}[/red]")
 
+@glossary.command()
+@click.option('--csv-file', required=True, type=click.Path(exists=True), help='CSV file with glossary terms')
+@click.option('--glossary-guid', required=False, help='The globally unique identifier for glossary')
+@click.option('--include-term-hierarchy', is_flag=True, help='Include term hierarchy in creation')
+def import_terms_csv(csv_file, glossary_guid, include_term_hierarchy):
+    """Import glossary terms from a CSV file."""
+    try:
+        from purviewcli.client._glossary import Glossary
+        client = Glossary()
+        args = {
+            '--glossaryFile': csv_file,
+            '--glossaryGuid': glossary_guid,
+            '--includeTermHierarchy': include_term_hierarchy
+        }
+        result = client.glossaryCreateTermsImport(args)
+        console.print(json.dumps({'status': 'success', 'result': str(result)}, indent=2))
+    except Exception as e:
+        console.print(f"[red]Error importing glossary terms from CSV: {e}[/red]")
+
 # Make the glossary group available for import
 __all__ = ['glossary']

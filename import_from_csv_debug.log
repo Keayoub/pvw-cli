@@ -1,0 +1,12 @@
+products type: <class 'list'>
+first product type: <class 'dict'>
+first product: {'qualifiedName': 'sales-dp@sales-collection', 'name': 'Sales Data Product', 'description': 'Sales data product', 'domain': 'Sales'}
+products type: <class 'list'>
+first product type: <class 'dict'>
+first product: {'qualifiedName': 'sales-dp@sales-collection', 'name': 'Sales Data Product', 'description': 'Sales data product', 'domain': 'Sales'}
+products type: <class 'list'>
+first product type: <class 'dict'>
+first product: {'qualifiedName': 'sales-dp@sales-collection', 'name': 'Sales Data Product', 'description': 'Sales data product', 'domain': 'Sales'}
+products type: <class 'list'>
+first product type: <class 'dict'>
+first product: {'qualifiedName': 'sales-dp@sales-collection', 'name': 'Sales Data Product', 'description': 'Sales data product', 'domain': 'Sales'}

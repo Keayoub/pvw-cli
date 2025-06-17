@@ -1,6 +1,5 @@
-# Sample CSV for importing glossary terms
 name,glossary_guid,description,short_description,status,definition,examples
-Customer,12345678-1234-1234-1234-123456789012,A person or organization that purchases goods or services,Individual or entity making purchases,Active,An individual or organization that has a commercial relationship with the business,"Individual customers, Corporate clients, Retail customers"
-Revenue,12345678-1234-1234-1234-123456789012,Total income generated from business operations,Income from operations,Active,The total amount of money brought in by business operations,"Monthly revenue, Annual revenue, Product revenue"
-Data Quality,12345678-1234-1234-1234-123456789012,Measure of data fitness for its intended use,Data fitness measure,Active,The degree to which data meets requirements for accuracy and consistency,"Data completeness, Data accuracy, Data consistency"
-PII,12345678-1234-1234-1234-123456789012,Personally Identifiable Information,Personal data,Active,Information that can identify a specific individual,"Social security numbers, Email addresses, Phone numbers"
+Sales,11111111-1111-1111-1111-111111111111,Sales related term,Sales,Active,All about sales,"Retail, B2B"
+Marketing,11111111-1111-1111-1111-111111111111,Marketing related term,Marketing,Active,All about marketing,"Campaign, Digital"
+Finance,11111111-1111-1111-1111-111111111111,Finance related term,Finance,Active,All about finance,"Accounting, Audit"
+HR,11111111-1111-1111-1111-111111111111,HR related term,HR,Active,All about HR,"Employee, Payroll"

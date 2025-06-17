@@ -1611,7 +1611,7 @@ def bulk_create_csv(ctx, csv_file, batch_size, dry_run, error_csv):
                 payload_file = tmpf.name
             try:
                 args = {"--payloadFile": payload_file}
-                result = entity_client.entityBulkCreate(args)
+                result = entity_client.entityCreateBulk(args)
                 if result and (not isinstance(result, dict) or result.get("status") != "error"):
                     success += len(batch)
                 else:
@@ -1624,16 +1624,16 @@ def bulk_create_csv(ctx, csv_file, batch_size, dry_run, error_csv):
                 failed_rows.extend(batch.to_dict(orient="records"))
             finally:
                 os.remove(payload_file)
-        console.print(f"[green]✓ Bulk create completed. Success: {success}, Failed: {failed}[/green]")
+        console.print(f"[green]SUCCESS: Bulk create completed. Success: {success}, Failed: {failed}[/green]")
         if errors:
             console.print("[red]Errors:[/red]")
             for err in errors:
                 console.print(f"[red]- {err}[/red]")
         if error_csv and failed_rows:
             pd.DataFrame(failed_rows).to_csv(error_csv, index=False)
-            console.print(f"[yellow]✗ Failed rows written to {error_csv}[/yellow]")
+            console.print(f"[yellow]WARNING: Failed rows written to {error_csv}[/yellow]")
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity bulk-create-csv: {str(e)}[/red]")
+        console.print(f"[red]ERROR: Error executing entity bulk-create-csv: {str(e)}[/red]")
 
 
 @entity.command()
@@ -1763,6 +1763,33 @@ def bulk_delete_csv(ctx, csv_file, batch_size, dry_run, error_csv):
             console.print(f"[yellow]✗ Failed rows written to {error_csv}[/yellow]")
     except Exception as e:
         console.print(f"[red]✗ Error executing entity bulk-delete-csv: {str(e)}[/red]")
+
+
+# === AUDIT OPERATIONS ===
+
+
+@entity.command()
+@click.option("--guid", required=True, help="The globally unique identifier of the entity")
+@click.pass_context
+def audit(ctx, guid):
+    """Get audit events for an entity by GUID"""
+    try:
+        if ctx.obj.get("mock"):
+            console.print("[yellow]🎭 Mock: entity audit command[/yellow]")
+            console.print(f"[dim]GUID: {guid}[/dim]")
+            console.print("[green]✓ Mock entity audit completed successfully[/green]")
+            return
+        args = {"--guid": guid}
+        from purviewcli.client._entity import Entity
+        entity_client = Entity()
+        result = entity_client.entityReadAudit(args)
+        if result:
+            console.print("[green]✓ Entity audit events retrieved successfully[/green]")
+            console.print(json.dumps(result, indent=2))
+        else:
+            console.print("[yellow]⚠ Entity audit completed with no result[/yellow]")
+    except Exception as e:
+        console.print(f"[red]✗ Error executing entity audit: {str(e)}[/red]")
 
 
 # Make the entity group available for import

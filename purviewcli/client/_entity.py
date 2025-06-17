@@ -65,9 +65,18 @@ class Entity(Endpoint):
 
     # === BULK OPERATIONS ===
 
+    def _validate_entities_have_qualified_name(self, args):
+        """Ensure every entity in the payload has a non-empty attributes.qualifiedName."""
+        payload = get_json(args, "--payloadFile")
+        entities = payload.get("entities", [])
+        missing = [e for e in entities if not e.get("attributes", {}).get("qualifiedName")]
+        if missing:
+            raise ValueError(f"The following entities are missing 'qualifiedName': {missing}")
+
     @decorator
     def entityBulkCreateOrUpdate(self, args):
         """Create or update entities in bulk (Official API: Bulk Create Or Update)"""
+        self._validate_entities_have_qualified_name(args)
         self.method = "POST"
         self.endpoint = PurviewEndpoints.ENTITY["bulk"]
         self.params = PurviewEndpoints.get_api_version_params("datamap")
@@ -613,3 +622,24 @@ class Entity(Endpoint):
         self.endpoint = f"/catalog/api/collections/{collection}/entity/moveHere"
         self.payload = get_json(args, "--payloadFile")
         self.params = PurviewEndpoints.get_api_version_params("catalog")
+
+    @decorator
+    def entityReadAudit(self, args):
+        """Get audit events for an entity by GUID (Official API: Get Audit Events)"""
+        self.method = "GET"
+        self.endpoint = PurviewEndpoints.ENTITY["audit"].format(guid=args["--guid"])
+        self.params = PurviewEndpoints.get_api_version_params("datamap")
+
+    def map_flat_entity_to_purview_entity(row: dict) -> dict:
+        """
+        Convert a flat dict (from CSV) to the nested Purview entity format.
+        Only 'typeName' is top-level; all other fields go under 'attributes'.
+        """
+        entity = {"typeName": row.get("typeName", "DataSet"), "attributes": {}}
+        for k, v in row.items():
+            if k != "typeName":
+    ^            entity["attributes"][k] = v
+        return entity
+
+    # Example usage in your CSV import logic:
+    # entities = [map_flat_entity_to_purview_entity(row) for row in csv_rows]
