@@ -40,6 +40,13 @@ class PurviewEndpoints:
     COLLECTIONS_VERSION = API_VERSION["collections"]
     SHARE_VERSION = API_VERSION["share"]
 
+    # === DOMAIN ENDPOINTS (Catalog) ===
+    # Based on official API: https://learn.microsoft.com/en-us/rest/api/purview/catalogdataplane/domains
+    DOMAIN = {
+        "base": f"{CATALOG_BASE}/domains",  # GET - List Domains, POST - Create Domain
+        "domain": f"{CATALOG_BASE}/domains/{{domainName}}",  # GET/PATCH/DELETE - Domain CRUD
+    }
+
     # === ENTITY ENDPOINTS (Data Map) ===
     ENTITY = {
         "base": f"{DATAMAP_BASE}/{ATLAS_API}/entity",
@@ -251,9 +258,9 @@ class PurviewEndpoints:
             "collections": {"api-version": cls.COLLECTIONS_VERSION},  # Collections API version
             "account": {
                 "api-version": cls.COLLECTIONS_VERSION
-            },  # Account API uses same version as collections
-            "policystore": {"api-version": cls.PREVIEW_VERSION},
+            },  # Account API uses same version as collections            "policystore": {"api-version": cls.PREVIEW_VERSION},
             "policystore_data": {"api-version": cls.PREVIEW_VERSION},
             "share": {"api-version": "2023-05-30-preview"},
+            "domain": {"api-version": cls.PREVIEW_VERSION},  # Domain API version
         }
         return version_map.get(endpoint_type, {})
