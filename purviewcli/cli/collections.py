@@ -5,9 +5,8 @@ Usage:
   collections create         Create a new collection
   collections delete         Delete a collection
   collections get            Get a collection by name
-  collections list           List all collections
-  collections import_csv     Import collections from a CSV file
-  collections export_csv     Export collections to a CSV file
+  collections list           List all collections  collections import        Import collections from a CSV file
+  collections export        Export collections to a CSV file
   collections --help         Show this help message and exit
 
 Options:
@@ -82,7 +81,7 @@ def list():
     except Exception as e:
         click.echo(f"Error: {e}")
 
-@collections.command()
+@collections.command(name="import")
 @click.option('--csv-file', type=click.Path(exists=True), required=True, help='CSV file to import collections from')
 def import_csv(csv_file):
     """Import collections from a CSV file"""
@@ -95,7 +94,7 @@ def import_csv(csv_file):
     except Exception as e:
         click.echo(f"Error: {e}")
 
-@collections.command()
+@collections.command(name="export")
 @click.option('--output-file', type=click.Path(), required=True, help='Output file path for CSV export')
 @click.option('--include-hierarchy', is_flag=True, default=True, help='Include collection hierarchy in export')
 @click.option('--include-metadata', is_flag=True, default=True, help='Include collection metadata in export')

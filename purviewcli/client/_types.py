@@ -13,7 +13,7 @@ class Types(Endpoint):
         typeDefKey = 'guid' if args['--name'] is None else 'name'
         typeDefVal = args['--guid'] if args['--name'] is None else args['--name']
         self.endpoint = f'/catalog/api/types/termtemplatedef/{typeDefKey}/{typeDefVal}'
-        self.params = {'api-version': '2021-05-01-preview'}
+        self.params = PurviewEndpoints.get_api_version_params('datamap')
 
     @decorator
     def typesReadClassificationDef(self, args):

@@ -58,7 +58,7 @@ def share():
     pass
 
 # Accepted Sent Shares
-@share.command()
+@share.command(name="list-accepted-shares")
 @click.option('--sent-share-name', required=True, help='The name of the sent share')
 @click.option('--skip-token', required=False, help='Continuation token for paging')
 def list_accepted_shares(sent_share_name, skip_token):
@@ -71,7 +71,7 @@ def list_accepted_shares(sent_share_name, skip_token):
     except Exception as e:
         click.echo(f"Error: {e}")
 
-@share.command()
+@share.command(name="get-accepted-share")
 @click.option('--sent-share-name', required=True, help='The name of the sent share')
 @click.option('--accepted-sent-share-name', required=True, help='The name of the accepted sent share')
 def get_accepted_share(sent_share_name, accepted_sent_share_name):
@@ -84,7 +84,7 @@ def get_accepted_share(sent_share_name, accepted_sent_share_name):
     except Exception as e:
         click.echo(f"Error: {e}")
 
-@share.command()
+@share.command(name="reinstate-accepted-share")
 @click.option('--sent-share-name', required=True)
 @click.option('--accepted-sent-share-name', required=True)
 @click.option('--payload-file', type=click.Path(exists=True), required=True)
@@ -98,7 +98,7 @@ def reinstate_accepted_share(sent_share_name, accepted_sent_share_name, payload_
     except Exception as e:
         click.echo(f"Error: {e}")
 
-@share.command()
+@share.command(name="revoke-accepted-share")
 @click.option('--sent-share-name', required=True)
 @click.option('--accepted-sent-share-name', required=True)
 def revoke_accepted_share(sent_share_name, accepted_sent_share_name):
@@ -111,7 +111,7 @@ def revoke_accepted_share(sent_share_name, accepted_sent_share_name):
     except Exception as e:
         click.echo(f"Error: {e}")
 
-@share.command()
+@share.command(name="update-expiration-accepted-share")
 @click.option('--sent-share-name', required=True)
 @click.option('--accepted-sent-share-name', required=True)
 @click.option('--payload-file', type=click.Path(exists=True), required=True)
@@ -126,7 +126,7 @@ def update_expiration_accepted_share(sent_share_name, accepted_sent_share_name, 
         click.echo(f"Error: {e}")
 
 # Asset Mappings
-@share.command()
+@share.command(name="list-asset-mappings")
 @click.option('--received-share-name', required=True)
 @click.option('--skip-token', required=False)
 @click.option('--filter', required=False)
@@ -141,7 +141,7 @@ def list_asset_mappings(received_share_name, skip_token, filter, order_by):
     except Exception as e:
         click.echo(f"Error: {e}")
 
-@share.command()
+@share.command(name="create-asset-mapping")
 @click.option('--received-share-name', required=True)
 @click.option('--asset-mapping-name', required=True)
 @click.option('--payload-file', type=click.Path(exists=True), required=True)

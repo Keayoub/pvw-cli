@@ -443,7 +443,7 @@ def read_terms_related(term_guid, limit, offset, sort):
     except Exception as e:
         console.print(f"[red]✗ Error: {e}[/red]")
 
-@glossary.command()
+@glossary.command(name="import-terms")
 @click.option('--csv-file', required=True, type=click.Path(exists=True), help='CSV file with glossary terms')
 @click.option('--glossary-guid', required=False, help='The globally unique identifier for glossary')
 @click.option('--include-term-hierarchy', is_flag=True, help='Include term hierarchy in creation')

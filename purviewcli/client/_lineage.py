@@ -446,7 +446,7 @@ class Lineage(Endpoint):
         """Get available CSV lineage templates"""
         self.method = "GET"
         self.endpoint = (
-            f"{PurviewEndpoints.DATAMAP_BASE}/{PurviewEndpoints.ATLAS_API}/lineage/csv/templates"
+            f"{PurviewEndpoints.DATAMAP_BASE}/{PurviewEndpoints.API_VERSION['atlas_api']}/lineage/csv/templates"
         )
         self.params = {}
 
@@ -584,7 +584,7 @@ class Lineage(Endpoint):
         """Get lineage metrics and statistics"""
         self.method = "GET"
         self.endpoint = (
-            f"{PurviewEndpoints.DATAMAP_BASE}/{PurviewEndpoints.ATLAS_API}/lineage/metrics"
+            f"{PurviewEndpoints.DATAMAP_BASE}/{PurviewEndpoints.API_VERSION['atlas_api']}/lineage/metrics"
         )
         self.params = {
             "entityGuid": args.get("--guid"),

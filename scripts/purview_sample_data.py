@@ -29,7 +29,7 @@ def main():
     
     print("Importing sample collections from CSV via CLI...")
     csv_path = "samples/csv/sample_collections.csv"
-    cmd = [sys.executable, '-m', 'purviewcli', 'collections', 'import-csv', '--csv-file', csv_path]
+    cmd = [sys.executable, '-m', 'purviewcli', 'collections', 'import', '--csv-file', csv_path]
     if run_cli_command(cmd):
         success_count += 1
 

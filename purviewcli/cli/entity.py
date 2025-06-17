@@ -1358,7 +1358,7 @@ def remove_business_metadata_attributes(ctx, guid, bm_name, payload_file):
         )
 
 
-@entity.command()
+@entity.command(name="import-business-metadata")
 @click.option(
     "--bm-file",
     required=True,

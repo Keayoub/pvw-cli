@@ -159,7 +159,7 @@ The CLI provides extensive CSV support for bulk operations:
 ### CSV Import/Export
 ```bash
 # Import entities from CSV
-pvw entity import-csv --csv-file data.csv --template basic
+pvw entity import --csv-file data.csv --template basic
 
 # Export entities to CSV  
 pvw entity export-csv --output-file export.csv --template basic
@@ -171,7 +171,7 @@ pvw entity update-csv --csv-file updates.csv --template basic
 ### Lineage CSV Operations
 ```bash
 # Import lineage from CSV
-pvw lineage import-csv --csv-file lineage.csv --template basic
+pvw lineage import --csv-file lineage.csv --template basic
 
 # Validate lineage CSV
 pvw lineage validate-csv --csv-file lineage.csv --template basic
@@ -281,7 +281,7 @@ pvw validate config --profile <name>
 ### CI/CD Integration
 ```bash
 # Automated entity management
-pvw entity import-csv --csv-file "${WORKSPACE}/entities.csv" --template basic
+pvw entity import --csv-file "${WORKSPACE}/entities.csv" --template basic
 
 # Generate reports
 pvw insight generate-report --output-file "${BUILD_ARTIFACTSTAGINGDIRECTORY}/insights.json"
@@ -290,14 +290,14 @@ pvw insight generate-report --output-file "${BUILD_ARTIFACTSTAGINGDIRECTORY}/ins
 ### Scripting and Automation
 ```bash
 # Batch operations with error handling
-pvw entity import-csv --csv-file batch1.csv --template basic || exit 1
-pvw entity import-csv --csv-file batch2.csv --template basic || exit 1
+pvw entity import --csv-file batch1.csv --template basic || exit 1
+pvw entity import --csv-file batch2.csv --template basic || exit 1
 ```
 
 ### Data Pipeline Integration
 ```bash
 # Update lineage after ETL completion
-pvw lineage import-csv --csv-file "${PIPELINE_LINEAGE}" --template etl
+pvw lineage import --csv-file "${PIPELINE_LINEAGE}" --template etl
 
 # Generate data quality report
 pvw governance compliance-report --output-file "${QA_REPORTS}/compliance.json"

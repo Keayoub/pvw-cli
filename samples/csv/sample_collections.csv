@@ -2,5 +2,5 @@ collectionName,friendlyName,description,parentCollection
 sales-collection,Sales Analytics,Collection for sales analytics and reports,kaydemopurview
 marketing-collection,Marketing Data,Collection for marketing data assets,kaydemopurview
 finance-collection,Finance Data,Collection for financial data and compliance,kaydemopurview
-hr-collection,HR Analytics,Collection for HR data,kaydemopurview
-hr-hiring,HR hiring,Collection for HR data,hr-collection
+hr-analytics,HR Analytics,Collection for HR data,v0o2am
+hr-hHiring,HR Hiring,Collection for HR data,v0o2am

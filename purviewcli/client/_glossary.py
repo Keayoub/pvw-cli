@@ -206,7 +206,7 @@ class Glossary(Endpoint):
             self.endpoint = f'{PurviewEndpoints.GLOSSARY["base"]}/{args["--glossaryGuid"]}/terms'
         else:
             self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.GLOSSARY['terms_import_by_name'], glossaryName=glossaryName).replace('/terms/import', '/terms')
-        self.params = {'limit': args['--limit'], 'offset': args['--offset'], 'sort': args['--sort'], 'extInfo': args['--extInfo'], 'includeTermHierarchy': args['--includeTermHierarchy'], 'api-version': '2021-05-01-preview'}
+        self.params = {'limit': args['--limit'], 'offset': args['--offset'], 'sort': args['--sort'], 'extInfo': args['--extInfo'], 'includeTermHierarchy': args['--includeTermHierarchy'], **PurviewEndpoints.get_api_version_params('glossary')}
 
     @decorator
     def glossaryReadTermsHeaders(self, args):

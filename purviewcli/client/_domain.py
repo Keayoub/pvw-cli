@@ -1,123 +1,79 @@
 """
 Governance Domain Management Client for Microsoft Purview
-Based on official API: https://learn.microsoft.com/en-us/rest/api/purview/catalogdataplane/domains
-API Version: 2024-03-01-preview
+ 
+NOTE: Governance Domains are currently not available in the public Microsoft Purview REST API.
+This feature may be in preview, portal-only, or planned for future release.
 
-Implements:
-- Create, list, get, update, and delete governance domains
-- Uses endpoints from purviewcli.client.endpoints (PurviewEndpoints)
-- Compatible with CLI global endpoint/token options
+This client provides a foundation for when the API becomes available and includes
+alternative approaches for domain-like organization.
 """
 
+from .endpoint import Endpoint
 from purviewcli.client.endpoints import PurviewEndpoints
-import os
-import requests
 
-class Domain:
+
+class Domain(Endpoint):
     """Client for managing governance domains in Microsoft Purview."""
-    def __init__(self, endpoint=None, token=None):
-        """
-        Initialize the Domain client with endpoint and token.
-        If not provided, will try to use environment variables.
-        """
-        self.endpoint = endpoint or os.environ.get("PURVIEW_ENDPOINT", "")
-        self.token = token or os.environ.get("PURVIEW_TOKEN", "")
-        self.endpoint = self.endpoint.rstrip("/") if self.endpoint else ""
-        
-        # Define domain API endpoints if not in PurviewEndpoints yet
-        if not hasattr(PurviewEndpoints, "DOMAIN"):
-            PurviewEndpoints.DOMAIN = {
-                "base": f"{PurviewEndpoints.CATALOG_BASE}/domains",
-                "domain": f"{PurviewEndpoints.CATALOG_BASE}/domains/{{name}}"
-            }
+    
+    def __init__(self):
+        Endpoint.__init__(self)
+        self.app = "catalog"  # Use catalog app as fallback
 
-    def create_domain(self, name, friendly_name=None, description=None):
-        """Create a new governance domain using the official Purview API."""
-        if not self.endpoint or not self.token:
-            raise ValueError("Endpoint and token must be provided")
-            
-        url = self.endpoint + PurviewEndpoints.DOMAIN["base"]
-        headers = {
-            "Authorization": f"Bearer {self.token}",
-            "Content-Type": "application/json"
+    def domainsList(self, args):
+        """List all governance domains - Currently not available in public API"""
+        # Return helpful message instead of making API call
+        result = {
+            "status": "not_available",
+            "message": "Governance Domains are not currently available in the public Microsoft Purview REST API. Please use the Azure portal to manage governance domains, or use collections as an alternative organizational structure.",
+            "alternatives": [
+                "Use collections to organize assets hierarchically",
+                "Use custom entity attributes to tag assets with domain information",
+                "Use glossary terms to create domain vocabularies"            ]
         }
-        params = PurviewEndpoints.get_api_version_params("catalog")
-        payload = {
-            "name": name,
-            "friendlyName": friendly_name or name,
-            "description": description or ""
-        }
-        response = requests.post(url, headers=headers, params=params, json=payload)
-        response.raise_for_status()
-        return response.json()
+        return result
 
-    def list_domains(self):
-        """List all governance domains."""
-        if not self.endpoint or not self.token:
-            raise ValueError("Endpoint and token must be provided")
-            
-        url = self.endpoint + PurviewEndpoints.DOMAIN["base"]
-        headers = {
-            "Authorization": f"Bearer {self.token}",
-            "Content-Type": "application/json"
+    def domainsCreate(self, args):
+        """Create a new governance domain - Currently not available in public API"""
+        result = {
+            "status": "not_available", 
+            "message": "Governance Domain creation is not currently available in the public Microsoft Purview REST API. Please use the Azure portal or consider using collections as an alternative.",            "suggested_action": f"Consider creating a collection named '{args.get('--name', 'unknown')}' instead using: pvw collections create --collection-name {args.get('--name', 'domain-name')}"
         }
-        params = PurviewEndpoints.get_api_version_params("catalog")
-        response = requests.get(url, headers=headers, params=params)
-        response.raise_for_status()
-        return response.json()
+        return result
 
-    def get_domain(self, name):
-        """Get a governance domain by name."""
-        if not self.endpoint or not self.token:
-            raise ValueError("Endpoint and token must be provided")
-            
-        url = self.endpoint + PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.DOMAIN["domain"], name=name
-        )
-        headers = {
-            "Authorization": f"Bearer {self.token}",
-            "Content-Type": "application/json"
+    def domainsGet(self, args):
+        """Get a governance domain by name - Currently not available in public API"""
+        domain_name = args.get("--domainName", "unknown")
+        result = {
+            "status": "not_available",
+            "message": f"Cannot retrieve governance domain '{domain_name}' - feature not available in public API",            "suggested_action": f"Try: pvw collections get --collection-name {domain_name}"
         }
-        params = PurviewEndpoints.get_api_version_params("catalog")
-        response = requests.get(url, headers=headers, params=params)
-        response.raise_for_status()
-        return response.json()
+        return result
 
-    def update_domain(self, name, friendly_name=None, description=None):
-        """Update a governance domain's friendlyName and/or description."""
-        if not self.endpoint or not self.token:
-            raise ValueError("Endpoint and token must be provided")
-            
-        url = self.endpoint + PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.DOMAIN["domain"], name=name
-        )
-        headers = {
-            "Authorization": f"Bearer {self.token}",
-            "Content-Type": "application/json"
+    def domainsUpdate(self, args):
+        """Update a governance domain - Currently not available in public API"""
+        domain_name = args.get("--domainName", "unknown")
+        result = {
+            "status": "not_available",            "message": f"Cannot update governance domain '{domain_name}' - feature not available in public API"
         }
-        params = PurviewEndpoints.get_api_version_params("catalog")
-        payload = {}
-        if friendly_name is not None:
-            payload["friendlyName"] = friendly_name
-        if description is not None:
-            payload["description"] = description
-        response = requests.patch(url, headers=headers, params=params, json=payload)
-        response.raise_for_status()
-        return response.json()
+        return result
 
-    def delete_domain(self, name):
-        """Delete a governance domain by name."""
-        if not self.endpoint or not self.token:
-            raise ValueError("Endpoint and token must be provided")
-            
-        url = self.endpoint + PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.DOMAIN["domain"], name=name
-        )
-        headers = {
-            "Authorization": f"Bearer {self.token}",
-            "Content-Type": "application/json"
+    def domainsDelete(self, args):
+        """Delete a governance domain by name - Currently not available in public API"""
+        domain_name = args.get("--domainName", "unknown")
+        result = {
+            "status": "not_available",            "message": f"Cannot delete governance domain '{domain_name}' - feature not available in public API"
         }
-        params = PurviewEndpoints.get_api_version_params("catalog")
-        response = requests.delete(url, headers=headers, params=params)
-        response.raise_for_status()
-        return {"status": "deleted", "name": name}
+        return result
+
+    def get_api_version(self):
+        """Return the current API version for the domain (datamap) endpoint."""
+        return PurviewEndpoints.get_api_version("datamap")
+
+    def get_api_version_params(self):
+        """Return the current API version params for the domain (datamap) endpoint."""
+        return PurviewEndpoints.get_api_version_params("datamap")
+
+    # Example usage in a real API call (when available):
+    # version = self.get_api_version()
+    # params = self.get_api_version_params()
+    # ... use version/params in requests ...

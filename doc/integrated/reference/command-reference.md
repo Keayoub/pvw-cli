@@ -6,9 +6,9 @@ This document lists all available Purview CLI commands with their syntax and des
 
 ### entity
 
-#### importBusinessMetadata
+#### import-business-metadata
 
-**Syntax:** `pvw entity importBusinessMetadata --bmFile=<val>`
+**Syntax:** `pvw entity import-business-metadata --bm-file=<val>`
 
 **Description:**  Import business metadata in bulk.
 
@@ -202,7 +202,7 @@ Glossary management operations
 
 #### import_terms
 
-**Syntax:** `pvw glossary import_terms --csv-file=<value> --glossary-guid=<value>`
+**Syntax:** `pvw glossary import-terms --csv-file=<value> --glossary-guid=<value>`
 
 **Description:** Import glossary terms from CSV
 
@@ -212,89 +212,95 @@ Glossary management operations
 
 **Description:** Assign glossary terms to entities from CSV
 
-### scanning
+### collections
 
-Advanced scanning operations and automation
+Collection management operations for organizing assets
 
-#### run_scan
+#### create
 
-**Syntax:** `pvw scanning run_scan --data-source=<value> --scan-name=<value> [--wait=<value>] [--output=<value>]`
+**Syntax:** `pvw collections create --collection-name=<value> [--friendly-name=<value>] [--description=<value>] [--parent-collection=<value>] [--payload-file=<path>]`
 
-**Description:** Run a scan and optionally wait for completion
+**Description:** Create a new collection
 
-#### generate_report
+#### delete
 
-**Syntax:** `pvw scanning generate_report --output-file=<value> [--include-failed=<value>]`
+**Syntax:** `pvw collections delete --collection-name=<value>`
 
-**Description:** Generate comprehensive scanning report
+**Description:** Delete a collection
 
-### governance
+#### get
 
-Business rules and governance operations
+**Syntax:** `pvw collections get --collection-name=<value>`
 
-#### check_compliance
+**Description:** Get a collection by name
 
-**Syntax:** `pvw governance check_compliance --entity-guid=<value> [--rule-types=<value>] [--output=<value>]`
+#### list
 
-**Description:** Check entity compliance against business rules
+**Syntax:** `pvw collections list`
 
-#### compliance_report
+**Description:** List all collections
 
-**Syntax:** `pvw governance compliance_report --output-file=<value> [--entity-type=<value>]`
+#### import
 
-**Description:** Generate comprehensive compliance report
+**Syntax:** `pvw collections import --csv-file=<path>`
 
-### monitoring
+**Description:** Import collections from a CSV file
 
-Real-time monitoring and alerting
+#### export
 
-#### dashboard
+**Syntax:** `pvw collections export --output-file=<path> [--include-hierarchy] [--include-metadata]`
 
-**Syntax:** `pvw monitoring dashboard [--refresh-interval=<value>]`
+**Description:** Export collections to a CSV file
 
-**Description:** Start real-time monitoring dashboard
+### domain
 
-#### export_metrics
+Governance domain management (limited functionality - collections recommended as alternative)
 
-**Syntax:** `pvw monitoring export_metrics --output-file=<value> [--format=<value>]`
+#### create
 
-**Description:** Export collected metrics
+**Syntax:** `pvw domain create --name=<value> [--friendly-name=<value>] [--description=<value>] [--payload-file=<path>]`
 
-### lineage
+**Description:** Create a new governance domain (not available in public API)
 
-Advanced lineage analysis and visualization
+#### list
 
-#### analyze
+**Syntax:** `pvw domain list`
 
-**Syntax:** `pvw lineage analyze --entity-guid=<value> [--direction=<value>] [--depth=<value>] [--output-file=<value>]`
+**Description:** List all governance domains (not available in public API)
 
-**Description:** Analyze comprehensive lineage for an entity
+#### get
 
-#### impact
+**Syntax:** `pvw domain get --domain-name=<value>`
 
-**Syntax:** `pvw lineage impact --entity-guid=<value> [--output-file=<value>]`
+**Description:** Get a governance domain by name (not available in public API)
 
-**Description:** Perform impact analysis for an entity
+#### update
 
-### plugins
+**Syntax:** `pvw domain update --domain-name=<value> [--friendly-name=<value>] [--description=<value>] [--payload-file=<path>]`
 
-Plugin management and operations
+**Description:** Update a governance domain (not available in public API)
 
-#### list_plugins
+#### delete
 
-**Syntax:** `pvw plugins list_plugins`
+**Syntax:** `pvw domain delete --domain-name=<value>`
 
-**Description:** List all available plugins
+**Description:** Delete a governance domain (not available in public API)
 
-#### info
+#### search
 
-**Syntax:** `pvw plugins info --plugin-name=<value>`
+**Syntax:** `pvw domain search [--keywords=<value>] [--entity-types=<value>] [--limit=<value>]`
 
-**Description:** Get detailed information about a plugin
+**Description:** Search for assets that might be related to governance domains
 
-#### execute
+#### check-attributes
 
-**Syntax:** `pvw plugins execute --plugin-name=<value> --operation=<value> [--params=<value>]`
+**Syntax:** `pvw domain check-attributes`
 
-**Description:** Execute a plugin operation
+**Description:** Check existing entity types for domain-related attributes
+
+#### create-using-collections
+
+**Syntax:** `pvw domain create-using-collections [--domain-name=<value>] [--show-examples]`
+
+**Description:** Guide for creating domain-like structures using collections API
 
