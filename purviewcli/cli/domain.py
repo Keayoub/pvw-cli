@@ -1,14 +1,25 @@
 import click
 import os
+import json
 from purviewcli.client._domain import Domain
+from rich.console import Console
 
+console = Console()
 
 def get_endpoint_and_token(ctx):
     """Get endpoint and token from context or environment variables."""
     endpoint = ctx.obj.get("endpoint") or os.environ.get("PURVIEW_ENDPOINT")
     token = ctx.obj.get("token") or os.environ.get("PURVIEW_TOKEN")
-    if not endpoint or not token:
-        raise click.ClickException("[ERROR] Endpoint and token must be set via CLI options or environment variables (PURVIEW_ENDPOINT, PURVIEW_TOKEN).")
+    
+    if not endpoint:
+        raise click.ClickException(
+            "[ERROR] Endpoint not found. Set with --endpoint or PURVIEW_ENDPOINT environment variable"
+        )
+    if not token:
+        raise click.ClickException(
+            "[ERROR] Token not found. Set with --token or PURVIEW_TOKEN environment variable"
+        )
+    
     return endpoint, token
 
 @click.group(help="Manage governance domains in Microsoft Purview using the official Governance Domain API. Domains are business-level groupings for stewardship, policy, and reporting. Use this command to create, list, and manage governance domains visible in the Purview Governance Domains section.")
@@ -27,11 +38,12 @@ def create(ctx, domain_name, friendly_name, description, collection):
         endpoint, token = get_endpoint_and_token(ctx)
         domain_client = Domain(endpoint, token)
         result = domain_client.create_domain(domain_name, friendly_name, description)
-        click.echo(f"[SUCCESS] Governance domain created: {result}")
+        console.print(f"[green]SUCCESS:[/green] Governance domain created: {domain_name}")
+        console.print(json.dumps(result, indent=2))
         if collection:
-            click.echo(f"[INFO] To associate collection '{collection}' with domain '{domain_name}', set the 'domain' attribute on assets in that collection.")
+            console.print(f"\n[yellow]INFO:[/yellow] To associate collection '{collection}' with domain '{domain_name}', set the 'domain' attribute on assets in that collection.")
     except Exception as e:
-        click.echo(f"[ERROR] Failed to create governance domain: {e}")
+        console.print(f"[red]ERROR:[/red] Failed to create governance domain: {e}")
 
 @domain.command(help="List all governance domains.")
 @click.pass_context
@@ -41,9 +53,9 @@ def list(ctx):
         endpoint, token = get_endpoint_and_token(ctx)
         domain_client = Domain(endpoint, token)
         result = domain_client.list_domains()
-        click.echo(result)
+        console.print(json.dumps(result, indent=2))
     except Exception as e:
-        click.echo(f"[ERROR] Failed to list governance domains: {e}")
+        console.print(f"[red]ERROR:[/red] Failed to list governance domains: {e}")
 
 @domain.command(help="Get a governance domain by name.")
 @click.argument("domain_name")
@@ -54,9 +66,9 @@ def get(ctx, domain_name):
         endpoint, token = get_endpoint_and_token(ctx)
         domain_client = Domain(endpoint, token)
         result = domain_client.get_domain(domain_name)
-        click.echo(result)
+        console.print(json.dumps(result, indent=2))
     except Exception as e:
-        click.echo(f"[ERROR] Failed to get governance domain: {e}")
+        console.print(f"[red]ERROR:[/red] Failed to get governance domain: {e}")
 
 @domain.command(help="Update a governance domain's friendly name and/or description.")
 @click.argument("domain_name")
@@ -69,19 +81,25 @@ def update(ctx, domain_name, friendly_name, description):
         endpoint, token = get_endpoint_and_token(ctx)
         domain_client = Domain(endpoint, token)
         result = domain_client.update_domain(domain_name, friendly_name, description)
-        click.echo(result)
+        console.print(f"[green]SUCCESS:[/green] Updated governance domain: {domain_name}")
+        console.print(json.dumps(result, indent=2))
     except Exception as e:
-        click.echo(f"[ERROR] Failed to update governance domain: {e}")
+        console.print(f"[red]ERROR:[/red] Failed to update governance domain: {e}")
 
 @domain.command(help="Delete a governance domain by name.")
 @click.argument("domain_name")
+@click.option("--force", is_flag=True, help="Force deletion without confirmation")
 @click.pass_context
-def delete(ctx, domain_name):
+def delete(ctx, domain_name, force):
     """Delete a governance domain by name."""
     try:
+        if not force and not click.confirm(f"Are you sure you want to delete domain '{domain_name}'?"):
+            console.print("[yellow]Operation cancelled.[/yellow]")
+            return
+            
         endpoint, token = get_endpoint_and_token(ctx)
         domain_client = Domain(endpoint, token)
         result = domain_client.delete_domain(domain_name)
-        click.echo(result)
+        console.print(f"[green]SUCCESS:[/green] Deleted governance domain: {domain_name}")
     except Exception as e:
-        click.echo(f"[ERROR] Failed to delete governance domain: {e}")
+        console.print(f"[red]ERROR:[/red] Failed to delete governance domain: {e}")
