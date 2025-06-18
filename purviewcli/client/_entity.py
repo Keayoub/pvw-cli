@@ -644,3 +644,36 @@ class Entity(Endpoint):
 
     # Example usage in your CSV import logic:
     # entities = [map_flat_entity_to_purview_entity(row) for row in csv_rows]
+
+    @decorator
+    def search_entities(self, search_args):
+        """Search for entities using the Purview Search API."""
+        # Build the request payload
+        payload = {
+            "keywords": search_args.get("keywords", "*"),
+            "limit": search_args.get("limit", 100),
+        }
+        # Add filter if provided
+        if "filter" in search_args and search_args["filter"]:
+            payload["filter"] = search_args["filter"]
+        # Use the search endpoint and correct API version
+        self.method = "POST"
+        self.endpoint = PurviewEndpoints.SEARCH["query"]
+        self.params = PurviewEndpoints.get_api_version_params("search")
+        self.payload = payload
+        # Actually perform the request and return the result
+        return self.send()
+
+    def send(self):
+        """Send the constructed HTTP request and return the result."""
+        from .endpoint import get_data
+        http_dict = {
+            "app": self.app,
+            "method": self.method,
+            "endpoint": self.endpoint,
+            "params": self.params,
+            "payload": self.payload,
+            "files": self.files,
+            "headers": self.headers,
+        }
+        return get_data(http_dict)

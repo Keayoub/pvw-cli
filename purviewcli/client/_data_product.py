@@ -80,9 +80,18 @@ class DataProduct:
 
     def list(self, type_name="DataProduct"):
         """List all data products (by typeName)."""
-        # This is a simple example; in practice, use search or filter by typeName
-        # Here, you would call a search client or entity list method
-        # For now, return an empty list as a placeholder
+        # Use the entity client's search method to find all entities of type DataProduct
+        search_args = {
+            "keywords": "*",  # match all
+            "filter": {
+                "entityType": [type_name]
+            },
+            "limit": 100
+        }
+        # If the entity client has a search method, use it; otherwise, return empty list
+        if hasattr(self.entity_client, "search_entities"):
+            return self.entity_client.search_entities(search_args)
+        # No suitable fallback for listing all entities by type; return empty list
         return []
 
     def show(self, qualified_name, type_name="DataProduct"):

@@ -15,7 +15,7 @@ class PurviewEndpoints:
     DATAMAP_BASE = "/datamap/api"
     CATALOG_BASE = "/catalog/api"
     SCAN_BASE = "/scan"
-    SEARCH_BASE = "/search/api"
+    SEARCH_BASE = "/search"  # Fixed: removed '/api' to match correct endpoint
     POLICYSTORE_BASE = "/policystore"
     SHARE_BASE = "/share"
     MANAGEMENT_BASE = ""  # Management uses Azure Resource Manager APIs

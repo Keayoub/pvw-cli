@@ -1790,5 +1790,28 @@ def audit(ctx, guid):
         console.print(f"[red]✗ Error executing entity audit: {str(e)}[/red]")
 
 
+@entity.command()
+@click.option('--type-name', required=False, help='Filter by entity typeName (e.g., DataSet, DataProduct)')
+@click.option('--limit', default=100, help='Maximum number of entities to return')
+def list(type_name, limit):
+    """List entities in Microsoft Purview."""
+    try:
+        from purviewcli.client._entity import Entity
+        entity_client = Entity()
+        search_args = {
+            "keywords": "*",
+            "filter": {"entityType": [type_name]} if type_name else {},
+            "limit": limit
+        }
+        results = entity_client.search_entities(search_args)
+        from rich.console import Console
+        console = Console()
+        console.print(json.dumps(results, indent=2))
+    except Exception as e:
+        from rich.console import Console
+        console = Console()
+        console.print(f"[red]✗ Error executing entity list: {str(e)}[/red]")
+
+
 # Make the entity group available for import
 __all__ = ["entity"]

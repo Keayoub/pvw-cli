@@ -294,6 +294,22 @@ data-product show-lineage --qualified-name="product.test.1"
 
 ---
 
+## API Coverage and Upcoming Features
+
+PVW CLI aims to provide comprehensive automation for all major Microsoft Purview APIs. However, some features—such as governance domain CRUD operations—are not yet available via the public REST API as of June 2025.
+
+- For the latest API documentation and updates, see:
+  - [Microsoft Purview REST API reference](https://learn.microsoft.com/en-us/rest/api/purview/)
+  - [Atlas 2.2 API documentation](https://learn.microsoft.com/en-us/purview/data-gov-api-atlas-2-2)
+
+**Note:**
+- Domain management (create, update, delete) is not currently supported by the public API. The CLI will add support for these features as soon as Microsoft releases the necessary endpoints.
+- Please monitor the above links and [Azure Updates](https://azure.microsoft.com/updates/) for new API releases.
+
+If you need a feature that is not yet implemented due to API limitations, please open an issue or check for updates in future releases.
+
+---
+
 ## Contributing & Support
 
 - [Documentation](https://github.com/Keayoub/Purview_cli/blob/main/doc/README.md)
