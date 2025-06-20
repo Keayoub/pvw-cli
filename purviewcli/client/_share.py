@@ -1,5 +1,5 @@
 from .endpoint import Endpoint, decorator, get_json
-from .endpoints import PurviewEndpoints
+from .endpoints import ENDPOINTS, DATAMAP_API_VERSION, format_endpoint, get_api_version_params
 
 class Share(Endpoint):
     def __init__(self):
@@ -10,21 +10,17 @@ class Share(Endpoint):
     @decorator
     def shareListAcceptedShares(self, args):
         sentShareName = args['--sentShareName']
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "GET"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.SHARE['accepted_sent_shares'], 
-            sentShareName=sentShareName
-        )
+        self.endpoint = ENDPOINTS['share']['accepted_sent_shares'].format(sentShareName=sentShareName)
 
     @decorator
     def shareGetAcceptedShare(self, args):
         sentShareName = args['--sentShareName']
         acceptedSentShareName = args['--acceptedSentShareName']
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "GET"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.SHARE['accepted_sent_share'], 
+        self.endpoint = ENDPOINTS['share']['accepted_sent_share'].format(
             sentShareName=sentShareName,
             acceptedSentShareName=acceptedSentShareName
         )
@@ -33,10 +29,9 @@ class Share(Endpoint):
     def shareReinstateAcceptedShare(self, args):
         sentShareName = args['--sentShareName']
         acceptedSentShareName = args['--acceptedSentShareName']
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "POST"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.SHARE['reinstate_accepted_share'], 
+        self.endpoint = ENDPOINTS['share']['reinstate_accepted_share'].format(
             sentShareName=sentShareName,
             acceptedSentShareName=acceptedSentShareName
         )
@@ -46,10 +41,9 @@ class Share(Endpoint):
     def shareRevokeAcceptedShare(self, args):
         sentShareName = args['--sentShareName']
         acceptedSentShareName = args['--acceptedSentShareName']
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "POST"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.SHARE['revoke_accepted_share'], 
+        self.endpoint = ENDPOINTS['share']['revoke_accepted_share'].format(
             sentShareName=sentShareName,
             acceptedSentShareName=acceptedSentShareName
         )
@@ -58,10 +52,9 @@ class Share(Endpoint):
     def shareUpdateExpirationAcceptedShare(self, args):
         sentShareName = args['--sentShareName']
         acceptedSentShareName = args['--acceptedSentShareName']
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "POST"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.SHARE['update_expiration_accepted_share'], 
+        self.endpoint = ENDPOINTS['share']['update_expiration_accepted_share'].format(
             sentShareName=sentShareName,
             acceptedSentShareName=acceptedSentShareName
         )
@@ -70,21 +63,17 @@ class Share(Endpoint):
     @decorator
     def shareListAssetMappings(self, args):
         receivedShareName = args['--receivedShareName']
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "GET"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.SHARE['asset_mappings'], 
-            receivedShareName=receivedShareName
-        )
+        self.endpoint = ENDPOINTS['share']['asset_mappings'].format(receivedShareName=receivedShareName)
 
     @decorator
     def shareCreateAssetMapping(self, args):
         receivedShareName = args['--receivedShareName']
         assetMappingName = args['--assetMappingName']
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "PUT"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.SHARE['asset_mapping'], 
+        self.endpoint = ENDPOINTS['share']['asset_mapping'].format(
             receivedShareName=receivedShareName,
             assetMappingName=assetMappingName
         )
@@ -94,10 +83,9 @@ class Share(Endpoint):
     def shareDeleteAssetMapping(self, args):
         receivedShareName = args['--receivedShareName']
         assetMappingName = args['--assetMappingName']
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "DELETE"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.SHARE['asset_mapping'], 
+        self.endpoint = ENDPOINTS['share']['asset_mapping'].format(
             receivedShareName=receivedShareName,
             assetMappingName=assetMappingName
         )
@@ -106,10 +94,9 @@ class Share(Endpoint):
     def shareGetAssetMapping(self, args):
         receivedShareName = args['--receivedShareName']
         assetMappingName = args['--assetMappingName']
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "GET"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.SHARE['asset_mapping'], 
+        self.endpoint = ENDPOINTS['share']['asset_mapping'].format(
             receivedShareName=receivedShareName,
             assetMappingName=assetMappingName
         )
@@ -117,21 +104,17 @@ class Share(Endpoint):
     @decorator
     def shareListAssets(self, args):
         sentShareName = args['--sentShareName']
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "GET"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.SHARE['assets'], 
-            sentShareName=sentShareName
-        )
+        self.endpoint = ENDPOINTS['share']['assets'].format(sentShareName=sentShareName)
 
     @decorator
     def shareCreateAsset(self, args):
         sentShareName = args['--sentShareName']
         assetName = args['--assetName']
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "PUT"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.SHARE['asset'], 
+        self.endpoint = ENDPOINTS['share']['asset'].format(
             sentShareName=sentShareName,
             assetName=assetName
         )
@@ -141,10 +124,9 @@ class Share(Endpoint):
     def shareDeleteAsset(self, args):
         sentShareName = args['--sentShareName']
         assetName = args['--assetName']
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "DELETE"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.SHARE['asset'], 
+        self.endpoint = ENDPOINTS['share']['asset'].format(
             sentShareName=sentShareName,
             assetName=assetName
         )
@@ -153,65 +135,64 @@ class Share(Endpoint):
     def shareGetAsset(self, args):
         sentShareName = args['--sentShareName']
         assetName = args['--assetName']
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "GET"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.SHARE['asset'], 
+        self.endpoint = ENDPOINTS['share']['asset'].format(
             sentShareName=sentShareName,
             assetName=assetName
         )
 
     @decorator
     def shareActivateEmail(self, args):
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "POST"
-        self.endpoint = PurviewEndpoints.SHARE['activate_email']
+        self.endpoint = ENDPOINTS['share']['activate_email']
         self.payload = get_json(args, '--payloadFile')
 
     @decorator
     def shareRegisterEmail(self, args):
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "POST"
         self.endpoint = "/registerEmail"
 
     @decorator
     def shareListReceivedAssets(self, args):
         receivedShareName = args['--receivedShareName']
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "GET"
         self.endpoint = f"/receivedShares/{receivedShareName}/receivedAssets"
 
     @decorator
     def shareListReceivedInvitations(self, args):
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "GET"
         self.endpoint = "/receivedInvitations"
 
     @decorator
     def shareGetReceivedInvitation(self, args):
         receivedInvitationName = args['--invitationName']
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "GET"
         self.endpoint = f"/receivedInvitations/{receivedInvitationName}"
 
     @decorator
     def shareRejectReceivedInvitation(self, args):
         receivedInvitationName = args['--invitationName']
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "POST"
         self.endpoint = f"/receivedInvitations/{receivedInvitationName}:reject"
         self.payload = get_json(args, '--payloadFile')
 
     @decorator
     def shareListReceivedShares(self, args):
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "GET"
         self.endpoint = "/receivedShares"
 
     @decorator
     def shareCreateReceivedShare(self, args):
         receivedShareName = args['--receivedShareName']
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "PUT"
         self.endpoint = f"/receivedShares/{receivedShareName}"
         self.payload = get_json(args, '--payloadFile')
@@ -219,21 +200,21 @@ class Share(Endpoint):
     @decorator
     def shareDeleteReceivedShare(self, args):
         receivedShareName = args['--receivedShareName']
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "DELETE"
         self.endpoint = f"/receivedShares/{receivedShareName}"
 
     @decorator
     def shareGetReceivedShare(self, args):
         receivedShareName = args['--receivedShareName']
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "GET"
         self.endpoint = f"/receivedShares/{receivedShareName}"
 
     @decorator
     def shareListSentInvitations(self, args):
         sentShareName = args['--sentShareName']
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "GET"
         self.endpoint = f"/sentShares/{sentShareName}/sentShareInvitations"
 
@@ -241,7 +222,7 @@ class Share(Endpoint):
     def shareCreateSentInvitation(self, args):
         sentShareName = args['--sentShareName']
         sentShareInvitationName = args['--invitationName']
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "PUT"
         self.endpoint = f"/sentShares/{sentShareName}/sentShareInvitations/{sentShareInvitationName}"
         self.payload = get_json(args, '--payloadFile')
@@ -250,7 +231,7 @@ class Share(Endpoint):
     def shareDeleteSentInvitation(self, args):
         sentShareName = args['--sentShareName']
         sentShareInvitationName = args['--invitationName']
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "DELETE"
         self.endpoint = f"/sentShares/{sentShareName}/sentShareInvitations/{sentShareInvitationName}"
 
@@ -258,20 +239,20 @@ class Share(Endpoint):
     def shareGetSentInvitation(self, args):
         sentShareName = args['--sentShareName']
         sentShareInvitationName = args['--invitationName']
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "GET"
         self.endpoint = f"/sentShares/{sentShareName}/sentShareInvitations/{sentShareInvitationName}"
 
     @decorator
     def shareListSentShares(self, args):
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "GET"
         self.endpoint = "/sentShares"
 
     @decorator
     def shareCreateSentShare(self, args):
         sentShareName = args['--sentShareName']
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "PUT"
         self.endpoint = f"/sentShares/{sentShareName}"
         self.payload = get_json(args, '--payloadFile')
@@ -279,13 +260,13 @@ class Share(Endpoint):
     @decorator
     def shareDeleteSentShare(self, args):
         sentShareName = args['--sentShareName']
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "DELETE"
         self.endpoint = f"/sentShares/{sentShareName}"
 
     @decorator
     def shareGetSentShare(self, args):
         sentShareName = args['--sentShareName']
-        self.params = PurviewEndpoints.get_api_version_params('share')
+        self.params = get_api_version_params('datamap')
         self.method = "GET"
         self.endpoint = f"/sentShares/{sentShareName}"

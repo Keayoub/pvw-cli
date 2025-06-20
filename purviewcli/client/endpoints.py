@@ -5,276 +5,237 @@ Centralized endpoint management for all Purview services
 
 import os
 
-class PurviewEndpoints:
-    """
-    Centralized configuration for Microsoft Purview API endpoints
-    Based on the latest Microsoft Purview REST API documentation
-    """
+# Simplified and modularized endpoint definitions for Purview Data Map API
 
-    # Base API paths for different services
-    DATAMAP_BASE = "/datamap/api"
-    CATALOG_BASE = "/catalog/api"
-    SCAN_BASE = "/scan"
-    SEARCH_BASE = "/search"  # Fixed: removed '/api' to match correct endpoint
-    POLICYSTORE_BASE = "/policystore"
-    SHARE_BASE = "/share"
-    MANAGEMENT_BASE = ""  # Management uses Azure Resource Manager APIs
+API_VERSION = {"datamap": {"stable": "2023-09-01", "preview": "2024-03-01-preview"}}
 
-    # === API VERSION CONSTANTS ===
-    API_VERSION = {
-        "atlas_api": "atlas/v2",
-        "search": {
-            "stable": "2023-01-01",
-            "preview": "2024-03-01-preview"
-        },
-        "scan": {
-            "stable": "2023-01-01",
-            "preview": "2024-03-01-preview"
-        },
-        "datamap": {
-            "stable": "2023-01-01",
-            "preview": "2025-05-30-preview"  # <-- UPDATED to the latest preview version
-        },
-        "management": "2021-12-01",
-        "collections": "2019-11-01-preview",
-        "share": "2023-05-30-preview",
-    }
+USE_PREVIEW = os.getenv("USE_PREVIEW", "true").lower() in ("1", "true", "yes")
 
-    # Helper: set to True to use preview versions for all APIs that support it
-    USE_PREVIEW = os.getenv("USE_PREVIEW", "true").lower() in ("1", "true", "yes")
+DATAMAP_API_VERSION = (
+    API_VERSION["datamap"]["preview"] if USE_PREVIEW else API_VERSION["datamap"]["stable"]
+)
 
-    @classmethod
-    def get_api_version(cls, api_name):
-        v = cls.API_VERSION[api_name]
-        if isinstance(v, dict):
-            return v["preview" if cls.USE_PREVIEW else "stable"]
-        return v
-
-    # === ENTITY ENDPOINTS (Data Map) ===
-    ENTITY = {
-        "base": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/entity",
-        "bulk": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/entity/bulk",
-        "bulk_classification": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/entity/bulk/classification",
-        "bulk_set_classifications": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/entity/bulk/setClassifications",
-        "guid": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/entity/guid",
-        "unique_attribute": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/entity/uniqueAttribute/type",
-        "classification": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/entity/guid/{{guid}}/classification",
-        "classifications": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/entity/guid/{{guid}}/classifications",
-        "header": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/entity/guid/{{guid}}/header",
-        "audit": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/entity/{{guid}}/audit",
-        "labels": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/entity/guid/{{guid}}/labels",
-        "business_metadata": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/entity/guid/{{guid}}/businessmetadata",
-        "business_metadata_import": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/entity/businessmetadata/import",
-        "business_metadata_template": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/entity/businessmetadata/import/template",
-        "business_metadata_bulk": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/entity/businessmetadata/bulk",
-        "business_metadata_export": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/entity/businessmetadata/export",
-        # New endpoints from 2024-03-01-preview
-        "move_to": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/entity/moveTo",
-        "provenance_info": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/entity/{{guid}}/provenanceinfo",
-        "sample": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/entity/{{guid}}/sample",
-    }
-    # === GLOSSARY ENDPOINTS (Data Map API - Fixed for 2024-03-01-preview) ===
-    GLOSSARY = {
-        "base": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/glossary",  # Fixed: Use DATAMAP_BASE instead of CATALOG_BASE
-        "categories": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/glossary/categories",
-        "category": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/glossary/category",
-        "terms": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/glossary/terms",
-        "term": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/glossary/term",
-        "detailed": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/glossary/{{glossaryGuid}}/detailed",
-        "partial": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/glossary/{{glossaryGuid}}/partial",
-        "category_partial": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/glossary/category/{{categoryGuid}}/partial",
-        "term_partial": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/glossary/term/{{termGuid}}/partial",
-        "category_related": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/glossary/category/{{categoryGuid}}/related",
-        "category_terms": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/glossary/category/{{categoryGuid}}/terms",
-        "term_assigned_entities": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/glossary/terms/{{termGuid}}/assignedEntities",
-        "term_related": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/glossary/terms/{{termGuid}}/related",
-        "categories_headers": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/glossary/{{glossaryGuid}}/categories/headers",
-        "terms_headers": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/glossary/{{glossaryGuid}}/terms/headers",
-        "terms_export": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/glossary/{{glossaryGuid}}/terms/export",
-        # Import endpoints - using Data Map API
-        "terms_import": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/glossary/{{glossaryGuid}}/terms/import",
-        "terms_import_by_name": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/glossary/name/{{glossaryName}}/terms/import",
-        "terms_import_operation": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/glossary/terms/import/{{operationGuid}}",
-    }
-
-    # === TYPES ENDPOINTS (Data Map) ===
-    TYPES = {
-        "base": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/types",
-        "businessmetadatadef": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/types/businessmetadatadef",
-        "classificationdef": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/types/classificationdef",
-        "entitydef": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/types/entitydef",
-        "enumdef": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/types/enumdef",
-        "relationshipdef": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/types/relationshipdef",
-        "structdef": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/types/structdef",
-        "typedef": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/types/typedef",
-    }  # === RELATIONSHIP ENDPOINTS (Data Map) ===
-    RELATIONSHIP = {
-        "base": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/relationship",
-        "guid": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/relationship/guid/{{guid}}",
-    }  # === LINEAGE ENDPOINTS (Data Map) ===
-    LINEAGE = {
-        "guid": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/lineage/{{guid}}",
-        "unique_attribute": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/lineage/uniqueAttribute/type/{{typeName}}",
-        "bulk": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/relationship/bulk",
-        "bulk_update": f"{DATAMAP_BASE}/{API_VERSION['atlas_api']}/relationship/bulk",
-    }
-
-    # === SEARCH ENDPOINTS ===
-    SEARCH = {
-        "query": f"{SEARCH_BASE}/query",
-        "suggest": f"{SEARCH_BASE}/suggest",
-        "autocomplete": f"{SEARCH_BASE}/autocomplete",
-        "browse": f"{SEARCH_BASE}/browse",
-    }
-    # === SCAN ENDPOINTS ===
-    SCAN = {
-        "datasources": f"{SCAN_BASE}/datasources",
-        "datasource": f"{SCAN_BASE}/datasources/{{dataSourceName}}",
-        "scans": f"{SCAN_BASE}/datasources/{{dataSourceName}}/scans",
-        "scan": f"{SCAN_BASE}/datasources/{{dataSourceName}}/scans/{{scanName}}",
-        "scan_runs": f"{SCAN_BASE}/datasources/{{dataSourceName}}/scans/{{scanName}}/runs",
-        "scan_run": f"{SCAN_BASE}/datasources/{{dataSourceName}}/scans/{{scanName}}/runs/{{runId}}",
-        "filters": f"{SCAN_BASE}/datasources/{{dataSourceName}}/scans/{{scanName}}/filters/custom",
-        "triggers": f"{SCAN_BASE}/datasources/{{dataSourceName}}/scans/{{scanName}}/triggers/default",
-        "classification_rules": f"{SCAN_BASE}/classificationrules",
-        "classification_rule": f"{SCAN_BASE}/classificationrules/{{classificationRuleName}}",
-        "classification_rule_versions": f"{SCAN_BASE}/classificationrules/{{classificationRuleName}}/versions",
-        "key_vaults": f"{SCAN_BASE}/azureKeyVaults",
-        "key_vault": f"{SCAN_BASE}/azureKeyVaults/{{keyVaultName}}",
-        "system_scan_rulesets": f"{SCAN_BASE}/systemScanRulesets",
-        "system_scan_ruleset": f"{SCAN_BASE}/systemScanRulesets/{{dataSourceType}}",
-        "system_scan_ruleset_versions": f"{SCAN_BASE}/systemScanRulesets/{{dataSourceType}}/versions",
-        "system_scan_ruleset_version": f"{SCAN_BASE}/systemScanRulesets/{{dataSourceType}}/versions/{{version}}",
-        "collections_list_datasources": f"{SCAN_BASE}/collections/{{collectionName}}/listDataSources",
-        "integration_runtimes": f"{SCAN_BASE}/integrationruntimes",
-        "integration_runtime": f"{SCAN_BASE}/integrationruntimes/{{integrationRuntimeName}}",
-        "integration_runtime_auth": f"{SCAN_BASE}/integrationruntimes/{{integrationRuntimeName}}/listAuthKeys",
-    }
-    # === ACCOUNT ENDPOINTS (2019-11-01-preview) ===
-    # Based on official API: https://learn.microsoft.com/en-us/rest/api/purview/accountdataplane/accounts
-    ACCOUNT = {
-        "account": "/account",  # GET - Get Account Properties
-        "account_update": "/account",  # PATCH - Update Account Properties
-        "access_keys": "/account/keys",  # POST - Get Access Keys
-        "regenerate_access_key": "/account/keys/regenerate",  # POST - Regenerate Access Key
-    }
-
-    # === COLLECTIONS ENDPOINTS (2019-11-01-preview) ===
-    # Based on official API: https://learn.microsoft.com/en-us/rest/api/purview/accountdataplane/collections
-    COLLECTIONS = {
-        "base": "/collections",  # GET - List Collections
-        "collection": "/collections/{collectionName}",  # GET/PUT/DELETE - Collection CRUD
-        "collection_path": "/collections/{collectionName}/getCollectionPath",  # GET - Get Collection Path
-        "child_collection_names": "/collections/{collectionName}/getChildCollectionNames",  # GET - List Child Collection Names
-    }
-
-    # === INSIGHT ENDPOINTS (Catalog) ===
-    INSIGHT = {
-        "asset_distribution_by_data_source": f"{CATALOG_BASE}/atlas/v2/datamap/assetDistributionByDataSource",
-        "asset_distribution_by_top_level_collection": f"{CATALOG_BASE}/atlas/v2/datamap/assetDistributionByTopLevelCollection",
-        "data_source_count_trend": f"{CATALOG_BASE}/atlas/v2/datamap/dataSourceCountTrend",
-        "file_extension_count_trend": f"{CATALOG_BASE}/atlas/v2/datamap/fileExtensionCountTrend",
-        "file_type_size_trend": f"{CATALOG_BASE}/atlas/v2/datamap/fileTypeSizeTrend",
-        "top_file_extensions_by_size": f"{CATALOG_BASE}/atlas/v2/datamap/topFileExtensionsBySize",
-        "classification_insight": f"{CATALOG_BASE}/atlas/v2/datamap/classificationInsight",
-        "label_insight": f"{CATALOG_BASE}/atlas/v2/datamap/labelInsight",
-        "tags_time_series": f"{CATALOG_BASE}/atlas/v2/datamap/tagsTimeSeries",
-    }
-    # === POLICYSTORE ENDPOINTS ===
-    POLICYSTORE = {
-        "metadata_policies": f"{POLICYSTORE_BASE}/metadataPolicies",
-        "metadata_policy_by_id": f"{POLICYSTORE_BASE}/metadataPolicies/{{policyId}}",
-        "collection_metadata_policy": f"{POLICYSTORE_BASE}/collections/{{collectionName}}/metadataPolicy",
-        "metadata_roles": f"{POLICYSTORE_BASE}/metadataRoles",
-        "data_policies": f"{POLICYSTORE_BASE}/dataPolicies",
-        "data_policy_by_name": f"{POLICYSTORE_BASE}/dataPolicies/{{policyName}}",
-        "data_policy_scopes": f"{POLICYSTORE_BASE}/dataPolicies/{{policyName}}/scopes",
-        "data_policy_scope_by_datasource": f"{POLICYSTORE_BASE}/dataPolicies/{{policyName}}/scopes/{{datasource}}",
-    }
-    # === SHARE ENDPOINTS ===
-    SHARE = {
-        "received_shares": f"{SHARE_BASE}/receivedShares",
-        "received_share": f"{SHARE_BASE}/receivedShares/{{receivedShareName}}",
-        "sent_shares": f"{SHARE_BASE}/sentShares",
-        "sent_share": f"{SHARE_BASE}/sentShares/{{sentShareName}}",
-        "accepted_sent_shares": f"{SHARE_BASE}/sentShares/{{sentShareName}}/acceptedSentShares",
-        "accepted_sent_share": f"{SHARE_BASE}/sentShares/{{sentShareName}}/acceptedSentShares/{{acceptedSentShareName}}",
-        "reinstate_accepted_share": f"{SHARE_BASE}/sentShares/{{sentShareName}}/acceptedSentShares/{{acceptedSentShareName}}:reinstate",
-        "revoke_accepted_share": f"{SHARE_BASE}/sentShares/{{sentShareName}}/acceptedSentShares/{{acceptedSentShareName}}:revoke",
-        "update_expiration_accepted_share": f"{SHARE_BASE}/sentShares/{{sentShareName}}/acceptedSentShares/{{acceptedSentShareName}}:update-expiration",
-        "asset_mappings": f"{SHARE_BASE}/receivedShares/{{receivedShareName}}/assetMappings",
-        "asset_mapping": f"{SHARE_BASE}/receivedShares/{{receivedShareName}}/assetMappings/{{assetMappingName}}",
-        "assets": f"{SHARE_BASE}/sentShares/{{sentShareName}}/assets",
-        "asset": f"{SHARE_BASE}/sentShares/{{sentShareName}}/assets/{{assetName}}",
-        "invitations": f"{SHARE_BASE}/sentShares/{{sentShareName}}/invitations",
-        "invitation": f"{SHARE_BASE}/sentShares/{{sentShareName}}/invitations/{{invitationName}}",
-        "activate_email": f"{SHARE_BASE}/activateEmail",
-    }
-
-    # === DOMAIN ENDPOINTS (Data Map - Governance Domains) ===
-    # Based on official API: https://learn.microsoft.com/en-us/rest/api/purview/datamapdataplane/domains
-    DOMAIN = {
-        "base": f"{DATAMAP_BASE}/domains",  # GET (list) / POST (create)
-        "domain": f"{DATAMAP_BASE}/domains/{{domainName}}",  # GET / PATCH / DELETE
-    }
-
-    # === MANAGEMENT ENDPOINTS (Azure Resource Manager) ===
-    MANAGEMENT = {
+ENDPOINTS = {
+    "entity": {
+        # Core entity operations - based on /atlas/v2/entity paths
+        "create_or_update": "/datamap/api/atlas/v2/entity",
+        "bulk_create_or_update": "/datamap/api/atlas/v2/entity/bulk",
+        "bulk_delete": "/datamap/api/atlas/v2/entity/bulk",
+        "list_by_guids": "/datamap/api/atlas/v2/entity/bulk",
+        "bulk_set_classifications": "/datamap/api/atlas/v2/entity/bulk/setClassifications",
+        "bulk_classification": "/datamap/api/atlas/v2/entity/bulk/classification",
+        "import_business_metadata": "/datamap/api/atlas/v2/entity/businessmetadata/import",
+        "business_metadata_template": "/datamap/api/atlas/v2/entity/businessmetadata/import/template",
+        # Entity by GUID operations
+        "get": "/datamap/api/atlas/v2/entity/guid/{guid}",
+        "update_attribute": "/datamap/api/atlas/v2/entity/guid/{guid}",
+        "delete": "/datamap/api/atlas/v2/entity/guid/{guid}",
+        "get_header": "/datamap/api/atlas/v2/entity/guid/{guid}/header",
+        "get_classification": "/datamap/api/atlas/v2/entity/guid/{guid}/classification/{classificationName}",
+        "remove_classification": "/datamap/api/atlas/v2/entity/guid/{guid}/classification/{classificationName}",
+        "get_classifications": "/datamap/api/atlas/v2/entity/guid/{guid}/classifications",
+        "add_classifications": "/datamap/api/atlas/v2/entity/guid/{guid}/classifications",
+        "update_classifications": "/datamap/api/atlas/v2/entity/guid/{guid}/classifications",
+        "add_business_metadata": "/datamap/api/atlas/v2/entity/guid/{guid}/businessmetadata",
+        "remove_business_metadata": "/datamap/api/atlas/v2/entity/guid/{guid}/businessmetadata",
+        "add_business_metadata_attributes": "/datamap/api/atlas/v2/entity/guid/{guid}/businessmetadata/{businessMetadataName}",
+        "remove_business_metadata_attributes": "/datamap/api/atlas/v2/entity/guid/{guid}/businessmetadata/{businessMetadataName}",
+        "add_label": "/datamap/api/atlas/v2/entity/guid/{guid}/labels",
+        "set_labels": "/datamap/api/atlas/v2/entity/guid/{guid}/labels",
+        "remove_labels": "/datamap/api/atlas/v2/entity/guid/{guid}/labels",
+        # Entity by unique attribute operations
+        "get_by_unique_attributes": "/datamap/api/atlas/v2/entity/uniqueAttribute/type/{typeName}",
+        "update_by_unique_attributes": "/datamap/api/atlas/v2/entity/uniqueAttribute/type/{typeName}",
+        "delete_by_unique_attribute": "/datamap/api/atlas/v2/entity/uniqueAttribute/type/{typeName}",
+        "list_by_unique_attributes": "/datamap/api/atlas/v2/entity/bulk/uniqueAttribute/type/{typeName}",
+        "remove_classification_by_unique_attribute": "/datamap/api/atlas/v2/entity/uniqueAttribute/type/{typeName}/classification/{classificationName}",
+        "update_classifications_by_unique_attribute": "/datamap/api/atlas/v2/entity/uniqueAttribute/type/{typeName}/classifications",
+        "add_classifications_by_unique_attribute": "/datamap/api/atlas/v2/entity/uniqueAttribute/type/{typeName}/classifications",
+        "add_labels_by_unique_attribute": "/datamap/api/atlas/v2/entity/uniqueAttribute/type/{typeName}/labels",
+        "set_labels_by_unique_attribute": "/datamap/api/atlas/v2/entity/uniqueAttribute/type/{typeName}/labels",
+        "remove_labels_by_unique_attribute": "/datamap/api/atlas/v2/entity/uniqueAttribute/type/{typeName}/labels",
+        # Entity collection operations
+        "move_entities_to_collection": "/datamap/api/entity/moveTo",
+    },
+    "glossary": {
+        # Core glossary operations
+        "base": "/datamap/api/atlas/v2/glossary",
+        "list": "/datamap/api/atlas/v2/glossary",
+        "create": "/datamap/api/atlas/v2/glossary",
+        "get": "/datamap/api/atlas/v2/glossary/{glossaryId}",
+        "update": "/datamap/api/atlas/v2/glossary/{glossaryId}",
+        "delete": "/datamap/api/atlas/v2/glossary/{glossaryId}",
+        "detailed": "/datamap/api/atlas/v2/glossary/{glossaryGuid}/detailed",
+        "partial": "/datamap/api/atlas/v2/glossary/{glossaryGuid}/partial",
+        # Glossary categories
+        "categories": "/datamap/api/atlas/v2/glossary/categories",
+        "category": "/datamap/api/atlas/v2/glossary/category",
+        "list_categories": "/datamap/api/atlas/v2/glossary/{glossaryId}/categories",
+        "categories_headers": "/datamap/api/atlas/v2/glossary/{glossaryGuid}/categories/headers",
+        "create_categories": "/datamap/api/atlas/v2/glossary/categories",
+        "create_category": "/datamap/api/atlas/v2/glossary/category",
+        "get_category": "/datamap/api/atlas/v2/glossary/category/{categoryId}",
+        "update_category": "/datamap/api/atlas/v2/glossary/category/{categoryId}",
+        "delete_category": "/datamap/api/atlas/v2/glossary/category/{categoryId}",
+        "category_partial": "/datamap/api/atlas/v2/glossary/category/{categoryGuid}/partial",
+        "category_related": "/datamap/api/atlas/v2/glossary/category/{categoryGuid}/related",
+        "category_terms": "/datamap/api/atlas/v2/glossary/category/{categoryGuid}/terms",
+        # Glossary terms
+        "terms": "/datamap/api/atlas/v2/glossary/terms",
+        "term": "/datamap/api/atlas/v2/glossary/term",
+        "list_terms": "/datamap/api/atlas/v2/glossary/{glossaryId}/terms",
+        "terms_headers": "/datamap/api/atlas/v2/glossary/{glossaryGuid}/terms/headers",
+        "create_terms": "/datamap/api/atlas/v2/glossary/terms",
+        "create_term": "/datamap/api/atlas/v2/glossary/term",
+        "get_term": "/datamap/api/atlas/v2/glossary/term/{termId}",
+        "update_term": "/datamap/api/atlas/v2/glossary/term/{termId}",
+        "delete_term": "/datamap/api/atlas/v2/glossary/term/{termId}",
+        "term_partial": "/datamap/api/atlas/v2/glossary/term/{termGuid}/partial",
+        "term_assigned_entities": "/datamap/api/atlas/v2/glossary/terms/{termGuid}/assignedEntities",
+        "term_related": "/datamap/api/atlas/v2/glossary/terms/{termGuid}/related",
+        "terms_export": "/datamap/api/atlas/v2/glossary/{glossaryGuid}/terms/export",
+        "terms_import": "/datamap/api/atlas/v2/glossary/{glossaryGuid}/terms/import",
+        "terms_import_by_name": "/datamap/api/atlas/v2/glossary/name/{glossaryName}/terms/import",
+        "terms_import_operation": "/datamap/api/atlas/v2/glossary/terms/import/{operationGuid}",
+        "assign_term_to_entities": "/datamap/api/atlas/v2/glossary/terms/{termId}/assignedEntities",
+        "delete_term_assignment_from_entities": "/datamap/api/atlas/v2/glossary/terms/{termId}/assignedEntities",
+        "list_related_terms": "/datamap/api/atlas/v2/glossary/terms/{termId}/related",
+    },
+    "lineage": {
+        # Lineage operations
+        "get": "/datamap/api/atlas/v2/lineage/{guid}",
+        "get_by_unique_attribute": "/datamap/api/atlas/v2/lineage/uniqueAttribute/type/{typeName}",
+        "get_next_page": "/datamap/api/lineage/{guid}/next",
+    },
+    "relationship": {
+        # Relationship operations
+        "create": "/datamap/api/atlas/v2/relationship",
+        "update": "/datamap/api/atlas/v2/relationship",
+        "get": "/datamap/api/atlas/v2/relationship/guid/{guid}",
+        "delete": "/datamap/api/atlas/v2/relationship/guid/{guid}",
+    },
+    "types": {
+        # Type definitions operations
+        "list": "/datamap/api/atlas/v2/types/typedefs",
+        "list_headers": "/datamap/api/atlas/v2/types/typedefs/headers",
+        "bulk_create": "/datamap/api/atlas/v2/types/typedefs",
+        "bulk_update": "/datamap/api/atlas/v2/types/typedefs",
+        "bulk_delete": "/datamap/api/atlas/v2/types/typedefs",
+        # Type by GUID
+        "get_by_guid": "/datamap/api/atlas/v2/types/typedef/guid/{guid}",
+        "get_by_name": "/datamap/api/atlas/v2/types/typedef/name/{name}",
+        "delete": "/datamap/api/atlas/v2/types/typedef/name/{name}",
+        # Business metadata definitions
+        "get_business_metadata_def_by_guid": "/datamap/api/atlas/v2/types/businessmetadatadef/guid/{guid}",
+        "get_business_metadata_def_by_name": "/datamap/api/atlas/v2/types/businessmetadatadef/name/{name}",
+        # Classification definitions
+        "get_classification_def_by_guid": "/datamap/api/atlas/v2/types/classificationdef/guid/{guid}",
+        "get_classification_def_by_name": "/datamap/api/atlas/v2/types/classificationdef/name/{name}",
+        # Entity definitions
+        "get_entity_def_by_guid": "/datamap/api/atlas/v2/types/entitydef/guid/{guid}",
+        "get_entity_def_by_name": "/datamap/api/atlas/v2/types/entitydef/name/{name}",
+        # Enum definitions
+        "get_enum_def_by_guid": "/datamap/api/atlas/v2/types/enumdef/guid/{guid}",
+        "get_enum_def_by_name": "/datamap/api/atlas/v2/types/enumdef/name/{name}",
+        # Relationship definitions
+        "get_relationship_def_by_guid": "/datamap/api/atlas/v2/types/relationshipdef/guid/{guid}",
+        "get_relationship_def_by_name": "/datamap/api/atlas/v2/types/relationshipdef/name/{name}",
+        # Struct definitions
+        "get_struct_def_by_guid": "/datamap/api/atlas/v2/types/structdef/guid/{guid}",
+        "get_struct_def_by_name": "/datamap/api/atlas/v2/types/structdef/name/{name}",
+        # Term template definitions
+        "get_term_template_def_by_guid": "/datamap/api/types/termtemplatedef/guid/{guid}",
+        "get_term_template_def_by_name": "/datamap/api/types/termtemplatedef/name/{name}",
+    },
+    "discovery": {
+        # Search and discovery operations
+        "query": "/datamap/api/search/query",
+        "suggest": "/datamap/api/search/suggest",
+        "autocomplete": "/datamap/api/search/autocomplete",
+        "navigate": "/datamap/api/navigate",
+    },
+    # Legacy/compatibility endpoints for existing functionality
+    "search": {
+        "query": "/datamap/api/search/query",
+        "suggest": "/datamap/api/search/suggest",
+        "autocomplete": "/datamap/api/search/autocomplete",
+    },
+    "account": {
+        # These are not part of the Data Map API but kept for compatibility
+        "base": "/account",
+        "settings": "/account/settings",
+        "usage": "/account/usage",
+        "account": "/account",
+        "account_update": "/account",
+        "access_keys": "/account/access-keys",
+        "regenerate_access_key": "/account/regenerate-access-key",
+    },
+    "collections": {
+        # Collection management endpoints - Account Data Plane API
+        "list": "/account/collections",
+        "get": "/account/collections/{collectionName}",
+        "create_or_update": "/account/collections/{collectionName}",
+        "delete": "/account/collections/{collectionName}",
+        "get_collection_path": "/account/collections/{collectionName}/getCollectionPath",
+        "get_child_collection_names": "/account/collections/{collectionName}/getChildCollectionNames",
+    },
+    "scan": {
+        # These are not part of the Data Map API but kept for compatibility
+        "base": "/scan",
+        "status": "/scan/status",
+        "results": "/scan/results",
+    },
+    "share": {
+        # These are not part of the Data Map API but kept for compatibility
+        "base": "/share",
+        "invitation": "/share/invitation",
+        "accept": "/share/accept",
+    },
+    "management": {
+        # Azure Resource Manager endpoints for Purview accounts
         "operations": "/providers/Microsoft.Purview/operations",
-        "check_name_availability": "/subscriptions/{{subscriptionId}}/providers/Microsoft.Purview/checkNameAvailability",
-        "accounts": "/subscriptions/{{subscriptionId}}/providers/Microsoft.Purview/accounts",
-        "accounts_by_rg": "/subscriptions/{{subscriptionId}}/resourceGroups/{{resourceGroupName}}/providers/Microsoft.Purview/accounts",
-        "account": "/subscriptions/{{subscriptionId}}/resourceGroups/{{resourceGroupName}}/providers/Microsoft.Purview/accounts/{{accountName}}",
-        "account_keys": "/subscriptions/{{subscriptionId}}/resourceGroups/{{resourceGroupName}}/providers/Microsoft.Purview/accounts/{{accountName}}/listkeys",
-        "private_endpoints": "/subscriptions/{{subscriptionId}}/resourceGroups/{{resourceGroupName}}/providers/Microsoft.Purview/accounts/{{accountName}}/privateEndpointConnections",
-        "private_endpoint": "/subscriptions/{{subscriptionId}}/resourceGroups/{{resourceGroupName}}/providers/Microsoft.Purview/accounts/{{accountName}}/privateEndpointConnections/{{privateEndpointConnectionName}}",
-        "default_account": "/providers/Microsoft.Purview/checkDefaultAccount",
-        "set_default_account": "/providers/Microsoft.Purview/setDefaultAccount",
-        "remove_default_account": "/providers/Microsoft.Purview/removeDefaultAccount",
-    }
+        "check_name_availability": "/subscriptions/{subscriptionId}/providers/Microsoft.Purview/checkNameAvailability",
+        "accounts": "/subscriptions/{subscriptionId}/providers/Microsoft.Purview/accounts",
+        "accounts_by_rg": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Purview/accounts",        "account": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Purview/accounts/{accountName}",
+    },
+}
 
-    @classmethod
-    def format_endpoint(cls, endpoint_template: str, **kwargs) -> str:
-        """
-        Format an endpoint template with provided parameters
 
-        Args:
-            endpoint_template: Template string with placeholders like {guid}
-            **kwargs: Parameters to substitute in the template
+def format_endpoint(endpoint_template: str, **kwargs) -> str:
+    """
+    Format an endpoint template with the provided keyword arguments.
 
-        Returns:
-            Formatted endpoint string
-        """
-        return endpoint_template.format(**kwargs)
+    Args:
+        endpoint_template: The endpoint template string with placeholders
+        **kwargs: Keyword arguments to substitute in the template
 
-    @classmethod
-    def get_api_version_params(cls, endpoint_type: str) -> dict:
-        """
-        Get appropriate API version parameters for different endpoint types
+    Returns:
+        The formatted endpoint string
+    """
+    return endpoint_template.format(**kwargs)
 
-        Args:
-            endpoint_type: Type of endpoint (search, management, scan, etc.)
 
-        Returns:
-            Dictionary with api-version parameter
-        """
-        # Map endpoint_type to the correct API_VERSION key
-        api_map = {
-            "search": "search",
-            "management": "management",
-            "datamap": "datamap",
-            "scan": "scan",
-            "catalog": "datamap",  # Catalog is now routed through datamap
-            "glossary": "datamap",
-            "collections": "collections",
-            "account": "collections",
-            "policystore": "scan",  # Example: update as needed
-            "policystore_data": "scan",  # Example: update as needed
-            "share": "share",
-            "domain": "datamap",  # Example: update as needed
-        }
-        api_key = api_map.get(endpoint_type)
-        if api_key:
-            version = cls.get_api_version(api_key)
-            return {"api-version": version}
-        return {}
+def get_api_version_params(api_type: str = "datamap") -> dict:
+    """
+    Get API version parameters for the specified API type.
+
+    Args:
+        api_type: The type of API ('datamap', 'account', 'collections', etc.)
+
+    Returns:
+        Dictionary containing the API version parameter
+    """
+    if api_type == "datamap":
+        return {"api-version": DATAMAP_API_VERSION}
+    elif api_type == "account":
+        return {"api-version": "2019-11-01-preview"}
+    elif api_type == "collections":
+        return {"api-version": "2019-11-01-preview"}
+    elif api_type == "management":
+        # These APIs typically use different versioning schemes
+        return {"api-version": "2021-07-01"}
+    elif api_type == "scan":
+        return {"api-version": "2018-12-01-preview"}
+    else:
+        # Default to datamap API version
+        return {"api-version": DATAMAP_API_VERSION}

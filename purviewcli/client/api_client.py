@@ -15,7 +15,7 @@ import logging
 from datetime import datetime
 import os
 import sys
-from .endpoints import PurviewEndpoints
+from .endpoints import ENDPOINTS, DATAMAP_API_VERSION, format_endpoint, get_api_version_params
 
 logger = logging.getLogger(__name__)
 
@@ -98,48 +98,47 @@ class PurviewClient:
     async def _make_request(self, method: str, endpoint: str, **kwargs) -> Dict:
         """Make HTTP request with retry logic"""
         url = f"{self.purview_endpoint}{endpoint}"
+        params = kwargs.get("params", {})
+        params["api-version"] = DATAMAP_API_VERSION
+        kwargs["params"] = params
 
         for attempt in range(self.config.max_retries):
             try:
                 async with self._session.request(method, url, **kwargs) as response:
-                    if response.status == 200:
-                        return await response.json()
-                    elif response.status == 401:
-                        # Token might be expired, refresh it
-                        await self._refresh_token()
-                        continue
-                    else:
-                        response.raise_for_status()
-            except Exception as e:
+                    response.raise_for_status()
+                    return await response.json()
+            except aiohttp.ClientError as e:
+                logger.error(f"Request failed on attempt {attempt + 1}: {e}")
                 if attempt == self.config.max_retries - 1:
                     raise
-                await asyncio.sleep(2**attempt)  # Exponential backoff
 
     async def _refresh_token(self):
         """Refresh authentication token"""
         token = await self._credential.get_token(self.auth_scope)
         self._token = token.token
-        self._session.headers.update(
-            {"Authorization": f"Bearer {self._token}"}
-        )  # Data Map API Methods
+        self._session.headers.update({"Authorization": f"Bearer {self._token}"})
 
+    # Data Map API Methods
     async def get_entity(self, guid: str, **kwargs) -> Dict:
         """Get entity by GUID"""
-        params = {k: v for k, v in kwargs.items() if v is not None}
-        endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.ENTITY["guid"], guid=guid)
-        return await self._make_request("GET", endpoint, params=params)
+        endpoint = format_endpoint(ENDPOINTS["entity"]["get"], guid=guid)
+        return await self._make_request("GET", endpoint, params=kwargs)
 
     async def create_entity(self, entity_data: Dict) -> Dict:
         """Create new entity"""
-        return await self._make_request("POST", PurviewEndpoints.ENTITY["base"], json=entity_data)
+        return await self._make_request(
+            "POST", ENDPOINTS["entity"]["create_or_update"], json=entity_data
+        )
 
     async def update_entity(self, entity_data: Dict) -> Dict:
         """Update existing entity"""
-        return await self._make_request("PUT", PurviewEndpoints.ENTITY["base"], json=entity_data)
+        return await self._make_request(
+            "PUT", ENDPOINTS["entity"]["create_or_update"], json=entity_data
+        )
 
     async def delete_entity(self, guid: str) -> Dict:
         """Delete entity by GUID"""
-        endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.ENTITY["guid"], guid=guid)
+        endpoint = format_endpoint(ENDPOINTS["entity"]["delete"], guid=guid)
         return await self._make_request("DELETE", endpoint)
 
     async def search_entities(self, query: str, **kwargs) -> Dict:
@@ -152,7 +151,7 @@ class PurviewClient:
             "offset": kwargs.get("offset", 0),
         }
         return await self._make_request(
-            "POST", PurviewEndpoints.SEARCH["query"], json=search_request
+            "POST", ENDPOINTS["discovery"]["query"], json=search_request
         )
 
     # Batch Operations
@@ -169,7 +168,7 @@ class PurviewClient:
 
             try:
                 result = await self._make_request(
-                    "POST", PurviewEndpoints.ENTITY["bulk"], json=batch_data
+                    "POST", ENDPOINTS["entity"]["bulk_create_or_update"], json=batch_data
                 )
                 results.extend(result.get("mutatedEntities", {}).get("CREATE", []))
 
@@ -195,7 +194,7 @@ class PurviewClient:
 
             try:
                 result = await self._make_request(
-                    "PUT", PurviewEndpoints.ENTITY["bulk"], json=batch_data
+                    "PUT", ENDPOINTS["entity"]["bulk_create_or_update"], json=batch_data
                 )
                 results.extend(result.get("mutatedEntities", {}).get("UPDATE", []))
 
@@ -290,23 +289,19 @@ class PurviewClient:
     async def get_glossary_terms(self, glossary_guid: str = None) -> List[Dict]:
         """Get all glossary terms"""
         if glossary_guid:
-            endpoint = PurviewEndpoints.format_endpoint(
-                PurviewEndpoints.GLOSSARY["terms"], glossaryGuid=glossary_guid
-            )
+            endpoint = f"{ENDPOINTS['glossary']['terms']}/{glossary_guid}"
         else:
-            endpoint = PurviewEndpoints.GLOSSARY["base"]
+            endpoint = ENDPOINTS["glossary"]["base"]
         return await self._make_request("GET", endpoint)
 
     async def create_glossary_term(self, term_data: Dict) -> Dict:
         """Create glossary term"""
-        return await self._make_request("POST", PurviewEndpoints.GLOSSARY["term"], json=term_data)
+        return await self._make_request("POST", ENDPOINTS["glossary"]["term"], json=term_data)
 
     async def assign_term_to_entities(self, term_guid: str, entity_guids: List[str]) -> Dict:
         """Assign glossary term to multiple entities"""
         assignment_data = {"termGuid": term_guid, "entityGuids": entity_guids}
-        endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.GLOSSARY["term_assigned_entities"], termGuid=term_guid
-        )
+        endpoint = f"{ENDPOINTS['glossary']['term_assigned_entities']}/{term_guid}"
         return await self._make_request("POST", endpoint, json=assignment_data)
 
     # Data Estate Insights
@@ -314,111 +309,103 @@ class PurviewClient:
         """Get asset distribution insights"""
         return await self._make_request("GET", "/mapanddiscover/api/browse")
 
-    # === ACCOUNT MANAGEMENT (Official API Operations) ===
-
-    async def get_account_properties(self) -> Dict:
+        # === ACCOUNT MANAGEMENT (Official API Operations) ===    async def get_account_properties(self) -> Dict:
         """Get Account Properties - Official API Operation"""
-        params = PurviewEndpoints.get_api_version_params("account")
-        return await self._make_request("GET", PurviewEndpoints.ACCOUNT["account"], params=params)
+        params = get_api_version_params("account")
+        return await self._make_request("GET", ENDPOINTS["account"]["account"], params=params)
 
     async def update_account_properties(self, account_data: Dict) -> Dict:
         """Update Account Properties - Official API Operation"""
-        params = PurviewEndpoints.get_api_version_params("account")
+        params = get_api_version_params("account")
         return await self._make_request(
-            "PATCH", PurviewEndpoints.ACCOUNT["account_update"], json=account_data, params=params
+            "PATCH", ENDPOINTS["account"]["account_update"], json=account_data, params=params
         )
 
     async def get_access_keys(self) -> Dict:
         """Get Access Keys - Official API Operation"""
-        params = PurviewEndpoints.get_api_version_params("account")
-        return await self._make_request(
-            "POST", PurviewEndpoints.ACCOUNT["access_keys"], params=params
-        )
+        params = get_api_version_params("account")
+        return await self._make_request("POST", ENDPOINTS["account"]["access_keys"], params=params)
 
     async def regenerate_access_key(self, key_data: Dict) -> Dict:
         """Regenerate Access Key - Official API Operation"""
-        params = PurviewEndpoints.get_api_version_params("account")
+        params = get_api_version_params("account")
         return await self._make_request(
-            "POST", PurviewEndpoints.ACCOUNT["regenerate_access_key"], json=key_data, params=params
+            "POST", ENDPOINTS["account"]["regenerate_access_key"], json=key_data, params=params
         )
 
-    # === COLLECTIONS MANAGEMENT (Official API Operations) ===
+        # === COLLECTIONS MANAGEMENT (Official API Operations) ===
 
     async def list_collections(self) -> List[Dict]:
         """List Collections - Official API Operation"""
-        params = PurviewEndpoints.get_api_version_params("collections")
-        return await self._make_request("GET", PurviewEndpoints.COLLECTIONS["base"], params=params)
+        params = get_api_version_params("collections")
+        return await self._make_request("GET", ENDPOINTS["collections"]["list"], params=params)
 
     async def get_collection(self, collection_name: str) -> Dict:
         """Get Collection - Official API Operation"""
-        endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.COLLECTIONS["collection"], collectionName=collection_name
-        )
-        params = PurviewEndpoints.get_api_version_params("collections")
+        endpoint = format_endpoint(ENDPOINTS["collections"]["get"], collectionName=collection_name)
+        params = get_api_version_params("collections")
         return await self._make_request("GET", endpoint, params=params)
 
     async def create_collection(self, collection_name: str, collection_data: Dict) -> Dict:
         """Create Collection - Official API Operation"""
-        endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.COLLECTIONS["collection"], collectionName=collection_name
+        endpoint = format_endpoint(
+            ENDPOINTS["collections"]["create_or_update"], collectionName=collection_name
         )
-        params = PurviewEndpoints.get_api_version_params("collections")
+        params = get_api_version_params("collections")
         return await self._make_request("PUT", endpoint, json=collection_data, params=params)
 
     async def update_collection(self, collection_name: str, collection_data: Dict) -> Dict:
         """Update Collection - Official API Operation"""
-        endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.COLLECTIONS["collection"], collectionName=collection_name
+        endpoint = format_endpoint(
+            ENDPOINTS["collections"]["create_or_update"], collectionName=collection_name
         )
-        params = PurviewEndpoints.get_api_version_params("collections")
+        params = get_api_version_params("collections")
         return await self._make_request("PUT", endpoint, json=collection_data, params=params)
 
     async def create_or_update_collection(
         self, collection_name: str, collection_data: Dict
     ) -> Dict:
         """Create Or Update Collection - Official API Operation (Backward Compatibility)"""
-        endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.COLLECTIONS["collection"], collectionName=collection_name
+        endpoint = format_endpoint(
+            ENDPOINTS["collections"]["create_or_update"], collectionName=collection_name
         )
-        params = PurviewEndpoints.get_api_version_params("collections")
+        params = get_api_version_params("collections")
         return await self._make_request("PUT", endpoint, json=collection_data, params=params)
 
     async def delete_collection(self, collection_name: str) -> Dict:
         """Delete Collection - Official API Operation"""
-        endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.COLLECTIONS["collection"], collectionName=collection_name
+        endpoint = format_endpoint(
+            ENDPOINTS["collections"]["delete"], collectionName=collection_name
         )
-        params = PurviewEndpoints.get_api_version_params("collections")
+        params = get_api_version_params("collections")
         return await self._make_request("DELETE", endpoint, params=params)
 
     async def get_collection_path(self, collection_name: str) -> Dict:
         """Get Collection Path - Official API Operation"""
-        endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.COLLECTIONS["collection_path"], collectionName=collection_name
+        endpoint = format_endpoint(
+            ENDPOINTS["collections"]["get_collection_path"], collectionName=collection_name
         )
-        params = PurviewEndpoints.get_api_version_params("collections")
+        params = get_api_version_params("collections")
         return await self._make_request("GET", endpoint, params=params)
 
     async def get_child_collection_names(self, collection_name: str) -> List[str]:
         """List Child Collection Names - Official API Operation"""
-        endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.COLLECTIONS["child_collection_names"], collectionName=collection_name
+        endpoint = format_endpoint(
+            ENDPOINTS["collections"]["get_child_collection_names"], collectionName=collection_name
         )
-        params = PurviewEndpoints.get_api_version_params("collections")
+        params = get_api_version_params("collections")
         return await self._make_request("GET", endpoint, params=params)
 
     # Lineage Operations
     async def get_lineage(self, guid: str, direction: str = "BOTH", depth: int = 3) -> Dict:
         """Get entity lineage"""
         params = {"direction": direction, "depth": depth}
-        endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.LINEAGE["lineage"], guid=guid)
+        endpoint = f"{ENDPOINTS['lineage']['lineage']}/{guid}"
         return await self._make_request("GET", endpoint, params=params)
 
     async def create_lineage(self, lineage_data: Dict) -> Dict:
         """Create lineage relationship"""
-        return await self._make_request(
-            "POST", PurviewEndpoints.LINEAGE["lineage"], json=lineage_data
-        )
+        return await self._make_request("POST", ENDPOINTS["lineage"]["lineage"], json=lineage_data)
 
     # === CSV IMPORT/EXPORT OPERATIONS ===
 

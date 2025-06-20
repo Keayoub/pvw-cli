@@ -1,5 +1,5 @@
 from .endpoint import Endpoint, decorator, get_json
-from .endpoints import PurviewEndpoints
+from .endpoints import ENDPOINTS, DATAMAP_API_VERSION
 
 class Policystore(Endpoint):
     def __init__(self):
@@ -10,38 +10,35 @@ class Policystore(Endpoint):
     @decorator
     def policystoreReadMetadataRoles(self, args):
         self.method = 'GET'
-        self.endpoint = PurviewEndpoints.POLICYSTORE['metadata_roles']
-        self.params = PurviewEndpoints.get_api_version_params('policystore')
+        self.endpoint = ENDPOINTS['policystore']['metadata_roles']
+        self.params = {'api-version': DATAMAP_API_VERSION}
 
     @decorator
     def policystoreReadMetadataPolicy(self, args):
         self.method = 'GET'
         if args["--policyId"] is None:
-            self.endpoint = PurviewEndpoints.format_endpoint(
-                PurviewEndpoints.POLICYSTORE['collection_metadata_policy'], 
+            self.endpoint = ENDPOINTS['policystore']['collection_metadata_policy'].format(
                 collectionName=args["--collectionName"]
             )
         else:
-            self.endpoint = PurviewEndpoints.format_endpoint(
-                PurviewEndpoints.POLICYSTORE['metadata_policy_by_id'], 
+            self.endpoint = ENDPOINTS['policystore']['metadata_policy_by_id'].format(
                 policyId=args["--policyId"]
             )
-        self.params = PurviewEndpoints.get_api_version_params('policystore')
+        self.params = {'api-version': DATAMAP_API_VERSION}
 
     @decorator
     def policystoreReadMetadataPolicies(self, args):
         self.method = 'GET'
-        self.endpoint = PurviewEndpoints.POLICYSTORE['metadata_policies']
-        self.params = PurviewEndpoints.get_api_version_params('policystore')
+        self.endpoint = ENDPOINTS['policystore']['metadata_policies']
+        self.params = {'api-version': DATAMAP_API_VERSION}
 
     @decorator
     def policystorePutMetadataPolicy(self, args):
         self.method = 'PUT'
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.POLICYSTORE['metadata_policy_by_id'], 
+        self.endpoint = ENDPOINTS['policystore']['metadata_policy_by_id'].format(
             policyId=args["--policyId"]
         )
-        self.params = PurviewEndpoints.get_api_version_params('policystore')
+        self.params = {'api-version': DATAMAP_API_VERSION}
         self.payload = get_json(args, '--payloadFile')
 
     # Data Policies
@@ -50,44 +47,40 @@ class Policystore(Endpoint):
         policyName = args['--policyName']
         self.method = 'GET'
         if args['--policyName']:
-            self.endpoint = PurviewEndpoints.format_endpoint(
-                PurviewEndpoints.POLICYSTORE['data_policy_by_name'], 
+            self.endpoint = ENDPOINTS['policystore']['data_policy_by_name'].format(
                 policyName=policyName
             )
         else:
-            self.endpoint = PurviewEndpoints.POLICYSTORE['data_policies']
-        self.params = PurviewEndpoints.get_api_version_params('policystore_data')
+            self.endpoint = ENDPOINTS['policystore']['data_policies']
+        self.params = {'api-version': DATAMAP_API_VERSION}
 
     @decorator
     def policystorePutDataPolicy(self, args):
         policyName = args['--policyName']
         self.method = 'PUT'
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.POLICYSTORE['data_policy_by_name'], 
+        self.endpoint = ENDPOINTS['policystore']['data_policy_by_name'].format(
             policyName=policyName
         )
-        self.params = PurviewEndpoints.get_api_version_params('policystore_data')
+        self.params = {'api-version': DATAMAP_API_VERSION}
         self.payload = get_json(args, '--payloadFile')
 
     @decorator
     def policystoreReadDataPolicyScopes(self, args):
         policyName = args['--policyName']
         self.method = 'GET'
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.POLICYSTORE['data_policy_scopes'], 
+        self.endpoint = ENDPOINTS['policystore']['data_policy_scopes'].format(
             policyName=policyName
         )
-        self.params = PurviewEndpoints.get_api_version_params('policystore_data')
+        self.params = {'api-version': DATAMAP_API_VERSION}
 
     @decorator
     def policystorePutDataPolicyScope(self, args):
         policyName = args['--policyName']
         self.method = 'PUT'
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.POLICYSTORE['data_policy_scopes'], 
+        self.endpoint = ENDPOINTS['policystore']['data_policy_scopes'].format(
             policyName=policyName
         )
-        self.params = PurviewEndpoints.get_api_version_params('policystore_data')
+        self.params = {'api-version': DATAMAP_API_VERSION}
         self.payload = get_json(args, '--payloadFile')
 
     @decorator
@@ -95,19 +88,17 @@ class Policystore(Endpoint):
         policyName = args['--policyName']
         datasource = args['--datasource']
         self.method = 'DELETE'
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.POLICYSTORE['data_policy_scope_by_datasource'], 
+        self.endpoint = ENDPOINTS['policystore']['data_policy_scope_by_datasource'].format(
             policyName=policyName,
             datasource=datasource
         )
-        self.params = PurviewEndpoints.get_api_version_params('policystore_data')
+        self.params = {'api-version': DATAMAP_API_VERSION}
 
     @decorator
     def policystoreDeleteDataPolicy(self, args):
         policyName = args['--policyName']
         self.method = 'DELETE'
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.POLICYSTORE['data_policy_by_name'], 
+        self.endpoint = ENDPOINTS['policystore']['data_policy_by_name'].format(
             policyName=policyName
         )
-        self.params = PurviewEndpoints.get_api_version_params('policystore_data')
+        self.params = {'api-version': DATAMAP_API_VERSION}

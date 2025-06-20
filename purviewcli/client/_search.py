@@ -8,7 +8,7 @@ import json
 import logging
 from typing import Dict, List, Optional, Union, Any
 from .endpoint import Endpoint, decorator, get_json
-from .endpoints import PurviewEndpoints
+from .endpoints import ENDPOINTS, DATAMAP_API_VERSION, format_endpoint, get_api_version_params
 
 # Configure logging for search operations
 logger = logging.getLogger(__name__)
@@ -120,8 +120,8 @@ class Search(Endpoint):
         Supports advanced filtering, faceting, sorting, and business metadata search
         """
         self.method = "POST"
-        self.endpoint = PurviewEndpoints.SEARCH["query"]
-        self.params = PurviewEndpoints.get_api_version_params("search")
+        self.endpoint = ENDPOINTS["search"]["query"]
+        self.params = get_api_version_params('datamap')
 
         # Build comprehensive search payload
         self.payload = self._build_search_payload(args)
@@ -137,8 +137,8 @@ class Search(Endpoint):
         Specialized method for complex enterprise search scenarios
         """
         self.method = "POST"
-        self.endpoint = PurviewEndpoints.SEARCH["query"]
-        self.params = PurviewEndpoints.get_api_version_params("search")
+        self.endpoint = ENDPOINTS["search"]["query"]
+        self.params = get_api_version_params('datamap')
 
         payload = self._build_search_payload(args)
 
@@ -171,8 +171,8 @@ class Search(Endpoint):
         Returns search results with facet counts for filtering
         """
         self.method = "POST"
-        self.endpoint = PurviewEndpoints.SEARCH["query"]
-        self.params = PurviewEndpoints.get_api_version_params("search")
+        self.endpoint = ENDPOINTS["search"]["query"]
+        self.params = get_api_version_params('datamap')
 
         payload = self._build_search_payload(args)
 
@@ -209,8 +209,8 @@ class Search(Endpoint):
         Search for assets modified or created within specific time ranges
         """
         self.method = "POST"
-        self.endpoint = PurviewEndpoints.SEARCH["query"]
-        self.params = PurviewEndpoints.get_api_version_params("search")
+        self.endpoint = ENDPOINTS["search"]["query"]
+        self.params = get_api_version_params('datamap')
 
         payload = self._build_search_payload(args)
 
@@ -258,8 +258,8 @@ class Search(Endpoint):
         Search for specific types of assets with type-specific parameters
         """
         self.method = "POST"
-        self.endpoint = PurviewEndpoints.SEARCH["query"]
-        self.params = PurviewEndpoints.get_api_version_params("search")
+        self.endpoint = ENDPOINTS["search"]["query"]
+        self.params = get_api_version_params('datamap')
 
         payload = self._build_search_payload(args)
 
@@ -288,8 +288,8 @@ class Search(Endpoint):
         Supports partial matching and contextual suggestions
         """
         self.method = "POST"
-        self.endpoint = PurviewEndpoints.SEARCH["autocomplete"]
-        self.params = PurviewEndpoints.get_api_version_params("search")
+        self.endpoint = ENDPOINTS["search"]["autocomplete"]
+        self.params = get_api_version_params('datamap')
 
         self.payload = {
             "keywords": args.get("--keywords", ""),
@@ -306,8 +306,8 @@ class Search(Endpoint):
         Provides intelligent search suggestions based on catalog content
         """
         self.method = "POST"
-        self.endpoint = PurviewEndpoints.SEARCH["suggest"]
-        self.params = PurviewEndpoints.get_api_version_params("search")
+        self.endpoint = ENDPOINTS["search"]["suggest"]
+        self.params = get_api_version_params('datamap')
 
         self.payload = {
             "keywords": args.get("--keywords", ""),
@@ -325,8 +325,8 @@ class Search(Endpoint):
         Supports collection-based browsing and path navigation
         """
         self.method = "POST"
-        self.endpoint = PurviewEndpoints.SEARCH["browse"]
-        self.params = PurviewEndpoints.get_api_version_params("search")
+        self.endpoint = ENDPOINTS["search"]["browse"]
+        self.params = get_api_version_params('datamap')
 
         self.payload = {
             "entityType": args.get("--entityType"),

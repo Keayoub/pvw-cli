@@ -1,6 +1,6 @@
 import uuid
 from .endpoint import Endpoint, decorator, get_json
-from .endpoints import PurviewEndpoints
+from .endpoints import ENDPOINTS, format_endpoint
 
 class Scan(Endpoint):
     def __init__(self):
@@ -10,46 +10,46 @@ class Scan(Endpoint):
     @decorator
     def scanReadClassificationRule(self, args):
         self.method = 'GET'
-        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.SCAN['classification_rule'], classificationRuleName=args["--classificationRuleName"])
+        self.endpoint = format_endpoint(ENDPOINTS['scan']['classification_rule'], classificationRuleName=args["--classificationRuleName"])
 
     @decorator
     def scanReadClassificationRules(self, args):
         self.method = 'GET'
-        self.endpoint = PurviewEndpoints.SCAN['classification_rules']
+        self.endpoint = ENDPOINTS['scan']['classification_rules']
 
     @decorator
     def scanReadClassificationRuleVersions(self, args):
         self.method = 'GET'
-        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.SCAN['classification_rule_versions'], classificationRuleName=args["--classificationRuleName"])
+        self.endpoint = format_endpoint(ENDPOINTS['scan']['classification_rule_versions'], classificationRuleName=args["--classificationRuleName"])
 
     @decorator
     def scanReadDataSource(self, args):
         self.method = 'GET'
-        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.SCAN['datasource'], dataSourceName=args["--dataSourceName"])
+        self.endpoint = format_endpoint(ENDPOINTS['scan']['datasource'], dataSourceName=args["--dataSourceName"])
 
     @decorator
     def scanReadDataSources(self, args):
         collectionName = args['--collectionName']
         self.method = 'GET'
         if args['--collectionName']:
-            self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.SCAN['collections_list_datasources'], collectionName=collectionName)
+            self.endpoint = format_endpoint(ENDPOINTS['scan']['collections_list_datasources'], collectionName=collectionName)
         else:
-            self.endpoint = PurviewEndpoints.SCAN['datasources']
+            self.endpoint = ENDPOINTS['scan']['datasources']
 
     @decorator
     def scanReadFilters(self, args):
         self.method = 'GET'
-        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.SCAN['filters'], dataSourceName=args["--dataSourceName"], scanName=args["--scanName"])
+        self.endpoint = format_endpoint(ENDPOINTS['scan']['filters'], dataSourceName=args["--dataSourceName"], scanName=args["--scanName"])
 
     @decorator
     def scanReadKeyVault(self, args):
         self.method = 'GET'
-        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.SCAN['key_vault'], keyVaultName=args["--keyVaultName"])
+        self.endpoint = format_endpoint(ENDPOINTS['scan']['key_vault'], keyVaultName=args["--keyVaultName"])
 
     @decorator
     def scanReadKeyVaults(self, args):
         self.method = 'GET'
-        self.endpoint = PurviewEndpoints.SCAN['key_vaults']
+        self.endpoint = ENDPOINTS['scan']['key_vaults']
 
     @decorator
     def scanReadScanHistory(self, args):

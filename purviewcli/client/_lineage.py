@@ -15,7 +15,7 @@ import logging
 
 from .api_client import PurviewClient
 from .endpoint import Endpoint, decorator, get_json
-from .endpoints import PurviewEndpoints
+from .endpoints import ENDPOINTS, DATAMAP_API_VERSION
 
 logger = logging.getLogger(__name__)
 
@@ -263,9 +263,7 @@ class Lineage(Endpoint):
     def lineageRead(self, args):
         """Read lineage information for an entity"""
         self.method = "GET"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.LINEAGE["guid"], guid=args["--guid"]
-        )
+        self.endpoint = ENDPOINTS["lineage"]["guid"].format(guid=args["--guid"])
         self.params = {
             "depth": args.get("--depth", 3),
             "width": args.get("--width", 6),
@@ -292,7 +290,7 @@ class Lineage(Endpoint):
     def lineageAnalyze(self, args):
         """Advanced lineage analysis endpoint"""
         self.method = "GET"
-        self.endpoint = f'{PurviewEndpoints.format_endpoint(PurviewEndpoints.LINEAGE["guid"], guid=args["--guid"])}/analyze'
+        self.endpoint = f"{ENDPOINTS['lineage']['guid'].format(guid=args['--guid'])}/analyze"
         self.params = {
             "depth": args.get("--depth", 3),
             "direction": args.get("--direction", "BOTH"),
@@ -303,7 +301,7 @@ class Lineage(Endpoint):
     def lineageImpact(self, args):
         """Impact analysis endpoint"""
         self.method = "GET"
-        self.endpoint = f'{PurviewEndpoints.format_endpoint(PurviewEndpoints.LINEAGE["guid"], guid=args["--guid"])}/impact'
+        self.endpoint = f"{ENDPOINTS['lineage']['guid'].format(guid=args['--guid'])}/impact"
         self.params = {
             "direction": args.get("--direction", "OUTPUT"),
             "maxDepth": args.get("--depth", 5),
@@ -446,7 +444,7 @@ class Lineage(Endpoint):
         """Get available CSV lineage templates"""
         self.method = "GET"
         self.endpoint = (
-            f"{PurviewEndpoints.DATAMAP_BASE}/{PurviewEndpoints.API_VERSION['atlas_api']}/lineage/csv/templates"
+            f"{ENDPOINTS['datamap_base']}/{DATAMAP_API_VERSION}/lineage/csv/templates"
         )
         self.params = {}
 
@@ -454,9 +452,7 @@ class Lineage(Endpoint):
     def lineageReadUniqueAttribute(self, args):
         """Read lineage information for an entity by unique attribute"""
         self.method = "GET"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.LINEAGE["unique_attribute"], typeName=args["--typeName"]
-        )
+        self.endpoint = ENDPOINTS["lineage"]["unique_attribute"].format(typeName=args["--typeName"])
         self.params = {
             "attr:qualifiedName": args["--qualifiedName"],
             "depth": args.get("--depth", 3),
@@ -471,9 +467,8 @@ class Lineage(Endpoint):
     def lineageBulkCreate(self, args):
         """Create multiple lineage relationships in bulk (Official API). Ensures payload is a list or dict with 'entities'."""
         self.method = "POST"
-        self.endpoint = PurviewEndpoints.LINEAGE["bulk"]
+        self.endpoint = ENDPOINTS["lineage"]["bulk"]
         payload = get_json(args, "--payloadFile")
-        # Accept either a list of relationships or a dict with 'entities' key
         if isinstance(payload, dict) and "entities" in payload:
             self.payload = payload
         elif isinstance(payload, list):
@@ -489,7 +484,7 @@ class Lineage(Endpoint):
     def lineageBulkUpdate(self, args):
         """Update multiple lineage relationships in bulk. Ensures payload is a list or dict with 'entities'."""
         self.method = "PUT"
-        self.endpoint = PurviewEndpoints.LINEAGE["bulk_update"]
+        self.endpoint = ENDPOINTS["lineage"]["bulk_update"]
         payload = get_json(args, "--payloadFile")
         if isinstance(payload, dict) and "entities" in payload:
             self.payload = payload
@@ -506,9 +501,7 @@ class Lineage(Endpoint):
     def lineageReadDownstream(self, args):
         """Get downstream lineage for an entity"""
         self.method = "GET"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.LINEAGE["downstream"], guid=args["--guid"]
-        )
+        self.endpoint = ENDPOINTS["lineage"]["downstream"].format(guid=args["--guid"])
         self.params = {
             "depth": args.get("--depth", 3),
             "width": args.get("--width", 6),
@@ -520,9 +513,7 @@ class Lineage(Endpoint):
     def lineageReadUpstream(self, args):
         """Get upstream lineage for an entity"""
         self.method = "GET"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.LINEAGE["upstream"], guid=args["--guid"]
-        )
+        self.endpoint = ENDPOINTS["lineage"]["upstream"].format(guid=args["--guid"])
         self.params = {
             "depth": args.get("--depth", 3),
             "width": args.get("--width", 6),
@@ -534,25 +525,21 @@ class Lineage(Endpoint):
     def lineageCreateRelationship(self, args):
         """Create a new lineage relationship"""
         self.method = "POST"
-        self.endpoint = PurviewEndpoints.LINEAGE["guid"].replace("/{guid}", "")
+        self.endpoint = ENDPOINTS["lineage"]["guid"].replace("/{guid}", "")
         self.payload = get_json(args, "--payloadFile")
 
     @decorator
     def lineageUpdateRelationship(self, args):
         """Update an existing lineage relationship"""
         self.method = "PUT"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.LINEAGE["guid"], guid=args["--guid"]
-        )
+        self.endpoint = ENDPOINTS["lineage"]["guid"].format(guid=args["--guid"])
         self.payload = get_json(args, "--payloadFile")
 
     @decorator
     def lineageDeleteRelationship(self, args):
         """Delete a lineage relationship"""
         self.method = "DELETE"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.LINEAGE["guid"], guid=args["--guid"]
-        )
+        self.endpoint = ENDPOINTS["lineage"]["guid"].format(guid=args["--guid"])
         self.params = {"cascade": str(args.get("--cascade", False)).lower()}
 
     # === ENHANCED LINEAGE ANALYSIS METHODS ===
@@ -561,7 +548,7 @@ class Lineage(Endpoint):
     def lineageAnalyzeColumn(self, args):
         """Analyze column-level lineage"""
         self.method = "GET"
-        self.endpoint = f'{PurviewEndpoints.format_endpoint(PurviewEndpoints.LINEAGE["guid"], guid=args["--guid"])}/columns'
+        self.endpoint = f"{ENDPOINTS['lineage']['guid'].format(guid=args['--guid'])}/columns"
         self.params = {
             "columnName": args.get("--columnName"),
             "direction": args.get("--direction", "BOTH"),
@@ -572,7 +559,7 @@ class Lineage(Endpoint):
     def lineageAnalyzeDataflow(self, args):
         """Analyze data flow patterns"""
         self.method = "GET"
-        self.endpoint = f'{PurviewEndpoints.format_endpoint(PurviewEndpoints.LINEAGE["guid"], guid=args["--guid"])}/dataflow'
+        self.endpoint = f"{ENDPOINTS['lineage']['guid'].format(guid=args['--guid'])}/dataflow"
         self.params = {
             "includeProcesses": "true",
             "includeTransformations": "true",
@@ -584,7 +571,7 @@ class Lineage(Endpoint):
         """Get lineage metrics and statistics"""
         self.method = "GET"
         self.endpoint = (
-            f"{PurviewEndpoints.DATAMAP_BASE}/{PurviewEndpoints.API_VERSION['atlas_api']}/lineage/metrics"
+            f"{ENDPOINTS['datamap_base']}/{DATAMAP_API_VERSION}/lineage/metrics"
         )
         self.params = {
             "entityGuid": args.get("--guid"),
@@ -599,5 +586,5 @@ class Lineage(Endpoint):
         guid = args.get('--guid')
         direction = args.get('--direction', 'BOTH')
         depth = args.get('--depth', 3)
-        self.endpoint = PurviewEndpoints.LINEAGE['guid'].format(guid=guid)
+        self.endpoint = ENDPOINTS['lineage']['guid'].format(guid=guid)
         self.params = {'direction': direction, 'depth': depth}

@@ -1,6 +1,6 @@
 import uuid
 from .endpoint import Endpoint, decorator, get_json
-from .endpoints import PurviewEndpoints
+from .endpoints import ENDPOINTS, DATAMAP_API_VERSION, format_endpoint, get_api_version_params
 
 class Management(Endpoint):
     def __init__(self):
@@ -10,54 +10,54 @@ class Management(Endpoint):
     @decorator
     def managementListOperations(self, args):
         self.method = 'GET'
-        self.endpoint = PurviewEndpoints.MANAGEMENT['operations']
-        self.params = PurviewEndpoints.get_api_version_params('management')
+        self.endpoint = ENDPOINTS['management']['operations']
+        self.params = get_api_version_params('datamap')
    
     @decorator
     def managementCheckNameAvailability(self, args):
         self.method = 'POST'
-        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.MANAGEMENT['check_name_availability'], subscriptionId=args["--subscriptionId"])
-        self.params = PurviewEndpoints.get_api_version_params('management')
+        self.endpoint = format_endpoint(ENDPOINTS['management']['check_name_availability'], subscriptionId=args["--subscriptionId"])
+        self.params = get_api_version_params('datamap')
         self.payload = {'name': args['--accountName'], 'type': 'Microsoft.Purview/accounts'}
     
     @decorator
     def managementReadAccounts(self, args):
         self.method = 'GET'
         if args["--resourceGroupName"] is None:
-            self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.MANAGEMENT['accounts'], subscriptionId=args["--subscriptionId"])
+            self.endpoint = format_endpoint(ENDPOINTS['management']['accounts'], subscriptionId=args["--subscriptionId"])
         else:
-            self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.MANAGEMENT['accounts_by_rg'], 
+            self.endpoint = format_endpoint(ENDPOINTS['management']['accounts_by_rg'], 
                                                            subscriptionId=args["--subscriptionId"], 
                                                            resourceGroupName=args["--resourceGroupName"])
-        self.params = PurviewEndpoints.get_api_version_params('management')
+        self.params = get_api_version_params('datamap')
 
     @decorator
     def managementReadAccount(self, args):
         self.method = 'GET'
-        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.MANAGEMENT['account'], 
+        self.endpoint = format_endpoint(ENDPOINTS['management']['account'], 
                                                        subscriptionId=args["--subscriptionId"],
                                                        resourceGroupName=args["--resourceGroupName"],
                                                        accountName=args["--accountName"])
-        self.params = PurviewEndpoints.get_api_version_params('management')
+        self.params = get_api_version_params('datamap')
     
     @decorator
     def managementCreateAccount(self, args):
         self.method = 'PUT'
-        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.MANAGEMENT['account'], 
+        self.endpoint = format_endpoint(ENDPOINTS['management']['account'], 
                                                        subscriptionId=args["--subscriptionId"],
                                                        resourceGroupName=args["--resourceGroupName"],
                                                        accountName=args["--accountName"])
-        self.params = PurviewEndpoints.get_api_version_params('management')
+        self.params = get_api_version_params('datamap')
         self.payload = get_json(args, '--payloadFile')
     
     @decorator
     def managementDeleteAccount(self, args):
         self.method = 'DELETE'
-        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.MANAGEMENT['account'], 
+        self.endpoint = format_endpoint(ENDPOINTS['management']['account'], 
                                                        subscriptionId=args["--subscriptionId"],
                                                        resourceGroupName=args["--resourceGroupName"],
                                                        accountName=args["--accountName"])
-        self.params = PurviewEndpoints.get_api_version_params('management')
+        self.params = get_api_version_params('datamap')
     
     @decorator
     def managementListKeys(self, args):

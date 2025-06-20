@@ -5,21 +5,22 @@ Deletes collections, entities, data products, domains, glossary terms, etc.
 import sys
 from purviewcli.client._collections import Collections
 from purviewcli.client._entity import Entity
-from purviewcli.client._data_product import DataProduct
+from purviewcli.client._unified_catalog import UnifiedCatalogDataProduct
 from purviewcli.client._glossary import Glossary
 # from purviewcli.client._domain import Domain  # Uncomment if available
 
 def main():
     print("Purging all sample data...")
-    # Remove data products
-    data_product_client = DataProduct()
+    # Remove data products using Unified Catalog API
+    data_product_client = UnifiedCatalogDataProduct()
     try:
-        dps = data_product_client.list()
-        for dp in dps:
-            qn = dp.get("qualifiedName")
-            if qn:
-                data_product_client.delete(qn)
-                print(f"Deleted data product: {qn}")
+        dps = data_product_client.list_data_products()
+        if isinstance(dps, dict) and 'value' in dps:
+            for dp in dps['value']:
+                dp_id = dp.get("id")
+                if dp_id:
+                    data_product_client.delete_data_product(dp_id)
+                    print(f"Deleted data product: {dp.get('name', dp_id)}")
     except Exception as e:
         print(f"Error deleting data products: {e}")
 

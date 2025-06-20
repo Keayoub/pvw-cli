@@ -13,7 +13,7 @@ Official Collections Operations:
 """
 
 from .endpoint import Endpoint, decorator, get_json, no_api_call_decorator
-from .endpoints import PurviewEndpoints
+from .endpoints import ENDPOINTS, DATAMAP_API_VERSION, format_endpoint, get_api_version_params
 import random
 import string
 
@@ -28,37 +28,32 @@ class Collections(Endpoint):
 
     def __init__(self):
         Endpoint.__init__(self)
-        self.app = "account"
-
-    # === CORE COLLECTION OPERATIONS ===
-
+        self.app = "account"    # === CORE COLLECTION OPERATIONS ===
     @decorator
     def collectionsGetCollections(self, args):
         """List Collections - Official API Operation"""
         self.method = "GET"
-        self.endpoint = PurviewEndpoints.COLLECTIONS["base"]
-        self.params = PurviewEndpoints.get_api_version_params("collections")
+        self.endpoint = ENDPOINTS["collections"]["list"]
+        self.params = get_api_version_params("collections")
 
     @decorator
     def collectionsGetCollection(self, args):
         """Get Collection - Official API Operation"""
         self.method = "GET"
-
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.COLLECTIONS["collection"], collectionName=args["--collectionName"]
+        self.endpoint = format_endpoint(
+            ENDPOINTS["collections"]["get"], collectionName=args["--collectionName"]
         )
-        print(self.endpoint)
-        self.params = PurviewEndpoints.get_api_version_params("collections")
+        self.params = get_api_version_params("collections")
 
     @decorator
     def collectionsCreateCollection(self, args):
         """Create Collection - Official API Operation"""
         collection_name = args.get("--collectionName") or get_random_string(6)
         self.method = "PUT"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.COLLECTIONS["collection"], collectionName=collection_name
+        self.endpoint = format_endpoint(
+            ENDPOINTS["collections"]["create_or_update"], collectionName=collection_name
         )
-        self.params = PurviewEndpoints.get_api_version_params("collections")
+        self.params = get_api_version_params("collections")
         # Build payload according to official API specification for creation
         if args.get("--payloadFile"):
             self.payload = get_json(args, "--payloadFile")
@@ -83,10 +78,10 @@ class Collections(Endpoint):
             raise ValueError("Collection name is required for update operation")
 
         self.method = "PUT"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.COLLECTIONS["collection"], collectionName=collection_name
+        self.endpoint = format_endpoint(
+            ENDPOINTS["collections"]["create_or_update"], collectionName=collection_name
         )
-        self.params = PurviewEndpoints.get_api_version_params("collections")
+        self.params = get_api_version_params("collections")
         # Build payload according to official API specification for update
         if args.get("--payloadFile"):
             self.payload = get_json(args, "--payloadFile")
@@ -108,10 +103,10 @@ class Collections(Endpoint):
         """Create Or Update Collection - Official API Operation (Backward Compatibility)"""
         collection_name = args.get("--collectionName") or get_random_string(6)
         self.method = "PUT"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.COLLECTIONS["collection"], collectionName=collection_name
+        self.endpoint = format_endpoint(
+            ENDPOINTS["collections"]["create_or_update"], collectionName=collection_name
         )
-        self.params = PurviewEndpoints.get_api_version_params("collections")
+        self.params = get_api_version_params("collections")
         # Build payload according to official API specification
         if args.get("--payloadFile"):
             self.payload = get_json(args, "--payloadFile")
@@ -132,10 +127,10 @@ class Collections(Endpoint):
     def collectionsDeleteCollection(self, args):
         """Delete Collection - Official API Operation"""
         self.method = "DELETE"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.COLLECTIONS["collection"], collectionName=args["--collectionName"]
+        self.endpoint = format_endpoint(
+            ENDPOINTS["collections"]["delete"], collectionName=args["--collectionName"]
         )
-        self.params = PurviewEndpoints.get_api_version_params("collections")
+        self.params = get_api_version_params("collections")
 
     # === COLLECTION HIERARCHY OPERATIONS ===
 
@@ -143,22 +138,20 @@ class Collections(Endpoint):
     def collectionsGetCollectionPath(self, args):
         """Get Collection Path - Official API Operation"""
         self.method = "GET"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.COLLECTIONS["collection_path"], collectionName=args["--collectionName"]
+        self.endpoint = format_endpoint(
+            ENDPOINTS["collections"]["get_collection_path"], collectionName=args["--collectionName"]
         )
-        self.params = PurviewEndpoints.get_api_version_params("collections")
+        self.params = get_api_version_params("collections")
 
     @decorator
     def collectionsGetChildCollectionNames(self, args):
         """List Child Collection Names - Official API Operation"""
         self.method = "GET"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.COLLECTIONS["child_collection_names"],
+        self.endpoint = format_endpoint(
+            ENDPOINTS["collections"]["get_child_collection_names"],
             collectionName=args["--collectionName"],
         )
-        self.params = PurviewEndpoints.get_api_version_params(
-            "collections"
-        )  # === CSV IMPORT/EXPORT OPERATIONS ===
+        self.params = get_api_version_params("collections")
 
     @no_api_call_decorator
     def collectionsImportFromCSV(self, args):
@@ -459,14 +452,20 @@ class Collections(Endpoint):
         results = []
         for _, row in df.iterrows():
             args = {
-                '--collectionName': row['collectionName'],
-                '--friendlyName': row['friendlyName'],
-                '--description': row.get('description', ''),
-                '--parentCollection': row.get('parentCollection', os.getenv("PURVIEW_ACCOUNT_NAME", "root")),                
+                "--collectionName": row["collectionName"],
+                "--friendlyName": row["friendlyName"],
+                "--description": row.get("description", ""),
+                "--parentCollection": row.get(
+                    "parentCollection", os.getenv("PURVIEW_ACCOUNT_NAME", "root")
+                ),
             }
             try:
                 result = self.collectionsCreateCollection(args)
-                results.append({'collection': row['collectionName'], 'status': 'success', 'result': result})
+                results.append(
+                    {"collection": row["collectionName"], "status": "success", "result": result}
+                )
             except Exception as e:
-                results.append({'collection': row['collectionName'], 'status': 'error', 'error': str(e)})
+                results.append(
+                    {"collection": row["collectionName"], "status": "error", "error": str(e)}
+                )
         return results

@@ -1,0 +1,1 @@
+py -m purviewcli entity list | ConvertFrom-Json | Select-Object -ExpandProperty data | Select-Object -ExpandProperty value | Format-Table id, displayText, description, qualifiedName, entityType

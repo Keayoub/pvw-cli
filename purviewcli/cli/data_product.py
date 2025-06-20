@@ -1,143 +1,278 @@
 import click
 import csv
 import json
+import tempfile
+import os
 from rich.console import Console
-from purviewcli.client._data_product import DataProduct
+from purviewcli.client._unified_catalog import UnifiedCatalogDataProduct
 
 console = Console()
 
 @click.group()
 def data_product():
-    """Manage data products in Microsoft Purview."""
+    """Manage data products in Microsoft Purview using Unified Catalog API."""
     pass
 
-@data_product.command(name="import")
-@click.option('--csv-file', required=True, type=click.Path(exists=True), help="CSV file with data product definitions")
-@click.option('--dry-run', is_flag=True, help="Preview data products to be created without making changes")
-def import_data_products(csv_file, dry_run):
-    """Import data products from a CSV file."""
-    try:
-        data_product_client = DataProduct()
-        results = data_product_client.import_from_csv_file(csv_file, dry_run=dry_run)
-        if dry_run:
-            msg = f"Dry run: {len(results)} data products would be imported."
-            print(msg)
-            for p in results[:5]:
-                print(json.dumps(p, indent=2))
-            if len(results) > 5:
-                print(f"...and {len(results)-5} more.")
-            return
-        for qualified_name, result in results:
-            if isinstance(result, dict) and result.get("status") == "error":
-                print(f"ERROR: Failed to import {qualified_name}: {result.get('message', 'Unknown error')}")
-            else:
-                print(f"SUCCESS: Imported {qualified_name}")
-    except Exception as e:
-        print(f"ERROR: Error importing data products: {str(e)}")
-
 @data_product.command()
-@click.option('--qualified-name', required=True, help="Qualified name of the data product")
-@click.option('--name', required=False, help="Name of the data product")
+@click.option('--name', required=True, help="Name of the data product")
 @click.option('--description', required=False, help="Description of the data product")
-def create(qualified_name, name, description):
-    """Create a new data product."""
-    data_product_client = DataProduct()
-    result = data_product_client.create(qualified_name, name, description)
-    # Check for error in result and print accordingly
-    if isinstance(result, dict) and result.get("status") == "error":
-        print(f"ERROR: {result.get('message', 'Failed to create data product.')}")
-    else:
-        print(f"SUCCESS: Created {qualified_name}")
-        print(json.dumps(result, indent=2))
+@click.option('--domain-guid', required=False, help="GUID of the domain to associate with")
+def create(name, description, domain_guid):
+    """Create a new data product using Unified Catalog API."""
+    try:
+        data_product_client = UnifiedCatalogDataProduct()
+        result = data_product_client.create_data_product(
+            name=name,
+            description=description,
+            domain_guid=domain_guid
+        )
+        
+        if result.get("status") == "error":
+            console.print(f"[red]ERROR:[/red] {result.get('message', 'Unknown error')}")
+            return
+            
+        console.print(f"[green]SUCCESS:[/green] Created data product '{name}'")
+        console.print(json.dumps(result, indent=2))
+            
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
 
 @data_product.command()
-@click.option('--qualified-name', required=True, help="Qualified name of the data product")
-def show(qualified_name):
-    """Show details of a data product."""
-    data_product_client = DataProduct()
-    result = data_product_client.show(qualified_name)
-    console.print(json.dumps(result, indent=2))
+@click.option('--data-product-id', required=True, help="ID of the data product")
+def show(data_product_id):
+    """Show details of a data product using Unified Catalog API."""
+    try:
+        data_product_client = UnifiedCatalogDataProduct()
+        result = data_product_client.get_data_product(data_product_id)
+        
+        if result.get("status") == "error":
+            console.print(f"[red]ERROR:[/red] {result.get('message', 'Unknown error')}")
+            return
+            
+        console.print(json.dumps(result, indent=2))
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
 
 @data_product.command()
-@click.option('--qualified-name', required=True, help="Qualified name of the data product")
-def delete(qualified_name):
-    """Delete a data product."""
-    data_product_client = DataProduct()
-    result = data_product_client.delete(qualified_name)
-    console.print(f"[green]DELETED:[/green] {qualified_name}")
-    console.print(json.dumps(result, indent=2))
+@click.option('--data-product-id', required=True, help="ID of the data product")
+@click.option('--name', required=False, help="New name for the data product")
+@click.option('--description', required=False, help="New description for the data product")
+def update(data_product_id, name, description):
+    """Update a data product using Unified Catalog API."""
+    try:
+        data_product_client = UnifiedCatalogDataProduct()
+        updates = {}
+        if name:
+            updates['name'] = name
+        if description:
+            updates['description'] = description
+        
+        if not updates:
+            console.print("[yellow]WARNING:[/yellow] No updates specified")
+            return
+        
+        result = data_product_client.update_data_product(data_product_id, updates)
+        
+        if result.get("status") == "error":
+            console.print(f"[red]ERROR:[/red] {result.get('message', 'Unknown error')}")
+            return
+            
+        console.print(f"[green]SUCCESS:[/green] Updated data product '{data_product_id}'")
+        console.print(json.dumps(result, indent=2))
+            
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
 
 @data_product.command()
-def list():
-    """List all data products."""
-    data_product_client = DataProduct()
-    results = data_product_client.list()
-    console.print(json.dumps(results, indent=2))
+@click.option('--data-product-id', required=True, help="ID of the data product")
+def delete(data_product_id):
+    """Delete a data product using Unified Catalog API."""
+    try:
+        data_product_client = UnifiedCatalogDataProduct()
+        result = data_product_client.delete_data_product(data_product_id)
+        
+        if result.get("status") == "error":
+            console.print(f"[red]ERROR:[/red] {result.get('message', 'Unknown error')}")
+            return
+            
+        console.print(f"[green]SUCCESS:[/green] Deleted data product '{data_product_id}'")
+        console.print(json.dumps(result, indent=2))
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
 
 @data_product.command()
-@click.option('--qualified-name', required=True, help="Qualified name of the data product")
-@click.option('--classification', required=True, help="Classification to add")
-def add_classification(qualified_name, classification):
-    """Add a classification to a data product."""
-    data_product_client = DataProduct()
-    result = data_product_client.add_classification(qualified_name, classification)
-    console.print(f"[green]CLASSIFICATION ADDED:[/green] {classification} to {qualified_name}")
-    console.print(json.dumps(result, indent=2))
+@click.option('--limit', default=50, help="Maximum number of data products to list")
+@click.option('--skip', default=0, help="Number of data products to skip")
+@click.option('--domain-id', required=False, help="Filter by governance domain ID")
+def list(limit, skip, domain_id):
+    """List data products using Unified Catalog API."""
+    try:
+        data_product_client = UnifiedCatalogDataProduct()
+        result = data_product_client.list_data_products(
+            limit=limit,
+            offset=skip,
+            domain_id=domain_id
+        )
+        
+        if result.get("status") == "error":
+            console.print(f"[red]ERROR:[/red] {result.get('message', 'Unknown error')}")
+            return
+            
+        console.print(json.dumps(result, indent=2))
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
 
 @data_product.command()
-@click.option('--qualified-name', required=True, help="Qualified name of the data product")
-@click.option('--classification', required=True, help="Classification to remove")
-def remove_classification(qualified_name, classification):
-    """Remove a classification from a data product."""
-    data_product_client = DataProduct()
-    result = data_product_client.remove_classification(qualified_name, classification)
-    console.print(f"[green]CLASSIFICATION REMOVED:[/green] {classification} from {qualified_name}")
-    console.print(json.dumps(result, indent=2))
+@click.option('--data-product-id', required=True, help="ID of the data product")
+def publish(data_product_id):
+    """Publish a data product using Unified Catalog API."""
+    try:
+        data_product_client = UnifiedCatalogDataProduct()
+        result = data_product_client.update_data_product(data_product_id, {"status": "Published"})
+        
+        if result.get("status") == "error":
+            console.print(f"[red]ERROR:[/red] {result.get('message', 'Unknown error')}")
+            return
+            
+        console.print(f"[green]SUCCESS:[/green] Published data product '{data_product_id}'")
+        console.print(json.dumps(result, indent=2))
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
 
 @data_product.command()
-@click.option('--qualified-name', required=True, help="Qualified name of the data product")
-@click.option('--label', required=True, help="Label to add")
-def add_label(qualified_name, label):
-    """Add a label to a data product."""
-    data_product_client = DataProduct()
-    result = data_product_client.add_label(qualified_name, label)
-    console.print(f"[green]LABEL ADDED:[/green] {label} to {qualified_name}")
-    console.print(json.dumps(result, indent=2))
+@click.option('--data-product-id', required=True, help="ID of the data product")
+def unpublish(data_product_id):
+    """Unpublish a data product using Unified Catalog API."""
+    try:
+        data_product_client = UnifiedCatalogDataProduct()
+        result = data_product_client.update_data_product(data_product_id, {"status": "Draft"})
+        
+        if result.get("status") == "error":
+            console.print(f"[red]ERROR:[/red] {result.get('message', 'Unknown error')}")
+            return
+            
+        console.print(f"[green]SUCCESS:[/green] Unpublished data product '{data_product_id}'")
+        console.print(json.dumps(result, indent=2))
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+# === BUSINESS DOMAIN COMMANDS ===
+# Business domains are required for data product creation
 
 @data_product.command()
-@click.option('--qualified-name', required=True, help="Qualified name of the data product")
-@click.option('--label', required=True, help="Label to remove")
-def remove_label(qualified_name, label):
-    """Remove a label from a data product."""
-    data_product_client = DataProduct()
-    result = data_product_client.remove_label(qualified_name, label)
-    console.print(f"[green]LABEL REMOVED:[/green] {label} from {qualified_name}")
-    console.print(json.dumps(result, indent=2))
+def list_domains():
+    """List all business domains."""
+    try:
+        data_product_client = UnifiedCatalogDataProduct()
+        result = data_product_client.businessDomainList({})
+        
+        if result.get("status") == "error":
+            console.print(f"[red]ERROR:[/red] {result.get('message', 'Unknown error')}")
+            return
+            
+        console.print(json.dumps(result, indent=2))
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
 
 @data_product.command()
-@click.option('--qualified-name', required=True, help="Qualified name of the data product")
-@click.option('--term', required=True, help="Glossary term to link")
-def link_glossary(qualified_name, term):
+@click.option('--name', required=True, help="Name of the business domain")
+@click.option('--description', required=False, help="Description of the business domain")
+@click.option('--type', default="DataDomain", help="Type of the business domain (DataDomain, LineOfBusiness, etc.)")
+def create_domain(name, description, type):
+    """Create a new business domain."""
+    try:
+        data_product_client = UnifiedCatalogDataProduct()
+        args = {
+            "--name": name,
+            "--description": description or "",
+            "--type": type,
+            "--status": "Draft"
+        }
+        result = data_product_client.businessDomainCreate(args)
+        
+        if result.get("status") == "error":
+            console.print(f"[red]ERROR:[/red] {result.get('message', 'Unknown error')}")
+            return
+            
+        console.print(f"[green]SUCCESS:[/green] Created business domain '{name}'")
+        console.print(json.dumps(result, indent=2))
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+@data_product.command()
+@click.option('--domain-id', required=True, help="ID of the business domain")
+def show_domain(domain_id):
+    """Show details of a business domain."""
+    try:
+        data_product_client = UnifiedCatalogDataProduct()
+        result = data_product_client.businessDomainRead({"--domainId": domain_id})
+        
+        if result.get("status") == "error":
+            console.print(f"[red]ERROR:[/red] {result.get('message', 'Unknown error')}")
+            return
+            
+        console.print(json.dumps(result, indent=2))
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+# === GLOSSARY TERM COMMANDS ===
+
+@data_product.command()
+@click.option('--domain-id', required=False, help="Filter by governance domain ID")
+def list_terms(domain_id):
+    """List glossary terms."""
+    try:
+        data_product_client = UnifiedCatalogDataProduct()
+        args = {}
+        if domain_id:
+            args["--governanceDomain"] = domain_id
+        result = data_product_client.glossaryTermsList(args)
+        
+        if result.get("status") == "error":
+            console.print(f"[red]ERROR:[/red] {result.get('message', 'Unknown error')}")
+            return
+            
+        console.print(json.dumps(result, indent=2))
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+@data_product.command()
+@click.option('--name', required=True, help="Name of the glossary term")
+@click.option('--description', required=False, help="Description of the glossary term")
+@click.option('--domain-id', required=True, help="ID of the governance domain")
+def create_term(name, description, domain_id):
+    """Create a new glossary term."""
+    try:
+        data_product_client = UnifiedCatalogDataProduct()
+        result = data_product_client.create_glossary_term(
+            name=name,
+            description=description or "",
+            domain_id=domain_id
+        )
+        
+        if result.get("status") == "error":
+            console.print(f"[red]ERROR:[/red] {result.get('message', 'Unknown error')}")
+            return
+            
+        console.print(f"[green]SUCCESS:[/green] Created glossary term '{name}'")
+        console.print(json.dumps(result, indent=2))
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+@data_product.command()
+@click.option('--data-product-id', required=True, help="ID of the data product")
+@click.option('--term-id', required=True, help="ID of the glossary term")
+def link_term(data_product_id, term_id):
     """Link a glossary term to a data product."""
-    data_product_client = DataProduct()
-    result = data_product_client.link_glossary(qualified_name, term)
-    console.print(f"[green]GLOSSARY TERM LINKED:[/green] {term} to {qualified_name}")
-    console.print(json.dumps(result, indent=2))
-
-@data_product.command()
-@click.option('--qualified-name', required=True, help="Qualified name of the data product")
-def show_lineage(qualified_name):
-    """Show lineage for a data product."""
-    data_product_client = DataProduct()
-    result = data_product_client.show_lineage(qualified_name)
-    console.print(json.dumps(result, indent=2))
-
-@data_product.command()
-@click.option('--qualified-name', required=True, help="Qualified name of the data product")
-@click.option('--status', required=True, help="Status to set (e.g., active, deprecated)")
-def set_status(qualified_name, status):
-    """Set the status of a data product."""
-    data_product_client = DataProduct()
-    result = data_product_client.set_status(qualified_name, status)
-    console.print(f"[green]STATUS SET:[/green] {status} for {qualified_name}")
-    console.print(json.dumps(result, indent=2))
+    try:
+        data_product_client = UnifiedCatalogDataProduct()
+        result = data_product_client.link_term_to_data_product(data_product_id, term_id)
+        
+        if result.get("status") == "error":
+            console.print(f"[red]ERROR:[/red] {result.get('message', 'Unknown error')}")
+            return
+            
+        console.print(f"[green]SUCCESS:[/green] Linked term '{term_id}' to data product '{data_product_id}'")
+        console.print(json.dumps(result, indent=2))
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")

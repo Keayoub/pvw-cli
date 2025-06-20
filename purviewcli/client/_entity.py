@@ -15,7 +15,7 @@ Complete implementation of all Entity operations from the official specification
 """
 
 from .endpoint import Endpoint, decorator, get_json, no_api_call_decorator
-from .endpoints import PurviewEndpoints
+from .endpoints import ENDPOINTS, DATAMAP_API_VERSION, format_endpoint, get_api_version_params
 
 
 class Entity(Endpoint):
@@ -31,8 +31,8 @@ class Entity(Endpoint):
     def entityCreateOrUpdate(self, args):
         """Create or update an entity (Official API: Create Or Update)"""
         self.method = "POST"
-        self.endpoint = PurviewEndpoints.ENTITY["base"]
-        self.params = PurviewEndpoints.get_api_version_params("datamap")
+        self.endpoint = ENDPOINTS["entity"]["base"]
+        self.params = get_api_version_params("datamap")
         self.payload = get_json(args, "--payloadFile")
 
     @decorator
@@ -44,16 +44,16 @@ class Entity(Endpoint):
     def entityDelete(self, args):
         """Delete an entity identified by its GUID"""
         self.method = "DELETE"
-        self.endpoint = f'{PurviewEndpoints.ENTITY["guid"]}/{args["--guid"][0]}'
-        self.params = PurviewEndpoints.get_api_version_params("datamap")
+        self.endpoint = f'{ENDPOINTS["entity"]["guid"]}/{args["--guid"][0]}'
+        self.params = get_api_version_params("datamap")
 
     @decorator
     def entityRead(self, args):
         """Get complete definition of an entity given its GUID (Official API: Get)"""
         self.method = "GET"
-        self.endpoint = f'{PurviewEndpoints.ENTITY["guid"]}/{args["--guid"][0]}'
+        self.endpoint = f'{ENDPOINTS["entity"]["guid"]}/{args["--guid"][0]}'
         self.params = {
-            **PurviewEndpoints.get_api_version_params("datamap"),
+            **get_api_version_params("datamap"),
             "ignoreRelationships": str(args.get("--ignoreRelationships", False)).lower(),
             "minExtInfo": str(args.get("--minExtInfo", False)).lower(),
         }
@@ -78,8 +78,8 @@ class Entity(Endpoint):
         """Create or update entities in bulk (Official API: Bulk Create Or Update)"""
         self._validate_entities_have_qualified_name(args)
         self.method = "POST"
-        self.endpoint = PurviewEndpoints.ENTITY["bulk"]
-        self.params = PurviewEndpoints.get_api_version_params("datamap")
+        self.endpoint = ENDPOINTS["entity"]["bulk"]
+        self.params = get_api_version_params("datamap")
         self.payload = get_json(args, "--payloadFile")
 
     @decorator
@@ -91,16 +91,16 @@ class Entity(Endpoint):
     def entityDeleteBulk(self, args):
         """Delete a list of entities in bulk (Official API: Bulk Delete)"""
         self.method = "DELETE"
-        self.endpoint = PurviewEndpoints.ENTITY["bulk"]
-        self.params = {**PurviewEndpoints.get_api_version_params("datamap"), "guid": args["--guid"]}
+        self.endpoint = ENDPOINTS["entity"]["bulk"]
+        self.params = {**get_api_version_params("datamap"), "guid": args["--guid"]}
 
     @decorator
     def entityReadBulk(self, args):
         """List entities in bulk identified by GUIDs (Official API: List By Guids)"""
         self.method = "GET"
-        self.endpoint = PurviewEndpoints.ENTITY["bulk"]
+        self.endpoint = ENDPOINTS["entity"]["bulk"]
         self.params = {
-            **PurviewEndpoints.get_api_version_params("datamap"),
+            **get_api_version_params("datamap"),
             "guid": args["--guid"],
             "ignoreRelationships": str(args.get("--ignoreRelationships", False)).lower(),
             "minExtInfo": str(args.get("--minExtInfo", False)).lower(),
@@ -112,9 +112,9 @@ class Entity(Endpoint):
     def entityReadUniqueAttribute(self, args):
         """Get entity by unique attributes (Official API: Get By Unique Attributes)"""
         self.method = "GET"
-        self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}'
+        self.endpoint = f'{ENDPOINTS["entity"]["unique_attribute"]}/{args["--typeName"]}'
         self.params = {
-            **PurviewEndpoints.get_api_version_params("datamap"),
+            **get_api_version_params("datamap"),
             "attr:qualifiedName": args["--qualifiedName"],
             "ignoreRelationships": str(args.get("--ignoreRelationships", False)).lower(),
             "minExtInfo": str(args.get("--minExtInfo", False)).lower(),
@@ -124,9 +124,9 @@ class Entity(Endpoint):
     def entityReadBulkUniqueAttribute(self, args):
         """List entities by unique attributes (Official API: List By Unique Attributes)"""
         self.method = "GET"
-        self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}/bulk'
+        self.endpoint = f'{ENDPOINTS["entity"]["unique_attribute"]}/{args["--typeName"]}/bulk'
         params = {
-            **PurviewEndpoints.get_api_version_params("datamap"),
+            **get_api_version_params("datamap"),
             "ignoreRelationships": str(args.get("--ignoreRelationships", False)).lower(),
             "minExtInfo": str(args.get("--minExtInfo", False)).lower(),
         }
@@ -141,9 +141,9 @@ class Entity(Endpoint):
     def entityDeleteUniqueAttribute(self, args):
         """Delete entity by unique attributes (Official API: Delete By Unique Attribute)"""
         self.method = "DELETE"
-        self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}'
+        self.endpoint = f'{ENDPOINTS["entity"]["unique_attribute"]}/{args["--typeName"]}'
         self.params = {
-            **PurviewEndpoints.get_api_version_params("datamap"),
+            **get_api_version_params("datamap"),
             "attr:qualifiedName": args["--qualifiedName"],
         }
 
@@ -151,9 +151,9 @@ class Entity(Endpoint):
     def entityPartialUpdateByUniqueAttribute(self, args):
         """Partial update by unique attributes (Official API: Partial Update By Unique Attributes)"""
         self.method = "PUT"
-        self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}'
+        self.endpoint = f'{ENDPOINTS["entity"]["unique_attribute"]}/{args["--typeName"]}'
         self.params = {
-            **PurviewEndpoints.get_api_version_params("datamap"),
+            **get_api_version_params("datamap"),
             "attr:qualifiedName": args["--qualifiedName"],
         }
         self.payload = get_json(args, "--payloadFile")
@@ -164,10 +164,8 @@ class Entity(Endpoint):
     def entityReadHeader(self, args):
         """Get entity header given its GUID (Official API: Get Header)"""
         self.method = "GET"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.ENTITY["header"], guid=args["--guid"][0]
-        )
-        self.params = PurviewEndpoints.get_api_version_params("datamap")
+        self.endpoint = ENDPOINTS["entity"]["header"].format(guid=args["--guid"][0])
+        self.params = get_api_version_params("datamap")
 
     # === PARTIAL UPDATE OPERATIONS ===
 
@@ -175,9 +173,9 @@ class Entity(Endpoint):
     def entityPartialUpdateAttribute(self, args):
         """Partial update entity attribute by GUID (Official API: Partial Update Attribute By Guid)"""
         self.method = "PUT"
-        self.endpoint = f'{PurviewEndpoints.ENTITY["guid"]}/{args["--guid"][0]}'
+        self.endpoint = f'{ENDPOINTS["entity"]["guid"]}/{args["--guid"][0]}'
         self.params = {
-            **PurviewEndpoints.get_api_version_params("datamap"),
+            **get_api_version_params("datamap"),
             "name": args["--attrName"],
         }
         self.payload = args["--attrValue"]
@@ -185,12 +183,12 @@ class Entity(Endpoint):
     @decorator
     def entityDelete(self, args):
         self.method = "DELETE"
-        self.endpoint = f'{PurviewEndpoints.ENTITY["guid"]}/{args["--guid"][0]}'
+        self.endpoint = f'{ENDPOINTS["entity"]["guid"]}/{args["--guid"][0]}'
 
     @decorator
     def entityRead(self, args):
         self.method = "GET"
-        self.endpoint = f'{PurviewEndpoints.ENTITY["guid"]}/{args["--guid"][0]}'
+        self.endpoint = f'{ENDPOINTS["entity"]["guid"]}/{args["--guid"][0]}'
         self.params = {
             "ignoreRelationships": str(args["--ignoreRelationships"]).lower(),
             "minExtInfo": str(args["--minExtInfo"]).lower(),
@@ -199,7 +197,7 @@ class Entity(Endpoint):
     @decorator
     def entityPut(self, args):
         self.method = "PUT"
-        self.endpoint = f'{PurviewEndpoints.ENTITY["guid"]}/{args["--guid"][0]}'
+        self.endpoint = f'{ENDPOINTS["entity"]["guid"]}/{args["--guid"][0]}'
         self.params = {"name": args["--attrName"]}
         self.payload = args["--attrValue"]
 
@@ -207,9 +205,7 @@ class Entity(Endpoint):
     def entityDeleteClassification(self, args):
         self.method = "DELETE"
         self.endpoint = (
-            PurviewEndpoints.format_endpoint(
-                PurviewEndpoints.ENTITY["classification"], guid=args["--guid"][0]
-            )
+            ENDPOINTS["entity"]["classification"].format(guid=args["--guid"][0])
             + f'/{args["--classificationName"]}'
         )
 
@@ -217,46 +213,36 @@ class Entity(Endpoint):
     def entityReadClassification(self, args):
         self.method = "GET"
         self.endpoint = (
-            PurviewEndpoints.format_endpoint(
-                PurviewEndpoints.ENTITY["classification"], guid=args["--guid"][0]
-            )
+            ENDPOINTS["entity"]["classification"].format(guid=args["--guid"][0])
             + f'/{args["--classificationName"]}'
         )
 
     @decorator
     def entityReadClassifications(self, args):
         self.method = "GET"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.ENTITY["classifications"], guid=args["--guid"][0]
-        )
+        self.endpoint = ENDPOINTS["entity"]["classifications"].format(guid=args["--guid"][0])
 
     @decorator
     def entityCreateClassifications(self, args):
         self.method = "POST"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.ENTITY["classifications"], guid=args["--guid"][0]
-        )
+        self.endpoint = ENDPOINTS["entity"]["classifications"].format(guid=args["--guid"][0])
         self.payload = get_json(args, "--payloadFile")
 
     @decorator
     def entityPutClassifications(self, args):
         self.method = "PUT"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.ENTITY["classifications"], guid=args["--guid"][0]
-        )
+        self.endpoint = ENDPOINTS["entity"]["classifications"].format(guid=args["--guid"][0])
         self.payload = get_json(args, "--payloadFile")
 
     @decorator
     def entityReadHeader(self, args):
         self.method = "GET"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.ENTITY["header"], guid=args["--guid"][0]
-        )
+        self.endpoint = ENDPOINTS["entity"]["header"].format(guid=args["--guid"][0])
 
     @decorator
     def entityReadBulkUniqueAttribute(self, args):
         self.method = "GET"
-        self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}/bulk'
+        self.endpoint = f'{ENDPOINTS["entity"]["unique_attribute"]}/{args["--typeName"]}/bulk'
         self.params = {
             "ignoreRelationships": str(args["--ignoreRelationships"]).lower(),
             "minExtInfo": str(args["--minExtInfo"]).lower(),
@@ -270,7 +256,7 @@ class Entity(Endpoint):
     @decorator
     def entityReadUniqueAttribute(self, args):
         self.method = "GET"
-        self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}'
+        self.endpoint = f'{ENDPOINTS["entity"]["unique_attribute"]}/{args["--typeName"]}'
         self.params = {
             "attr:qualifiedName": args["--qualifiedName"],
             "ignoreRelationships": str(args["--ignoreRelationships"]).lower(),
@@ -280,27 +266,27 @@ class Entity(Endpoint):
     @decorator
     def entityDeleteUniqueAttribute(self, args):
         self.method = "DELETE"
-        self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}'
+        self.endpoint = f'{ENDPOINTS["entity"]["unique_attribute"]}/{args["--typeName"]}'
         self.params = {"attr:qualifiedName": args["--qualifiedName"]}
 
     @decorator
     def entityPutUniqueAttribute(self, args):
         self.method = "PUT"
-        self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}'
+        self.endpoint = f'{ENDPOINTS["entity"]["unique_attribute"]}/{args["--typeName"]}'
         self.payload = get_json(args, "--payloadFile")
         self.params = {"attr:qualifiedName": args["--qualifiedName"]}
 
     @decorator
     def entityDeleteUniqueAttributeClassification(self, args):
         self.method = "DELETE"
-        self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}/classification/{args["--classificationName"]}'
+        self.endpoint = f'{ENDPOINTS["entity"]["unique_attribute"]}/{args["--typeName"]}/classification/{args["--classificationName"]}'
         self.params = {"attr:qualifiedName": args["--qualifiedName"]}
 
     @decorator
     def entityCreateUniqueAttributeClassifications(self, args):
         self.method = "POST"
         self.endpoint = (
-            f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}/classifications'
+            f'{ENDPOINTS["entity"]["unique_attribute"]}/{args["--typeName"]}/classifications'
         )
         self.payload = get_json(args, "--payloadFile")
         self.params = {"attr:qualifiedName": args["--qualifiedName"]}
@@ -309,7 +295,7 @@ class Entity(Endpoint):
     def entityPutUniqueAttributeClassifications(self, args):
         self.method = "PUT"
         self.endpoint = (
-            f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}/classifications'
+            f'{ENDPOINTS["entity"]["unique_attribute"]}/{args["--typeName"]}/classifications'
         )
         self.payload = get_json(args, "--payloadFile")
         self.params = {"attr:qualifiedName": args["--qualifiedName"]}
@@ -320,7 +306,7 @@ class Entity(Endpoint):
         self.method = "POST"
         self.endpoint = f"/catalog/api/collections/{collection}/entity"
         self.payload = get_json(args, "--payloadFile")
-        self.params = PurviewEndpoints.get_api_version_params("catalog")
+        self.params = get_api_version_params("datamap")
 
     @decorator
     def entityCreateOrUpdateCollectionBulk(self, args):
@@ -328,7 +314,7 @@ class Entity(Endpoint):
         self.method = "POST"
         self.endpoint = f"/catalog/api/collections/{collection}/entity/bulk"
         self.payload = get_json(args, "--payloadFile")
-        self.params = PurviewEndpoints.get_api_version_params("catalog")
+        self.params = get_api_version_params("datamap")
 
     @decorator
     def entityChangeCollection(self, args):
@@ -336,7 +322,7 @@ class Entity(Endpoint):
         self.method = "POST"
         self.endpoint = f"/catalog/api/collections/{collection}/entity/moveHere"
         self.payload = get_json(args, "--payloadFile")
-        self.params = PurviewEndpoints.get_api_version_params("catalog")
+        self.params = get_api_version_params("datamap")
 
     # === CLASSIFICATION OPERATIONS ===
 
@@ -344,26 +330,24 @@ class Entity(Endpoint):
     def entityAddClassification(self, args):
         """Associate a classification to multiple entities in bulk (Official API: Add Classification)"""
         self.method = "POST"
-        self.endpoint = PurviewEndpoints.ENTITY["bulk_classification"]
-        self.params = PurviewEndpoints.get_api_version_params("datamap")
+        self.endpoint = ENDPOINTS["entity"]["bulk_classification"]
+        self.params = get_api_version_params("datamap")
         self.payload = get_json(args, "--payloadFile")
 
     @decorator
     def entityBulkSetClassifications(self, args):
         """Set classifications on entities in bulk (Official API: Bulk Set Classifications)"""
         self.method = "POST"
-        self.endpoint = PurviewEndpoints.ENTITY["bulk_set_classifications"]
-        self.params = PurviewEndpoints.get_api_version_params("datamap")
+        self.endpoint = ENDPOINTS["entity"]["bulk_set_classifications"]
+        self.params = get_api_version_params("datamap")
         self.payload = get_json(args, "--payloadFile")
 
     @decorator
     def entityAddClassifications(self, args):
         """Add classifications to an existing entity by GUID (Official API: Add Classifications)"""
         self.method = "POST"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.ENTITY["classifications"], guid=args["--guid"][0]
-        )
-        self.params = PurviewEndpoints.get_api_version_params("datamap")
+        self.endpoint = ENDPOINTS["entity"]["classifications"].format(guid=args["--guid"][0])
+        self.params = get_api_version_params("datamap")
         self.payload = get_json(args, "--payloadFile")
 
     @decorator
@@ -371,10 +355,10 @@ class Entity(Endpoint):
         """Add classification by unique attribute (Official API: Add Classifications By Unique Attribute)"""
         self.method = "POST"
         self.endpoint = (
-            f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}/classifications'
+            f'{ENDPOINTS["entity"]["unique_attribute"]}/{args["--typeName"]}/classifications'
         )
         self.params = {
-            **PurviewEndpoints.get_api_version_params("datamap"),
+            **get_api_version_params("datamap"),
             "attr:qualifiedName": args["--qualifiedName"],
         }
         self.payload = get_json(args, "--payloadFile")
@@ -384,30 +368,24 @@ class Entity(Endpoint):
         """Get classification for an entity by GUID (Official API: Get Classification)"""
         self.method = "GET"
         self.endpoint = (
-            PurviewEndpoints.format_endpoint(
-                PurviewEndpoints.ENTITY["classification"], guid=args["--guid"][0]
-            )
+            ENDPOINTS["entity"]["classification"].format(guid=args["--guid"][0])
             + f'/{args["--classificationName"]}'
         )
-        self.params = PurviewEndpoints.get_api_version_params("datamap")
+        self.params = get_api_version_params("datamap")
 
     @decorator
     def entityReadClassifications(self, args):
         """List classifications for an entity by GUID (Official API: Get Classifications)"""
         self.method = "GET"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.ENTITY["classifications"], guid=args["--guid"][0]
-        )
-        self.params = PurviewEndpoints.get_api_version_params("datamap")
+        self.endpoint = ENDPOINTS["entity"]["classifications"].format(guid=args["--guid"][0])
+        self.params = get_api_version_params("datamap")
 
     @decorator
     def entityUpdateClassifications(self, args):
         """Update classifications on an entity by GUID (Official API: Update Classifications)"""
         self.method = "PUT"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.ENTITY["classifications"], guid=args["--guid"][0]
-        )
-        self.params = PurviewEndpoints.get_api_version_params("datamap")
+        self.endpoint = ENDPOINTS["entity"]["classifications"].format(guid=args["--guid"][0])
+        self.params = get_api_version_params("datamap")
         self.payload = get_json(args, "--payloadFile")
 
     @decorator
@@ -415,10 +393,10 @@ class Entity(Endpoint):
         """Update classification by unique attribute (Official API: Update Classifications By Unique Attribute)"""
         self.method = "PUT"
         self.endpoint = (
-            f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}/classifications'
+            f'{ENDPOINTS["entity"]["unique_attribute"]}/{args["--typeName"]}/classifications'
         )
         self.params = {
-            **PurviewEndpoints.get_api_version_params("datamap"),
+            **get_api_version_params("datamap"),
             "attr:qualifiedName": args["--qualifiedName"],
         }
         self.payload = get_json(args, "--payloadFile")
@@ -428,20 +406,18 @@ class Entity(Endpoint):
         """Remove classification from an entity by GUID (Official API: Remove Classification)"""
         self.method = "DELETE"
         self.endpoint = (
-            PurviewEndpoints.format_endpoint(
-                PurviewEndpoints.ENTITY["classification"], guid=args["--guid"][0]
-            )
+            ENDPOINTS["entity"]["classification"].format(guid=args["--guid"][0])
             + f'/{args["--classificationName"]}'
         )
-        self.params = PurviewEndpoints.get_api_version_params("datamap")
+        self.params = get_api_version_params("datamap")
 
     @decorator
     def entityDeleteClassificationByUniqueAttribute(self, args):
         """Remove classification by unique attribute (Official API: Remove Classification By Unique Attribute)"""
         self.method = "DELETE"
-        self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}/classification/{args["--classificationName"]}'
+        self.endpoint = f'{ENDPOINTS["entity"]["unique_attribute"]}/{args["--typeName"]}/classification/{args["--classificationName"]}'
         self.params = {
-            **PurviewEndpoints.get_api_version_params("datamap"),
+            **get_api_version_params("datamap"),
             "attr:qualifiedName": args["--qualifiedName"],
         }
 
@@ -451,19 +427,17 @@ class Entity(Endpoint):
     def entityAddLabels(self, args):
         """Add given labels to an entity by GUID (Official API: Add Label)"""
         self.method = "POST"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.ENTITY["labels"], guid=args["--guid"][0]
-        )
-        self.params = PurviewEndpoints.get_api_version_params("datamap")
+        self.endpoint = ENDPOINTS["entity"]["labels"].format(guid=args["--guid"][0])
+        self.params = get_api_version_params("datamap")
         self.payload = get_json(args, "--payloadFile")
 
     @decorator
     def entityAddLabelsByUniqueAttribute(self, args):
         """Add labels by unique attribute (Official API: Add Labels By Unique Attribute)"""
         self.method = "POST"
-        self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}/labels'
+        self.endpoint = f'{ENDPOINTS["entity"]["unique_attribute"]}/{args["--typeName"]}/labels'
         self.params = {
-            **PurviewEndpoints.get_api_version_params("datamap"),
+            **get_api_version_params("datamap"),
             "attr:qualifiedName": args["--qualifiedName"],
         }
         self.payload = get_json(args, "--payloadFile")
@@ -472,19 +446,17 @@ class Entity(Endpoint):
     def entitySetLabels(self, args):
         """Set labels to an entity by GUID (Official API: Set Labels)"""
         self.method = "PUT"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.ENTITY["labels"], guid=args["--guid"][0]
-        )
-        self.params = PurviewEndpoints.get_api_version_params("datamap")
+        self.endpoint = ENDPOINTS["entity"]["labels"].format(guid=args["--guid"][0])
+        self.params = get_api_version_params("datamap")
         self.payload = get_json(args, "--payloadFile")
 
     @decorator
     def entitySetLabelsByUniqueAttribute(self, args):
         """Set labels by unique attribute (Official API: Set Labels By Unique Attribute)"""
         self.method = "PUT"
-        self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}/labels'
+        self.endpoint = f'{ENDPOINTS["entity"]["unique_attribute"]}/{args["--typeName"]}/labels'
         self.params = {
-            **PurviewEndpoints.get_api_version_params("datamap"),
+            **get_api_version_params("datamap"),
             "attr:qualifiedName": args["--qualifiedName"],
         }
         self.payload = get_json(args, "--payloadFile")
@@ -493,19 +465,17 @@ class Entity(Endpoint):
     def entityRemoveLabels(self, args):
         """Remove labels from an entity by GUID (Official API: Remove Labels)"""
         self.method = "DELETE"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.ENTITY["labels"], guid=args["--guid"][0]
-        )
-        self.params = PurviewEndpoints.get_api_version_params("datamap")
+        self.endpoint = ENDPOINTS["entity"]["labels"].format(guid=args["--guid"][0])
+        self.params = get_api_version_params("datamap")
         self.payload = get_json(args, "--payloadFile")
 
     @decorator
     def entityRemoveLabelsByUniqueAttribute(self, args):
         """Remove labels by unique attribute (Official API: Remove Labels By Unique Attribute)"""
         self.method = "DELETE"
-        self.endpoint = f'{PurviewEndpoints.ENTITY["unique_attribute"]}/{args["--typeName"]}/labels'
+        self.endpoint = f'{ENDPOINTS["entity"]["unique_attribute"]}/{args["--typeName"]}/labels'
         self.params = {
-            **PurviewEndpoints.get_api_version_params("datamap"),
+            **get_api_version_params("datamap"),
             "attr:qualifiedName": args["--qualifiedName"],
         }
         self.payload = get_json(args, "--payloadFile")
@@ -516,8 +486,8 @@ class Entity(Endpoint):
     def entityMoveEntitiesToCollection(self, args):
         """Move existing entities to target collection (Official API: Move Entities To Collection)"""
         self.method = "POST"
-        self.endpoint = PurviewEndpoints.ENTITY["move_to"]
-        self.params = PurviewEndpoints.get_api_version_params("datamap")
+        self.endpoint = ENDPOINTS["entity"]["move_to"]
+        self.params = get_api_version_params("datamap")
         self.payload = get_json(args, "--payloadFile")
 
     # === BUSINESS METADATA OPERATIONS ===
@@ -527,11 +497,9 @@ class Entity(Endpoint):
         """Add or update business metadata to an entity (Official API: Add Or Update Business Metadata)"""
         guid = args["--guid"][0]
         self.method = "POST"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.ENTITY["business_metadata"], guid=guid
-        )
+        self.endpoint = ENDPOINTS["entity"]["business_metadata"].format(guid=guid)
         self.params = {
-            **PurviewEndpoints.get_api_version_params("datamap"),
+            **get_api_version_params("datamap"),
             "isOverwrite": str(args.get("--isOverwrite", False)).lower(),
         }
         self.payload = get_json(args, "--payloadFile")
@@ -542,8 +510,8 @@ class Entity(Endpoint):
         guid = args["--guid"][0]
         bmName = args["--bmName"]
         self.method = "POST"
-        self.endpoint = f'{PurviewEndpoints.format_endpoint(PurviewEndpoints.ENTITY["business_metadata"], guid=guid)}/{bmName}'
-        self.params = PurviewEndpoints.get_api_version_params("datamap")
+        self.endpoint = f'{ENDPOINTS["entity"]["business_metadata"].format(guid=guid)}/{bmName}'
+        self.params = get_api_version_params("datamap")
         self.payload = get_json(args, "--payloadFile")
 
     @decorator
@@ -551,10 +519,8 @@ class Entity(Endpoint):
         """Remove business metadata from an entity (Official API: Remove Business Metadata)"""
         guid = args["--guid"][0]
         self.method = "DELETE"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.ENTITY["business_metadata"], guid=guid
-        )
-        self.params = PurviewEndpoints.get_api_version_params("datamap")
+        self.endpoint = ENDPOINTS["entity"]["business_metadata"].format(guid=guid)
+        self.params = get_api_version_params("datamap")
         self.payload = get_json(args, "--payloadFile")
 
     @decorator
@@ -563,24 +529,24 @@ class Entity(Endpoint):
         guid = args["--guid"][0]
         bmName = args["--bmName"]
         self.method = "DELETE"
-        self.endpoint = f'{PurviewEndpoints.format_endpoint(PurviewEndpoints.ENTITY["business_metadata"], guid=guid)}/{bmName}'
-        self.params = PurviewEndpoints.get_api_version_params("datamap")
+        self.endpoint = f'{ENDPOINTS["entity"]["business_metadata"].format(guid=guid)}/{bmName}'
+        self.params = get_api_version_params("datamap")
         self.payload = get_json(args, "--payloadFile")
 
     @decorator
     def entityImportBusinessMetadata(self, args):
         """Import business metadata in bulk (Official API: Import Business Metadata)"""
         self.method = "POST"
-        self.endpoint = PurviewEndpoints.ENTITY["business_metadata_import"]
-        self.params = PurviewEndpoints.get_api_version_params("datamap")
+        self.endpoint = ENDPOINTS["entity"]["business_metadata_import"]
+        self.params = get_api_version_params("datamap")
         self.files = {"file": open(args["--bmFile"], "rb")}
 
     @decorator
     def entityGetBusinessMetadataTemplate(self, args):
         """Get sample template for business metadata (Official API: Get Sample Business Metadata Template)"""
         self.method = "GET"
-        self.endpoint = PurviewEndpoints.ENTITY["business_metadata_template"]
-        self.params = PurviewEndpoints.get_api_version_params("datamap")
+        self.endpoint = ENDPOINTS["entity"]["business_metadata_template"]
+        self.params = get_api_version_params("datamap")
 
     # === SAMPLE OPERATIONS ===
 
@@ -589,10 +555,8 @@ class Entity(Endpoint):
         """Get sample data for an entity (Official API: Get Sample)"""
         guid = args["--guid"][0]
         self.method = "GET"
-        self.endpoint = PurviewEndpoints.format_endpoint(
-            PurviewEndpoints.ENTITY["sample"], guid=guid
-        )
-        self.params = PurviewEndpoints.get_api_version_params("datamap")
+        self.endpoint = ENDPOINTS["entity"]["sample"].format(guid=guid)
+        self.params = get_api_version_params("datamap")
 
     # === LEGACY COMPATIBILITY METHODS (Deprecated but maintained for backward compatibility) ===
 
@@ -604,7 +568,7 @@ class Entity(Endpoint):
         self.method = "POST"
         self.endpoint = f"/catalog/api/collections/{collection}/entity"
         self.payload = get_json(args, "--payloadFile")
-        self.params = PurviewEndpoints.get_api_version_params("catalog")
+        self.params = get_api_version_params("datamap")
 
     @decorator
     def entityCreateOrUpdateCollectionBulk(self, args):
@@ -613,7 +577,7 @@ class Entity(Endpoint):
         self.method = "POST"
         self.endpoint = f"/catalog/api/collections/{collection}/entity/bulk"
         self.payload = get_json(args, "--payloadFile")
-        self.params = PurviewEndpoints.get_api_version_params("catalog")
+        self.params = get_api_version_params("datamap")
 
     @decorator
     def entityChangeCollection(self, args):
@@ -622,14 +586,14 @@ class Entity(Endpoint):
         self.method = "POST"
         self.endpoint = f"/catalog/api/collections/{collection}/entity/moveHere"
         self.payload = get_json(args, "--payloadFile")
-        self.params = PurviewEndpoints.get_api_version_params("catalog")
+        self.params = get_api_version_params("datamap")
 
     @decorator
     def entityReadAudit(self, args):
         """Get audit events for an entity by GUID (Official API: Get Audit Events)"""
         self.method = "GET"
-        self.endpoint = PurviewEndpoints.ENTITY["audit"].format(guid=args["--guid"])
-        self.params = PurviewEndpoints.get_api_version_params("datamap")
+        self.endpoint = ENDPOINTS["entity"]["audit"].format(guid=args["--guid"])
+        self.params = get_api_version_params("datamap")
 
     def map_flat_entity_to_purview_entity(row: dict) -> dict:
         """
@@ -647,22 +611,42 @@ class Entity(Endpoint):
 
     @decorator
     def search_entities(self, search_args):
-        """Search for entities using the Purview Search API."""
-        # Build the request payload
+        """Search for entities using the Unified Catalog API."""
+        import logging
+        logger = logging.getLogger(__name__)
+
+        # Build the request payload for Unified Catalog search
         payload = {
-            "keywords": search_args.get("keywords", "*"),
+            "query": search_args.get("keywords", "*"),  # Ensure 'query' key is included
+            "filter": search_args.get("filter", {"entityType": ["DataSet"]}),  # Default filter
             "limit": search_args.get("limit", 100),
+            "offset": search_args.get("offset", 0),
         }
-        # Add filter if provided
-        if "filter" in search_args and search_args["filter"]:
-            payload["filter"] = search_args["filter"]
-        # Use the search endpoint and correct API version
+
+        # Remove None fields
+        payload = {k: v for k, v in payload.items() if v is not None}
+
+        # Log the full request details for debugging
+        logger.debug(f"Request Method: POST")
+        logger.debug(f"Request Endpoint: {ENDPOINTS['discovery']['query']}")
+        logger.debug(f"Request Params: {{'api-version': DATAMAP_API_VERSION}}")
+        logger.debug(f"Request Payload: {payload}")
+
+        # Use the Unified Catalog search endpoint and correct API version
         self.method = "POST"
-        self.endpoint = PurviewEndpoints.SEARCH["query"]
-        self.params = PurviewEndpoints.get_api_version_params("search")
+        self.endpoint = ENDPOINTS["discovery"]["query"]
+        self.params = get_api_version_params("datamap")
         self.payload = payload
-        # Actually perform the request and return the result
-        return self.send()
+
+        try:
+            # Send the request and log the response
+            response = self.send()
+            logger.debug(f"Response from search_entities: {response}")
+            return response
+        except Exception as e:
+            # Log the full error response for diagnostics
+            logger.error(f"Error during search_entities: {str(e)}")
+            raise
 
     def send(self):
         """Send the constructed HTTP request and return the result."""

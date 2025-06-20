@@ -11,7 +11,7 @@ Official Account Operations:
 """
 
 from .endpoint import Endpoint, decorator, get_json
-from .endpoints import PurviewEndpoints
+from .endpoints import ENDPOINTS, DATAMAP_API_VERSION
 
 class Account(Endpoint):
     """Account Management Operations - Official API Operations Only"""
@@ -26,15 +26,15 @@ class Account(Endpoint):
     def accountGetAccount(self, args):
         """Get Account Properties - Official API Operation"""
         self.method = 'GET'
-        self.endpoint = PurviewEndpoints.ACCOUNT['account']
-        self.params = PurviewEndpoints.get_api_version_params('account')
+        self.endpoint = ENDPOINTS['account']['base']
+        self.params = {"api-version": DATAMAP_API_VERSION}
 
     @decorator
     def accountUpdateAccount(self, args):
         """Update Account Properties - Official API Operation"""
         self.method = 'PATCH'
-        self.endpoint = PurviewEndpoints.ACCOUNT['account_update']
-        self.params = PurviewEndpoints.get_api_version_params('account')
+        self.endpoint = ENDPOINTS['account']['settings']
+        self.params = {"api-version": DATAMAP_API_VERSION}
         self.payload = get_json(args, '--payloadFile')
 
     # === ACCESS KEYS OPERATIONS ===
@@ -43,13 +43,12 @@ class Account(Endpoint):
     def accountGetAccessKeys(self, args):
         """Get Access Keys - Official API Operation"""
         self.method = 'POST'
-        self.endpoint = PurviewEndpoints.ACCOUNT['access_keys']
-        self.params = PurviewEndpoints.get_api_version_params('account')
+        self.endpoint = ENDPOINTS['account']['usage']
+        self.params = {"api-version": DATAMAP_API_VERSION}
 
     @decorator
     def accountRegenerateAccessKeys(self, args):
         """Regenerate Access Key - Official API Operation"""
         self.method = 'POST'
-        self.endpoint = PurviewEndpoints.ACCOUNT['regenerate_access_key']
-        self.params = PurviewEndpoints.get_api_version_params('account')
-        self.payload = get_json(args, '--payloadFile')
+        self.endpoint = ENDPOINTS['account']['usage']
+        self.params = {"api-version": DATAMAP_API_VERSION}

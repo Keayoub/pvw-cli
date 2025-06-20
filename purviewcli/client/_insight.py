@@ -1,5 +1,5 @@
 from .endpoint import Endpoint, decorator, get_json
-from .endpoints import PurviewEndpoints
+from .endpoints import ENDPOINTS, DATAMAP_API_VERSION
 from datetime import datetime, timedelta
 
 class Insight(Endpoint):
@@ -11,7 +11,7 @@ class Insight(Endpoint):
     @decorator
     def insightAssetDistribution(self, args):
         self.method = 'GET'
-        self.endpoint = PurviewEndpoints.INSIGHT['asset_distribution_by_data_source']
+        self.endpoint = ENDPOINTS['insight']['asset_distribution_by_data_source']
 
     @decorator
     def insightFilesWithoutResourceSet(self, args):
@@ -26,12 +26,12 @@ class Insight(Endpoint):
     @decorator
     def insightTags(self, args):
         self.method = 'GET'
-        self.endpoint = PurviewEndpoints.INSIGHT['label_insight']
+        self.endpoint = ENDPOINTS['insight']['label_insight']
 
     @decorator
     def insightTagsTimeSeries(self, args):
         self.method = 'GET'
-        self.endpoint = PurviewEndpoints.INSIGHT['tags_time_series']
+        self.endpoint = ENDPOINTS['insight']['tags_time_series']
 
     # Scan
     @decorator

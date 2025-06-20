@@ -1796,14 +1796,27 @@ def audit(ctx, guid):
 def list(type_name, limit):
     """List entities in Microsoft Purview."""
     try:
-        from purviewcli.client._entity import Entity
-        entity_client = Entity()
-        search_args = {
+        from purviewcli.client._search import Search
+        search_client = Search()
+        
+        # Create search query payload
+        search_payload = {
             "keywords": "*",
-            "filter": {"entityType": [type_name]} if type_name else {},
-            "limit": limit
+            "limit": limit,
+            "filter": {}
         }
-        results = entity_client.search_entities(search_args)
+        
+        # Add type filter if specified
+        if type_name:
+            search_payload["filter"]["entityType"] = [type_name]
+        
+        # Convert to args format expected by searchQuery
+        search_args = {
+            "--payloadFile": None,
+            "--payload": json.dumps(search_payload)
+        }
+        
+        results = search_client.searchQuery(search_args)
         from rich.console import Console
         console = Console()
         console.print(json.dumps(results, indent=2))

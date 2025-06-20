@@ -1,249 +1,306 @@
 from .endpoint import Endpoint, decorator, get_json, no_api_call_decorator
-from .endpoints import PurviewEndpoints
+from .endpoints import ENDPOINTS, DATAMAP_API_VERSION, format_endpoint, get_api_version_params
+
 
 class Glossary(Endpoint):
     def __init__(self):
         Endpoint.__init__(self)
-        self.app = 'catalog'
+        self.app = "catalog"
 
     @decorator
     def glossaryRead(self, args):
-        self.method = 'GET'
+        self.method = "GET"
         if args["--glossaryGuid"] is None:
-            self.endpoint = PurviewEndpoints.GLOSSARY['base']
+            self.endpoint = ENDPOINTS["glossary"]["base"]
         else:
-            self.endpoint = f'{PurviewEndpoints.GLOSSARY["base"]}/{args["--glossaryGuid"]}'
-        self.params = {'limit': args['--limit'], 'offset': args['--offset'], 'sort': args['--sort'], 'ignoreTermsAndCategories': args['--ignoreTermsAndCategories']}
+            self.endpoint = f"{ENDPOINTS['glossary']['base']}/{args['--glossaryGuid']}"
+        self.params = {
+            "limit": args["--limit"],
+            "offset": args["--offset"],
+            "sort": args["--sort"],
+            "ignoreTermsAndCategories": args["--ignoreTermsAndCategories"],
+        }
 
     @decorator
     def glossaryCreate(self, args):
         """Create a glossary. Ensures payload is a valid JSON object."""
-        self.method = 'POST'
-        self.endpoint = PurviewEndpoints.GLOSSARY['base']
-        payload = get_json(args, '--payloadFile')
+        self.method = "POST"
+        self.endpoint = ENDPOINTS["glossary"]["base"]
+        payload = get_json(args, "--payloadFile")
         if not isinstance(payload, dict):
-            raise ValueError("Glossary payload must be a JSON object (dict). Got: {}".format(type(payload)))
+            raise ValueError(
+                "Glossary payload must be a JSON object (dict). Got: {}".format(type(payload))
+            )
         self.payload = payload
 
     @decorator
     def glossaryCreateCategories(self, args):
         """Create multiple glossary categories. Ensures payload is a valid JSON array or wraps as needed."""
-        self.method = 'POST'
-        self.endpoint = PurviewEndpoints.GLOSSARY['categories']
-        payload = get_json(args, '--payloadFile')
+        self.method = "POST"
+        self.endpoint = ENDPOINTS["glossary"]["categories"]
+        payload = get_json(args, "--payloadFile")
         if isinstance(payload, list):
             self.payload = {"categories": payload}
         elif isinstance(payload, dict) and "categories" in payload:
             self.payload = payload
         else:
-            raise ValueError("Glossary categories payload must be a list or a dict with 'categories' key.")
+            raise ValueError(
+                "Glossary categories payload must be a list or a dict with 'categories' key."
+            )
 
     @decorator
     def glossaryCreateCategory(self, args):
         """Create a single glossary category. Ensures payload is a valid JSON object."""
-        self.method = 'POST'
-        self.endpoint = PurviewEndpoints.GLOSSARY['category']
-        payload = get_json(args, '--payloadFile')
+        self.method = "POST"
+        self.endpoint = ENDPOINTS["glossary"]["category"]
+        payload = get_json(args, "--payloadFile")
         if not isinstance(payload, dict):
-            raise ValueError("Glossary category payload must be a JSON object (dict). Got: {}".format(type(payload)))
+            raise ValueError(
+                "Glossary category payload must be a JSON object (dict). Got: {}".format(
+                    type(payload)
+                )
+            )
         self.payload = payload
 
     @decorator
     def glossaryDeleteCategory(self, args):
-        self.method = 'DELETE'
-        self.endpoint = f'{PurviewEndpoints.GLOSSARY["category"]}/{args["--categoryGuid"]}'
+        self.method = "DELETE"
+        self.endpoint = f"{ENDPOINTS['glossary']['category']}/{args['--categoryGuid']}"
 
     @decorator
     def glossaryReadCategory(self, args):
-        self.method = 'GET'
-        self.endpoint = f'{PurviewEndpoints.GLOSSARY["category"]}/{args["--categoryGuid"]}'
-        self.params = {'limit': args['--limit'], 'offset': args['--offset'], 'sort': args['--sort']}
+        self.method = "GET"
+        self.endpoint = f"{ENDPOINTS['glossary']['category']}/{args['--categoryGuid']}"
+        self.params = {"limit": args["--limit"], "offset": args["--offset"], "sort": args["--sort"]}
 
     @decorator
     def glossaryPutCategory(self, args):
-        self.method = 'PUT'
-        self.endpoint = f'{PurviewEndpoints.GLOSSARY["category"]}/{args["--categoryGuid"]}'
-        self.payload = get_json(args, '--payloadFile')
+        self.method = "PUT"
+        self.endpoint = f"{ENDPOINTS['glossary']['category']}/{args['--categoryGuid']}"
+        self.payload = get_json(args, "--payloadFile")
 
     @decorator
     def glossaryPutCategoryPartial(self, args):
-        self.method = 'PUT'
-        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.GLOSSARY['category_partial'], categoryGuid=args["--categoryGuid"])
-        self.payload = get_json(args, '--payloadFile')
+        self.method = "PUT"
+        self.endpoint = format_endpoint(
+            ENDPOINTS["glossary"]["category_partial"], categoryGuid=args["--categoryGuid"]
+        )
+        self.payload = get_json(args, "--payloadFile")
 
     @decorator
     def glossaryReadCategoryRelated(self, args):
-        self.method = 'GET'
-        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.GLOSSARY['category_related'], categoryGuid=args["--categoryGuid"])
+        self.method = "GET"
+        self.endpoint = format_endpoint(
+            ENDPOINTS["glossary"]["category_related"], categoryGuid=args["--categoryGuid"]
+        )
 
     @decorator
     def glossaryReadCategoryTerms(self, args):
-        self.method = 'GET'
-        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.GLOSSARY['category_terms'], categoryGuid=args["--categoryGuid"])
-        self.params = {'limit': args['--limit'], 'offset': args['--offset'], 'sort': args['--sort']}
+        self.method = "GET"
+        self.endpoint = format_endpoint(
+            ENDPOINTS["glossary"]["category_terms"], categoryGuid=args["--categoryGuid"]
+        )
+        self.params = {"limit": args["--limit"], "offset": args["--offset"], "sort": args["--sort"]}
 
     @decorator
     def glossaryCreateTerm(self, args):
         """Create a single glossary term. Ensures payload is a valid JSON object."""
-        self.method = 'POST'
-        self.endpoint = PurviewEndpoints.GLOSSARY['term']
-        payload = get_json(args, '--payloadFile')
+        self.method = "POST"
+        self.endpoint = ENDPOINTS["glossary"]["term"]
+        payload = get_json(args, "--payloadFile")
         if not isinstance(payload, dict):
-            raise ValueError("Glossary term payload must be a JSON object (dict). Got: {}".format(type(payload)))
+            raise ValueError(
+                "Glossary term payload must be a JSON object (dict). Got: {}".format(type(payload))
+            )
         self.payload = payload
-        self.params = {'includeTermHierarchy': args['--includeTermHierarchy']}
+        self.params = {"includeTermHierarchy": args["--includeTermHierarchy"]}
 
     @decorator
     def glossaryDeleteTerm(self, args):
-        self.method = 'DELETE'
-        self.endpoint = f'{PurviewEndpoints.GLOSSARY["term"]}/{args["--termGuid"][0]}'
+        self.method = "DELETE"
+        self.endpoint = f"{ENDPOINTS['glossary']['term']}/{args['--termGuid'][0]}"
 
     @decorator
     def glossaryReadTerm(self, args):
-        self.method = 'GET'
-        self.endpoint = f'{PurviewEndpoints.GLOSSARY["term"]}/{args["--termGuid"][0]}'
-        self.params = {'includeTermHierarchy': args['--includeTermHierarchy']}
+        self.method = "GET"
+        self.endpoint = f"{ENDPOINTS['glossary']['term']}/{args['--termGuid'][0]}"
 
     @decorator
     def glossaryPutTerm(self, args):
-        self.method = 'PUT'
-        self.endpoint = f'{PurviewEndpoints.GLOSSARY["term"]}/{args["--termGuid"][0]}'
-        self.params = {'includeTermHierarchy': args['--includeTermHierarchy']}
-        self.payload = get_json(args, '--payloadFile')
+        self.method = "PUT"
+        self.endpoint = f"{ENDPOINTS['glossary']['term']}/{args['--termGuid'][0]}"
+        self.params = {"includeTermHierarchy": args["--includeTermHierarchy"]}
+        self.payload = get_json(args, "--payloadFile")
 
     @decorator
     def glossaryPutTermPartial(self, args):
-        self.method = 'PUT'
-        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.GLOSSARY['term_partial'], termGuid=args["--termGuid"][0])
-        self.params = {'includeTermHierarchy': args['--includeTermHierarchy']}
-        self.payload = get_json(args, '--payloadFile')
+        self.method = "PUT"
+        self.endpoint = format_endpoint(
+            ENDPOINTS["glossary"]["term_partial"], termGuid=args["--termGuid"][0]
+        )
+        self.params = {"includeTermHierarchy": args["--includeTermHierarchy"]}
+        self.payload = get_json(args, "--payloadFile")
 
     @decorator
     def glossaryCreateTerms(self, args):
         """Create multiple glossary terms. Ensures payload is a valid JSON array or wraps as needed."""
-        self.method = 'POST'
-        self.endpoint = PurviewEndpoints.GLOSSARY['terms']
-        payload = get_json(args, '--payloadFile')
+        self.method = "POST"
+        self.endpoint = ENDPOINTS["glossary"]["terms"]
+        payload = get_json(args, "--payloadFile")
         if isinstance(payload, list):
             self.payload = {"terms": payload}
         elif isinstance(payload, dict) and "terms" in payload:
             self.payload = payload
         else:
             raise ValueError("Glossary terms payload must be a list or a dict with 'terms' key.")
-        self.params = {'includeTermHierarchy': args['--includeTermHierarchy']}
+        self.params = {"includeTermHierarchy": args["--includeTermHierarchy"]}
 
     @decorator
     def glossaryDeleteTermsAssignedEntities(self, args):
-        self.method = 'DELETE'
-        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.GLOSSARY['term_assigned_entities'], termGuid=args["--termGuid"][0])
-        self.payload = get_json(args, '--payloadFile')
+        self.method = "DELETE"
+        self.endpoint = format_endpoint(
+            ENDPOINTS["glossary"]["term_assigned_entities"], termGuid=args["--termGuid"][0]
+        )
+        self.payload = get_json(args, "--payloadFile")
 
     @decorator
     def glossaryReadTermsAssignedEntities(self, args):
-        self.method = 'GET'
-        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.GLOSSARY['term_assigned_entities'], termGuid=args["--termGuid"][0])
-        self.params = {'limit': args['--limit'], 'offset': args['--offset'], 'sort': args['--sort']}
+        self.method = "GET"
+        self.endpoint = format_endpoint(
+            ENDPOINTS["glossary"]["term_assigned_entities"], termGuid=args["--termGuid"][0]
+        )
+        self.params = {"limit": args["--limit"], "offset": args["--offset"], "sort": args["--sort"]}
 
     @decorator
     def glossaryCreateTermsAssignedEntities(self, args):
-        self.method = 'POST'
-        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.GLOSSARY['term_assigned_entities'], termGuid=args["--termGuid"][0])
-        self.payload = get_json(args, '--payloadFile')
+        self.method = "POST"
+        self.endpoint = format_endpoint(
+            ENDPOINTS["glossary"]["term_assigned_entities"], termGuid=args["--termGuid"][0]
+        )
+        self.payload = get_json(args, "--payloadFile")
 
     @decorator
     def glossaryPutTermsAssignedEntities(self, args):
-        self.method = 'PUT'
-        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.GLOSSARY['term_assigned_entities'], termGuid=args["--termGuid"][0])
-        self.payload = get_json(args, '--payloadFile')
+        self.method = "PUT"
+        self.endpoint = format_endpoint(
+            ENDPOINTS["glossary"]["term_assigned_entities"], termGuid=args["--termGuid"][0]
+        )
+        self.payload = get_json(args, "--payloadFile")
 
     @decorator
     def glossaryReadTermsRelated(self, args):
-        self.method = 'GET'
-        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.GLOSSARY['term_related'], termGuid=args["--termGuid"][0])
-        self.params = {'limit': args['--limit'], 'offset': args['--offset'], 'sort': args['--sort']}
+        self.method = "GET"
+        self.endpoint = format_endpoint(
+            ENDPOINTS["glossary"]["term_related"], termGuid=args["--termGuid"][0]
+        )
+        self.params = {"limit": args["--limit"], "offset": args["--offset"], "sort": args["--sort"]}
 
     @decorator
     def glossaryDelete(self, args):
-        self.method = 'DELETE'
-        self.endpoint = f'{PurviewEndpoints.GLOSSARY["base"]}/{args["--glossaryGuid"]}'
+        self.method = "DELETE"
+        self.endpoint = f"{ENDPOINTS['glossary']['base']}/{args['--glossaryGuid']}"
 
     @decorator
     def glossaryPut(self, args):
-        self.method = 'PUT'
-        self.endpoint = f'{PurviewEndpoints.GLOSSARY["base"]}/{args["--glossaryGuid"]}'
-        self.payload = get_json(args, '--payloadFile')
+        self.method = "PUT"
+        self.endpoint = f"{ENDPOINTS['glossary']['base']}/{args['--glossaryGuid']}"
+        self.payload = get_json(args, "--payloadFile")
 
     @decorator
     def glossaryReadCategories(self, args):
-        self.method = 'GET'
-        self.endpoint = f'{PurviewEndpoints.GLOSSARY["base"]}/{args["--glossaryGuid"]}/categories'
-        self.params = {'limit': args['--limit'], 'offset': args['--offset'], 'sort': args['--sort']}
+        self.method = "GET"
+        self.endpoint = f"{ENDPOINTS['glossary']['base']}/{args['--glossaryGuid']}/categories"
+        self.params = {"limit": args["--limit"], "offset": args["--offset"], "sort": args["--sort"]}
 
     @decorator
     def glossaryReadCategoriesHeaders(self, args):
-        self.method = 'GET'
-        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.GLOSSARY['categories_headers'], glossaryGuid=args["--glossaryGuid"])
-        self.params = {'limit': args['--limit'], 'offset': args['--offset'], 'sort': args['--sort']}
+        self.method = "GET"
+        self.endpoint = format_endpoint(
+            ENDPOINTS["glossary"]["categories_headers"], glossaryGuid=args["--glossaryGuid"]
+        )
+        self.params = {"limit": args["--limit"], "offset": args["--offset"], "sort": args["--sort"]}
 
     @decorator
     def glossaryReadDetailed(self, args):
-        self.method = 'GET'
-        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.GLOSSARY['detailed'], glossaryGuid=args["--glossaryGuid"])
-        self.params = {'includeTermHierarchy': args['--includeTermHierarchy']}
+        self.method = "GET"
+        self.endpoint = format_endpoint(
+            ENDPOINTS["glossary"]["detailed"], glossaryGuid=args["--glossaryGuid"]
+        )
+        self.params = {"includeTermHierarchy": args["--includeTermHierarchy"]}
 
     @decorator
     def glossaryPutPartial(self, args):
-        self.method = 'PUT'
-        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.GLOSSARY['partial'], glossaryGuid=args["--glossaryGuid"])
-        self.payload = get_json(args, '--payloadFile')
-        self.params = {'includeTermHierarchy': args['--includeTermHierarchy']}
+        self.method = "PUT"
+        self.endpoint = format_endpoint(
+            ENDPOINTS["glossary"]["partial"], glossaryGuid=args["--glossaryGuid"]
+        )
+        self.payload = get_json(args, "--payloadFile")
+        self.params = {"includeTermHierarchy": args["--includeTermHierarchy"]}
 
     @decorator
     def glossaryReadTerms(self, args):
-        glossaryName = 'Glossary'
-        self.method = 'GET'
-        if args['--glossaryGuid']:
-            self.endpoint = f'{PurviewEndpoints.GLOSSARY["base"]}/{args["--glossaryGuid"]}/terms'
+        glossaryName = "Glossary"
+        self.method = "GET"
+        if args["--glossaryGuid"]:
+            self.endpoint = f"{ENDPOINTS['glossary']['base']}/{args['--glossaryGuid']}/terms"
         else:
-            self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.GLOSSARY['terms_import_by_name'], glossaryName=glossaryName).replace('/terms/import', '/terms')
-        self.params = {'limit': args['--limit'], 'offset': args['--offset'], 'sort': args['--sort'], 'extInfo': args['--extInfo'], 'includeTermHierarchy': args['--includeTermHierarchy'], **PurviewEndpoints.get_api_version_params('glossary')}
+            self.endpoint = format_endpoint(
+                ENDPOINTS["glossary"]["terms_import_by_name"], glossaryName=glossaryName
+            ).replace("/terms/import", "/terms")
+        self.params = {
+            "limit": args["--limit"],
+            "offset": args["--offset"],
+            "sort": args["--sort"],
+            "extInfo": args["--extInfo"],
+            "includeTermHierarchy": args["--includeTermHierarchy"],
+            **get_api_version_params("datamap"),
+        }
 
     @decorator
     def glossaryReadTermsHeaders(self, args):
-        self.method = 'GET'
-        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.GLOSSARY['terms_headers'], glossaryGuid=args["--glossaryGuid"])
-        self.params = {'limit': args['--limit'], 'offset': args['--offset'], 'sort': args['--sort']}
+        self.method = "GET"
+        self.endpoint = format_endpoint(
+            ENDPOINTS["glossary"]["terms_headers"], glossaryGuid=args["--glossaryGuid"]
+        )
+        self.params = {"limit": args["--limit"], "offset": args["--offset"], "sort": args["--sort"]}
 
     @decorator
     def glossaryCreateTermsExport(self, args):
-        self.method = 'POST'
-        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.GLOSSARY['terms_export'], glossaryGuid=args["--glossaryGuid"])
-        self.payload = args['--termGuid']
+        self.method = "POST"
+        self.endpoint = format_endpoint(
+            ENDPOINTS["glossary"]["terms_export"], glossaryGuid=args["--glossaryGuid"]
+        )
+        self.payload = args["--termGuid"]
         self.params = {
-            'api-version': '2021-05-01-preview',
-            'includeTermHierarchy': args['--includeTermHierarchy']
-            }
+            "api-version": "2021-05-01-preview",
+            "includeTermHierarchy": args["--includeTermHierarchy"],
+        }
 
     @decorator
     def glossaryCreateTermsImport(self, args):
-        glossaryName = 'Glossary'
-        self.method = 'POST'
-        if args['--glossaryGuid']:
-            self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.GLOSSARY['terms_import'], glossaryGuid=args["--glossaryGuid"])
+        glossaryName = "Glossary"
+        self.method = "POST"
+        if args["--glossaryGuid"]:
+            self.endpoint = format_endpoint(
+                ENDPOINTS["glossary"]["terms_import"], glossaryGuid=args["--glossaryGuid"]
+            )
         else:
-            self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.GLOSSARY['terms_import_by_name'], glossaryName=glossaryName)
-        self.files = {'file': open(args["--glossaryFile"], 'rb')}
+            self.endpoint = format_endpoint(
+                ENDPOINTS["glossary"]["terms_import_by_name"], glossaryName=glossaryName
+            )
+        self.files = {"file": open(args["--glossaryFile"], "rb")}
         self.params = {
-            **PurviewEndpoints.get_api_version_params("datamap"),
-            'includeTermHierarchy': args['--includeTermHierarchy']
+            **get_api_version_params("datamap"),
+            "includeTermHierarchy": args["--includeTermHierarchy"],
         }
-        
+
     @decorator
     def glossaryReadTermsImport(self, args):
-        self.method = 'GET'
-        self.endpoint = PurviewEndpoints.format_endpoint(PurviewEndpoints.GLOSSARY['terms_import_operation'], operationGuid=args["--operationGuid"])
-        self.params = PurviewEndpoints.get_api_version_params("datamap")
-
+        self.method = "GET"
+        self.endpoint = format_endpoint(
+            ENDPOINTS["glossary"]["terms_import_operation"], operationGuid=args["--operationGuid"]
+        )
+        self.params = get_api_version_params("datamap")
 
     # === CSV IMPORT/EXPORT OPERATIONS ===
     @no_api_call_decorator
@@ -262,13 +319,13 @@ class Glossary(Endpoint):
             or args.get("--csv-file")
         )
         glossary_guid = args.get("glossary_guid") or args.get("--glossary-guid")
-        
+
         print(f"📥 Preparing to import glossary terms from CSV file: {csv_file}")
         print(f"🎯 Target glossary GUID: {glossary_guid}")
 
         if not csv_file or not os.path.exists(csv_file):
             raise ValueError(f"CSV file path is required and must exist. Got: {csv_file}")
-        
+
         if not glossary_guid:
             raise ValueError("Glossary GUID is required for terms import")
 
@@ -295,7 +352,9 @@ class Glossary(Endpoint):
 
         # Display what will be imported
         for index, row in df.iterrows():
-            print(f"  {index + 1}. {row['name']} - {row.get('definition', 'No definition')[:50]}...")
+            print(
+                f"  {index + 1}. {row['name']} - {row.get('definition', 'No definition')[:50]}..."
+            )
 
         print("✅ CSV validation completed successfully")
         print("🚀 Starting glossary term creation process...")
@@ -310,6 +369,7 @@ class Glossary(Endpoint):
                 # Clean NaN values and convert to proper strings
                 def clean_value(val, default=""):
                     import pandas as pd
+
                     if pd.isna(val) or val is None:
                         return default
                     return str(val).strip()
@@ -326,27 +386,27 @@ class Glossary(Endpoint):
                     "name": term_name,
                     "shortDescription": term_definition,
                     "longDescription": clean_value(row.get("longDescription"), term_definition),
-                    "anchor": {
-                        "glossaryGuid": glossary_guid
-                    },
+                    "anchor": {"glossaryGuid": glossary_guid},
                     "status": clean_value(row.get("status"), "Active"),
                 }
 
                 # Add optional fields if present
                 if not pd.isna(row.get("abbreviation")):
                     term_payload["abbreviation"] = clean_value(row.get("abbreviation"))
-                
+
                 if not pd.isna(row.get("usage")):
                     term_payload["usage"] = clean_value(row.get("usage"))
 
                 # Add synonyms if present (comma-separated)
                 synonyms = clean_value(row.get("synonyms"))
                 if synonyms:
-                    term_payload["synonyms"] = [{"displayText": s.strip()} for s in synonyms.split(",") if s.strip()]
+                    term_payload["synonyms"] = [
+                        {"displayText": s.strip()} for s in synonyms.split(",") if s.strip()
+                    ]
 
                 term_args = {
                     "--payloadFile": None,  # We'll set payload directly
-                    "--includeTermHierarchy": False
+                    "--includeTermHierarchy": False,
                 }
 
                 print(f"📝 Creating term: {term_name}")
@@ -354,7 +414,10 @@ class Glossary(Endpoint):
                 # Create a temporary JSON file for the payload
                 import tempfile
                 import json
-                with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as temp_file:
+
+                with tempfile.NamedTemporaryFile(
+                    mode="w", suffix=".json", delete=False
+                ) as temp_file:
                     json.dump(term_payload, temp_file, indent=2)
                     temp_filename = temp_file.name
 
@@ -383,7 +446,9 @@ class Glossary(Endpoint):
 
                 # Process in batches
                 if (index + 1) % batch_size == 0:
-                    print(f"⏸️  Batch {(index + 1) // batch_size} completed. Processed {index + 1}/{len(df)} terms")
+                    print(
+                        f"⏸️  Batch {(index + 1) // batch_size} completed. Processed {index + 1}/{len(df)} terms"
+                    )
 
             except Exception as e:
                 error_count += 1
@@ -422,7 +487,15 @@ class Glossary(Endpoint):
         print("📤 Fetching glossaries from Microsoft Purview...")
 
         # Step 1: Get all glossaries
-        glossaries_data = self.glossaryRead({"--glossaryGuid": None, "--limit": 1000, "--offset": 0, "--sort": "ASC", "--ignoreTermsAndCategories": False})
+        glossaries_data = self.glossaryRead(
+            {
+                "--glossaryGuid": None,
+                "--limit": 1000,
+                "--offset": 0,
+                "--sort": "ASC",
+                "--ignoreTermsAndCategories": False,
+            }
+        )
 
         if not glossaries_data or not isinstance(glossaries_data, dict):
             print("❌ Failed to fetch glossaries")
@@ -440,7 +513,9 @@ class Glossary(Endpoint):
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             output_file = f"glossary_export_{timestamp}.csv"
 
-        export_type = args.get("export_type") or args.get("--export-type") or "both"  # both, glossaries, terms
+        export_type = (
+            args.get("export_type") or args.get("--export-type") or "both"
+        )  # both, glossaries, terms
         include_metadata = args.get("include_metadata") or args.get("--include-metadata") or True
 
         print(f"📁 Output file: {output_file}")
@@ -467,7 +542,7 @@ class Glossary(Endpoint):
                     "parentGlossaryGuid": "",
                     "parentTermGuid": "",
                     "abbreviation": "",
-                    "synonyms": ""
+                    "synonyms": "",
                 }
 
                 if include_metadata:
@@ -482,17 +557,19 @@ class Glossary(Endpoint):
             if export_type in ["both", "terms"]:
                 try:
                     # Get terms for this glossary
-                    terms_data = self.glossaryRead({
-                        "--glossaryGuid": glossary_guid,
-                        "--limit": 1000,
-                        "--offset": 0,
-                        "--sort": "ASC",
-                        "--ignoreTermsAndCategories": False
-                    })
+                    terms_data = self.glossaryRead(
+                        {
+                            "--glossaryGuid": glossary_guid,
+                            "--limit": 1000,
+                            "--offset": 0,
+                            "--sort": "ASC",
+                            "--ignoreTermsAndCategories": False,
+                        }
+                    )
 
                     if terms_data and isinstance(terms_data, dict):
                         terms = terms_data.get("terms", [])
-                        
+
                         for term in terms:
                             term_row = {
                                 "type": "term",
@@ -506,7 +583,9 @@ class Glossary(Endpoint):
                                 "parentGlossaryGuid": glossary_guid,
                                 "parentTermGuid": "",
                                 "abbreviation": term.get("abbreviation", ""),
-                                "synonyms": ", ".join([s.get("displayText", "") for s in term.get("synonyms", [])])
+                                "synonyms": ", ".join(
+                                    [s.get("displayText", "") for s in term.get("synonyms", [])]
+                                ),
                             }
 
                             if include_metadata:
@@ -532,8 +611,12 @@ class Glossary(Endpoint):
             if csv_data:
                 print("\n📋 Export Summary:")
                 print(f"   • Total items: {len(csv_data)}")
-                print(f"   • Glossaries: {len([item for item in csv_data if item.get('type') == 'glossary'])}")
-                print(f"   • Terms: {len([item for item in csv_data if item.get('type') == 'term'])}")
+                print(
+                    f"   • Glossaries: {len([item for item in csv_data if item.get('type') == 'glossary'])}"
+                )
+                print(
+                    f"   • Terms: {len([item for item in csv_data if item.get('type') == 'term'])}"
+                )
                 print(f"   • Columns: {len(df.columns)}")
                 print(f"   • Metadata info: {'✓' if include_metadata else '✗'}")
 
