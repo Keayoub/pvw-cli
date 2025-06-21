@@ -1,10 +1,4 @@
 # Copilot Instructions for Purview_cli Project
-
-Welcome, GitHub Copilot!  
-This file provides guidance to help you generate code and suggestions that align with our project's architecture, design principles, and best practices.
-
----
-
 ## General Principles
 
 - **Adhere to Clean Architecture:**  

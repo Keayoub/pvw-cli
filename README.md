@@ -302,6 +302,14 @@ PVW CLI aims to provide comprehensive automation for all major Microsoft Purview
   - [Microsoft Purview REST API reference](https://learn.microsoft.com/en-us/rest/api/purview/)
   - [Atlas 2.2 API documentation](https://learn.microsoft.com/en-us/purview/data-gov-api-atlas-2-2)
 
+### API Version Support
+
+- Data Map: **2024-03-01-preview** (default) or **2023-09-01** (stable)
+- Collections: **2019-11-01-preview**
+- Account: **2019-11-01-preview**
+- Management: **2021-07-01**
+- Scan: **2018-12-01-preview**
+
 **Note:**
 - Domain management (create, update, delete) is not currently supported by the public API. The CLI will add support for these features as soon as Microsoft releases the necessary endpoints.
 - Please monitor the above links and [Azure Updates](https://azure.microsoft.com/updates/) for new API releases.

@@ -117,6 +117,12 @@ def register_individual_cli_modules(main_group):
         main_group.add_command(domain)
     except ImportError as e:
         console.print(f"[yellow]⚠ Could not import domain CLI module: {e}[/yellow]")
+    try:
+        from .workflow import workflow
+
+        main_group.add_command(workflow)
+    except ImportError as e:
+        console.print(f"[yellow]⚠ Could not import workflow CLI module: {e}[/yellow]")
 
 
 @click.group()
