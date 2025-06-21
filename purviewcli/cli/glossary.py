@@ -13,10 +13,12 @@ Usage:
   glossary put                     Update a glossary
   glossary put-category            Update a glossary category
   glossary put-term                Update a glossary term
-  glossary read or List            Read glossaries
+  glossary read or list            Read glossaries
   glossary read-categories         Read glossary categories
   glossary read-category           Read a glossary category
   glossary read-term               Read a glossary term
+  glossary read-terms              Read all terms in a glossary
+  glossary list-terms              List all terms in a glossary (alias)
   glossary --help                  Show this help message and exit
 
 Options:
@@ -378,6 +380,23 @@ def read_term(term_guid, include_term_hierarchy):
 @click.option('--include-term-hierarchy', is_flag=True, help='Include term hierarchy in retrieval')
 def read_terms(glossary_guid, limit, offset, sort, ext_info, include_term_hierarchy):
     """Read glossary terms"""
+    try:
+        client = Glossary()
+        args = {'--glossaryGuid': glossary_guid, '--limit': limit, '--offset': offset, '--sort': sort, '--extInfo': ext_info, '--includeTermHierarchy': include_term_hierarchy}
+        result = client.glossaryReadTerms(args)
+        console.print(json.dumps(result, indent=2))
+    except Exception as e:
+        console.print(f"[red]✗ Error: {e}[/red]")
+
+@glossary.command(name="list-terms", help="List all terms in a glossary (alias for read-terms)")
+@click.option('--glossary-guid', help='The globally unique identifier for glossary')
+@click.option('--limit', type=int, default=1000, help='The page size - by default there is no paging')
+@click.option('--offset', type=int, default=0, help='Offset for pagination purpose')
+@click.option('--sort', default='ASC', help='Sort order: ASC or DESC')
+@click.option('--ext-info', is_flag=True, help='Include extended information')
+@click.option('--include-term-hierarchy', is_flag=True, help='Include term hierarchy in retrieval')
+def list_terms(glossary_guid, limit, offset, sort, ext_info, include_term_hierarchy):
+    """List all terms in a glossary (user-friendly alias for read-terms)"""
     try:
         client = Glossary()
         args = {'--glossaryGuid': glossary_guid, '--limit': limit, '--offset': offset, '--sort': sort, '--extInfo': ext_info, '--includeTermHierarchy': include_term_hierarchy}

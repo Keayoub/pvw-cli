@@ -288,6 +288,13 @@ data-product show-lineage --qualified-name="product.test.1"
 - **Discovery Query/Search**: Flexible, advanced search for all catalog assets
 - **Entity Management**: Bulk import/export, update, and validation
 - **Glossary Management**: Import/export terms, assign terms in bulk
+  ```bash
+  # List all terms in a glossary
+  pvw glossary list-terms --glossary-guid "your-glossary-guid"
+  
+  # Create and manage glossary terms
+  pvw glossary create-term --payload-file term.json
+  ```
 - **Lineage Operations**: Lineage discovery, CSV-based bulk lineage
 - **Monitoring & Analytics**: Real-time dashboards, metrics, and reporting
 - **Plugin System**: Extensible with custom plugins
