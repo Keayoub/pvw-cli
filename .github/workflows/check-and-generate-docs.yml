@@ -29,8 +29,8 @@ jobs:
           python setup.py check
           python setup.py sdist bdist_wheel
 
-      - name: Generate Documentation
-        run: |
-          python doc/boilerplate/generate_boilerplate_csv.py
-          python doc/boilerplate/docgen.py
-          python doc/boilerplate/docupdate_mainfiles.py
+    #   - name: Generate Documentation
+    #     run: |
+    #       python doc/boilerplate/generate_boilerplate_csv.py
+    #       python doc/boilerplate/docgen.py
+    #       python doc/boilerplate/docupdate_mainfiles.py
