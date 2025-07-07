@@ -83,7 +83,7 @@ pvw = "purviewcli.cli.cli:main"
 pvw-cli = "purviewcli.cli.cli:main"
 
 [tool.setuptools]
-packages = ["purviewcli"]
+packages = ["purviewcli", "purviewcli.cli"]
 
 [tool.setuptools.package-data]
 purviewcli = [
