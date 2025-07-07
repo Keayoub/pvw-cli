@@ -28,7 +28,7 @@ if requirements_file.exists():
 
 setup(
     name='pvw-cli',
-    version="1.0.0",
+    version="1.0.1",
     description="Microsoft Purview CLI with comprehensive automation capabilities",
     long_description=long_description,
     long_description_content_type='text/markdown',
