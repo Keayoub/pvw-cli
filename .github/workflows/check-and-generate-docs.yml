@@ -1,0 +1,35 @@
+name: Check and Generate Documentation
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  check-and-generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Compile and Check Package
+        run: |
+          python setup.py check
+          python setup.py sdist bdist_wheel
+
+      - name: Generate Documentation
+        run: |
+          python doc/boilerplate/generate_boilerplate_csv.py
+          python doc/boilerplate/docgen.py
+          python doc/boilerplate/docupdate_mainfiles.py

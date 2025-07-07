@@ -9,10 +9,10 @@ description = " Microsoft Purview CLI with comprehensive automation capabilities
 readme = "README.md"
 license = {text = "MIT"}
 authors = [
-    {name = "AYOUB KEBAILI", email = "keayoub@msnc.com"}
+    {name = "AYOUB KEBAILI", email = "keayoub@msn.com"}
 ]
 maintainers = [
-    {name = "AYOUB KEBAILI", email = "keayoub@msnc.com"}
+    {name = "AYOUB KEBAILI", email = "keayoub@msn.com"}
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
