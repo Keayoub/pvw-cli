@@ -8,9 +8,14 @@ version_file = Path(__file__).parent / 'purviewcli' / '__init__.py'
 version = {}
 if version_file.exists():
     with open(version_file, 'r') as f:
-        exec(f.read(), version)
+        content = f.read()
+        # Extract just the version line
+        for line in content.split('\n'):
+            if line.strip().startswith('__version__'):
+                exec(line, version)
+                break
 else:
-    version['__version__'] = '1.0.0'
+    version['__version__'] = '1.0.3'
 
 # Read README
 readme_file = Path(__file__).parent / 'README.md'
@@ -28,7 +33,7 @@ if requirements_file.exists():
 
 setup(
     name='pvw-cli',
-    version="1.0.1",
+    version=version['__version__'],
     description="Microsoft Purview CLI with comprehensive automation capabilities",
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -36,8 +41,7 @@ setup(
     author='Ayoub KEBAILI',
     author_email='keayoub@msn.com',
     license='MIT',
-    packages=find_packages(),
-    install_requires=requirements,
+    packages=find_packages(include=["purviewcli", "purviewcli.*"]),
     python_requires='>=3.8',
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -56,11 +60,6 @@ setup(
         "Topic :: Internet :: WWW/HTTP",
     ],
     keywords='microsoft purview cli data catalog governance automation pvw',
-    entry_points={
-        'console_scripts': [
-            'pvw = purviewcli.cli.cli:main'
-        ],
-    },
     package_data={
         'purviewcli': [
             'templates/*.json',

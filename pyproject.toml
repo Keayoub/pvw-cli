@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pvw-cli"
-version = "1.0.1"
+version = "1.0.3"
 description = " Microsoft Purview CLI with comprehensive automation capabilities"
 readme = "README.md"
 license = {text = "MIT"}
@@ -83,7 +83,7 @@ pvw = "purviewcli.cli.cli:main"
 pvw-cli = "purviewcli.cli.cli:main"
 
 [tool.setuptools]
-packages = ["purviewcli", "purviewcli.cli"]
+packages = ["purviewcli", "purviewcli.cli", "purviewcli.client", "purviewcli.plugins"]
 
 [tool.setuptools.package-data]
 purviewcli = [
@@ -177,3 +177,5 @@ exclude_lines = [
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
 ]
+
+dynamic = ["entry-points"]
