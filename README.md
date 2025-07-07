@@ -8,7 +8,7 @@
 
 ## What is PVW CLI?
 
-**PVW CLI v2.0.0** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* including:
+**PVW CLI v1.0.0** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* including:
 
 - Entity management (create, update, bulk, import/export)
 - Glossary and term management

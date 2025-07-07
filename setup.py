@@ -10,7 +10,7 @@ if version_file.exists():
     with open(version_file, 'r') as f:
         exec(f.read(), version)
 else:
-    version['__version__'] = '2.0.0'
+    version['__version__'] = '1.0.0'
 
 # Read README
 readme_file = Path(__file__).parent / 'README.md'
@@ -28,7 +28,7 @@ if requirements_file.exists():
 
 setup(
     name='pvw-cli',
-    version="2.0.0",
+    version="1.0.0",
     description="Microsoft Purview CLI with comprehensive automation capabilities",
     long_description=long_description,
     long_description_content_type='text/markdown',
