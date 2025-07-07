@@ -215,15 +215,18 @@ class Glossary(Endpoint):
     # === GLOSSARY TERM OPERATIONS ===
 
     @decorator
+    @decorator
     def glossaryReadTerms(self, args):
-        """Get all glossary terms (Official API: List Terms)"""
+        """Get terms for a specific glossary (Official API: List Terms by Glossary)"""
         self.method = "GET"
-        self.endpoint = ENDPOINTS["glossary"]["terms"]
+        self.endpoint = ENDPOINTS["glossary"]["list_terms"].format(glossaryId=args["--glossaryGuid"])
         self.params = {
             **get_api_version_params("datamap"),
             "limit": args.get("--limit"),
             "offset": args.get("--offset"),
             "sort": args.get("--sort"),
+            "extInfo": str(args.get("--extInfo", False)).lower(),
+            "includeTermHierarchy": str(args.get("--includeTermHierarchy", False)).lower(),
         }
 
     @decorator

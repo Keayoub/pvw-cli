@@ -463,20 +463,68 @@ def read_terms_related(term_guid, limit, offset, sort):
         console.print(f"[red]✗ Error: {e}[/red]")
 
 @glossary.command(name="import-terms")
-@click.option('--csv-file', required=True, type=click.Path(exists=True), help='CSV file with glossary terms')
-@click.option('--glossary-guid', required=False, help='The globally unique identifier for glossary')
+@click.option('--csv-file', required=False, type=click.Path(exists=True), help='CSV file with glossary terms')
+@click.option('--json-file', required=False, type=click.Path(exists=True), help='JSON file with glossary terms')
+@click.option('--glossary-guid', required=True, help='The globally unique identifier for glossary')
 @click.option('--include-term-hierarchy', is_flag=True, help='Include term hierarchy in creation')
-def import_terms_csv(csv_file, glossary_guid, include_term_hierarchy):
-    """Import glossary terms from a CSV file."""
+def import_terms_csv(csv_file, json_file, glossary_guid, include_term_hierarchy):
+    """Import glossary terms from a CSV or JSON file."""
     try:
+        if not csv_file and not json_file:
+            console.print("[red]Error: Either --csv-file or --json-file must be provided[/red]")
+            return
+            
+        if csv_file and json_file:
+            console.print("[red]Error: Provide either --csv-file or --json-file, not both[/red]")
+            return
+            
         from purviewcli.client._glossary import Glossary
         client = Glossary()
-        args = {
-            '--glossaryFile': csv_file,
-            '--glossaryGuid': glossary_guid,
-            '--includeTermHierarchy': include_term_hierarchy
-        }
-        result = client.glossaryCreateTermsImport(args)
+        
+        if csv_file:
+            # For CSV files, we need to read and convert to the expected format
+            # The Purview API expects a specific JSON structure for import
+            console.print(f"[yellow]Note: CSV import requires conversion to JSON format[/yellow]")
+            console.print(f"[yellow]Processing CSV file: {csv_file}[/yellow]")
+            
+            import csv
+            import json
+            
+            terms = []
+            with open(csv_file, 'r', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    term = {
+                        "name": row.get("name", ""),
+                        "definition": row.get("definition", ""),
+                        "status": row.get("status", "Draft"),
+                        "nickName": row.get("nickName", ""),
+                        "abbreviation": row.get("abbreviation", "")
+                    }
+                    # Remove empty values
+                    term = {k: v for k, v in term.items() if v}
+                    terms.append(term)
+            
+            args = {
+                '--payloadFile': None,  # We'll set payload directly
+                '--glossaryGuid': glossary_guid,
+                '--includeTermHierarchy': include_term_hierarchy
+            }
+            
+            # Set the payload directly on the client
+            client.glossaryImportTerms(args)
+            client.payload = terms
+            result = client.call_api()
+            
+        else:
+            # For JSON files, use the existing method
+            args = {
+                '--payloadFile': json_file,
+                '--glossaryGuid': glossary_guid,
+                '--includeTermHierarchy': include_term_hierarchy
+            }
+            result = client.glossaryImportTerms(args)
+        
         console.print(json.dumps({'status': 'success', 'result': str(result)}, indent=2))
     except Exception as e:
         console.print(f"[red]Error importing glossary terms from CSV: {e}[/red]")

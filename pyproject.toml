@@ -7,7 +7,7 @@ name = "pvw-cli"
 version = "2.0.0"
 description = " Microsoft Purview CLI with comprehensive automation capabilities"
 readme = "README.md"
-license = "MIT"
+license = {text = "MIT"}
 authors = [
     {name = "AYOUB KEBAILI", email = "keayoub@msnc.com"}
 ]

@@ -9,12 +9,15 @@ from rich.console import Console
 
 console = Console()
 
+
 @click.group()
 def workflow():
     """Manage workflows and approval processes in Microsoft Purview."""
     pass
 
+
 # ========== Basic Workflow Management Commands ==========
+
 
 @workflow.command()
 @click.pass_context
@@ -27,10 +30,11 @@ def list(ctx):
             return
 
         from purviewcli.client._workflow import Workflow
+
         args = {}
         workflow_client = Workflow()
         result = workflow_client.workflowListWorkflows(args)
-        
+
         if result:
             console.print("[green]✓ Workflow list completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
@@ -39,9 +43,15 @@ def list(ctx):
     except Exception as e:
         console.print(f"[red]✗ Error executing workflow list: {str(e)}[/red]")
 
+
 @workflow.command()
-@click.option('--workflow-id', required=True, help='Workflow ID')
-@click.option('--payload-file', required=True, type=click.Path(exists=True), help='JSON file with workflow definition')
+@click.option("--workflow-id", required=True, help="Workflow ID")
+@click.option(
+    "--payload-file",
+    required=True,
+    type=click.Path(exists=True),
+    help="JSON file with workflow definition",
+)
 @click.pass_context
 def create(ctx, workflow_id, payload_file):
     """Create a new workflow."""
@@ -54,13 +64,11 @@ def create(ctx, workflow_id, payload_file):
             return
 
         from purviewcli.client._workflow import Workflow
-        args = {
-            '--workflowId': workflow_id,
-            '--payloadFile': payload_file
-        }
+
+        args = {"--workflowId": workflow_id, "--payloadFile": payload_file}
         workflow_client = Workflow()
         result = workflow_client.workflowCreateWorkflow(args)
-        
+
         if result:
             console.print("[green]✓ Workflow create completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
@@ -69,8 +77,9 @@ def create(ctx, workflow_id, payload_file):
     except Exception as e:
         console.print(f"[red]✗ Error executing workflow create: {str(e)}[/red]")
 
+
 @workflow.command()
-@click.option('--workflow-id', required=True, help='Workflow ID')
+@click.option("--workflow-id", required=True, help="Workflow ID")
 @click.pass_context
 def get(ctx, workflow_id):
     """Get a specific workflow."""
@@ -82,10 +91,11 @@ def get(ctx, workflow_id):
             return
 
         from purviewcli.client._workflow import Workflow
-        args = {'--workflowId': workflow_id}
+
+        args = {"--workflowId": workflow_id}
         workflow_client = Workflow()
         result = workflow_client.workflowGetWorkflow(args)
-        
+
         if result:
             console.print("[green]✓ Workflow get completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
@@ -94,9 +104,12 @@ def get(ctx, workflow_id):
     except Exception as e:
         console.print(f"[red]✗ Error executing workflow get: {str(e)}[/red]")
 
+
 @workflow.command()
-@click.option('--workflow-id', required=True, help='Workflow ID')
-@click.option('--payload-file', type=click.Path(exists=True), help='JSON file with execution parameters')
+@click.option("--workflow-id", required=True, help="Workflow ID")
+@click.option(
+    "--payload-file", type=click.Path(exists=True), help="JSON file with execution parameters"
+)
 @click.pass_context
 def execute(ctx, workflow_id, payload_file):
     """Execute a workflow."""
@@ -110,12 +123,13 @@ def execute(ctx, workflow_id, payload_file):
             return
 
         from purviewcli.client._workflow import Workflow
-        args = {'--workflowId': workflow_id}
+
+        args = {"--workflowId": workflow_id}
         if payload_file:
-            args['--payloadFile'] = payload_file
+            args["--payloadFile"] = payload_file
         workflow_client = Workflow()
         result = workflow_client.workflowExecuteWorkflow(args)
-        
+
         if result:
             console.print("[green]✓ Workflow execute completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
@@ -124,8 +138,9 @@ def execute(ctx, workflow_id, payload_file):
     except Exception as e:
         console.print(f"[red]✗ Error executing workflow: {str(e)}[/red]")
 
+
 @workflow.command()
-@click.option('--workflow-id', required=True, help='Workflow ID')
+@click.option("--workflow-id", required=True, help="Workflow ID")
 @click.pass_context
 def executions(ctx, workflow_id):
     """List workflow executions."""
@@ -137,10 +152,11 @@ def executions(ctx, workflow_id):
             return
 
         from purviewcli.client._workflow import Workflow
-        args = {'--workflowId': workflow_id}
+
+        args = {"--workflowId": workflow_id}
         workflow_client = Workflow()
         result = workflow_client.workflowListWorkflowExecutions(args)
-        
+
         if result:
             console.print("[green]✓ Workflow executions list completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
@@ -149,11 +165,13 @@ def executions(ctx, workflow_id):
     except Exception as e:
         console.print(f"[red]✗ Error listing workflow executions: {str(e)}[/red]")
 
+
 # ========== Approval Commands ==========
 
+
 @workflow.command()
-@click.option('--status', help='Filter by approval status')
-@click.option('--assigned-to', help='Filter by assignee')
+@click.option("--status", help="Filter by approval status")
+@click.option("--assigned-to", help="Filter by assignee")
 @click.pass_context
 def approvals(ctx, status, assigned_to):
     """List approval requests."""
@@ -168,14 +186,15 @@ def approvals(ctx, status, assigned_to):
             return
 
         from purviewcli.client._workflow import Workflow
+
         args = {}
         if status:
-            args['--status'] = status
+            args["--status"] = status
         if assigned_to:
-            args['--assignedTo'] = assigned_to
+            args["--assignedTo"] = assigned_to
         workflow_client = Workflow()
         result = workflow_client.workflowGetApprovalRequests(args)
-        
+
         if result:
             console.print("[green]✓ Approval requests list completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
@@ -184,9 +203,10 @@ def approvals(ctx, status, assigned_to):
     except Exception as e:
         console.print(f"[red]✗ Error listing approval requests: {str(e)}[/red]")
 
+
 @workflow.command()
-@click.option('--request-id', required=True, help='Approval request ID')
-@click.option('--comments', help='Approval comments')
+@click.option("--request-id", required=True, help="Approval request ID")
+@click.option("--comments", help="Approval comments")
 @click.pass_context
 def approve(ctx, request_id, comments):
     """Approve a request."""
@@ -200,12 +220,13 @@ def approve(ctx, request_id, comments):
             return
 
         from purviewcli.client._workflow import Workflow
-        args = {'--requestId': request_id}
+
+        args = {"--requestId": request_id}
         if comments:
-            args['--comments'] = comments
+            args["--comments"] = comments
         workflow_client = Workflow()
         result = workflow_client.workflowApproveRequest(args)
-        
+
         if result:
             console.print("[green]✓ Request approved successfully[/green]")
             console.print(json.dumps(result, indent=2))
@@ -214,9 +235,10 @@ def approve(ctx, request_id, comments):
     except Exception as e:
         console.print(f"[red]✗ Error approving request: {str(e)}[/red]")
 
+
 @workflow.command()
-@click.option('--request-id', required=True, help='Approval request ID')
-@click.option('--comments', help='Rejection comments')
+@click.option("--request-id", required=True, help="Approval request ID")
+@click.option("--comments", help="Rejection comments")
 @click.pass_context
 def reject(ctx, request_id, comments):
     """Reject a request."""
@@ -230,12 +252,13 @@ def reject(ctx, request_id, comments):
             return
 
         from purviewcli.client._workflow import Workflow
-        args = {'--requestId': request_id}
+
+        args = {"--requestId": request_id}
         if comments:
-            args['--comments'] = comments
+            args["--comments"] = comments
         workflow_client = Workflow()
         result = workflow_client.workflowRejectRequest(args)
-        
+
         if result:
             console.print("[green]✓ Request rejected successfully[/green]")
             console.print(json.dumps(result, indent=2))
@@ -244,7 +267,9 @@ def reject(ctx, request_id, comments):
     except Exception as e:
         console.print(f"[red]✗ Error rejecting request: {str(e)}[/red]")
 
+
 # ========== Template Commands ==========
+
 
 @workflow.command()
 @click.pass_context
@@ -257,10 +282,11 @@ def templates(ctx):
             return
 
         from purviewcli.client._workflow import Workflow
+
         args = {}
         workflow_client = Workflow()
         result = workflow_client.workflowListWorkflowTemplates(args)
-        
+
         if result:
             console.print("[green]✓ Workflow templates list completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
@@ -269,8 +295,9 @@ def templates(ctx):
     except Exception as e:
         console.print(f"[red]✗ Error listing workflow templates: {str(e)}[/red]")
 
+
 @workflow.command()
-@click.option('--template-id', required=True, help='Template ID')
+@click.option("--template-id", required=True, help="Template ID")
 @click.pass_context
 def template(ctx, template_id):
     """Get a specific workflow template."""
@@ -282,10 +309,11 @@ def template(ctx, template_id):
             return
 
         from purviewcli.client._workflow import Workflow
-        args = {'--templateId': template_id}
+
+        args = {"--templateId": template_id}
         workflow_client = Workflow()
         result = workflow_client.workflowGetWorkflowTemplate(args)
-        
+
         if result:
             console.print("[green]✓ Workflow template get completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
@@ -294,10 +322,17 @@ def template(ctx, template_id):
     except Exception as e:
         console.print(f"[red]✗ Error getting workflow template: {str(e)}[/red]")
 
+
 # ========== Validation Commands ==========
 
+
 @workflow.command()
-@click.option('--payload-file', required=True, type=click.Path(exists=True), help='JSON file with workflow definition to validate')
+@click.option(
+    "--payload-file",
+    required=True,
+    type=click.Path(exists=True),
+    help="JSON file with workflow definition to validate",
+)
 @click.pass_context
 def validate(ctx, payload_file):
     """Validate a workflow definition."""
@@ -309,10 +344,11 @@ def validate(ctx, payload_file):
             return
 
         from purviewcli.client._workflow import Workflow
-        args = {'--payloadFile': payload_file}
+
+        args = {"--payloadFile": payload_file}
         workflow_client = Workflow()
         result = workflow_client.workflowValidateWorkflow(args)
-        
+
         if result:
             console.print("[green]✓ Workflow validation completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
@@ -321,5 +357,6 @@ def validate(ctx, payload_file):
     except Exception as e:
         console.print(f"[red]✗ Error validating workflow: {str(e)}[/red]")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     workflow()
