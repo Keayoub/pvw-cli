@@ -4,15 +4,15 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pvw-cli"
-version = "2.0.0"
+version = "1.0.0"
 description = " Microsoft Purview CLI with comprehensive automation capabilities"
 readme = "README.md"
 license = {text = "MIT"}
 authors = [
-    {name = "AYOUB KEBAILI", email = "keayoub@msnc.com"}
+    {name = "AYOUB KEBAILI", email = "keayoub@msn.com"}
 ]
 maintainers = [
-    {name = "AYOUB KEBAILI", email = "keayoub@msnc.com"}
+    {name = "AYOUB KEBAILI", email = "keayoub@msn.com"}
 ]
 classifiers = [
     "Development Status :: 4 - Beta",

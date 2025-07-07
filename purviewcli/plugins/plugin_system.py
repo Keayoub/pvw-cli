@@ -52,7 +52,7 @@ class PluginMetadata:
     configuration_schema: Dict[str, Any] = field(default_factory=dict)
     supported_operations: List[str] = field(default_factory=list)
     entry_point: str = "main"
-    min_cli_version: str = "2.0.0"
+    min_cli_version: str = "1.0.0"
     max_cli_version: str = ""
 
 @dataclass
