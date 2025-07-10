@@ -275,7 +275,7 @@ def read_typedefs(include_term_template, type_):
     try:
         args = {'--includeTermTemplate': include_term_template, '--type': type_}
         client = Types()
-        result = client.typesReadTypeDefs(args)
+        result = client.typesRead(args)
         click.echo(json.dumps(result, indent=2))
     except Exception as e:
         click.echo(f"Error: {e}")
@@ -288,7 +288,7 @@ def read_typedefs_headers(include_term_template, type_):
     try:
         args = {'--includeTermTemplate': include_term_template, '--type': type_}
         client = Types()
-        result = client.typesReadTypeDefsHeaders(args)
+        result = client.typesReadHeaders(args)
         click.echo(json.dumps(result, indent=2))
     except Exception as e:
         click.echo(f"Error: {e}")

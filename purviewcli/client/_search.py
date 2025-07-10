@@ -33,27 +33,43 @@ class Search(Endpoint):
         self.endpoint = ENDPOINTS["discovery"]["query"]
         self.params = get_api_version_params("datamap")
         
-        # Build search payload
+        # Check if direct payload is provided
+        if args.get("--payload"):
+            import json
+            self.payload = json.loads(args["--payload"])
+            return
+        
+        # Check if payload file is provided
+        if args.get("--payloadFile"):
+            self.payload = get_json(args, "--payloadFile")
+            return
+        
+        # Build search payload from individual parameters
         search_request = {
             "keywords": args.get("--keywords", "*"),
             "limit": args.get("--limit", 50),
-            "offset": args.get("--offset", 0),
-            "filter": {},
-            "facets": []
+            "offset": args.get("--offset", 0)
         }
+        
+        # Only add filter if there are actual filter values
+        filter_obj = {}
         
         # Add filters if provided
         if args.get("--filter"):
-            search_request["filter"] = self._parse_filter(args["--filter"])
+            filter_obj.update(self._parse_filter(args["--filter"]))
         
         if args.get("--entityType"):
-            search_request["filter"]["entityType"] = args["--entityType"]
+            filter_obj["entityType"] = args["--entityType"]
             
         if args.get("--classification"):
-            search_request["filter"]["classification"] = args["--classification"]
+            filter_obj["classification"] = args["--classification"]
             
         if args.get("--term"):
-            search_request["filter"]["term"] = args["--term"]
+            filter_obj["term"] = args["--term"]
+        
+        # Only include filter if it has content
+        if filter_obj:
+            search_request["filter"] = filter_obj
         
         # Add facets if requested
         if args.get("--facets"):

@@ -48,7 +48,7 @@ def create(collection_name, friendly_name, description, parent_collection, paylo
             "--payloadFile": payload_file,
         }
         client = Collections()
-        result = client.collectionsCreateCollection(args)
+        result = client.collectionsCreate(args)
         click.echo(json.dumps(result, indent=2))
     except Exception as e:
         click.echo(f"Error: {e}")
@@ -61,7 +61,7 @@ def delete(collection_name):
     try:
         args = {"--collectionName": collection_name}
         client = Collections()
-        result = client.collectionsDeleteCollection(args)
+        result = client.collectionsDelete(args)
         click.echo(json.dumps(result, indent=2))
     except Exception as e:
         click.echo(f"Error: {e}")
@@ -74,7 +74,7 @@ def get(collection_name):
     try:
         args = {"--collectionName": collection_name}
         client = Collections()
-        result = client.collectionsGetCollection(args)
+        result = client.collectionsRead(args)
         click.echo(json.dumps(result, indent=2))
     except Exception as e:
         click.echo(f"Error: {e}")
@@ -85,7 +85,7 @@ def list():
     """List all collections"""
     try:
         client = Collections()
-        result = client.collectionsGetCollections({})
+        result = client.collectionsRead({})
         click.echo(json.dumps(result, indent=2))
     except Exception as e:
         click.echo(f"Error: {e}")
@@ -104,7 +104,7 @@ def import_csv(csv_file):
         args = {"--csv-file": csv_file}
         client = Collections()
         # You may need to implement this method in your client
-        result = client.importCollectionsFromCSV(args)
+        result = client.collectionsImport(args)
         click.echo(json.dumps(result, indent=2))
     except Exception as e:
         click.echo(f"Error: {e}")
@@ -130,7 +130,7 @@ def export_csv(output_file, include_hierarchy, include_metadata):
         }
         client = Collections()
         # You may need to implement this method in your client
-        result = client.exportCollectionsToCSV(args)
+        result = client.collectionsExport(args)
         click.echo(json.dumps(result, indent=2))
     except Exception as e:
         click.echo(f"Error: {e}")

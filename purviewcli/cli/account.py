@@ -45,7 +45,7 @@ def get_account(ctx):
 
         from purviewcli.client._account import Account
         account_client = Account()
-        result = account_client.getAccount(args)
+        result = account_client.accountRead(args)
 
         if result:
             console.print("[green]✓ Account information retrieved successfully[/green]")
@@ -71,7 +71,7 @@ def get_access_keys(ctx):
 
         from purviewcli.client._account import Account
         account_client = Account()
-        result = account_client.getAccessKeys(args)
+        result = account_client.accountReadAccessKeys(args)
 
         if result:
             console.print("[green]✓ Access keys retrieved successfully[/green]")
@@ -101,7 +101,7 @@ def regenerate_access_keys(ctx, key_type):
 
         from purviewcli.client._account import Account
         account_client = Account()
-        result = account_client.regenerateAccessKeys(args)
+        result = account_client.accountRegenerateAccessKey(args)
 
         if result:
             console.print("[green]✓ Access keys regenerated successfully[/green]")
@@ -129,7 +129,7 @@ def update_account(ctx, friendly_name):
 
         from purviewcli.client._account import Account
         account_client = Account()
-        result = account_client.updateAccount(args)
+        result = account_client.accountUpdate(args)
 
         if result:
             console.print("[green]✓ Account updated successfully[/green]")
@@ -153,9 +153,9 @@ def get_collections(ctx):
 
         args = {}
 
-        from purviewcli.client._account import Account
-        account_client = Account()
-        result = account_client.getCollections(args)
+        from purviewcli.client._collections import Collections
+        account_client = Collections()
+        result = account_client.collectionsRead(args)
 
         if result:
             console.print("[green]✓ Collections retrieved successfully[/green]")
@@ -181,9 +181,9 @@ def get_collection(ctx, collection_name):
 
         args = {"--collectionName": collection_name}
 
-        from purviewcli.client._account import Account
-        account_client = Account()
-        result = account_client.getCollection(args)
+        from purviewcli.client._collections import Collections
+        account_client = Collections()
+        result = account_client.collectionsRead(args)
 
         if result:
             console.print("[green]✓ Collection information retrieved successfully[/green]")

@@ -1799,16 +1799,18 @@ def list(type_name, limit):
         from purviewcli.client._search import Search
         search_client = Search()
         
-        # Create search query payload
+        # Create search query payload with proper filter structure
         search_payload = {
             "keywords": "*",
             "limit": limit,
-            "filter": {}
         }
         
-        # Add type filter if specified
+        # Only add filter if type_name is specified
         if type_name:
-            search_payload["filter"]["entityType"] = [type_name]
+            search_payload["filter"] = {
+                "entityType": [type_name]
+            }
+        # If no type specified, don't include filter at all
         
         # Convert to args format expected by searchQuery
         search_args = {
