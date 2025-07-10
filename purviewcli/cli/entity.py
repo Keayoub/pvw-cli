@@ -1808,7 +1808,7 @@ def list(type_name, limit):
         # Only add filter if type_name is specified
         if type_name:
             search_payload["filter"] = {
-                "entityType": [type_name]
+                "entityType": type_name  # Send as string, not array
             }
         # If no type specified, don't include filter at all
         
