@@ -39,6 +39,13 @@ def get_data(http_dict):
             json=http_dict.get("payload"),
         )
 
+        # The synchronous client returns a wrapper dict like
+        # {"status": "success", "data": <json>, "status_code": 200}
+        # Normalize to return the raw JSON payload when available so
+        # calling code (which expects the API JSON) works consistently
+        if isinstance(result, dict) and result.get("status") == "success" and "data" in result:
+            return result.get("data")
+
         return result
 
     except Exception as e:
