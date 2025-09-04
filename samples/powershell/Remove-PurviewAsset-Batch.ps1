@@ -326,8 +326,7 @@ do {
             foreach ($result in $results) {
                 $batchSuccess += $result.Success
                 $batchFailed += $result.Failed
-                $loopSuccessCount += $result.Success
-                $loopFailureCount += $result.Failed
+                # Note: Don't add to loopSuccessCount here - it will be added after batch processing
                 if ($result.OptimalBulkSize) {
                     $optimalSizes += $result.OptimalBulkSize
                 }
@@ -346,6 +345,10 @@ do {
             if ($batchFailed -gt 0) {
                 Write-Host "    ⚠️ $batchFailed failed (will retry in next loop)" -ForegroundColor Yellow
             }
+            
+            # Add batch results to loop totals
+            $loopSuccessCount += $batchSuccess
+            $loopFailureCount += $batchFailed
             
             # Throttle between batches to respect API limits
             Start-Sleep -Milliseconds $batchThrottleMs

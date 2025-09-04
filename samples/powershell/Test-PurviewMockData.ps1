@@ -96,17 +96,32 @@ function Test-BulkDeletePerformance {
     
     # Simulate the continuous loop
     $remainingAssets = $MockAssets
+    $maxLoops = [Math]::Ceiling($MockAssets.Count / 1000) + 5  # Expected loops + safety margin
     
-    while ($remainingAssets.Count -gt 0) {
+    while ($remainingAssets.Count -gt 0 -and $loopCount -lt $maxLoops) {
         $loopCount++
         $loopStartTime = Get-Date
         
         Write-Host "`n=== MOCK LOOP $loopCount ==="
         
+        # Safety check to prevent infinite loops
+        if ($loopCount -gt $maxLoops) {
+            Write-Host "⚠️  SAFETY BREAK: Maximum loops ($maxLoops) reached. Stopping test." -ForegroundColor Yellow
+            break
+        }
+        
         # Simulate search (take up to 1000 assets)
         $searchLimit = [Math]::Min(1000, $remainingAssets.Count)
         $currentBatch = $remainingAssets[0..($searchLimit - 1)]
-        $remainingAssets = $remainingAssets[$searchLimit..($remainingAssets.Count - 1)]
+        
+        # Fix: Properly handle remaining assets after taking the batch
+        if ($searchLimit -eq $remainingAssets.Count) {
+            # If we took all remaining assets, set to empty array
+            $remainingAssets = @()
+        } else {
+            # Otherwise, take the remaining portion
+            $remainingAssets = $remainingAssets[$searchLimit..($remainingAssets.Count - 1)]
+        }
         
         Write-Host "🔍 Mock search found $($currentBatch.Count) assets"
         
