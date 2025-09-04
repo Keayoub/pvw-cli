@@ -165,7 +165,7 @@ if ($Mode -eq 'SINGLE') {
     Write-Host "📊 SINGLE MODE: Individual asset deletion with detailed progress..." -ForegroundColor Cyan
 } else {
     $bulkMode = $true
-    Write-Host "⚡ BULK MODE: Using Purview Bulk Delete API (200 assets per bulk request, 4 parallel jobs)..." -ForegroundColor Cyan
+    Write-Host "⚡ BULK MODE: Large bulk operations with minimal parallel jobs (500 assets per bulk request, 2 parallel jobs)..." -ForegroundColor Cyan
 }
 
 Write-Host "Press Ctrl+C to cancel if needed. Starting in 3 seconds..."
@@ -179,13 +179,13 @@ $loopCount = 0
 $overallStartTime = Get-Date
 
 # Performance optimization settings with API protection
-$batchSize = 500           # Aggressive batch size for maximum throughput  
-$maxParallelJobs = 4       # Limited parallel jobs to avoid DDoS protection
-$apiThrottleMs = 200       # Reduced delay between API calls (5 calls/second max)
-$batchThrottleMs = 800     # Reduced delay between batches
+$batchSize = 1000          # Process assets in large batches for efficiency
+$maxParallelJobs = 4       # INCREASED: More parallel jobs to compensate for smaller bulk sizes
+$apiThrottleMs = 200       # REDUCED: Less throttling needed with smaller bulk requests
+$batchThrottleMs = 800     # REDUCED: Shorter delays between batches
 $retryDelayMs = 5000       # Delay after API errors (5 seconds)
 $maxRetries = 3            # Maximum retries for failed requests
-$bulkDeleteSize = 200      # INCREASED: Number of GUIDs per bulk delete request (testing max capacity)
+$bulkDeleteSize = 50       # RECOMMENDED: Microsoft best practice ~50 assets per bulk request
 
 do {
     $loopCount++
