@@ -50,9 +50,18 @@ if ([string]::IsNullOrWhiteSpace($CollectionName)) {
 
 Write-Host "Debug: AccountName='$AccountName', CollectionName='$CollectionName'"
 
+# Performance optimization settings with API protection - defined early for consistency
+$batchSize = 1000          # Process assets in large batches for efficiency
+$maxParallelJobs = 10      # 100 assets/job = exactly 2 API calls per job
+$apiThrottleMs = 200       # Less throttling needed with smaller bulk requests
+$batchThrottleMs = 800     # Shorter delays between batches
+$retryDelayMs = 5000       # Delay after API errors (5 seconds)
+$maxRetries = 3            # Maximum retries for failed requests
+$bulkDeleteSize = 50       # RECOMMENDED: Microsoft best practice ~50 assets per bulk request
+
 # Function to search for assets
 function Search-PurviewAssets {
-    param($searchUri, $headers, $collectionName, $limit = 5000)
+    param($searchUri, $headers, $collectionName, $limit = $batchSize)  # Use global batchSize variable
     
     $searchBody = @{
         "keywords" = "*"
@@ -69,10 +78,12 @@ function Search-PurviewAssets {
         # Ensure we always return an array (even if empty) and never null for successful searches
         if ($assetsResponse.value) {
             return $assetsResponse.value
-        } else {
+        }
+        else {
             return @()  # Return empty array instead of null
         }
-    } catch {
+    }
+    catch {
         Write-Host "  ❌ Search failed with detailed error:" -ForegroundColor Red
         Write-Host "    Status Code: $($_.Exception.Response.StatusCode)" -ForegroundColor Yellow
         Write-Host "    Error Message: $($_.Exception.Message)" -ForegroundColor Yellow
@@ -83,7 +94,8 @@ function Search-PurviewAssets {
             $reader = New-Object System.IO.StreamReader($errorStream)
             $errorContent = $reader.ReadToEnd()
             Write-Host "    Response Content: $errorContent" -ForegroundColor Yellow
-        } catch {
+        }
+        catch {
             Write-Host "    Could not read error response content" -ForegroundColor Yellow
         }
         
@@ -108,7 +120,8 @@ try {
         Write-Host "❌ Collection '$CollectionName' not found!" -ForegroundColor Red
         exit 1
     }
-} catch {
+}
+catch {
     Write-Host "❌ Cannot access Purview account:" -ForegroundColor Red
     Write-Host "  Status: $($_.Exception.Response.StatusCode)" -ForegroundColor Yellow
     Write-Host "  Error: $($_.Exception.Message)" -ForegroundColor Yellow
@@ -133,14 +146,15 @@ if ($initialAssets.Count -eq 0) {
 Write-Host "✅ Collection contains assets. Starting comprehensive search..."
 
 # Get a larger sample to estimate total (use smaller limit to avoid API restrictions)
-$sampleAssets = Search-PurviewAssets -searchUri $searchUri -headers $headers -collectionName $CollectionName -limit 1000
+$sampleAssets = Search-PurviewAssets -searchUri $searchUri -headers $headers -collectionName $CollectionName -limit $batchSize
 
 if ($sampleAssets -and $sampleAssets.Count -gt 0) {
     Write-Host "📊 Found $($sampleAssets.Count) assets in collection"
-    if ($sampleAssets.Count -eq 1000) {
-        Write-Host "⚠️  Collection has 1000+ assets - continuous loop will process all"
+    if ($sampleAssets.Count -eq $batchSize) {
+        Write-Host "⚠️  Collection has $batchSize+ assets - continuous loop will process all"
     }
-} else {
+}
+else {
     Write-Host "❌ No assets found in collection."
     exit 0
 }
@@ -163,7 +177,8 @@ Write-Host ""
 if ($Mode -eq 'SINGLE') {
     $bulkMode = $false
     Write-Host "📊 SINGLE MODE: Individual asset deletion with detailed progress..." -ForegroundColor Cyan
-} else {
+}
+else {
     $bulkMode = $true
     Write-Host "⚡ BULK MODE: Large bulk operations with minimal parallel jobs (500 assets per bulk request, 2 parallel jobs)..." -ForegroundColor Cyan
 }
@@ -178,15 +193,6 @@ $totalFailed = 0
 $loopCount = 0
 $overallStartTime = Get-Date
 
-# Performance optimization settings with API protection
-$batchSize = 1000          # Process assets in large batches for efficiency
-$maxParallelJobs = 4       # INCREASED: More parallel jobs to compensate for smaller bulk sizes
-$apiThrottleMs = 200       # REDUCED: Less throttling needed with smaller bulk requests
-$batchThrottleMs = 800     # REDUCED: Shorter delays between batches
-$retryDelayMs = 5000       # Delay after API errors (5 seconds)
-$maxRetries = 3            # Maximum retries for failed requests
-$bulkDeleteSize = 50       # RECOMMENDED: Microsoft best practice ~50 assets per bulk request
-
 do {
     $loopCount++
     $loopStartTime = Get-Date
@@ -194,8 +200,8 @@ do {
     Write-Host "`n=== LOOP $loopCount ==="
     Write-Host "🔍 Searching for next batch of assets..."
     
-    # Search for assets (use safer batch size to avoid API limits)
-    $assets = Search-PurviewAssets -searchUri $searchUri -headers $headers -collectionName $CollectionName -limit 1000
+    # Search for assets (use batchSize to avoid API limits)
+    $assets = Search-PurviewAssets -searchUri $searchUri -headers $headers -collectionName $CollectionName -limit $batchSize
     
     if (-not $assets -or $assets.Count -eq 0) {
         Write-Host "✅ No more assets found - collection is empty!"
@@ -223,7 +229,7 @@ do {
             $chunks = @()
             for ($j = 0; $j -lt $batch.Count; $j += $chunkSize) {
                 $chunkEnd = [Math]::Min($j + $chunkSize - 1, $batch.Count - 1)
-                $chunks += ,@($batch[$j..$chunkEnd])
+                $chunks += , @($batch[$j..$chunkEnd])
             }
             
             # Process chunks in parallel using bulk delete API
@@ -262,17 +268,28 @@ do {
                         
                         while (-not $deleted -and $retryCount -le $maxRetries) {
                             try {
-                                $result = Invoke-RestMethod -Method DELETE -Uri $bulkDeleteUri -Headers $headers -TimeoutSec 120
+                                $result = Invoke-RestMethod -Method DELETE -Uri $bulkDeleteUri -Headers $headers -TimeoutSec 120                                
+                                $actualDeleted = 0
                                 
-                                # Count successful deletions from bulk response
-                                if ($result.mutatedEntities -and $result.mutatedEntities.DELETE) {
-                                    $success += $result.mutatedEntities.DELETE.Count
-                                } else {
-                                    $success += $bulkGroup.Count  # Assume all succeeded if no detailed response
+                                if ($result -and $result.mutatedEntities -and $result.mutatedEntities.DELETE) {
+                                    $actualDeleted = $result.mutatedEntities.DELETE.Count
                                 }
+                                elseif ($result -and (-not $result.errorCode) -and (-not $result.error)) {
+                                    $actualDeleted = $bulkGroup.Count
+                                }
+                                else {
+                                    # Any other case - count as 0 for safety
+                                    $actualDeleted = 0
+                                }
+                                
+                                # CRITICAL: Cap the count to never exceed what we actually sent
+                                $actualDeleted = [Math]::Min($actualDeleted, $bulkGroup.Count)
+                                
+                                $success += $actualDeleted
                                 $deleted = $true
                                 
-                            } catch {
+                            }
+                            catch {
                                 $retryCount++
                                 
                                 # Check for specific error types that might indicate bulk size issues
@@ -281,18 +298,22 @@ do {
                                     $currentBulkSize = [Math]::Max(50, [Math]::Floor($currentBulkSize * 0.5))
                                     Write-Warning "URI too long error, reducing bulk size to $currentBulkSize"
                                     break  # Break retry loop and try with smaller size
-                                } elseif ($_.Exception.Response.StatusCode -eq 429 -or $_.Exception.Response.StatusCode -eq 503) {
+                                }
+                                elseif ($_.Exception.Response.StatusCode -eq 429 -or $_.Exception.Response.StatusCode -eq 503) {
                                     # Rate limited or service unavailable - wait longer
                                     Start-Sleep -Milliseconds $retryDelayMs
-                                } elseif ($_.Exception.Message -match "timeout|timed out") {
+                                }
+                                elseif ($_.Exception.Message -match "timeout|timed out") {
                                     # Timeout - reduce bulk size
                                     $currentBulkSize = [Math]::Max(50, [Math]::Floor($currentBulkSize * 0.8))
                                     Write-Warning "Timeout error, reducing bulk size to $currentBulkSize"
                                     break
-                                } elseif ($retryCount -le $maxRetries) {
+                                }
+                                elseif ($retryCount -le $maxRetries) {
                                     # Other error - shorter retry delay
                                     Start-Sleep -Milliseconds ($retryDelayMs / 2)
-                                } else {
+                                }
+                                else {
                                     $failed += $bulkGroup.Count
                                 }
                             }
@@ -323,8 +344,18 @@ do {
             $results = $jobs | Wait-Job | Receive-Job
             $jobs | Remove-Job
             
+            # DEBUG: Track job results for accuracy with validation
+            $jobCount = 0
             foreach ($result in $results) {
-                $batchSuccess += $result.Success
+                $jobCount++                
+                $maxPossibleSuccess = $chunks[$jobCount - 1].Count
+                $actualSuccess = [Math]::Min($result.Success, $maxPossibleSuccess)
+                
+                if ($result.Success -gt $maxPossibleSuccess) {
+                    Write-Host "    ⚠️ Job $jobCount reported $($result.Success) successes but only had $maxPossibleSuccess assets - correcting" -ForegroundColor Yellow
+                }
+                              
+                $batchSuccess += $actualSuccess
                 $batchFailed += $result.Failed
                 # Note: Don't add to loopSuccessCount here - it will be added after batch processing
                 if ($result.OptimalBulkSize) {
@@ -341,6 +372,11 @@ do {
                 }
             }
             
+            if ($batchSuccess -gt $batch.Count) {
+                Write-Host "    ⚠️ WARNING: Batch success ($batchSuccess) exceeds batch size ($($batch.Count)) - correcting to batch size" -ForegroundColor Red
+                $batchSuccess = $batch.Count
+            }
+            
             Write-Host " ✅ $batchSuccess/$($batch.Count) deleted (bulk API)"
             if ($batchFailed -gt 0) {
                 Write-Host "    ⚠️ $batchFailed failed (will retry in next loop)" -ForegroundColor Yellow
@@ -353,7 +389,8 @@ do {
             # Throttle between batches to respect API limits
             Start-Sleep -Milliseconds $batchThrottleMs
         }
-    } else {
+    }
+    else {
         # SINGLE MODE: Individual asset deletion with detailed progress
         $processed = 0
         foreach ($asset in $assets) {
@@ -366,7 +403,8 @@ do {
             try {
                 $null = Invoke-RestMethod -Method DELETE -Uri $deleteUri -Headers $headers -TimeoutSec 30
                 $loopSuccessCount++
-            } catch {
+            }
+            catch {
                 $loopFailureCount++
             }
         }
@@ -404,9 +442,11 @@ Write-Host "🚀 Average rate: $finalRate deletions/minute"
 if ($totalFailed -eq 0) {
     Write-Host "`n🎉 SUCCESS: All assets successfully deleted from collection '$CollectionName'!" -ForegroundColor Green
     Write-Host "🧹 Collection is now completely empty." -ForegroundColor Green
-} elseif ($totalDeleted -gt 0) {
+}
+elseif ($totalDeleted -gt 0) {
     Write-Host "`n✅ PARTIAL SUCCESS: $totalDeleted assets deleted, $totalFailed failed." -ForegroundColor Yellow
     Write-Host "🔄 You may run the script again to retry failed deletions." -ForegroundColor Yellow
-} else {
+}
+else {
     Write-Host "`n❌ NO DELETIONS: No assets were deleted. Check permissions." -ForegroundColor Red
 }
