@@ -165,7 +165,7 @@ if ($Mode -eq 'SINGLE') {
     Write-Host "📊 SINGLE MODE: Individual asset deletion with detailed progress..." -ForegroundColor Cyan
 } else {
     $bulkMode = $true
-    Write-Host "⚡ BULK MODE: Batch processing for maximum speed (250 assets per batch)..." -ForegroundColor Cyan
+    Write-Host "⚡ BULK MODE: Using Purview Bulk Delete API (200 assets per bulk request, 4 parallel jobs)..." -ForegroundColor Cyan
 }
 
 Write-Host "Press Ctrl+C to cancel if needed. Starting in 3 seconds..."
@@ -177,7 +177,15 @@ $totalDeleted = 0
 $totalFailed = 0
 $loopCount = 0
 $overallStartTime = Get-Date
-$batchSize = 250
+
+# Performance optimization settings with API protection
+$batchSize = 500           # Aggressive batch size for maximum throughput  
+$maxParallelJobs = 4       # Limited parallel jobs to avoid DDoS protection
+$apiThrottleMs = 200       # Reduced delay between API calls (5 calls/second max)
+$batchThrottleMs = 800     # Reduced delay between batches
+$retryDelayMs = 5000       # Delay after API errors (5 seconds)
+$maxRetries = 3            # Maximum retries for failed requests
+$bulkDeleteSize = 200      # INCREASED: Number of GUIDs per bulk delete request (testing max capacity)
 
 do {
     $loopCount++
@@ -201,7 +209,7 @@ do {
     $loopFailureCount = 0
 
     if ($bulkMode) {
-        # BULK MODE: Process in 250-asset batches for speed
+        # OPTIMIZED BULK MODE: Using Purview Bulk Delete API with parallel processing
         for ($i = 0; $i -lt $assets.Count; $i += $batchSize) {
             $endIndex = [Math]::Min($i + $batchSize - 1, $assets.Count - 1)
             $batch = $assets[$i..$endIndex]
@@ -210,18 +218,137 @@ do {
             
             Write-Host "  Processing batch $batchNumber/$totalBatches ($($batch.Count) assets)..." -NoNewline
             
+            # Split batch into parallel chunks for bulk delete API
+            $chunkSize = [Math]::Ceiling($batch.Count / $maxParallelJobs)
+            $chunks = @()
+            for ($j = 0; $j -lt $batch.Count; $j += $chunkSize) {
+                $chunkEnd = [Math]::Min($j + $chunkSize - 1, $batch.Count - 1)
+                $chunks += ,@($batch[$j..$chunkEnd])
+            }
+            
+            # Process chunks in parallel using bulk delete API
+            $jobs = @()
+            foreach ($chunk in $chunks) {
+                $job = Start-Job -ScriptBlock {
+                    param($assetChunk, $accountName, $accessToken, $throttleMs, $maxRetries, $retryDelayMs, $bulkDeleteSize)
+                    
+                    $headers = @{
+                        'Authorization' = "Bearer $accessToken"
+                        'Content-Type'  = 'application/json'
+                    }
+                    
+                    $success = 0
+                    $failed = 0
+                    $currentBulkSize = $bulkDeleteSize
+                    
+                    # Process chunk in bulk delete groups with adaptive sizing
+                    for ($k = 0; $k -lt $assetChunk.Count; $k += $currentBulkSize) {
+                        $bulkEndIndex = [Math]::Min($k + $currentBulkSize - 1, $assetChunk.Count - 1)
+                        $bulkGroup = $assetChunk[$k..$bulkEndIndex]
+                        
+                        # Build bulk delete URI with multiple guid parameters
+                        $guidParams = ($bulkGroup | ForEach-Object { "guid=$($_.id)" }) -join "&"
+                        $bulkDeleteUri = "https://$accountName.purview.azure.com/datamap/api/atlas/v2/entity/bulk?$guidParams"
+                        
+                        # Check URL length - reduce bulk size if too long
+                        if ($bulkDeleteUri.Length -gt 8000) {
+                            $currentBulkSize = [Math]::Max(50, [Math]::Floor($currentBulkSize * 0.7))
+                            Write-Warning "URL too long, reducing bulk size to $currentBulkSize"
+                            continue  # Retry with smaller batch
+                        }
+                        
+                        $retryCount = 0
+                        $deleted = $false
+                        
+                        while (-not $deleted -and $retryCount -le $maxRetries) {
+                            try {
+                                $result = Invoke-RestMethod -Method DELETE -Uri $bulkDeleteUri -Headers $headers -TimeoutSec 120
+                                
+                                # Count successful deletions from bulk response
+                                if ($result.mutatedEntities -and $result.mutatedEntities.DELETE) {
+                                    $success += $result.mutatedEntities.DELETE.Count
+                                } else {
+                                    $success += $bulkGroup.Count  # Assume all succeeded if no detailed response
+                                }
+                                $deleted = $true
+                                
+                            } catch {
+                                $retryCount++
+                                
+                                # Check for specific error types that might indicate bulk size issues
+                                if ($_.Exception.Message -match "URI too long|Request-URI Too Large|414") {
+                                    # URL too long - reduce bulk size permanently
+                                    $currentBulkSize = [Math]::Max(50, [Math]::Floor($currentBulkSize * 0.5))
+                                    Write-Warning "URI too long error, reducing bulk size to $currentBulkSize"
+                                    break  # Break retry loop and try with smaller size
+                                } elseif ($_.Exception.Response.StatusCode -eq 429 -or $_.Exception.Response.StatusCode -eq 503) {
+                                    # Rate limited or service unavailable - wait longer
+                                    Start-Sleep -Milliseconds $retryDelayMs
+                                } elseif ($_.Exception.Message -match "timeout|timed out") {
+                                    # Timeout - reduce bulk size
+                                    $currentBulkSize = [Math]::Max(50, [Math]::Floor($currentBulkSize * 0.8))
+                                    Write-Warning "Timeout error, reducing bulk size to $currentBulkSize"
+                                    break
+                                } elseif ($retryCount -le $maxRetries) {
+                                    # Other error - shorter retry delay
+                                    Start-Sleep -Milliseconds ($retryDelayMs / 2)
+                                } else {
+                                    $failed += $bulkGroup.Count
+                                }
+                            }
+                            
+                            # Throttle API calls to avoid DDoS protection
+                            Start-Sleep -Milliseconds $throttleMs
+                        }
+                        
+                        if (-not $deleted -and $retryCount -gt $maxRetries) {
+                            $failed += $bulkGroup.Count
+                        }
+                    }
+                    
+                    return @{ Success = $success; Failed = $failed; OptimalBulkSize = $currentBulkSize }
+                } -ArgumentList $chunk, $AccountName, $accessToken, $apiThrottleMs, $maxRetries, $retryDelayMs, $bulkDeleteSize
+                
+                $jobs += $job
+                
+                # Stagger job starts to avoid overwhelming the API
+                Start-Sleep -Milliseconds 100
+            }
+            
+            # Wait for all parallel jobs to complete and collect results
             $batchSuccess = 0
-            foreach ($asset in $batch) {
-                $deleteUri = "https://$AccountName.purview.azure.com/catalog/api/atlas/v2/entity/guid/$($asset.id)"
-                try {
-                    $null = Invoke-RestMethod -Method DELETE -Uri $deleteUri -Headers $headers -TimeoutSec 30
-                    $batchSuccess++
-                    $loopSuccessCount++
-                } catch {
-                    $loopFailureCount++
+            $batchFailed = 0
+            $optimalSizes = @()
+            
+            $results = $jobs | Wait-Job | Receive-Job
+            $jobs | Remove-Job
+            
+            foreach ($result in $results) {
+                $batchSuccess += $result.Success
+                $batchFailed += $result.Failed
+                $loopSuccessCount += $result.Success
+                $loopFailureCount += $result.Failed
+                if ($result.OptimalBulkSize) {
+                    $optimalSizes += $result.OptimalBulkSize
                 }
             }
-            Write-Host " ✅ $batchSuccess/$($batch.Count) deleted"
+            
+            # Adaptive bulk size adjustment based on feedback
+            if ($optimalSizes.Count -gt 0) {
+                $avgOptimalSize = [Math]::Floor(($optimalSizes | Measure-Object -Average).Average)
+                if ($avgOptimalSize -lt $bulkDeleteSize) {
+                    $bulkDeleteSize = $avgOptimalSize
+                    Write-Host "    📊 Adaptive sizing: Reduced bulk size to $bulkDeleteSize for better performance" -ForegroundColor Cyan
+                }
+            }
+            
+            Write-Host " ✅ $batchSuccess/$($batch.Count) deleted (bulk API)"
+            if ($batchFailed -gt 0) {
+                Write-Host "    ⚠️ $batchFailed failed (will retry in next loop)" -ForegroundColor Yellow
+            }
+            
+            # Throttle between batches to respect API limits
+            Start-Sleep -Milliseconds $batchThrottleMs
         }
     } else {
         # SINGLE MODE: Individual asset deletion with detailed progress
