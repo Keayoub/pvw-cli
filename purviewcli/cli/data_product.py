@@ -4,7 +4,7 @@ import json
 import tempfile
 import os
 from rich.console import Console
-from purviewcli.client._unified_catalog import UnifiedCatalogDataProduct
+from purviewcli.client._data_product import DataProduct
 
 console = Console()
 
@@ -20,7 +20,7 @@ def data_product():
 def create(name, description, domain_guid):
     """Create a new data product using Unified Catalog API."""
     try:
-        data_product_client = UnifiedCatalogDataProduct()
+        data_product_client = DataProduct()
         result = data_product_client.create_data_product(
             name=name,
             description=description,
@@ -42,7 +42,7 @@ def create(name, description, domain_guid):
 def show(data_product_id):
     """Show details of a data product using Unified Catalog API."""
     try:
-        data_product_client = UnifiedCatalogDataProduct()
+        data_product_client = DataProduct()
         result = data_product_client.get_data_product(data_product_id)
         
         if result.get("status") == "error":
@@ -60,7 +60,7 @@ def show(data_product_id):
 def update(data_product_id, name, description):
     """Update a data product using Unified Catalog API."""
     try:
-        data_product_client = UnifiedCatalogDataProduct()
+        data_product_client = DataProduct()
         updates = {}
         if name:
             updates['name'] = name
@@ -88,7 +88,7 @@ def update(data_product_id, name, description):
 def delete(data_product_id):
     """Delete a data product using Unified Catalog API."""
     try:
-        data_product_client = UnifiedCatalogDataProduct()
+        data_product_client = DataProduct()
         result = data_product_client.delete_data_product(data_product_id)
         
         if result.get("status") == "error":
@@ -107,7 +107,7 @@ def delete(data_product_id):
 def list(limit, skip, domain_id):
     """List data products using Unified Catalog API."""
     try:
-        data_product_client = UnifiedCatalogDataProduct()
+        data_product_client = DataProduct()
         result = data_product_client.list_data_products(
             limit=limit,
             offset=skip,
@@ -127,7 +127,7 @@ def list(limit, skip, domain_id):
 def publish(data_product_id):
     """Publish a data product using Unified Catalog API."""
     try:
-        data_product_client = UnifiedCatalogDataProduct()
+        data_product_client = DataProduct()
         result = data_product_client.update_data_product(data_product_id, {"status": "Published"})
         
         if result.get("status") == "error":
@@ -144,7 +144,7 @@ def publish(data_product_id):
 def unpublish(data_product_id):
     """Unpublish a data product using Unified Catalog API."""
     try:
-        data_product_client = UnifiedCatalogDataProduct()
+        data_product_client = DataProduct()
         result = data_product_client.update_data_product(data_product_id, {"status": "Draft"})
         
         if result.get("status") == "error":
@@ -163,7 +163,7 @@ def unpublish(data_product_id):
 def list_domains():
     """List all business domains."""
     try:
-        data_product_client = UnifiedCatalogDataProduct()
+        data_product_client = DataProduct()
         result = data_product_client.businessDomainList({})
         
         if result.get("status") == "error":
@@ -181,7 +181,7 @@ def list_domains():
 def create_domain(name, description, type):
     """Create a new business domain."""
     try:
-        data_product_client = UnifiedCatalogDataProduct()
+        data_product_client = DataProduct()
         args = {
             "--name": name,
             "--description": description or "",
@@ -204,7 +204,7 @@ def create_domain(name, description, type):
 def show_domain(domain_id):
     """Show details of a business domain."""
     try:
-        data_product_client = UnifiedCatalogDataProduct()
+        data_product_client = DataProduct()
         result = data_product_client.businessDomainRead({"--domainId": domain_id})
         
         if result.get("status") == "error":
@@ -222,7 +222,7 @@ def show_domain(domain_id):
 def list_terms(domain_id):
     """List glossary terms."""
     try:
-        data_product_client = UnifiedCatalogDataProduct()
+        data_product_client = DataProduct()
         args = {}
         if domain_id:
             args["--governanceDomain"] = domain_id
@@ -243,7 +243,7 @@ def list_terms(domain_id):
 def create_term(name, description, domain_id):
     """Create a new glossary term."""
     try:
-        data_product_client = UnifiedCatalogDataProduct()
+        data_product_client = DataProduct()
         result = data_product_client.create_glossary_term(
             name=name,
             description=description or "",
@@ -265,7 +265,7 @@ def create_term(name, description, domain_id):
 def link_term(data_product_id, term_id):
     """Link a glossary term to a data product."""
     try:
-        data_product_client = UnifiedCatalogDataProduct()
+        data_product_client = DataProduct()
         result = data_product_client.link_term_to_data_product(data_product_id, term_id)
         
         if result.get("status") == "error":
