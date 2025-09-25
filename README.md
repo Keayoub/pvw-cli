@@ -38,10 +38,15 @@ Get started with PVW CLI in minutes:
    pip install pvw-cli
    ```
 
-2. **Set Environment Variables**
+2. **Set Required Environment Variables**
 
    ```bash
+   # Required for Purview API access
    set PURVIEW_ACCOUNT_NAME=your-purview-account
+   set PURVIEW_ACCOUNT_ID=your-purview-account-id-guid
+   set PURVIEW_RESOURCE_GROUP=your-resource-group-name
+   
+   # Optional
    set AZURE_REGION=  # (optional, e.g. 'china', 'usgov')
    ```
 
@@ -128,10 +133,15 @@ pip install -e .
    pip install pvw-cli
    ```
 
-2. **Set Environment Variables**
+2. **Set Required Environment Variables**
 
    ```bash
+   # Required for Purview API access
    set PURVIEW_ACCOUNT_NAME=your-purview-account
+   set PURVIEW_ACCOUNT_ID=your-purview-account-id-guid
+   set PURVIEW_RESOURCE_GROUP=your-resource-group-name
+   
+   # Optional
    set AZURE_REGION=  # (optional, e.g. 'china', 'usgov')
    ```
 
@@ -204,6 +214,72 @@ If you are signed in to Azure in Visual Studio or VS Code, `DefaultAzureCredenti
 - For local development, Azure CLI authentication is easiest.
 
 For more details, see the [Azure Identity documentation](https://learn.microsoft.com/en-us/python/api/overview/azure/identity-readme?view=azure-python).
+
+---
+
+## Required Purview Configuration
+
+Before using PVW CLI, you need to set three essential environment variables. Here's how to find them:
+
+### 🔍 **How to Find Your Purview Values**
+
+#### **1. PURVIEW_ACCOUNT_NAME**
+- This is your Purview account name as it appears in Azure Portal
+- Example: `kaydemopurview`
+
+#### **2. PURVIEW_ACCOUNT_ID** 
+- This is the GUID that identifies your Purview account for Unified Catalog APIs
+- **Method 1 - Azure CLI:**
+  ```bash
+  az purview account show --name YOUR_ACCOUNT_NAME --resource-group YOUR_RG --query endpoints.catalog -o tsv
+  ```
+  Extract the GUID from the URL (before `-api.purview-service.microsoft.com`)
+
+- **Method 2 - Azure Portal:**
+  1. Go to your Purview account in Azure Portal
+  2. Navigate to Properties → Atlas endpoint URL
+  3. Extract GUID from: `https://GUID-api.purview-service.microsoft.com/catalog`
+
+#### **3. PURVIEW_RESOURCE_GROUP**
+- The Azure resource group containing your Purview account
+- Example: `fabric-artifacts`
+
+### 📋 **Setting the Variables**
+
+**Windows (Command Prompt/PowerShell):**
+```cmd
+set PURVIEW_ACCOUNT_NAME=your-purview-account
+set PURVIEW_ACCOUNT_ID=c869cf92-11d8-4fbc-a7cf-6114d160dd71
+set PURVIEW_RESOURCE_GROUP=your-resource-group
+```
+
+**Linux/macOS:**
+```bash
+export PURVIEW_ACCOUNT_NAME=your-purview-account
+export PURVIEW_ACCOUNT_ID=c869cf92-11d8-4fbc-a7cf-6114d160dd71
+export PURVIEW_RESOURCE_GROUP=your-resource-group
+```
+
+**Permanent (Windows):**
+```cmd
+setx PURVIEW_ACCOUNT_NAME "your-purview-account"
+setx PURVIEW_ACCOUNT_ID "c869cf92-11d8-4fbc-a7cf-6114d160dd71"
+setx PURVIEW_RESOURCE_GROUP "your-resource-group"
+```
+
+### 🔧 **Debug Environment Issues**
+
+If you experience issues with environment variables between different terminals, use this debug script:
+
+```bash
+# Run this to check your current environment
+python -c "
+import os
+print('PURVIEW_ACCOUNT_NAME:', os.getenv('PURVIEW_ACCOUNT_NAME'))
+print('PURVIEW_ACCOUNT_ID:', os.getenv('PURVIEW_ACCOUNT_ID'))
+print('PURVIEW_RESOURCE_GROUP:', os.getenv('PURVIEW_RESOURCE_GROUP'))
+"
+```
 
 ---
 

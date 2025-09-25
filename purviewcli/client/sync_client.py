@@ -60,7 +60,7 @@ class SyncPurviewClient:
                     "-o", "tsv"
                 ], capture_output=True, text=True, check=True)
                 atlas_url = result.stdout.strip()
-                # Extract account ID from URL like: https://c869cf92-11d8-4fbc-a7cf-6114d160dd71-api.purview-service.microsoft.com/catalog
+                
                 if atlas_url and "-api.purview-service.microsoft.com" in atlas_url:
                     account_id = atlas_url.split("://")[1].split("-api.purview-service.microsoft.com")[0]
                 else:
