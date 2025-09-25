@@ -22,10 +22,15 @@ def get_data(http_dict):
         account_name = os.getenv(
             "PURVIEW_ACCOUNT_NAME", http_dict.get("account_name", "test-purview-account")
         )
+        
+        # Get account ID from environment (optional)
+        account_id = os.getenv("PURVIEW_ACCOUNT_ID")
 
         # Create config
         config = SyncPurviewConfig(
-            account_name=account_name, azure_region=os.getenv("AZURE_REGION", "public")
+            account_name=account_name, 
+            azure_region=os.getenv("AZURE_REGION", "public"),
+            account_id=account_id
         )
 
         # Create synchronous client

@@ -1,5 +1,5 @@
-from .data_product import data_product
+from .unified_catalog import uc
 
 __all__ = [
-    "data_product",
+    "uc",
 ]

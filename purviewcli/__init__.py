@@ -1,4 +1,4 @@
-__version__ = "1.0.6"
+__version__ = "1.0.8"
 
 # Import main client modules
 from .client import *
@@ -23,5 +23,5 @@ __all__ = [
     "insight",
     "share",
     "collections",
-    "data_product",
+    "uc",
 ]

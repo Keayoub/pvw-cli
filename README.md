@@ -1,21 +1,26 @@
-# PURVIEW CLI v1.0.0 - Microsoft Purview Automation & Data Governance
+# PURVIEW CLI v1.0.7 - Microsoft Purview Automation & Data Governance
 
-> **LATEST UPDATE (June 2025):**
-> - Major: Advanced Data Product Management (see new `data-product` command group)
-> - Enhanced Discovery Query/Search support (see below for usage).
+> **LATEST UPDATE (September 2025):**
+> - **🚀 MAJOR: Complete Microsoft Purview Unified Catalog (UC) Support** (see new `uc` command group)
+> - Full governance domains, glossary terms, data products, OKRs, and critical data elements management
+> - Feature parity with UnifiedCatalogPy project with enhanced CLI experience
+> - Advanced Data Product Management (legacy `data-product` command group)
+> - Enhanced Discovery Query/Search support
+> - **Fixed all command examples to use correct `pvw` command**
 
 ---
 
 ## What is PVW CLI?
 
-**PVW CLI v1.0.0** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* including:
+**PVW CLI v1.0.7** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* including:
 
+- **NEW Unified Catalog (UC) Management** - Complete governance domains, glossary terms, data products, OKRs, CDEs (NEW)
 - Entity management (create, update, bulk, import/export)
 - Glossary and term management
 - Lineage operations
 - Collection and account management
 - Advanced search and discovery
-- Data product management (new, see below)
+- Data product management (legacy compatibility)
 - Classification, label, and status management
 - And more (see command reference)
 
@@ -45,16 +50,23 @@ Get started with PVW CLI in minutes:
    - Run `az login` (recommended)
    - Or set Service Principal credentials as environment variables
 
-4. **Run Your First Search**
+4. **List Your Governance Domains (UC)**
+
+   ```bash
+   pvw uc domain list
+   ```
+
+5. **Run Your First Search**
 
    ```bash
    pvw search query --keywords="customer" --limit=5
    ```
 
-5. **See All Commands**
+6. **See All Commands**
 
    ```bash
    pvw --help
+   pvw uc --help
    ```
 
 For more advanced usage, see the sections below or visit the [documentation](https://pvw-cli.readthedocs.io/).
@@ -63,7 +75,7 @@ For more advanced usage, see the sections below or visit the [documentation](htt
 
 ## Overview
 
-**PVW CLI v1.0.0** is a modern command-line interface and Python library for Microsoft Purview, enabling:
+**PVW CLI v1.0.7** is a modern command-line interface and Python library for Microsoft Purview, enabling:
 
 - Advanced data catalog search and discovery
 - Bulk import/export of entities, glossary terms, and lineage
@@ -257,9 +269,43 @@ See `tests/test_search_examples.py` for ready-to-run pytest examples covering al
 
 ---
 
-## Data Product Management (Advanced)
+## Unified Catalog Management (NEW)
 
-PVW CLI now includes a powerful `data-product` command group for advanced data product lifecycle management. This is in addition to the CLI's support for all core Purview APIs.
+PVW CLI now includes comprehensive **Microsoft Purview Unified Catalog (UC)** support with the new `uc` command group. This provides complete management of modern data governance features including governance domains, glossary terms, data products, objectives (OKRs), and critical data elements.
+
+**🎯 Feature Parity**: Full compatibility with [UnifiedCatalogPy](https://github.com/olafwrieden/unifiedcatalogpy) functionality.
+
+See [`doc/commands/unified-catalog.md`](doc/commands/unified-catalog.md) for complete documentation and examples.
+
+### Quick UC Examples
+
+```bash
+# Governance Domains
+pvw uc domain list
+pvw uc domain create --name "Finance" --description "Financial governance"
+
+# Glossary Terms  
+pvw uc term list --domain-id "abc-123"
+pvw uc term create --name "Customer" --domain-id "abc-123"
+
+# Data Products
+pvw uc dataproduct list --domain-id "abc-123"
+pvw uc dataproduct create --name "Customer Analytics" --domain-id "abc-123"
+
+# Objectives & Key Results (OKRs)
+pvw uc objective list --domain-id "abc-123" 
+pvw uc objective create --definition "Improve data quality by 20%" --domain-id "abc-123"
+
+# Critical Data Elements (CDEs)
+pvw uc cde list --domain-id "abc-123"
+pvw uc cde create --name "SSN" --data-type "String" --domain-id "abc-123"
+```
+
+---
+
+## Data Product Management (Legacy)
+
+PVW CLI also includes the original `data-product` command group for backward compatibility with traditional data product lifecycle management.
 
 See [`doc/commands/data-product.md`](doc/commands/data-product.md) for full documentation and examples.
 
@@ -274,17 +320,24 @@ pvw data-product add-classification --qualified-name="product.test.1" --classifi
 pvw data-product add-label --qualified-name="product.test.1" --label="gold"
 
 # Link glossary term
-data-product link-glossary --qualified-name="product.test.1" --term="Customer"
+pvw data-product link-glossary --qualified-name="product.test.1" --term="Customer"
 
 # Set status and show lineage
-data-product set-status --qualified-name="product.test.1" --status="active"
-data-product show-lineage --qualified-name="product.test.1"
+pvw data-product set-status --qualified-name="product.test.1" --status="active"
+pvw data-product show-lineage --qualified-name="product.test.1"
 ```
 
 ---
 
 ## Core Features
 
+- **Unified Catalog (UC)**: Complete modern data governance (NEW)
+  ```bash
+  # Manage governance domains, terms, data products, OKRs, CDEs
+  pvw uc domain list
+  pvw uc term create --name "Customer" --domain-id "abc-123"
+  pvw uc objective create --definition "Improve quality" --domain-id "abc-123"
+  ```
 - **Discovery Query/Search**: Flexible, advanced search for all catalog assets
 - **Entity Management**: Bulk import/export, update, and validation
 - **Glossary Management**: Import/export terms, assign terms in bulk
@@ -301,27 +354,34 @@ data-product show-lineage --qualified-name="product.test.1"
 
 ---
 
-## API Coverage and Upcoming Features
+## API Coverage and Support
 
-PVW CLI aims to provide comprehensive automation for all major Microsoft Purview APIs. However, some features—such as governance domain CRUD operations—are not yet available via the public REST API as of June 2025.
+PVW CLI provides comprehensive automation for all major Microsoft Purview APIs, including the new **Unified Catalog APIs** for modern data governance.
 
-- For the latest API documentation and updates, see:
-  - [Microsoft Purview REST API reference](https://learn.microsoft.com/en-us/rest/api/purview/)
-  - [Atlas 2.2 API documentation](https://learn.microsoft.com/en-us/purview/data-gov-api-atlas-2-2)
+### Supported API Groups
+
+- **Unified Catalog**: Complete governance domains, glossary terms, data products, OKRs, CDEs management ✅
+- **Data Map**: Full entity and lineage management ✅
+- **Discovery**: Advanced search, browse, and query capabilities ✅
+- **Collections**: Collection and account management ✅
+- **Management**: Administrative operations ✅
+- **Scan**: Data source scanning and configuration ✅
 
 ### API Version Support
 
+- **Unified Catalog**: Latest UC API endpoints (September 2025)
 - Data Map: **2024-03-01-preview** (default) or **2023-09-01** (stable)
 - Collections: **2019-11-01-preview**
 - Account: **2019-11-01-preview**
 - Management: **2021-07-01**
 - Scan: **2018-12-01-preview**
 
-**Note:**
-- Domain management (create, update, delete) is not currently supported by the public API. The CLI will add support for these features as soon as Microsoft releases the necessary endpoints.
-- Please monitor the above links and [Azure Updates](https://azure.microsoft.com/updates/) for new API releases.
+For the latest API documentation and updates, see:
+- [Microsoft Purview REST API reference](https://learn.microsoft.com/en-us/rest/api/purview/)
+- [Atlas 2.2 API documentation](https://learn.microsoft.com/en-us/purview/data-gov-api-atlas-2-2)
+- [Azure Updates](https://azure.microsoft.com/updates/) for new releases
 
-If you need a feature that is not yet implemented due to API limitations, please open an issue or check for updates in future releases.
+If you need a feature that is not yet implemented, please open an issue or check for updates in future releases.
 
 ---
 
