@@ -1,0 +1,10 @@
+{
+  "entity": {
+    "typeName": "DataSet",
+    "attributes": {
+      "qualifiedName": "test-dataset-cli@kaydemopurview",
+      "name": "Test Dataset CLI",
+      "description": "Initial description - needs to be updated"
+    }
+  }
+}

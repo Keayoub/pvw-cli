@@ -61,11 +61,12 @@ if %errorlevel% equ 0 (
     echo 🎉 SUCCESS! Purview CLI is working correctly!
     echo.
     echo You can now use commands like:
-    echo   pv glossary list
-    echo   pv entity get --guid [guid]
-    echo   pv search query "*"
+    echo   pvw glossary list
+    echo   pvw entity get --guid [guid]
+    echo   pvw search query --keywords "*" --json  ^
+    echo   ^       (the --json flag prints nicely formatted JSON output)
     echo.
-    echo For more help: pv --help
+    echo For more help: pvw --help
 ) else (
     echo.
     echo ⚠️  Connection test failed. Please check:

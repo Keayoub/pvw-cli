@@ -229,13 +229,29 @@ Before using PVW CLI, you need to set three essential environment variables. Her
 
 #### **2. PURVIEW_ACCOUNT_ID** 
 - This is the GUID that identifies your Purview account for Unified Catalog APIs
-- **Method 1 - Azure CLI:**
+- **✅ Important: For most Purview deployments, this is your Azure Tenant ID**
+
+- **Method 1 - Get your Tenant ID (recommended):**
+  
+  **Bash/Command Prompt:**
+  ```bash
+  az account show --query tenantId -o tsv
+  ```
+  
+  **PowerShell:**
+  ```powershell
+  az account show --query tenantId -o tsv
+  # Or store directly in environment variable:
+  $env:PURVIEW_ACCOUNT_ID = az account show --query tenantId -o tsv
+  ```
+
+- **Method 2 - Azure CLI (extract from Atlas endpoint):**
   ```bash
   az purview account show --name YOUR_ACCOUNT_NAME --resource-group YOUR_RG --query endpoints.catalog -o tsv
   ```
   Extract the GUID from the URL (before `-api.purview-service.microsoft.com`)
 
-- **Method 2 - Azure Portal:**
+- **Method 3 - Azure Portal:**
   1. Go to your Purview account in Azure Portal
   2. Navigate to Properties → Atlas endpoint URL
   3. Extract GUID from: `https://GUID-api.purview-service.microsoft.com/catalog`
@@ -246,31 +262,46 @@ Before using PVW CLI, you need to set three essential environment variables. Her
 
 ### 📋 **Setting the Variables**
 
-**Windows (Command Prompt/PowerShell):**
+**Windows Command Prompt:**
 ```cmd
 set PURVIEW_ACCOUNT_NAME=your-purview-account
-set PURVIEW_ACCOUNT_ID=c869cf92-11d8-4fbc-a7cf-6114d160dd71
+set PURVIEW_ACCOUNT_ID=your-purview-account-id
 set PURVIEW_RESOURCE_GROUP=your-resource-group
+```
+
+**Windows PowerShell:**
+```powershell
+$env:PURVIEW_ACCOUNT_NAME="your-purview-account"
+$env:PURVIEW_ACCOUNT_ID="your-purview-account-id" 
+$env:PURVIEW_RESOURCE_GROUP="your-resource-group"
 ```
 
 **Linux/macOS:**
 ```bash
 export PURVIEW_ACCOUNT_NAME=your-purview-account
-export PURVIEW_ACCOUNT_ID=c869cf92-11d8-4fbc-a7cf-6114d160dd71
+export PURVIEW_ACCOUNT_ID=your-purview-account-id
 export PURVIEW_RESOURCE_GROUP=your-resource-group
 ```
 
-**Permanent (Windows):**
+**Permanent (Windows Command Prompt):**
 ```cmd
 setx PURVIEW_ACCOUNT_NAME "your-purview-account"
-setx PURVIEW_ACCOUNT_ID "c869cf92-11d8-4fbc-a7cf-6114d160dd71"
+setx PURVIEW_ACCOUNT_ID "your-purview-account-id"
 setx PURVIEW_RESOURCE_GROUP "your-resource-group"
+```
+
+**Permanent (Windows PowerShell):**
+```powershell
+[Environment]::SetEnvironmentVariable("PURVIEW_ACCOUNT_NAME", "your-purview-account", "User")
+[Environment]::SetEnvironmentVariable("PURVIEW_ACCOUNT_ID", "your-purview-account-id", "User")
+[Environment]::SetEnvironmentVariable("PURVIEW_RESOURCE_GROUP", "your-resource-group", "User")
 ```
 
 ### 🔧 **Debug Environment Issues**
 
-If you experience issues with environment variables between different terminals, use this debug script:
+If you experience issues with environment variables between different terminals, use these debug commands:
 
+**Command Prompt/Bash:**
 ```bash
 # Run this to check your current environment
 python -c "
@@ -279,6 +310,22 @@ print('PURVIEW_ACCOUNT_NAME:', os.getenv('PURVIEW_ACCOUNT_NAME'))
 print('PURVIEW_ACCOUNT_ID:', os.getenv('PURVIEW_ACCOUNT_ID'))
 print('PURVIEW_RESOURCE_GROUP:', os.getenv('PURVIEW_RESOURCE_GROUP'))
 "
+```
+
+**PowerShell:**
+```powershell
+# Check environment variables in PowerShell
+python -c "
+import os
+print('PURVIEW_ACCOUNT_NAME:', os.getenv('PURVIEW_ACCOUNT_NAME'))
+print('PURVIEW_ACCOUNT_ID:', os.getenv('PURVIEW_ACCOUNT_ID'))
+print('PURVIEW_RESOURCE_GROUP:', os.getenv('PURVIEW_RESOURCE_GROUP'))
+"
+
+# Or use PowerShell native commands
+Write-Host "PURVIEW_ACCOUNT_NAME: $env:PURVIEW_ACCOUNT_NAME"
+Write-Host "PURVIEW_ACCOUNT_ID: $env:PURVIEW_ACCOUNT_ID" 
+Write-Host "PURVIEW_RESOURCE_GROUP: $env:PURVIEW_RESOURCE_GROUP"
 ```
 
 ---
@@ -293,6 +340,28 @@ The PVW CLI provides advanced search using the latest Microsoft Purview Discover
 
 ### CLI Usage Examples
 
+#### 🎯 **Multiple Output Formats**
+
+```bash
+# 1. Table Format (Default) - Quick overview
+pvw search query --keywords="customer" --limit=5
+# → Clean table with Name, Type, Collection, Classifications, Qualified Name
+
+# 2. Detailed Format - Human-readable with all metadata  
+pvw search query --keywords="customer" --limit=5 --detailed
+# → Rich panels showing full details, timestamps, search scores
+
+# 3. JSON Format - Complete technical details with syntax highlighting (WELL-FORMATTED)
+pvw search query --keywords="customer" --limit=5 --json
+# → Full JSON response with indentation, line numbers and color coding
+
+# 4. Table with IDs - For entity operations
+pvw search query --keywords="customer" --limit=5 --show-ids
+# → Table format + entity GUIDs for copy/paste into update commands
+```
+
+#### 🔍 **Search Operations**
+
 ```bash
 # Basic search for assets with keyword 'customer'
 pvw search query --keywords="customer" --limit=5
@@ -300,12 +369,29 @@ pvw search query --keywords="customer" --limit=5
 # Advanced search with classification filter
 pvw search query --keywords="sales" --classification="PII" --objectType="Tables" --limit=10
 
+# Pagination through large result sets
+pvw search query --keywords="SQL" --offset=10 --limit=5
+
 # Autocomplete suggestions for partial keyword
 pvw search autocomplete --keywords="ord" --limit=3
 
 # Get search suggestions (fuzzy matching)
 pvw search suggest --keywords="prod" --limit=2
 
+**⚠️ IMPORTANT - Command Line Quoting:**
+```cmd
+# ✅ CORRECT - Use quotes around keywords
+pvw search query --keywords="customer" --limit=5
+
+# ✅ CORRECT - For wildcard searches, use quotes
+pvw search query --keywords="*" --limit=5
+
+# ❌ WRONG - Don't use unquoted * (shell expands to file names)
+pvw search query --keywords=* --limit=5
+# This causes: "Error: Got unexpected extra arguments (dist doc ...)"
+```
+
+```bash
 # Faceted search with aggregation
 pvw search query --keywords="finance" --facetFields="objectType,classification" --limit=5
 
@@ -316,8 +402,15 @@ pvw search browse --entityType="Tables" --path="/root/finance" --limit=2
 pvw search query --keywords="audit" --createdAfter="2024-01-01" --limit=1
 
 # Entity type specific search
-pvw search query --entityTypes="Files,Tables" --limit=2
+pvw search query --keywords="finance" --entityTypes="Files,Tables" --limit=2
 ```
+
+#### 💡 **Usage Scenarios**
+
+- **Daily browsing**: Use default table format for quick scans
+- **Understanding assets**: Use `--detailed` for rich information panels  
+- **Technical work**: Use `--json` for complete API data access
+- **Entity operations**: Use `--show-ids` to get GUIDs for updates
 
 ### Python Usage Example
 
@@ -355,26 +448,199 @@ See [`doc/commands/unified-catalog.md`](doc/commands/unified-catalog.md) for com
 
 ### Quick UC Examples
 
+#### 🏛️ **Governance Domains Management**
+
 ```bash
-# Governance Domains
+# List all governance domains
 pvw uc domain list
-pvw uc domain create --name "Finance" --description "Financial governance"
 
-# Glossary Terms  
+# Create a new governance domain
+pvw uc domain create --name "Finance" --description "Financial data governance domain"
+
+# Get domain details
+pvw uc domain get --domain-id "abc-123-def-456"
+
+# Update domain information
+pvw uc domain update --domain-id "abc-123" --description "Updated financial governance"
+```
+
+#### 📖 **Glossary Terms in UC**
+
+```bash
+# List all terms in a domain
 pvw uc term list --domain-id "abc-123"
-pvw uc term create --name "Customer" --domain-id "abc-123"
 
-# Data Products
+# Create a new glossary term
+pvw uc term create --name "Customer" --domain-id "abc-123" --definition "A person or entity that purchases products"
+
+# Get term details with relationships
+pvw uc term get --term-id "term-456" --domain-id "abc-123"
+
+# Link terms to data assets
+pvw uc term assign --term-id "term-456" --asset-id "asset-789" --domain-id "abc-123"
+```
+
+#### 📦 **Data Products Management**
+
+```bash
+# List all data products in a domain
 pvw uc dataproduct list --domain-id "abc-123"
-pvw uc dataproduct create --name "Customer Analytics" --domain-id "abc-123"
 
-# Objectives & Key Results (OKRs)
-pvw uc objective list --domain-id "abc-123" 
-pvw uc objective create --definition "Improve data quality by 20%" --domain-id "abc-123"
+# Create a comprehensive data product
+pvw uc dataproduct create \
+  --name "Customer Analytics Dashboard" \
+  --domain-id "abc-123" \
+  --description "360-degree customer analytics with behavioral insights" \
+  --owner "data-team@company.com"
 
-# Critical Data Elements (CDEs)
+# Get detailed data product information
+pvw uc dataproduct get --product-id "prod-789" --domain-id "abc-123"
+
+# Update data product metadata
+pvw uc dataproduct update \
+  --product-id "prod-789" \
+  --domain-id "abc-123" \
+  --status "active" \
+  --version "v2.1.0"
+
+# Add data assets to a data product
+pvw uc dataproduct add-asset \
+  --product-id "prod-789" \
+  --domain-id "abc-123" \
+  --asset-id "ece43ce5-ac45-4e50-a4d0-365a64299efc"
+```
+
+#### 🎯 **Objectives & Key Results (OKRs)**
+
+```bash
+# List objectives for a domain
+pvw uc objective list --domain-id "abc-123"
+
+# Create measurable objectives
+pvw uc objective create \
+  --definition "Improve data quality score by 25% within Q4" \
+  --domain-id "abc-123" \
+  --target-value "95" \
+  --measurement-unit "percentage"
+
+# Track objective progress
+pvw uc objective update \
+  --objective-id "obj-456" \
+  --domain-id "abc-123" \
+  --current-value "87" \
+  --status "in-progress"
+```
+
+#### 🔑 **Critical Data Elements (CDEs)**
+
+```bash
+# List critical data elements
 pvw uc cde list --domain-id "abc-123"
-pvw uc cde create --name "SSN" --data-type "String" --domain-id "abc-123"
+
+# Define critical data elements with governance rules
+pvw uc cde create \
+  --name "Social Security Number" \
+  --data-type "String" \
+  --domain-id "abc-123" \
+  --classification "PII" \
+  --retention-period "7-years"
+
+# Associate CDEs with data assets
+pvw uc cde link \
+  --cde-id "cde-789" \
+  --domain-id "abc-123" \
+  --asset-id "ea3412c3-7387-4bc1-9923-11f6f6f60000"
+```
+
+#### 🔄 **Integrated Workflow Example**
+
+```bash
+# 1. Discover assets to govern
+pvw search query --keywords="customer" --detailed
+
+# 2. Create governance domain for discovered assets
+pvw uc domain create --name "Customer Data" --description "Customer information governance"
+
+# 3. Define governance terms
+pvw uc term create --name "Customer PII" --domain-id "new-domain-id" --definition "Personal customer information"
+
+# 4. Create data product from discovered assets
+pvw uc dataproduct create --name "Customer Master Data" --domain-id "new-domain-id"
+
+# 5. Set governance objectives
+pvw uc objective create --definition "Ensure 100% PII classification compliance" --domain-id "new-domain-id"
+```
+
+---
+
+## Entity Management & Updates
+
+PVW CLI provides comprehensive entity management capabilities for updating Purview assets like descriptions, classifications, and custom attributes.
+
+### 🔄 **Entity Update Examples**
+
+#### **Update Asset Descriptions**
+
+```bash
+# Update table description using GUID
+pvw entity update-attribute \
+  --guid "ece43ce5-ac45-4e50-a4d0-365a64299efc" \
+  --attribute "description" \
+  --value "Updated customer data warehouse table with enhanced analytics"
+
+# Update dataset description using qualified name
+pvw entity update-attribute \
+  --qualifiedName "https://app.powerbi.com/groups/abc-123/datasets/def-456" \
+  --attribute "description" \
+  --value "Power BI dataset for customer analytics dashboard"
+```
+
+#### **Bulk Entity Operations**
+
+```bash
+# Read entity details before updating
+pvw entity read-by-attribute \
+  --guid "ea3412c3-7387-4bc1-9923-11f6f6f60000" \
+  --attribute "description,classifications,customAttributes"
+
+# Update multiple attributes at once
+pvw entity update-bulk \
+  --input-file entities_to_update.json \
+  --output-file update_results.json
+```
+
+#### **Column-Level Updates**
+
+```bash
+# Update specific column descriptions in a table
+pvw entity update-attribute \
+  --guid "column-guid-123" \
+  --attribute "description" \
+  --value "Customer unique identifier - Primary Key"
+
+# Add classifications to sensitive columns
+pvw entity add-classification \
+  --guid "column-guid-456" \
+  --classification "MICROSOFT.PERSONAL.EMAIL"
+```
+
+### 🔍 **Discovery to Update Workflow**
+
+```bash
+# 1. Find assets that need updates
+pvw search query --keywords="customer table" --show-ids --limit=10
+
+# 2. Get detailed information about a specific asset
+pvw entity read-by-attribute --guid "FOUND_GUID" --attribute "description,classifications"
+
+# 3. Update the asset description
+pvw entity update-attribute \
+  --guid "FOUND_GUID" \
+  --attribute "description" \
+  --value "Updated description based on business requirements"
+
+# 4. Verify the update
+pvw search query --keywords="FOUND_GUID" --detailed
 ```
 
 ---

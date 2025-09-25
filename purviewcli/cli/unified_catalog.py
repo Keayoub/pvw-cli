@@ -11,9 +11,18 @@ import os
 from rich.console import Console
 from rich.table import Table
 from rich.text import Text
+from rich.syntax import Syntax
 from purviewcli.client._unified_catalog import UnifiedCatalogClient
 
 console = Console()
+
+
+def _format_json_output(data):
+    """Format JSON output with syntax highlighting using Rich"""
+    # Pretty print JSON with syntax highlighting
+    json_str = json.dumps(data, indent=2)
+    syntax = Syntax(json_str, "json", theme="monokai", line_numbers=True)
+    console.print(syntax)
 
 
 @click.group()
@@ -88,7 +97,8 @@ def create(name, description, type, owner_id, status):
 
 
 @domain.command(name="list")
-def list_domains():
+@click.option("--json", "output_json", is_flag=True, help="Output results in JSON format")
+def list_domains(output_json):
     """List all governance domains."""
     try:
         client = UnifiedCatalogClient()
@@ -109,6 +119,11 @@ def list_domains():
 
         if not domains:
             console.print("[yellow]No governance domains found.[/yellow]")
+            return
+
+        # Output in JSON format if requested
+        if output_json:
+            _format_json_output(domains)
             return
 
         table = Table(title="Governance Domains")
@@ -243,7 +258,8 @@ def create(
 @dataproduct.command(name="list")
 @click.option("--domain-id", required=False, help="Governance domain ID (optional filter)")
 @click.option("--status", required=False, help="Status filter (Draft, Published, Archived)")
-def list_data_products(domain_id, status):
+@click.option("--json", "output_json", is_flag=True, help="Output results in JSON format")
+def list_data_products(domain_id, status, output_json):
     """List all data products (optionally filtered by domain or status)."""
     try:
         client = UnifiedCatalogClient()
@@ -272,6 +288,11 @@ def list_data_products(domain_id, status):
             if status:
                 filter_msg += f" with status '{status}'"
             console.print(f"[yellow]No data products found{filter_msg}.[/yellow]")
+            return
+
+        # Output in JSON format if requested
+        if output_json:
+            _format_json_output(products)
             return
 
         table = Table(title="Data Products")
@@ -326,6 +347,7 @@ def show(product_id):
 # GLOSSARY TERMS
 # ========================================
 
+
 @uc.group()
 def term():
     """Manage glossary terms."""
@@ -336,26 +358,40 @@ def term():
 @click.option("--name", required=True, help="Name of the glossary term")
 @click.option("--description", required=False, default="", help="Rich text description of the term")
 @click.option("--domain-id", required=True, help="Governance domain ID")
-@click.option("--status", required=False, default="Draft", 
-              type=click.Choice(["Draft", "Published", "Archived"]),
-              help="Status of the term")
-@click.option("--acronym", required=False, help="Acronyms for the term (can be specified multiple times)", multiple=True)
-@click.option("--owner-id", required=False, help="Owner Entra ID (can be specified multiple times)", multiple=True)
+@click.option(
+    "--status",
+    required=False,
+    default="Draft",
+    type=click.Choice(["Draft", "Published", "Archived"]),
+    help="Status of the term",
+)
+@click.option(
+    "--acronym",
+    required=False,
+    help="Acronyms for the term (can be specified multiple times)",
+    multiple=True,
+)
+@click.option(
+    "--owner-id",
+    required=False,
+    help="Owner Entra ID (can be specified multiple times)",
+    multiple=True,
+)
 @click.option("--resource-name", required=False, help="Resource name for additional reading")
 @click.option("--resource-url", required=False, help="Resource URL for additional reading")
 def create(name, description, domain_id, status, acronym, owner_id, resource_name, resource_url):
     """Create a new glossary term."""
     try:
         client = UnifiedCatalogClient()
-        
+
         # Build args dictionary
         args = {
             "--name": [name],
             "--description": [description],
             "--governance-domain-id": [domain_id],
-            "--status": [status]
+            "--status": [status],
         }
-        
+
         if acronym:
             args["--acronyms"] = list(acronym)
         if owner_id:
@@ -363,71 +399,86 @@ def create(name, description, domain_id, status, acronym, owner_id, resource_nam
         if resource_name and resource_url:
             args["--resource-name"] = [resource_name]
             args["--resource-url"] = [resource_url]
-            
+
         result = client.create_term(args)
-        
+
         if not result:
             console.print("[red]ERROR:[/red] No response received")
             return
         if isinstance(result, dict) and "error" in result:
             console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
             return
-            
+
         console.print(f"[green]✅ SUCCESS:[/green] Created glossary term '{name}'")
         console.print(json.dumps(result, indent=2))
-        
+
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
 
 
 @term.command(name="list")
 @click.option("--domain-id", required=True, help="Governance domain ID to list terms from")
-def list_terms(domain_id):
+@click.option("--json", "output_json", is_flag=True, help="Output results in JSON format")
+def list_terms(domain_id, output_json):
     """List all glossary terms in a governance domain."""
     try:
         client = UnifiedCatalogClient()
         args = {"--governance-domain-id": [domain_id]}
         result = client.get_terms(args)
-        
+
         if not result:
             console.print("[yellow]No glossary terms found.[/yellow]")
             return
-            
-        # Handle both list and dict responses
+
+        # The API returns glossaries with terms nested inside
+        # Extract all terms from all glossaries
+        all_terms = []
+
         if isinstance(result, (list, tuple)):
-            terms = result
+            glossaries = result
         elif isinstance(result, dict):
-            terms = result.get("value", [])
+            glossaries = result.get("value", [])
         else:
-            terms = []
-            
-        if not terms:
+            glossaries = []
+
+        # Extract terms from glossaries
+        for glossary in glossaries:
+            if isinstance(glossary, dict) and "terms" in glossary:
+                for term in glossary["terms"]:
+                    all_terms.append(
+                        {
+                            "id": term.get("termGuid"),
+                            "name": term.get("displayText"),
+                            "glossary": glossary.get("name"),
+                            "glossary_id": glossary.get("guid"),
+                        }
+                    )
+
+        if not all_terms:
             console.print("[yellow]No glossary terms found.[/yellow]")
             return
-            
+
+        # Output in JSON format if requested
+        if output_json:
+            _format_json_output(all_terms)
+            return
+
         table = Table(title="Glossary Terms")
-        table.add_column("ID", style="cyan")
+        table.add_column("Term ID", style="cyan")
         table.add_column("Name", style="green")
-        table.add_column("Status", style="yellow") 
-        table.add_column("Acronyms", style="blue")
-        table.add_column("Description", style="white")
-        
-        for term in terms:
-            acronyms = ", ".join(term.get("acronyms", []))
-            desc = term.get("description", "")
-            if len(desc) > 50:
-                desc = desc[:50] + "..."
-                
+        table.add_column("Glossary", style="yellow")
+        table.add_column("Glossary ID", style="blue")
+
+        for term in all_terms:
             table.add_row(
                 term.get("id", "N/A"),
                 term.get("name", "N/A"),
-                term.get("status", "N/A"),
-                acronyms or "None",
-                desc
+                term.get("glossary", "N/A"),
+                term.get("glossary_id", "N/A"),
             )
-            
+
         console.print(table)
-        
+
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
 
@@ -440,16 +491,16 @@ def show(term_id):
         client = UnifiedCatalogClient()
         args = {"--term-id": [term_id]}
         result = client.get_term_by_id(args)
-        
+
         if not result:
             console.print("[red]ERROR:[/red] No response received")
             return
         if isinstance(result, dict) and "error" in result:
             console.print(f"[red]ERROR:[/red] {result.get('error', 'Term not found')}")
             return
-            
+
         console.print(json.dumps(result, indent=2))
-        
+
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
 
@@ -457,6 +508,7 @@ def show(term_id):
 # ========================================
 # OBJECTIVES AND KEY RESULTS (OKRs)
 # ========================================
+
 
 @uc.group()
 def objective():
@@ -467,56 +519,68 @@ def objective():
 @objective.command()
 @click.option("--definition", required=True, help="Definition of the objective")
 @click.option("--domain-id", required=True, help="Governance domain ID")
-@click.option("--status", required=False, default="Draft",
-              type=click.Choice(["Draft", "Published", "Archived"]),
-              help="Status of the objective")
-@click.option("--owner-id", required=False, help="Owner Entra ID (can be specified multiple times)", multiple=True)
-@click.option("--target-date", required=False, help="Target date (ISO format: 2025-12-30T14:00:00.000Z)")
+@click.option(
+    "--status",
+    required=False,
+    default="Draft",
+    type=click.Choice(["Draft", "Published", "Archived"]),
+    help="Status of the objective",
+)
+@click.option(
+    "--owner-id",
+    required=False,
+    help="Owner Entra ID (can be specified multiple times)",
+    multiple=True,
+)
+@click.option(
+    "--target-date", required=False, help="Target date (ISO format: 2025-12-30T14:00:00.000Z)"
+)
 def create(definition, domain_id, status, owner_id, target_date):
     """Create a new objective."""
     try:
         client = UnifiedCatalogClient()
-        
+
         args = {
             "--definition": [definition],
             "--governance-domain-id": [domain_id],
-            "--status": [status]
+            "--status": [status],
         }
-        
+
         if owner_id:
             args["--owner-id"] = list(owner_id)
         if target_date:
             args["--target-date"] = [target_date]
-            
+
         result = client.create_objective(args)
-        
+
         if not result:
             console.print("[red]ERROR:[/red] No response received")
             return
         if isinstance(result, dict) and "error" in result:
             console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
             return
-            
+
         console.print(f"[green]✅ SUCCESS:[/green] Created objective")
         console.print(json.dumps(result, indent=2))
-        
+
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
 
 
 @objective.command(name="list")
 @click.option("--domain-id", required=True, help="Governance domain ID to list objectives from")
-def list_objectives(domain_id):
+@click.option("--json", "output_json", is_flag=True, help="Output results in JSON format")
+def list_objectives(domain_id, output_json):
     """List all objectives in a governance domain."""
     try:
         client = UnifiedCatalogClient()
         args = {"--governance-domain-id": [domain_id]}
         result = client.get_objectives(args)
-        
+
         if not result:
             console.print("[yellow]No objectives found.[/yellow]")
             return
-            
+
         # Handle response format
         if isinstance(result, (list, tuple)):
             objectives = result
@@ -524,31 +588,36 @@ def list_objectives(domain_id):
             objectives = result.get("value", [])
         else:
             objectives = []
-            
+
         if not objectives:
             console.print("[yellow]No objectives found.[/yellow]")
             return
-            
+
+        # Output in JSON format if requested
+        if output_json:
+            _format_json_output(objectives)
+            return
+
         table = Table(title="Objectives")
         table.add_column("ID", style="cyan")
         table.add_column("Definition", style="green")
         table.add_column("Status", style="yellow")
         table.add_column("Target Date", style="blue")
-        
+
         for obj in objectives:
             definition = obj.get("definition", "")
             if len(definition) > 50:
                 definition = definition[:50] + "..."
-                
+
             table.add_row(
                 obj.get("id", "N/A"),
                 definition,
                 obj.get("status", "N/A"),
-                obj.get("targetDate", "N/A")
+                obj.get("targetDate", "N/A"),
             )
-            
+
         console.print(table)
-        
+
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
 
@@ -561,16 +630,16 @@ def show(objective_id):
         client = UnifiedCatalogClient()
         args = {"--objective-id": [objective_id]}
         result = client.get_objective_by_id(args)
-        
+
         if not result:
             console.print("[red]ERROR:[/red] No response received")
             return
         if isinstance(result, dict) and "error" in result:
             console.print(f"[red]ERROR:[/red] {result.get('error', 'Objective not found')}")
             return
-            
+
         console.print(json.dumps(result, indent=2))
-        
+
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
 
@@ -578,6 +647,7 @@ def show(objective_id):
 # ========================================
 # CRITICAL DATA ELEMENTS (CDEs)
 # ========================================
+
 
 @uc.group()
 def cde():
@@ -589,58 +659,71 @@ def cde():
 @click.option("--name", required=True, help="Name of the critical data element")
 @click.option("--description", required=False, default="", help="Description of the CDE")
 @click.option("--domain-id", required=True, help="Governance domain ID")
-@click.option("--data-type", required=True,
-              type=click.Choice(["String", "Number", "Boolean", "Date", "DateTime"]),
-              help="Data type of the CDE")
-@click.option("--status", required=False, default="Draft",
-              type=click.Choice(["Draft", "Published", "Archived"]),
-              help="Status of the CDE")
-@click.option("--owner-id", required=False, help="Owner Entra ID (can be specified multiple times)", multiple=True)
+@click.option(
+    "--data-type",
+    required=True,
+    type=click.Choice(["String", "Number", "Boolean", "Date", "DateTime"]),
+    help="Data type of the CDE",
+)
+@click.option(
+    "--status",
+    required=False,
+    default="Draft",
+    type=click.Choice(["Draft", "Published", "Archived"]),
+    help="Status of the CDE",
+)
+@click.option(
+    "--owner-id",
+    required=False,
+    help="Owner Entra ID (can be specified multiple times)",
+    multiple=True,
+)
 def create(name, description, domain_id, data_type, status, owner_id):
     """Create a new critical data element."""
     try:
         client = UnifiedCatalogClient()
-        
+
         args = {
             "--name": [name],
             "--description": [description],
             "--governance-domain-id": [domain_id],
             "--data-type": [data_type],
-            "--status": [status]
+            "--status": [status],
         }
-        
+
         if owner_id:
             args["--owner-id"] = list(owner_id)
-            
+
         result = client.create_critical_data_element(args)
-        
+
         if not result:
             console.print("[red]ERROR:[/red] No response received")
             return
         if isinstance(result, dict) and "error" in result:
             console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
             return
-            
+
         console.print(f"[green]✅ SUCCESS:[/green] Created critical data element '{name}'")
         console.print(json.dumps(result, indent=2))
-        
+
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
 
 
 @cde.command(name="list")
 @click.option("--domain-id", required=True, help="Governance domain ID to list CDEs from")
-def list_cdes(domain_id):
+@click.option("--json", "output_json", is_flag=True, help="Output results in JSON format")
+def list_cdes(domain_id, output_json):
     """List all critical data elements in a governance domain."""
     try:
         client = UnifiedCatalogClient()
         args = {"--governance-domain-id": [domain_id]}
         result = client.get_critical_data_elements(args)
-        
+
         if not result:
             console.print("[yellow]No critical data elements found.[/yellow]")
             return
-            
+
         # Handle response format
         if isinstance(result, (list, tuple)):
             cdes = result
@@ -648,33 +731,38 @@ def list_cdes(domain_id):
             cdes = result.get("value", [])
         else:
             cdes = []
-            
+
         if not cdes:
             console.print("[yellow]No critical data elements found.[/yellow]")
             return
-            
+
+        # Output in JSON format if requested
+        if output_json:
+            _format_json_output(cdes)
+            return
+
         table = Table(title="Critical Data Elements")
         table.add_column("ID", style="cyan")
         table.add_column("Name", style="green")
         table.add_column("Data Type", style="blue")
         table.add_column("Status", style="yellow")
         table.add_column("Description", style="white")
-        
+
         for cde_item in cdes:
             desc = cde_item.get("description", "")
             if len(desc) > 30:
                 desc = desc[:30] + "..."
-                
+
             table.add_row(
                 cde_item.get("id", "N/A"),
                 cde_item.get("name", "N/A"),
                 cde_item.get("dataType", "N/A"),
                 cde_item.get("status", "N/A"),
-                desc
+                desc,
             )
-            
+
         console.print(table)
-        
+
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
 
@@ -687,16 +775,16 @@ def show(cde_id):
         client = UnifiedCatalogClient()
         args = {"--cde-id": [cde_id]}
         result = client.get_critical_data_element_by_id(args)
-        
+
         if not result:
             console.print("[red]ERROR:[/red] No response received")
             return
         if isinstance(result, dict) and "error" in result:
             console.print(f"[red]ERROR:[/red] {result.get('error', 'CDE not found')}")
             return
-            
+
         console.print(json.dumps(result, indent=2))
-        
+
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
 
@@ -704,6 +792,7 @@ def show(cde_id):
 # ========================================
 # HEALTH MANAGEMENT (Preview)
 # ========================================
+
 
 @uc.group()
 def health():
@@ -718,7 +807,7 @@ def list_controls():
     console.print("This feature is coming soon to Microsoft Purview Unified Catalog")
 
 
-@health.command(name="actions") 
+@health.command(name="actions")
 def list_actions():
     """List health actions (preview - not yet implemented)."""
     console.print("[yellow]🚧 Health Actions are not yet implemented in the API[/yellow]")
@@ -736,6 +825,7 @@ def data_quality():
 # CUSTOM ATTRIBUTES (Coming Soon)
 # ========================================
 
+
 @uc.group()
 def attribute():
     """Manage custom attributes (coming soon)."""
@@ -752,6 +842,7 @@ def list_attributes():
 # ========================================
 # REQUESTS (Coming Soon)
 # ========================================
+
 
 @uc.group()
 def request():
