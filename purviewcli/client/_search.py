@@ -45,10 +45,15 @@ class Search(Endpoint):
             return
         
         # Build search payload from individual parameters
+        # Support both '--keywords' and the CLI shorthand '--query'
+        keywords = args.get("--keywords") if args.get("--keywords") is not None else args.get("--query")
+        if keywords is None:
+            keywords = "*"
+
         search_request = {
-            "keywords": args.get("--keywords", "*"),
+            "keywords": keywords,
             "limit": args.get("--limit", 50),
-            "offset": args.get("--offset", 0)
+            "offset": args.get("--offset", 0),
         }
         
         # Only add filter if there are actual filter values

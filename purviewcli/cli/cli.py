@@ -18,6 +18,12 @@ from rich.console import Console
 
 console = Console()
 
+# Import version for the CLI
+try:
+    from purviewcli import __version__
+except ImportError:
+    __version__ = "unknown"
+
 
 # ============================================================================
 # INDIVIDUAL CLI MODULE REGISTRATION SYSTEM
@@ -106,11 +112,11 @@ def register_individual_cli_modules(main_group):
     except ImportError as e:
         console.print(f"[yellow]⚠ Could not import collections CLI module: {e}[/yellow]")
     try:
-        from .data_product import data_product
+        from .unified_catalog import uc
 
-        main_group.add_command(data_product)
+        main_group.add_command(uc)  # Main Unified Catalog command
     except ImportError as e:
-        console.print(f"[yellow]⚠ Could not import data_product CLI module: {e}[/yellow]")
+        console.print(f"[yellow]⚠ Could not import unified catalog (uc) CLI module: {e}[/yellow]")
     try:
         from .domain import domain
 
@@ -126,7 +132,7 @@ def register_individual_cli_modules(main_group):
 
 
 @click.group()
-@click.option("--version", is_flag=True, help="Show the current version and exit.")
+@click.version_option(version=__version__, prog_name="pvw")
 @click.option("--profile", help="Configuration profile to use")
 @click.option("--account-name", help="Override Purview account name")
 @click.option(
@@ -136,19 +142,11 @@ def register_individual_cli_modules(main_group):
 @click.option("--debug", is_flag=True, help="Enable debug mode")
 @click.option("--mock", is_flag=True, help="Mock mode - simulate commands without real API calls")
 @click.pass_context
-def main(ctx, version, profile, account_name, endpoint, token, debug, mock):
+def main(ctx, profile, account_name, endpoint, token, debug, mock):
     """
     Purview CLI with profile management and automation.
     All command groups are registered as modular Click-based modules for full CLI visibility.
     """
-    if version:
-        try:
-            from purviewcli import __version__
-
-            click.echo(f"Purview CLI version: {__version__}")
-        except ImportError:
-            click.echo("Purview CLI version: unknown")
-        ctx.exit()
     ctx.ensure_object(dict)
 
     if debug:

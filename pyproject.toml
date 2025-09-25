@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pvw-cli"
-version = "1.0.6"
-description = " Microsoft Purview CLI with comprehensive automation capabilities"
+version = "1.0.8"
+description = "Microsoft Purview CLI with comprehensive automation capabilities"
 readme = "README.md"
-license = {text = "MIT"}
+license = "MIT"
 authors = [
     {name = "AYOUB KEBAILI", email = "keayoub@msn.com"}
 ]
@@ -18,6 +18,7 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Intended Audience :: System Administrators",
+
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",
@@ -40,12 +41,13 @@ dependencies = [
     "requests>=2.28.0",
     "pandas>=1.5.0",
     "aiohttp>=3.8.0",
-    "pydantic>=1.10.0",
+    "pydantic>=1.10.0,<3.0.0",
     "typer>=0.7.0",
     "PyYAML>=6.0",
     "python-dotenv>=0.19.0",
     "asyncio-throttle>=1.0.0",
     "tabulate>=0.9.0",
+    "cryptography>=41.0.5,<46.0.0",
 ]
 
 [project.optional-dependencies]
@@ -72,11 +74,11 @@ test = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/your-org/pvw-cli"
-Documentation = "https://pvw-cli.readthedocs.io/"
-Repository = "https://github.com/your-org/pvw-cli.git"
-"Bug Tracker" = "https://github.com/your-org/pvw-cli/issues"
-Changelog = "https://github.com/your-org/pvw-cli/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/Keayoub/Purview_cli"
+Documentation = "https://github.com/Keayoub/Purview_cli/wiki"
+Repository = "https://github.com/Keayoub/Purview_cli.git"
+"Bug Tracker" = "https://github.com/Keayoub/Purview_cli/issues"
+Source = "https://github.com/Keayoub/Purview_cli"
 
 [project.scripts]
 pvw = "purviewcli.cli.cli:main"
@@ -84,6 +86,8 @@ pvw-cli = "purviewcli.cli.cli:main"
 
 [tool.setuptools]
 packages = ["purviewcli", "purviewcli.cli", "purviewcli.client", "purviewcli.plugins"]
+include-package-data = true
+zip-safe = false
 
 [tool.setuptools.package-data]
 purviewcli = [
@@ -178,4 +182,4 @@ exclude_lines = [
     "@(abc\\.)?abstractmethod",
 ]
 
-dynamic = ["entry-points"]
+
