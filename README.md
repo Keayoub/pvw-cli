@@ -1,4 +1,4 @@
-# PURVIEW CLI v1.0.8 - Microsoft Purview Automation & Data Governance
+# PURVIEW CLI v1.0.9 - Microsoft Purview Automation & Data Governance
 
 > **LATEST UPDATE (September 2025):**
 > - **🚀 MAJOR: Complete Microsoft Purview Unified Catalog (UC) Support** (see new `uc` command group)
@@ -12,7 +12,7 @@
 
 ## What is PVW CLI?
 
-**PVW CLI v1.0.8** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* including:
+**PVW CLI v1.0.9** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* including:
 
 - **NEW Unified Catalog (UC) Management** - Complete governance domains, glossary terms, data products, OKRs, CDEs (NEW)
 - Entity management (create, update, bulk, import/export)
@@ -80,7 +80,7 @@ For more advanced usage, see the sections below or visit the [documentation](htt
 
 ## Overview
 
-**PVW CLI v1.0.8** is a modern command-line interface and Python library for Microsoft Purview, enabling:
+**PVW CLI v1.0.9** is a modern command-line interface and Python library for Microsoft Purview, enabling:
 
 - Advanced data catalog search and discovery
 - Bulk import/export of entities, glossary terms, and lineage

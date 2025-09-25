@@ -12,4 +12,4 @@ dependencies:
       - cryptography>=41.0.5,<46.0.0
       
       # Main package
-      - pvw-cli==1.0.8
+      - pvw-cli==1.0.9
