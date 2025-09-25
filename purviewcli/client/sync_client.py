@@ -60,21 +60,21 @@ class SyncPurviewClient:
                     "-o", "tsv"
                 ], capture_output=True, text=True, check=True)
                 atlas_url = result.stdout.strip()
-                # Extract account ID from URL like: https://c869cf92-11d8-4fbc-a7cf-6114d160dd71-api.purview-service.microsoft.com/catalog
+                
                 if atlas_url and "-api.purview-service.microsoft.com" in atlas_url:
                     account_id = atlas_url.split("://")[1].split("-api.purview-service.microsoft.com")[0]
                 else:
                     raise Exception(f"Could not extract account ID from Atlas URL: {atlas_url}")
             except Exception as e:
-                # Try to get tenant ID as fallback since it often matches the account ID
+                # For Unified Catalog, the account ID is typically the Azure Tenant ID
                 try:
                     tenant_result = subprocess.run([
                         "az", "account", "show", "--query", "tenantId", "-o", "tsv"
                     ], capture_output=True, text=True, check=True)
                     account_id = tenant_result.stdout.strip()
-                    print(f"Warning: Using tenant ID as account ID fallback: {account_id}")
+                    print(f"Info: Using Tenant ID as Purview Account ID for Unified Catalog: {account_id}")
                 except Exception:
-                    raise Exception(f"Could not determine Purview account ID. Please set PURVIEW_ACCOUNT_ID environment variable. Error: {e}")
+                    raise Exception(f"Could not determine Purview account ID. For Unified Catalog, this is typically your Azure Tenant ID. Please set PURVIEW_ACCOUNT_ID environment variable. Error: {e}")
         return account_id
 
     def _get_authentication_token(self, for_unified_catalog=False):
@@ -146,7 +146,7 @@ class SyncPurviewClient:
                 timeout=30,
             )
             # Handle the response
-            if response.status_code == 200:
+            if response.status_code in [200, 201]:
                 try:
                     data = response.json()
                     return {"status": "success", "data": data, "status_code": response.status_code}
@@ -172,7 +172,7 @@ class SyncPurviewClient:
                     timeout=30,
                 )
 
-                if response.status_code == 200:
+                if response.status_code in [200, 201]:
                     try:
                         data = response.json()
                         return {

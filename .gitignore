@@ -28,3 +28,4 @@ nginx/
 
 web-ui/node_modules/
 
+.env
