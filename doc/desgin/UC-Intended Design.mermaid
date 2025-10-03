@@ -1,0 +1,109 @@
+---
+title: Microsoft Purview Unified Catalog Architecture
+---
+graph TB
+    subgraph UC["Unified Catalog Layer (Business View)"]
+        direction TB
+        
+        subgraph GD["Governance Domains"]
+            GD1["👥 HR Domain<br/>ID: d4cdd762-..."]
+            GD2["💰 Finance Domain<br/>ID: d8209808-..."]
+            GD3["📢 Marketing Domain<br/>ID: abdeda41-..."]
+            GD4["🤝 Sales & Partner<br/>ID: 92624714-...<br/><i>(nested under Marketing)</i>"]
+        end
+        
+        subgraph BC["Business Concepts"]
+            DP1["📦 Data Products"]
+            OKR1["🎯 OKRs"]
+            CDE1["⭐ Critical Data Elements"]
+        end
+        
+        GD1 --> DP1
+        GD1 --> OKR1
+        GD1 --> CDE1
+        GD4 --> DP1
+    end
+    
+    subgraph DM["Data Map Layer (Atlas/Technical View)"]
+        direction TB
+        
+        subgraph GLOSS["Glossaries"]
+            GL1["📚 HR Domain Glossary<br/>GUID: 69a6aff1-..."]
+            GL2["📚 Finance Glossary<br/>GUID: xxxxxxxx-..."]
+            GL3["📚 Marketing Glossary<br/>GUID: yyyyyyyy-..."]
+            GL4["📚 Sales & Partner Glossary<br/>GUID: ef9c21b1-..."]
+        end
+        
+        subgraph TERMS["Glossary Terms"]
+            T1["📝 Employee"]
+            T2["📝 Department"]
+            T3["📝 Customer"]
+            T4["📝 SalesPerson"]
+            T5["📝 SalesQuota"]
+        end
+        
+        subgraph ASSETS["Business Assets"]
+            E1["🗄️ Tables"]
+            E2["📊 Columns"]
+            E3["🔗 Relationships"]
+        end
+        
+        GL1 --> T1
+        GL1 --> T2
+        GL1 --> T3
+        GL4 --> T4
+        GL4 --> T5
+        
+        T4 -.can be linked to.-> E1
+    end
+    
+    %% Associations between layers
+    GD1 -.naming convention.-> GL1
+    GD2 -.naming convention.-> GL2
+    GD3 -.naming convention.-> GL3
+    GD4 -.naming convention.-> GL4
+    
+    %% Annotations
+    NOTE1["⚠️ NO DIRECT API LINK<br/>Domain GUID ≠ Glossary GUID<br/>Association by naming convention only"]
+    NOTE2["🔄 Nested domains may return 404<br/>when queried directly<br/>Use parent-child traversal"]
+    NOTE3["✅ CLI Approach:<br/>1. List all glossaries<br/>2. Match by qualifiedName pattern<br/>3. Use explicit --glossary-guid"]
+    
+    NOTE1 -.-> GD1
+    NOTE1 -.-> GL1
+    NOTE2 -.-> GD4
+    NOTE3 -.-> GL4
+    
+    subgraph API["API Endpoints"]
+        API1["🔌 Unified Catalog API<br/>/datagovernance/catalog/businessdomains"]
+        API2["🔌 Data Map API<br/>/catalog/api/atlas/v2/glossary"]
+    end
+    
+    UC --> API1
+    DM --> API2
+    
+    subgraph UI["Purview UI Views"]
+        UI1["🖥️ Governance Domains<br/><i>(Recommended for business users)</i>"]
+        UI2["🖥️ Classic Types<br/><i>(Technical/admin view)</i>"]
+    end
+    
+    UC --> UI1
+    DM --> UI2
+    
+    %% Styling
+    classDef domainStyle fill:#1f6feb,stroke:#333,stroke-width:2px,color:#fff
+    classDef nestedStyle fill:#bf40bf,stroke:#333,stroke-width:2px,color:#fff
+    classDef glossaryStyle fill:#6e7781,stroke:#333,stroke-width:2px,color:#fff
+    classDef termStyle fill:#58a6ff,stroke:#333,stroke-width:1.5px,color:#000
+    classDef dataproductStyle fill:#1f6feb,stroke:#222,stroke-width:2px,color:#fff
+    classDef noteStyle fill:#fff3cd,stroke:#856404,stroke-width:2px,color:#856404
+    classDef apiStyle fill:#238636,stroke:#333,stroke-width:2px,color:#fff
+    classDef uiStyle fill:#8957e5,stroke:#333,stroke-width:2px,color:#fff
+    
+    class GD1,GD2,GD3 domainStyle
+    class GD4 nestedStyle
+    class GL1,GL2,GL3,GL4 glossaryStyle
+    class T1,T2,T3,T4,T5 termStyle
+    class DP1,OKR1,CDE1 dataproductStyle
+    class NOTE1,NOTE2,NOTE3 noteStyle
+    class API1,API2 apiStyle
+    class UI1,UI2 uiStyle

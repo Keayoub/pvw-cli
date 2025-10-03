@@ -20,8 +20,9 @@ def workflow():
 
 
 @workflow.command()
+@click.option("--json", "output_json", is_flag=True, help="Output results in JSON format")
 @click.pass_context
-def list(ctx):
+def list(ctx, output_json):
     """List all workflows."""
     try:
         if ctx.obj and ctx.obj.get("mock"):
@@ -30,16 +31,55 @@ def list(ctx):
             return
 
         from purviewcli.client._workflow import Workflow
+        from rich.table import Table
 
         args = {}
         workflow_client = Workflow()
         result = workflow_client.workflowListWorkflows(args)
 
-        if result:
-            console.print("[green]✓ Workflow list completed successfully[/green]")
-            console.print(json.dumps(result, indent=2))
+        # Handle response structure
+        if isinstance(result, dict):
+            workflows = result.get("results", []) or result.get("value", [])
+        elif isinstance(result, (list, tuple)):
+            workflows = result
         else:
+            workflows = []
+
+        if not workflows:
             console.print("[yellow]⚠ No workflows found[/yellow]")
+            return
+
+        # Output in JSON format if requested
+        if output_json:
+            console.print(json.dumps(workflows, indent=2))
+            return
+
+        table = Table(title="Workflows", show_lines=True)
+        table.add_column("ID", style="cyan", no_wrap=True, width=38)
+        table.add_column("Name", style="green", width=30)
+        table.add_column("Type", style="blue")
+        table.add_column("Status", style="yellow")
+        table.add_column("Description", style="white")
+
+        for wf in workflows:
+            if not isinstance(wf, dict):
+                continue
+            
+            workflow_id = wf.get("id", "N/A")
+            name = wf.get("name", "N/A")
+            wf_type = wf.get("type", "N/A")
+            status = wf.get("status", "N/A")
+            description = wf.get("description", "")
+            
+            # Truncate description if too long
+            if len(description) > 60:
+                description = description[:60] + "..."
+            
+            table.add_row(workflow_id, name, wf_type, status, description)
+
+        console.print(table)
+        console.print(f"\n[dim]Total: {len(workflows)} workflow(s)[/dim]")
+
     except Exception as e:
         console.print(f"[red]✗ Error executing workflow list: {str(e)}[/red]")
 

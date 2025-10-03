@@ -1,12 +1,15 @@
 # PURVIEW CLI v1.0.9 - Microsoft Purview Automation & Data Governance
 
-> **LATEST UPDATE (September 2025):**
+> **LATEST UPDATE (October 2025):**
+> - **🚀 NEW: Complete Data Product CRUD Operations** - Full update and delete support with smart partial updates
+> - **🏥 NEW: Health Monitoring API** - Automated governance health checks and recommendations
+> - **🔄 NEW: Workflow Management** - Approval workflows and business process automation
+> - **✨ Enhanced ID Display** - Full UUIDs now visible in all list commands (no truncation)
 > - **🚀 MAJOR: Complete Microsoft Purview Unified Catalog (UC) Support** (see new `uc` command group)
 > - Full governance domains, glossary terms, data products, OKRs, and critical data elements management
 > - Feature parity with UnifiedCatalogPy project with enhanced CLI experience
 > - Advanced Data Product Management (legacy `data-product` command group)
 > - Enhanced Discovery Query/Search support
-> - **Fixed all command examples to use correct `pvw` command**
 
 ---
 
@@ -491,23 +494,31 @@ pvw uc dataproduct create \
   --name "Customer Analytics Dashboard" \
   --domain-id "abc-123" \
   --description "360-degree customer analytics with behavioral insights" \
-  --owner "data-team@company.com"
+  --type Analytical \
+  --status Draft
 
 # Get detailed data product information
-pvw uc dataproduct get --product-id "prod-789" --domain-id "abc-123"
+pvw uc dataproduct show --product-id "prod-789"
 
-# Update data product metadata
+# Update data product (partial updates supported - only specify fields to change)
 pvw uc dataproduct update \
   --product-id "prod-789" \
-  --domain-id "abc-123" \
-  --status "active" \
-  --version "v2.1.0"
+  --status Published \
+  --description "Updated comprehensive customer analytics" \
+  --endorsed
 
-# Add data assets to a data product
-pvw uc dataproduct add-asset \
+# Update multiple fields at once
+pvw uc dataproduct update \
   --product-id "prod-789" \
-  --domain-id "abc-123" \
-  --asset-id "ece43ce5-ac45-4e50-a4d0-365a64299efc"
+  --status Published \
+  --update-frequency Monthly \
+  --endorsed
+
+# Delete a data product (with confirmation)
+pvw uc dataproduct delete --product-id "prod-789"
+
+# Delete without confirmation prompt
+pvw uc dataproduct delete --product-id "prod-789" --yes
 ```
 
 #### 🎯 **Objectives & Key Results (OKRs)**
@@ -551,6 +562,85 @@ pvw uc cde link \
   --domain-id "abc-123" \
   --asset-id "ea3412c3-7387-4bc1-9923-11f6f6f60000"
 ```
+
+#### 🏥 **Health Monitoring (NEW)**
+
+Monitor governance health and get automated recommendations to improve your data governance posture.
+
+```bash
+# List all health findings and recommendations
+pvw uc health query
+
+# Filter by severity
+pvw uc health query --severity High
+pvw uc health query --severity Medium
+
+# Filter by status
+pvw uc health query --status NotStarted
+pvw uc health query --status InProgress
+
+# Get detailed information about a specific health action
+pvw uc health show --action-id "5ea3fc78-6a77-4098-8779-ed81de6f87c9"
+
+# Update health action status
+pvw uc health update \
+  --action-id "5ea3fc78-6a77-4098-8779-ed81de6f87c9" \
+  --status InProgress \
+  --reason "Working on assigning glossary terms to data products"
+
+# Get health summary statistics
+pvw uc health summary
+
+# Output health findings in JSON format
+pvw uc health query --json
+```
+
+**Health Finding Types:**
+- Missing glossary terms on data products (High)
+- Data products without OKRs (Medium)
+- Missing data quality scores (Medium)
+- Classification gaps on data assets (Medium)
+- Description quality issues (Medium)
+- Business domains without critical data entities (Medium)
+
+#### 🔄 **Workflow Management (NEW)**
+
+Manage approval workflows and business process automation in Purview.
+
+```bash
+# List all workflows
+pvw workflow list
+
+# Get workflow details
+pvw workflow get --workflow-id "workflow-123"
+
+# Create a new workflow (requires JSON definition)
+pvw workflow create --workflow-id "approval-flow-1" --payload-file workflow-definition.json
+
+# Execute a workflow
+pvw workflow execute --workflow-id "workflow-123"
+
+# List workflow executions
+pvw workflow executions --workflow-id "workflow-123"
+
+# View specific execution details
+pvw workflow execution-details --workflow-id "workflow-123" --execution-id "exec-456"
+
+# Update workflow configuration
+pvw workflow update --workflow-id "workflow-123" --payload-file updated-workflow.json
+
+# Delete a workflow
+pvw workflow delete --workflow-id "workflow-123"
+
+# Output workflows in JSON format
+pvw workflow list --json
+```
+
+**Workflow Use Cases:**
+- Data access request approvals
+- Glossary term certification workflows
+- Data product publishing approvals
+- Classification review processes
 
 #### 🔄 **Integrated Workflow Example**
 
@@ -703,6 +793,8 @@ PVW CLI provides comprehensive automation for all major Microsoft Purview APIs, 
 ### Supported API Groups
 
 - **Unified Catalog**: Complete governance domains, glossary terms, data products, OKRs, CDEs management ✅
+  - **Health Monitoring**: Automated governance health checks and recommendations ✅ NEW
+  - **Workflows**: Approval workflows and business process automation ✅ NEW
 - **Data Map**: Full entity and lineage management ✅
 - **Discovery**: Advanced search, browse, and query capabilities ✅
 - **Collections**: Collection and account management ✅

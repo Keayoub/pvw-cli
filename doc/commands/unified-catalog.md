@@ -8,10 +8,11 @@ The Unified Catalog (`uc`) command group provides comprehensive management of Mi
 
 - **✅ Governance Domains** - Organizational contexts for data assets
 - **✅ Glossary Terms** - Business terminology and definitions with full metadata
-- **✅ Data Products** - Curated data asset collections with lifecycle management
+- **✅ Data Products** - Curated data asset collections with full CRUD lifecycle management (NEW: update & delete)
 - **✅ Objectives & Key Results (OKRs)** - Data governance goal tracking and measurement
 - **✅ Critical Data Elements (CDEs)** - Important data element definitions with data types
-- **🚧 Health Management** - Data quality controls and actions (preview/coming soon)
+- **✅ Health Management** - Automated governance health monitoring and recommendations (NEW)
+- **✅ Workflow Management** - Approval workflows and business process automation (NEW)
 - **🚧 Custom Attributes** - User-defined metadata attributes (coming soon)
 - **🚧 Access Requests** - Data access workflow management (coming soon)
 
@@ -119,14 +120,20 @@ pvw uc term delete --term-id "term-456" --confirm
 
 ### 📦 Data Products (`pv uc dataproduct`)
 
-Manage curated data asset collections with lifecycle tracking:
+Manage curated data asset collections with lifecycle tracking and full CRUD operations:
 
 ```bash
-# List all data products
+# List all data products (with full IDs displayed)
 pvw uc dataproduct list
 
 # List products in specific domain  
 pvw uc dataproduct list --domain-id "abc-123"
+
+# List with filtering
+pvw uc dataproduct list --status Published
+
+# Show specific data product details
+pvw uc dataproduct show --product-id "560f1496-f0d3-4c8e-b343-8636bd4f9d4a"
 
 # Create basic data product
 pvw uc dataproduct create --name "Customer 360" 
@@ -139,12 +146,34 @@ pvw uc dataproduct create --name "Sales Dashboard" --domain-id "abc-123"
                         --business-use "Track sales KPIs" 
                         --owner-id "sales@company.com" --endorsed
 
-# Update product status
-pvw uc dataproduct update --product-id "prod-789" --status "Published"
+# Update data product (smart partial updates - only specify fields to change)
+pvw uc dataproduct update --product-id "560f1496-f0d3-4c8e-b343-8636bd4f9d4a" \
+                        --status Published
 
-# Delete product  
-pvw uc dataproduct delete --product-id "prod-789" --confirm
+# Update multiple fields at once
+pvw uc dataproduct update --product-id "560f1496-f0d3-4c8e-b343-8636bd4f9d4a" \
+                        --description "Updated comprehensive customer analytics" \
+                        --endorsed \
+                        --update-frequency Monthly
+
+# Update status and business metadata
+pvw uc dataproduct update --product-id "prod-789" \
+                        --status Published \
+                        --business-use "Updated business justification"
+
+# Delete product (with confirmation prompt)
+pvw uc dataproduct delete --product-id "prod-789"
+
+# Delete without confirmation
+pvw uc dataproduct delete --product-id "prod-789" --yes
 ```
+
+**Key Features:**
+- ✅ **Smart Updates**: Fetches current state first, then applies only specified changes
+- ✅ **Partial Updates**: Update individual fields without affecting others
+- ✅ **Full ID Display**: All list commands show complete UUIDs (no truncation)
+- ✅ **Safe Deletion**: Confirmation prompt by default, `--yes` to skip
+- ✅ **Rich Formatting**: Beautiful tables with status colors and proper alignment
 
 ### 🎯 Objectives & Key Results (`pv uc objective`)
 
@@ -205,6 +234,126 @@ pvw uc cde update --cde-id "cde-456" --status "Deprecated"
 # Delete CDE
 pvw uc cde delete --cde-id "cde-456" --confirm
 ```
+
+### 🏥 Health Monitoring (`pvw uc health`) **NEW**
+
+Monitor governance health and get automated recommendations to improve your data governance posture:
+
+```bash
+# List all health findings and recommendations
+pvw uc health query
+
+# Filter by severity
+pvw uc health query --severity High
+pvw uc health query --severity Medium
+pvw uc health query --severity Low
+
+# Filter by status
+pvw uc health query --status NotStarted
+pvw uc health query --status InProgress
+pvw uc health query --status Resolved
+
+# Filter by finding type
+pvw uc health query --finding-type Discoverability
+pvw uc health query --finding-type Quality
+
+# Get detailed information about a specific health action
+pvw uc health show --action-id "5ea3fc78-6a77-4098-8779-ed81de6f87c9"
+
+# Update health action status and track progress
+pvw uc health update \
+  --action-id "5ea3fc78-6a77-4098-8779-ed81de6f87c9" \
+  --status InProgress \
+  --reason "Working on assigning glossary terms to data products"
+
+# Assign health action to team member
+pvw uc health update \
+  --action-id "5ea3fc78-6a77-4098-8779-ed81de6f87c9" \
+  --assigned-to "user@company.com"
+
+# Mark health action as resolved
+pvw uc health update \
+  --action-id "5ea3fc78-6a77-4098-8779-ed81de6f87c9" \
+  --status Resolved \
+  --reason "All data products now have published glossary terms assigned"
+
+# Delete a health action
+pvw uc health delete --action-id "5ea3fc78-6a77-4098-8779-ed81de6f87c9"
+
+# Get health summary statistics (if available)
+pvw uc health summary
+
+# Output health findings in JSON format for automation
+pvw uc health query --json
+```
+
+**Health Finding Types:**
+- **Missing glossary terms** (High severity) - Data products without published terms
+- **Missing OKRs** (Medium) - Data products without defined objectives
+- **Missing data quality scores** (Medium) - Products/assets without quality metrics
+- **Classification gaps** (Medium) - Data assets missing proper classifications
+- **Description quality issues** (Medium) - Short or missing descriptions
+- **Domain completeness** (Medium) - Business domains without critical data entities
+
+**Key Features:**
+- ✅ **Automated Monitoring**: Continuous governance health checks
+- ✅ **Prioritized Findings**: Severity-based recommendations (High/Medium/Low)
+- ✅ **Actionable Insights**: Clear recommendations for each finding
+- ✅ **Progress Tracking**: Update status and track resolution
+- ✅ **Rich Formatting**: Color-coded severity (Red=High, Yellow=Medium, Green=Low)
+
+### 🔄 Workflow Management (`pvw workflow`) **NEW**
+
+Manage approval workflows and business process automation in Purview:
+
+```bash
+# List all workflows
+pvw workflow list
+
+# Get workflow details
+pvw workflow get --workflow-id "workflow-123"
+
+# Create a new workflow (requires JSON definition file)
+pvw workflow create --workflow-id "approval-flow-1" \
+                   --payload-file workflow-definition.json
+
+# Execute a workflow
+pvw workflow execute --workflow-id "workflow-123"
+
+# Execute with parameters
+pvw workflow execute --workflow-id "workflow-123" \
+                    --payload-file execution-params.json
+
+# List workflow executions/runs
+pvw workflow executions --workflow-id "workflow-123"
+
+# Get specific execution details
+pvw workflow execution-details --workflow-id "workflow-123" \
+                              --execution-id "exec-456"
+
+# Update workflow configuration
+pvw workflow update --workflow-id "workflow-123" \
+                   --payload-file updated-workflow.json
+
+# Delete a workflow
+pvw workflow delete --workflow-id "workflow-123"
+
+# Output workflows in JSON format for scripting
+pvw workflow list --json
+```
+
+**Workflow Use Cases:**
+- **Data Access Requests**: Automated approval flows for data access
+- **Term Certification**: Glossary term review and approval processes
+- **Data Product Publishing**: Multi-stage approval for publishing data products
+- **Classification Review**: Automated classification validation workflows
+- **Quality Gate Enforcement**: Data quality checks before promotion
+
+**Key Features:**
+- ✅ **Full Lifecycle Management**: Create, execute, monitor, and delete workflows
+- ✅ **Execution Tracking**: Monitor workflow runs and get detailed status
+- ✅ **Flexible Definition**: JSON-based workflow configuration
+- ✅ **Rich Formatting**: Beautiful table display with full workflow IDs visible
 
 ## 🎨 Beautiful Console Output
 
