@@ -117,8 +117,13 @@ az account show
 **Purpose**: Safely delete Purview collections with comprehensive dependency cleanup.
 
 **Features**:
-- **Dependency Resolution**: Automatically removes child collections, scans, and data sources
+- **Complete Dependency Resolution**: Automatically removes:
+  - Child collections (nested hierarchies)
+  - Data sources and scans
+  - **Assets (entities)** - NEW! Handles the common "referenced by assets" error
 - **Force Mode**: Aggressive cleanup for stubborn dependencies
+- **Asset Deletion**: Searches for and removes all assets in the collection before deletion
+- **Pagination Support**: Handles collections with thousands of assets
 - **Safety Checks**: Validates collection existence and dependencies
 - **Debug Mode**: Detailed troubleshooting information
 - **Comprehensive Cleanup**: Handles complex collection hierarchies
@@ -234,6 +239,22 @@ az resource show --name "your-purview-account" --resource-type "Microsoft.Purvie
 - Try both internal name and friendly display name
 - Check for typos in collection names
 
+**"Collection is being referenced by assets" Error (Code 12011)**:
+- **Common Issue**: Collections with assets cannot be deleted
+- **Solution 1**: Use `-Force` parameter to automatically delete assets first
+  ```powershell
+  .\Remove-PurviewCollection.ps1 -AccountName "your-account" -CollectionName "collection-name" -Force
+  ```
+- **Solution 2**: Delete assets separately first, then delete collection
+  ```powershell
+  # Step 1: Delete all assets
+  .\Remove-PurviewAsset-Batch.ps1 -AccountName "your-account" -CollectionName "collection-name" -Mode BULK
+  
+  # Step 2: Delete the empty collection
+  .\Remove-PurviewCollection.ps1 -AccountName "your-account" -CollectionName "collection-name"
+  ```
+- **Note**: Force mode now includes automatic asset deletion (updated October 2025)
+
 **Permission Errors**:
 - Ensure you have appropriate Purview permissions
 - Collection Admin role required for deletion operations
@@ -260,9 +281,10 @@ az resource show --name "your-purview-account" --resource-type "Microsoft.Purvie
 All scripts use standard exit codes for automation:
 - **0**: Success
 - **1**: Authentication failure
-- **2**: Resource not found
+- **2**: Resource not found or conflict (collection has dependencies)
 - **3**: Operation failed (recoverable)
 - **4**: Unexpected error (non-recoverable)
+- **5**: Assets found in collection (use -Force to delete them)
 
 ## 📈 **Best Practices**
 
@@ -325,6 +347,17 @@ For issues or questions:
 
 ---
 
-**Last Updated**: September 2025  
+## 📝 **Changelog**
+
+### October 2025
+- **Remove-PurviewCollection.ps1**: Added automatic asset deletion feature
+  - Now searches for and deletes assets in collection before deletion attempt
+  - Resolves common "Error 12011: collection is being referenced by assets" issue
+  - Force mode now includes comprehensive asset cleanup
+  - Added pagination support for collections with thousands of assets
+
+---
+
+**Last Updated**: October 6, 2025  
 **Compatible With**: PowerShell 5.1+, PowerShell Core 7+, Azure CLI 2.0+  
 **Project**: [pvw-cli](https://github.com/Keayoub/pvw-cli)
