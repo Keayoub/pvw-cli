@@ -240,6 +240,97 @@ foreach ($ds in $dsTarget) {
   }
 }
 
+Write-Host ">>> Checking for assets in collection..." -ForegroundColor Cyan
+# Search for all assets in this collection
+$searchPayload = @{
+  keywords = $null
+  filter = @{
+    collectionId = $collectionName
+  }
+  limit = 1000
+}
+
+try {
+  $catalogApi = "$acctBase/catalog"
+  $searchUrl = "$catalogApi/api/search/query?api-version=2023-09-01"
+  if ($Debug) { Write-Host "DEBUG: Searching for assets at: $searchUrl" -ForegroundColor Magenta }
+  
+  $searchResults = Invoke-PvApi -Method POST -Url $searchUrl -Body $searchPayload -IgnoreErrors
+  
+  if ($searchResults -and $searchResults.value -and $searchResults.value.Count -gt 0) {
+    $totalAssets = $searchResults.'@search.count'
+    Write-Host "    Found $totalAssets asset(s) in collection" -ForegroundColor Yellow
+    
+    if ($Force) {
+      Write-Host "⚠️ FORCE MODE: Attempting to delete assets..." -ForegroundColor Yellow
+      
+      $deletedCount = 0
+      $failedCount = 0
+      
+      foreach ($asset in $searchResults.value) {
+        $guid = $asset.id
+        $assetName = if ($asset.name) { $asset.name } else { $guid }
+        
+        try {
+          Write-Host "   - Deleting asset: $assetName (GUID: $guid)"
+          $deleteAssetUrl = "$catalogApi/api/atlas/v2/entity/guid/$guid"
+          Invoke-PvApi -Method DELETE -Url $deleteAssetUrl -ExpectedStatus 200 -IgnoreErrors | Out-Null
+          $deletedCount++
+          Write-Host "     ✅ Asset deleted" -ForegroundColor Green
+        } catch {
+          $failedCount++
+          Write-Warning "Failed to delete asset '$assetName': $($_.Exception.Message)"
+        }
+      }
+      
+      Write-Host "   Asset deletion summary: $deletedCount deleted, $failedCount failed" -ForegroundColor $(if ($failedCount -eq 0) { "Green" } else { "Yellow" })
+      
+      # Handle pagination if there are more assets
+      $nextLink = $searchResults.'@search.nextLink'
+      while ($nextLink -and $deletedCount -lt 10000) {
+        Write-Host "   Fetching more assets..."
+        $moreResults = Invoke-PvApi -Method GET -Url $nextLink -IgnoreErrors
+        
+        if ($moreResults -and $moreResults.value) {
+          foreach ($asset in $moreResults.value) {
+            $guid = $asset.id
+            $assetName = if ($asset.name) { $asset.name } else { $guid }
+            
+            try {
+              Write-Host "   - Deleting asset: $assetName (GUID: $guid)"
+              Invoke-PvApi -Method DELETE -Url "$catalogApi/api/atlas/v2/entity/guid/$guid" -ExpectedStatus 200 -IgnoreErrors | Out-Null
+              $deletedCount++
+              Write-Host "     ✅ Asset deleted" -ForegroundColor Green
+            } catch {
+              $failedCount++
+              Write-Warning "Failed to delete asset '$assetName': $($_.Exception.Message)"
+            }
+          }
+        }
+        
+        $nextLink = $moreResults.'@search.nextLink'
+      }
+      
+      Write-Host "   Final asset deletion: $deletedCount total deleted" -ForegroundColor Green
+      
+      # Wait for backend to process deletions
+      Write-Host "   Waiting 5 seconds for backend to process asset deletions..."
+      Start-Sleep -Seconds 5
+    } else {
+      Write-Warning "Assets found in collection. Cannot delete collection while it contains assets."
+      Write-Host "Use -Force to attempt automatic asset deletion, or manually delete/move assets first." -ForegroundColor Yellow
+      exit 5
+    }
+  } else {
+    Write-Host "    No assets found in collection" -ForegroundColor Green
+  }
+} catch {
+  Write-Warning "Could not search for assets: $($_.Exception.Message)"
+  if (-not $Force) {
+    throw "Cannot verify asset status. Use -Force to skip this check."
+  }
+}
+
 Write-Host ">>> Deleting collection '$friendlyName' ($collectionName) …" -ForegroundColor Cyan
 if ($Debug) { 
   Write-Host "DEBUG: collectionName variable = '$collectionName'" -ForegroundColor Magenta
