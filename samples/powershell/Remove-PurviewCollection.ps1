@@ -12,7 +12,7 @@
 .PARAMETER Force
   If set, will force delete and try harder to remove blocking scan/data source objects even if metadata is partial.
 
-.PARAMETER Debug
+.PARAMETER DebugMode
   If set, displays detailed debug information during execution.
 
 .EXAMPLE
@@ -22,14 +22,14 @@
   ./Remove-PurviewCollection.ps1 -AccountName "contoso-purview" -CollectionName "Finance-Prod" -Force
   
 .EXAMPLE
-  ./Remove-PurviewCollection.ps1 -AccountName "contoso-purview" -CollectionName "Finance-Prod" -Force -Debug
+  ./Remove-PurviewCollection.ps1 -AccountName "contoso-purview" -CollectionName "Finance-Prod" -Force -DebugMode
 #>
 
 param(
   [Parameter(Mandatory=$true)][string]$AccountName,
   [Parameter(Mandatory=$true)][string]$CollectionName,
   [switch]$Force,
-  [switch]$Debug
+  [switch]$DebugMode
 )
 
 Write-Host "Getting access token using Azure CLI..."
@@ -71,7 +71,7 @@ function Invoke-PvApi {
     }
   } catch {
     if ($IgnoreErrors) {
-      if ($Debug) { Write-Host "Ignoring error for $Method $Url : $($_.Exception.Message)" -ForegroundColor Gray }
+      if ($DebugMode) { Write-Host "Ignoring error for $Method $Url : $($_.Exception.Message)" -ForegroundColor Gray }
       return $null
     }
     
@@ -172,11 +172,11 @@ $dsTarget = $dsItems | Where-Object { Test-DataSourceInCollection $_ }
 foreach ($ds in $dsTarget) {
   $dsName = $ds.name
   Write-Host "    DataSource in collection: $dsName -> removing scans then data source" -ForegroundColor Yellow
-  if ($Debug) { Write-Host "    DEBUG: dsName = '$dsName'" -ForegroundColor Magenta }
+  if ($DebugMode) { Write-Host "    DEBUG: dsName = '$dsName'" -ForegroundColor Magenta }
 
   try {
     $scansUrl = "$scanApi/datasources/$dsName/scans?api-version=2023-09-01"
-    if ($Debug) { Write-Host "    DEBUG: Fetching scans from: $scansUrl" -ForegroundColor Magenta }
+    if ($DebugMode) { Write-Host "    DEBUG: Fetching scans from: $scansUrl" -ForegroundColor Magenta }
     $scans = Invoke-PvApi -Uri $scansUrl
     $scanList = @()
     if ($scans -and $scans.value) { $scanList += $scans.value }
@@ -195,18 +195,18 @@ foreach ($ds in $dsTarget) {
       } elseif ($s.scanName) {
         $scanName = $s.scanName
       } else {
-        if ($Debug) { Write-Host "Scan object properties: $($s | ConvertTo-Json -Depth 2)" -ForegroundColor Gray }
+        if ($DebugMode) { Write-Host "Scan object properties: $($s | ConvertTo-Json -Depth 2)" -ForegroundColor Gray }
         $scanName = "UnknownScan_$([guid]::NewGuid().ToString().Substring(0,8))"
       }
       
       Write-Host "       - Deleting scan: $scanName"
-      if ($Debug) { 
+      if ($DebugMode) { 
         Write-Host "       DEBUG: scanName variable = '$scanName'" -ForegroundColor Magenta
         Write-Host "       DEBUG: dsName variable = '$dsName'" -ForegroundColor Magenta
       }
       $deleteUrlTemplate = "$scanApi/datasources/{0}/scans/{1}?api-version=2023-09-01"
       $deleteUrl = $deleteUrlTemplate -f $dsName, $scanName
-      if ($Debug) { Write-Host "       DEBUG: Constructed URL = '$deleteUrl'" -ForegroundColor Magenta }
+      if ($DebugMode) { Write-Host "       DEBUG: Constructed URL = '$deleteUrl'" -ForegroundColor Magenta }
       try {
         Invoke-PvApi -Method DELETE -Url $deleteUrl -ExpectedStatus 200 | Out-Null
         Write-Host "       ✅ Scan '$scanName' deleted" -ForegroundColor Green
@@ -225,10 +225,10 @@ foreach ($ds in $dsTarget) {
   }
 
   Write-Host "       - Deleting data source: $dsName"
-  if ($Debug) { Write-Host "       DEBUG: dsName variable = '$dsName'" -ForegroundColor Magenta }
+  if ($DebugMode) { Write-Host "       DEBUG: dsName variable = '$dsName'" -ForegroundColor Magenta }
   $deleteUrlTemplate = "$scanApi/datasources/{0}?api-version=2023-09-01"
   $deleteUrl = $deleteUrlTemplate -f $dsName
-  if ($Debug) { Write-Host "       DEBUG: Constructed data source URL = '$deleteUrl'" -ForegroundColor Magenta }
+  if ($DebugMode) { Write-Host "       DEBUG: Constructed data source URL = '$deleteUrl'" -ForegroundColor Magenta }
   try {
     Invoke-PvApi -Method DELETE -Url $deleteUrl -ExpectedStatus 200 | Out-Null
     Write-Host "       ✅ Data source '$dsName' deleted" -ForegroundColor Green
@@ -253,7 +253,7 @@ $searchPayload = @{
 try {
   $catalogApi = "$acctBase/catalog"
   $searchUrl = "$catalogApi/api/search/query?api-version=2023-09-01"
-  if ($Debug) { Write-Host "DEBUG: Searching for assets at: $searchUrl" -ForegroundColor Magenta }
+  if ($DebugMode) { Write-Host "DEBUG: Searching for assets at: $searchUrl" -ForegroundColor Magenta }
   
   $searchResults = Invoke-PvApi -Method POST -Url $searchUrl -Body $searchPayload -IgnoreErrors
   
@@ -332,12 +332,12 @@ try {
 }
 
 Write-Host ">>> Deleting collection '$friendlyName' ($collectionName) …" -ForegroundColor Cyan
-if ($Debug) { 
+if ($DebugMode) { 
   Write-Host "DEBUG: collectionName variable = '$collectionName'" -ForegroundColor Magenta
 }
 $deleteUrlTemplate = "$acctApi/collections/{0}?api-version=2019-11-01-preview"
 $deleteUrl = $deleteUrlTemplate -f $collectionName
-if ($Debug) { Write-Host "DEBUG: Constructed collection URL = '$deleteUrl'" -ForegroundColor Magenta }
+if ($DebugMode) { Write-Host "DEBUG: Constructed collection URL = '$deleteUrl'" -ForegroundColor Magenta }
 
 if ($Force) {
   Write-Host "⚠️ FORCE MODE: Attempting aggressive collection deletion..." -ForegroundColor Yellow

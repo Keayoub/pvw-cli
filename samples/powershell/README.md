@@ -138,19 +138,19 @@ az account show
 .\Remove-PurviewCollection.ps1 -AccountName "your-purview-account" -CollectionName "collection-name" -Force
 
 # Debug mode (detailed troubleshooting)
-.\Remove-PurviewCollection.ps1 -AccountName "your-purview-account" -CollectionName "collection-name" -Force -Debug
+.\Remove-PurviewCollection.ps1 -AccountName "your-purview-account" -CollectionName "collection-name" -Force -DebugMode
 
 # Examples
 .\Remove-PurviewCollection.ps1 -AccountName "contoso-purview" -CollectionName "Finance-Test"
 .\Remove-PurviewCollection.ps1 -AccountName "contoso-purview" -CollectionName "Legacy-Data" -Force
-.\Remove-PurviewCollection.ps1 -AccountName "contoso-purview" -CollectionName "Problem-Collection" -Force -Debug
+.\Remove-PurviewCollection.ps1 -AccountName "contoso-purview" -CollectionName "Problem-Collection" -Force -DebugMode
 ```
 
 **Parameters**:
 - `AccountName` (Required): Your Purview account name
 - `CollectionName` (Required): Collection name or friendly display name
 - `Force` (Optional): Aggressive cleanup mode
-- `Debug` (Optional): Detailed debugging output
+- `DebugMode` (Optional): Detailed debugging output
 
 ---
 
@@ -162,7 +162,7 @@ az account show
 | `CollectionName` | String | Collection name or friendly display name | All except List-AllPurviewCollections |
 | `Mode` | String | `SINGLE` or `BULK` deletion mode | Remove-PurviewAsset-Batch only |
 | `Force` | Switch | Aggressive cleanup mode | Remove-PurviewCollection only |
-| `Debug` | Switch | Detailed debugging output | Remove-PurviewCollection only |
+| `DebugMode` | Switch | Detailed debugging output | Remove-PurviewCollection only |
 
 ## 🎯 **Quick Start Guide**
 
@@ -263,12 +263,12 @@ az resource show --name "your-purview-account" --resource-type "Microsoft.Purvie
 **Network/API Errors**:
 - Check network connectivity to `*.purview.azure.com`
 - Verify firewall rules if behind corporate network
-- Try with `-Debug` parameter for detailed API information
+- Try with `-DebugMode` parameter for detailed API information
 
 ### Debug Mode Usage
 ```powershell
 # Enable debug mode for detailed troubleshooting
-.\Remove-PurviewCollection.ps1 -AccountName "your-account" -CollectionName "problem-collection" -Debug
+.\Remove-PurviewCollection.ps1 -AccountName "your-account" -CollectionName "problem-collection" -DebugMode
 
 # Debug output includes:
 # - Variable values at each step
