@@ -242,28 +242,30 @@ foreach ($ds in $dsTarget) {
 
 Write-Host ">>> Checking for assets in collection..." -ForegroundColor Cyan
 
+$datamapApi = "$acctBase/datamap"
 $catalogApi = "$acctBase/catalog"
 $allAssets = @()
 
-# Method 1: Try Search API with multiple approaches
+# Method 1: Try modern DataMap Search API (primary method)
 try {
-  # Try with collectionId filter
+  # Use the modern datamap API endpoint with wildcards
   $searchPayload = @{
-    keywords = $null
+    keywords = "*"
     filter = @{
       collectionId = $collectionName
     }
     limit = 1000
   }
   
-  $searchUrl = "$catalogApi/api/search/query?api-version=2023-09-01"
-  if ($DebugMode) { Write-Host "DEBUG: Searching for assets (Method 1) at: $searchUrl" -ForegroundColor Magenta }
+  $searchUrl = "$datamapApi/api/search/query?api-version=2023-09-01"
+  if ($DebugMode) { Write-Host "DEBUG: Searching for assets (DataMap API) at: $searchUrl" -ForegroundColor Magenta }
   
   $searchResults = Invoke-PvApi -Method POST -Url $searchUrl -Body $searchPayload -IgnoreErrors
   
   if ($searchResults -and $searchResults.value) {
     $allAssets += $searchResults.value
-    if ($DebugMode) { Write-Host "DEBUG: Method 1 found $($searchResults.value.Count) assets" -ForegroundColor Magenta }
+    Write-Host "    DataMap API found $($searchResults.value.Count) assets" -ForegroundColor Cyan
+    if ($DebugMode) { Write-Host "DEBUG: DataMap search successful" -ForegroundColor Magenta }
     
     # Handle pagination
     $nextLink = $searchResults.'@search.nextLink'
@@ -271,59 +273,63 @@ try {
       $moreResults = Invoke-PvApi -Method GET -Url $nextLink -IgnoreErrors
       if ($moreResults -and $moreResults.value) {
         $allAssets += $moreResults.value
+        Write-Host "    Found $($moreResults.value.Count) more assets (pagination)..." -ForegroundColor Cyan
       }
       $nextLink = $moreResults.'@search.nextLink'
     }
+  } else {
+    Write-Host "    DataMap API returned no results" -ForegroundColor Yellow
   }
 } catch {
-  if ($DebugMode) { Write-Warning "Method 1 search failed: $($_.Exception.Message)" }
+  Write-Warning "DataMap search failed: $($_.Exception.Message)"
+  if ($DebugMode) { Write-Host "DEBUG: Full error: $_" -ForegroundColor Magenta }
 }
 
-# Method 2: Try Browse API (alternative approach)
-try {
-  $browseUrl = "$catalogApi/api/browse?api-version=2023-09-01"
-  $browsePayload = @{
-    entityType = $null
-    path = $collectionName
-    limit = 1000
-  }
-  
-  if ($DebugMode) { Write-Host "DEBUG: Trying Browse API (Method 2)" -ForegroundColor Magenta }
-  
-  $browseResults = Invoke-PvApi -Method POST -Url $browseUrl -Body $browsePayload -IgnoreErrors
-  
-  if ($browseResults -and $browseResults.value) {
-    $existingGuids = $allAssets | ForEach-Object { $_.id }
-    foreach ($item in $browseResults.value) {
-      if ($item.id -and $item.id -notin $existingGuids) {
-        $allAssets += $item
+# Method 2: Try legacy Catalog Search API (fallback)
+if ($allAssets.Count -eq 0) {
+  try {
+    $legacySearchPayload = @{
+      keywords = "*"
+      filter = @{
+        collectionId = $collectionName
       }
+      limit = 1000
     }
-    if ($DebugMode) { Write-Host "DEBUG: Method 2 found additional items, total now: $($allAssets.Count)" -ForegroundColor Magenta }
+    
+    $legacySearchUrl = "$catalogApi/api/search/query?api-version=2023-09-01"
+    if ($DebugMode) { Write-Host "DEBUG: Trying legacy Catalog API" -ForegroundColor Magenta }
+    
+    $legacyResults = Invoke-PvApi -Method POST -Url $legacySearchUrl -Body $legacySearchPayload -IgnoreErrors
+    
+    if ($legacyResults -and $legacyResults.value) {
+      $allAssets += $legacyResults.value
+      Write-Host "    Legacy Catalog API found $($legacyResults.value.Count) assets" -ForegroundColor Cyan
+    }
+  } catch {
+    if ($DebugMode) { Write-Warning "Legacy Catalog search failed: $($_.Exception.Message)" }
   }
-} catch {
-  if ($DebugMode) { Write-Warning "Method 2 browse failed: $($_.Exception.Message)" }
 }
 
-# Method 3: Try getting entities by collection (Atlas API)
-try {
-  $atlasSearchUrl = "$catalogApi/api/atlas/v2/search/basic?collectionId=$collectionName&limit=1000"
-  if ($DebugMode) { Write-Host "DEBUG: Trying Atlas search (Method 3)" -ForegroundColor Magenta }
-  
-  $atlasResults = Invoke-PvApi -Method GET -Url $atlasSearchUrl -IgnoreErrors
-  
-  if ($atlasResults -and $atlasResults.entities) {
-    $existingGuids = $allAssets | ForEach-Object { $_.id }
-    foreach ($entity in $atlasResults.entities) {
-      $entityGuid = if ($entity.guid) { $entity.guid } else { $entity.id }
-      if ($entityGuid -and $entityGuid -notin $existingGuids) {
-        $allAssets += @{ id = $entityGuid; name = $entity.displayText }
+# Method 3: Try Atlas API with collection filter
+if ($allAssets.Count -eq 0) {
+  try {
+    $atlasSearchUrl = "$catalogApi/api/atlas/v2/search/basic?collectionId=$collectionName&limit=1000"
+    if ($DebugMode) { Write-Host "DEBUG: Trying Atlas API" -ForegroundColor Magenta }
+    
+    $atlasResults = Invoke-PvApi -Method GET -Url $atlasSearchUrl -IgnoreErrors
+    
+    if ($atlasResults -and $atlasResults.entities) {
+      foreach ($entity in $atlasResults.entities) {
+        $entityGuid = if ($entity.guid) { $entity.guid } else { $entity.id }
+        if ($entityGuid) {
+          $allAssets += @{ id = $entityGuid; name = $entity.displayText }
+        }
       }
+      Write-Host "    Atlas API found $($allAssets.Count) assets" -ForegroundColor Cyan
     }
-    if ($DebugMode) { Write-Host "DEBUG: Method 3 found additional items, total now: $($allAssets.Count)" -ForegroundColor Magenta }
+  } catch {
+    if ($DebugMode) { Write-Warning "Atlas search failed: $($_.Exception.Message)" }
   }
-} catch {
-  if ($DebugMode) { Write-Warning "Method 3 Atlas search failed: $($_.Exception.Message)" }
 }
 
 $totalAssets = $allAssets.Count
@@ -363,15 +369,22 @@ if ($totalAssets -gt 0) {
     Write-Host "   Asset deletion summary: $deletedCount deleted, $failedCount failed" -ForegroundColor $(if ($failedCount -eq 0) { "Green" } else { "Yellow" })
     
     # Wait longer for backend to process all deletions
-    Write-Host "   Waiting 10 seconds for backend to process asset deletions..."
-    Start-Sleep -Seconds 10
+    Write-Host "   Waiting 15 seconds for backend to fully process asset deletions..."
+    Start-Sleep -Seconds 15
   } else {
     Write-Warning "Assets found in collection. Cannot delete collection while it contains assets."
     Write-Host "Use -Force to attempt automatic asset deletion, or manually delete/move assets first." -ForegroundColor Yellow
     exit 5
   }
 } else {
-  Write-Host "    No assets found in collection" -ForegroundColor Green
+  Write-Host "    ⚠️  No assets detected via search APIs" -ForegroundColor Yellow
+  
+  # Even if no assets found, the collection might still have hidden/orphaned assets
+  # Try to delete anyway if Force is enabled, and handle the error gracefully
+  if ($Force) {
+    Write-Host "    Force mode enabled - will attempt collection deletion anyway..." -ForegroundColor Cyan
+    Write-Host "    (Assets may exist but not be indexed yet, or could be orphaned)" -ForegroundColor Gray
+  }
 }
 
 Write-Host ">>> Deleting collection '$friendlyName' ($collectionName) …" -ForegroundColor Cyan
@@ -390,27 +403,40 @@ try {
   Invoke-PvApi -Method DELETE -Url $deleteUrl -ExpectedStatus 200 | Out-Null
   Write-Host "🎉 SUCCESS: Collection '$friendlyName' deleted successfully!" -ForegroundColor Green
 } catch {
-  if ($_.Exception.Message -match "409" -or $_.Exception.Message -match '"code"\s*:\s*"Conflict"') {
-    Write-Warning "Delete failed with HTTP 409 (Conflict) — collection is still referenced."
+  if ($_.Exception.Message -match "409" -or $_.Exception.Message -match '"code"\s*:\s*"Conflict"' -or $_.Exception.Message -match "12011" -or $_.Exception.Message -match "referenced by assets") {
+    Write-Warning "Delete failed with HTTP 409 (Conflict) — collection is still referenced by assets."
     Write-Host "Details:" -ForegroundColor Yellow
     Write-Host $_.Exception.Message
     
     if ($Force) {
-      Write-Host "`n⚠️ FORCE MODE: Attempting additional cleanup strategies..." -ForegroundColor Yellow
+      Write-Host "`n⚠️ FORCE MODE: Collection still has asset references..." -ForegroundColor Yellow
+      Write-Host "   This usually means assets exist but weren't found by search APIs" -ForegroundColor Yellow
+      Write-Host "   Possible causes: indexing delays, orphaned assets, or lineage references" -ForegroundColor Yellow
       
-      Write-Host "   - Waiting 10 seconds for backend cleanup..."
-      Start-Sleep -Seconds 10
+      # Suggest using the dedicated batch removal script
+      Write-Host "`n💡 RECOMMENDED SOLUTION:" -ForegroundColor Cyan
+      Write-Host "   Use the dedicated batch removal script which handles this better:" -ForegroundColor White
+      Write-Host "   .\Remove-PurviewAsset-Batch.ps1 -AccountName '$AccountName' -CollectionName '$collectionName' -Mode BULK" -ForegroundColor Green
+      Write-Host "   Then retry this collection deletion script." -ForegroundColor White
+      
+      Write-Host "`n   Attempting one more retry with extended wait..." -ForegroundColor Yellow
+      Write-Host "   - Waiting 20 seconds for backend to finalize any pending deletions..."
+      Start-Sleep -Seconds 20
       
       try {
-        Write-Host "   - Retrying collection deletion..."
+        Write-Host "   - Final retry of collection deletion..."
         Invoke-PvApi -Method DELETE -Url "$acctApi/collections/$collectionName?api-version=2019-11-01-preview" -ExpectedStatus 200 | Out-Null
-        Write-Host "🎉 SUCCESS: Collection '$friendlyName' deleted on retry!" -ForegroundColor Green
+        Write-Host "🎉 SUCCESS: Collection '$friendlyName' deleted on final retry!" -ForegroundColor Green
         exit 0
       } catch {
-        Write-Warning "Force deletion still failed: $($_.Exception.Message)"
-        Write-Host "`n❌ FORCE DELETE FAILED" -ForegroundColor Red
-        Write-Host "The collection may have hidden dependencies that require manual intervention." -ForegroundColor Yellow
-        Write-Host "Try again in a few minutes, or check for assets/lineage still referencing this collection." -ForegroundColor Yellow
+        Write-Warning "Final deletion attempt failed: $($_.Exception.Message)"
+        Write-Host "`n❌ COLLECTION DELETION FAILED - ASSETS STILL REFERENCED" -ForegroundColor Red
+        Write-Host "`n📋 NEXT STEPS:" -ForegroundColor Cyan
+        Write-Host "   1. Run the batch asset removal script:" -ForegroundColor White
+        Write-Host "      .\Remove-PurviewAsset-Batch.ps1 -AccountName '$AccountName' -CollectionName '$collectionName' -Mode BULK" -ForegroundColor Green
+        Write-Host "   2. Wait for completion (may take time for large collections)" -ForegroundColor White
+        Write-Host "   3. Re-run this script to delete the empty collection" -ForegroundColor White
+        Write-Host "`n   Alternative: Check for lineage relationships or scan history that may be blocking deletion" -ForegroundColor Yellow
         exit 3
       }
     } else {
