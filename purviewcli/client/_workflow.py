@@ -9,7 +9,7 @@ from .endpoints import ENDPOINTS, format_endpoint, get_api_version_params
 class Workflow(Endpoint):
     def __init__(self):
         Endpoint.__init__(self)
-        self.app = 'workflow'
+        self.app = 'datagovernance'  # Use datagovernance for workflow endpoints
 
     # ========== Workflow Management ==========
     
@@ -17,8 +17,8 @@ class Workflow(Endpoint):
     def workflowListWorkflows(self, args):
         """List all workflows"""
         self.method = 'GET'
-        self.endpoint = ENDPOINTS['workflow']['list_workflows']
-        self.params = get_api_version_params('workflow')
+        self.endpoint = '/datagovernance/dataaccess/workflows'
+        self.params = {}
 
     @decorator
     def workflowCreateWorkflow(self, args):

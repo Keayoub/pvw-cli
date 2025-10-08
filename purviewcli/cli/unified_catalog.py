@@ -296,23 +296,29 @@ def list_data_products(domain_id, status, output_json):
             return
 
         table = Table(title="Data Products")
-        table.add_column("ID", style="cyan")
+        table.add_column("ID", style="cyan", no_wrap=True)
         table.add_column("Name", style="green")
-        table.add_column("Domain ID", style="blue")
+        table.add_column("Domain ID", style="blue", no_wrap=True)
         table.add_column("Status", style="yellow")
-        table.add_column("Description", style="white")
+        table.add_column("Description", style="white", max_width=50)
 
         for product in products:
+            # Get domain ID and handle "N/A" display
+            domain_id = product.get("domain") or product.get("domainId", "")
+            domain_display = domain_id if domain_id else "N/A"
+            
+            # Clean HTML tags from description
+            description = product.get("description", "")
+            import re
+            description = re.sub(r'<[^>]+>', '', description)
+            description = description.strip()
+            
             table.add_row(
                 product.get("id", "N/A"),
                 product.get("name", "N/A"),
-                product.get("domainId", "N/A"),
+                domain_display,
                 product.get("status", "N/A"),
-                (
-                    (product.get("description", "")[:50] + "...")
-                    if len(product.get("description", "")) > 50
-                    else product.get("description", "")
-                ),
+                (description[:50] + "...") if len(description) > 50 else description,
             )
 
         console.print(table)
@@ -339,6 +345,412 @@ def show(product_id):
 
         console.print(json.dumps(result, indent=2))
 
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@dataproduct.command()
+@click.option("--product-id", required=True, help="ID of the data product to update")
+@click.option("--name", required=False, help="Name of the data product")
+@click.option("--description", required=False, help="Description of the data product")
+@click.option("--domain-id", required=False, help="Governance domain ID")
+@click.option(
+    "--type",
+    required=False,
+    type=click.Choice(["Operational", "Analytical", "Reference"]),
+    help="Type of data product",
+)
+@click.option(
+    "--owner-id",
+    required=False,
+    help="Owner Entra ID (can be specified multiple times)",
+    multiple=True,
+)
+@click.option("--business-use", required=False, help="Business use description")
+@click.option(
+    "--update-frequency",
+    required=False,
+    type=click.Choice(["Daily", "Weekly", "Monthly", "Quarterly", "Annually"]),
+    help="Update frequency",
+)
+@click.option("--endorsed", is_flag=True, help="Mark as endorsed")
+@click.option(
+    "--status",
+    required=False,
+    type=click.Choice(["Draft", "Published", "Archived"]),
+    help="Status of the data product",
+)
+def update(
+    product_id, name, description, domain_id, type, owner_id, business_use, update_frequency, endorsed, status
+):
+    """Update an existing data product."""
+    try:
+        client = UnifiedCatalogClient()
+
+        # Build args dictionary - only include provided values
+        args = {"--product-id": [product_id]}
+        
+        if name:
+            args["--name"] = [name]
+        if description is not None:  # Allow empty string
+            args["--description"] = [description]
+        if domain_id:
+            args["--domain-id"] = [domain_id]
+        if type:
+            args["--type"] = [type]
+        if status:
+            args["--status"] = [status]
+        if business_use is not None:
+            args["--business-use"] = [business_use]
+        if update_frequency:
+            args["--update-frequency"] = [update_frequency]
+        if endorsed:
+            args["--endorsed"] = ["true"]
+        if owner_id:
+            args["--owner-id"] = list(owner_id)
+
+        result = client.update_data_product(args)
+
+        if not result:
+            console.print("[red]ERROR:[/red] No response received")
+            return
+        if isinstance(result, dict) and "error" in result:
+            console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
+            return
+
+        console.print(f"[green]✅ SUCCESS:[/green] Updated data product '{product_id}'")
+        console.print(json.dumps(result, indent=2))
+
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@dataproduct.command()
+@click.option("--product-id", required=True, help="ID of the data product to delete")
+@click.option("--yes", "-y", is_flag=True, help="Skip confirmation prompt")
+def delete(product_id, yes):
+    """Delete a data product."""
+    try:
+        if not yes:
+            confirm = click.confirm(
+                f"Are you sure you want to delete data product '{product_id}'?",
+                default=False
+            )
+            if not confirm:
+                console.print("[yellow]Deletion cancelled.[/yellow]")
+                return
+
+        client = UnifiedCatalogClient()
+        args = {"--product-id": [product_id]}
+        result = client.delete_data_product(args)
+
+        # DELETE operations may return empty response on success
+        if result is None or (isinstance(result, dict) and not result.get("error")):
+            console.print(f"[green]✅ SUCCESS:[/green] Deleted data product '{product_id}'")
+        elif isinstance(result, dict) and "error" in result:
+            console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
+        else:
+            console.print(f"[green]✅ SUCCESS:[/green] Deleted data product '{product_id}'")
+            if result:
+                console.print(json.dumps(result, indent=2))
+
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+# ========================================
+# GLOSSARIES
+# ========================================
+
+
+@uc.group()
+def glossary():
+    """Manage glossaries (for finding glossary GUIDs)."""
+    pass
+
+
+@glossary.command(name="list")
+@click.option("--json", "output_json", is_flag=True, help="Output results in JSON format")
+def list_glossaries(output_json):
+    """List all glossaries with their GUIDs."""
+    try:
+        from purviewcli.client._glossary import Glossary
+        
+        client = Glossary()
+        result = client.glossaryRead({})
+
+        # Normalize response
+        if isinstance(result, dict):
+            glossaries = result.get("value", []) or []
+        elif isinstance(result, (list, tuple)):
+            glossaries = result
+        else:
+            glossaries = []
+
+        if not glossaries:
+            console.print("[yellow]No glossaries found.[/yellow]")
+            return
+
+        # Output in JSON format if requested
+        if output_json:
+            _format_json_output(glossaries)
+            return
+
+        table = Table(title="Glossaries")
+        table.add_column("GUID", style="cyan", no_wrap=True)
+        table.add_column("Name", style="green")
+        table.add_column("Qualified Name", style="yellow")
+        table.add_column("Description", style="white")
+
+        for g in glossaries:
+            if not isinstance(g, dict):
+                continue
+            table.add_row(
+                g.get("guid", "N/A"),
+                g.get("name", "N/A"),
+                g.get("qualifiedName", "N/A"),
+                (g.get("shortDescription", "")[:60] + "...") if len(g.get("shortDescription", "")) > 60 else g.get("shortDescription", ""),
+            )
+
+        console.print(table)
+        console.print("\n[dim]Tip: Use the GUID with --glossary-guid option when listing/creating terms[/dim]")
+
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@glossary.command(name="create")
+@click.option("--name", required=True, help="Name of the glossary")
+@click.option("--description", required=False, default="", help="Description of the glossary")
+@click.option("--domain-id", required=False, help="Associate with governance domain ID (optional)")
+def create_glossary(name, description, domain_id):
+    """Create a new glossary."""
+    try:
+        from purviewcli.client._glossary import Glossary
+        
+        client = Glossary()
+        
+        # Build qualified name - include domain_id if provided
+        if domain_id:
+            qualified_name = f"{name}@{domain_id}"
+        else:
+            qualified_name = name
+        
+        payload = {
+            "name": name,
+            "qualifiedName": qualified_name,
+            "shortDescription": description,
+            "longDescription": description,
+        }
+        
+        result = client.glossaryCreate({"--payloadFile": payload})
+        
+        if not result:
+            console.print("[red]ERROR:[/red] No response received")
+            return
+        if isinstance(result, dict) and "error" in result:
+            console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
+            return
+        
+        guid = result.get("guid") if isinstance(result, dict) else None
+        console.print(f"[green]✅ SUCCESS:[/green] Created glossary '{name}'")
+        if guid:
+            console.print(f"[cyan]GUID:[/cyan] {guid}")
+            console.print(f"\n[dim]Use this GUID: --glossary-guid {guid}[/dim]")
+        console.print(json.dumps(result, indent=2))
+        
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@glossary.command(name="create-for-domains")
+def create_glossaries_for_domains():
+    """Create glossaries for all governance domains that don't have one."""
+    try:
+        from purviewcli.client._glossary import Glossary
+        
+        uc_client = UnifiedCatalogClient()
+        glossary_client = Glossary()
+        
+        # Get all domains
+        domains_result = uc_client.get_governance_domains({})
+        if isinstance(domains_result, dict):
+            domains = domains_result.get("value", [])
+        elif isinstance(domains_result, (list, tuple)):
+            domains = domains_result
+        else:
+            domains = []
+        
+        if not domains:
+            console.print("[yellow]No governance domains found.[/yellow]")
+            return
+        
+        # Get existing glossaries
+        glossaries_result = glossary_client.glossaryRead({})
+        if isinstance(glossaries_result, dict):
+            existing_glossaries = glossaries_result.get("value", [])
+        elif isinstance(glossaries_result, (list, tuple)):
+            existing_glossaries = glossaries_result
+        else:
+            existing_glossaries = []
+        
+        # Build set of domain IDs that already have glossaries (check qualifiedName)
+        existing_domain_ids = set()
+        for g in existing_glossaries:
+            if isinstance(g, dict):
+                qn = g.get("qualifiedName", "")
+                # Extract domain_id from qualifiedName if it contains @domain_id pattern
+                if "@" in qn:
+                    domain_id_part = qn.split("@")[-1]
+                    existing_domain_ids.add(domain_id_part)
+        
+        console.print(f"[cyan]Found {len(domains)} governance domains and {len(existing_glossaries)} existing glossaries[/cyan]\n")
+        
+        created_count = 0
+        for domain in domains:
+            if not isinstance(domain, dict):
+                continue
+            
+            domain_id = domain.get("id")
+            domain_name = domain.get("name")
+            
+            if not domain_id or not domain_name:
+                continue
+            
+            # Check if glossary already exists for this domain
+            if domain_id in existing_domain_ids:
+                console.print(f"[dim]⏭  Skipping {domain_name} - glossary already exists[/dim]")
+                continue
+            
+            # Create glossary for this domain
+            glossary_name = f"{domain_name} Glossary"
+            qualified_name = f"{glossary_name}@{domain_id}"
+            
+            payload = {
+                "name": glossary_name,
+                "qualifiedName": qualified_name,
+                "shortDescription": f"Glossary for {domain_name} domain",
+                "longDescription": f"This glossary contains business terms for the {domain_name} governance domain.",
+            }
+            
+            try:
+                result = glossary_client.glossaryCreate({"--payloadFile": payload})
+                guid = result.get("guid") if isinstance(result, dict) else None
+                
+                if guid:
+                    console.print(f"[green]✅ Created:[/green] {glossary_name} (GUID: {guid})")
+                    created_count += 1
+                else:
+                    console.print(f"[yellow]⚠  Created {glossary_name} but no GUID returned[/yellow]")
+                    
+            except Exception as e:
+                console.print(f"[red]❌ Failed to create {glossary_name}:[/red] {str(e)}")
+        
+        console.print(f"\n[cyan]Created {created_count} new glossaries[/cyan]")
+        console.print("[dim]Run 'pvw uc glossary list' to see all glossaries[/dim]")
+        
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@glossary.command(name="verify-links")
+def verify_glossary_links():
+    """Verify which domains have properly linked glossaries."""
+    try:
+        from purviewcli.client._glossary import Glossary
+        
+        uc_client = UnifiedCatalogClient()
+        glossary_client = Glossary()
+        
+        # Get all domains
+        domains_result = uc_client.get_governance_domains({})
+        if isinstance(domains_result, dict):
+            domains = domains_result.get("value", [])
+        elif isinstance(domains_result, (list, tuple)):
+            domains = domains_result
+        else:
+            domains = []
+        
+        # Get all glossaries
+        glossaries_result = glossary_client.glossaryRead({})
+        if isinstance(glossaries_result, dict):
+            glossaries = glossaries_result.get("value", [])
+        elif isinstance(glossaries_result, (list, tuple)):
+            glossaries = glossaries_result
+        else:
+            glossaries = []
+        
+        console.print(f"[bold cyan]Governance Domain → Glossary Link Verification[/bold cyan]\n")
+        
+        table = Table(title="Domain-Glossary Associations")
+        table.add_column("Domain Name", style="green")
+        table.add_column("Domain ID", style="cyan", no_wrap=True)
+        table.add_column("Linked Glossary", style="yellow")
+        table.add_column("Glossary GUID", style="magenta", no_wrap=True)
+        table.add_column("Status", style="white")
+        
+        # Build a map of domain_id -> glossary info
+        domain_glossary_map = {}
+        for g in glossaries:
+            if not isinstance(g, dict):
+                continue
+            qn = g.get("qualifiedName", "")
+            # Check if qualifiedName contains @domain_id pattern
+            if "@" in qn:
+                domain_id_part = qn.split("@")[-1]
+                domain_glossary_map[domain_id_part] = {
+                    "name": g.get("name"),
+                    "guid": g.get("guid"),
+                    "qualifiedName": qn,
+                }
+        
+        linked_count = 0
+        unlinked_count = 0
+        
+        for domain in domains:
+            if not isinstance(domain, dict):
+                continue
+            
+            domain_id = domain.get("id")
+            domain_name = domain.get("name", "N/A")
+            parent_id = domain.get("parentDomainId")
+            
+            # Skip if no domain_id
+            if not domain_id:
+                continue
+            
+            # Show if it's a nested domain
+            nested_indicator = " (nested)" if parent_id else ""
+            domain_display = f"{domain_name}{nested_indicator}"
+            
+            if domain_id in domain_glossary_map:
+                glossary_info = domain_glossary_map[domain_id]
+                table.add_row(
+                    domain_display,
+                    domain_id[:8] + "...",
+                    glossary_info["name"],
+                    glossary_info["guid"][:8] + "...",
+                    "[green]✅ Linked[/green]"
+                )
+                linked_count += 1
+            else:
+                table.add_row(
+                    domain_display,
+                    domain_id[:8] + "...",
+                    "[dim]No glossary[/dim]",
+                    "[dim]N/A[/dim]",
+                    "[yellow]⚠ Not Linked[/yellow]"
+                )
+                unlinked_count += 1
+        
+        console.print(table)
+        console.print(f"\n[cyan]Summary:[/cyan]")
+        console.print(f"  • Linked domains: [green]{linked_count}[/green]")
+        console.print(f"  • Unlinked domains: [yellow]{unlinked_count}[/yellow]")
+        
+        if unlinked_count > 0:
+            console.print(f"\n[dim]💡 Tip: Run 'pvw uc glossary create-for-domains' to create glossaries for unlinked domains[/dim]")
+        
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
 
@@ -377,10 +789,10 @@ def term():
     help="Owner Entra ID (can be specified multiple times)",
     multiple=True,
 )
-@click.option("--resource-name", required=False, help="Resource name for additional reading")
-@click.option("--resource-url", required=False, help="Resource URL for additional reading")
+@click.option("--resource-name", required=False, help="Resource name for additional reading (can be specified multiple times)", multiple=True)
+@click.option("--resource-url", required=False, help="Resource URL for additional reading (can be specified multiple times)", multiple=True)
 def create(name, description, domain_id, status, acronym, owner_id, resource_name, resource_url):
-    """Create a new glossary term."""
+    """Create a new Unified Catalog term (Governance Domain term)."""
     try:
         client = UnifiedCatalogClient()
 
@@ -393,12 +805,13 @@ def create(name, description, domain_id, status, acronym, owner_id, resource_nam
         }
 
         if acronym:
-            args["--acronyms"] = list(acronym)
+            args["--acronym"] = list(acronym)
         if owner_id:
             args["--owner-id"] = list(owner_id)
-        if resource_name and resource_url:
-            args["--resource-name"] = [resource_name]
-            args["--resource-url"] = [resource_url]
+        if resource_name:
+            args["--resource-name"] = list(resource_name)
+        if resource_url:
+            args["--resource-url"] = list(resource_url)
 
         result = client.create_term(args)
 
@@ -420,42 +833,29 @@ def create(name, description, domain_id, status, acronym, owner_id, resource_nam
 @click.option("--domain-id", required=True, help="Governance domain ID to list terms from")
 @click.option("--json", "output_json", is_flag=True, help="Output results in JSON format")
 def list_terms(domain_id, output_json):
-    """List all glossary terms in a governance domain."""
+    """List all Unified Catalog terms in a governance domain."""
     try:
         client = UnifiedCatalogClient()
         args = {"--governance-domain-id": [domain_id]}
         result = client.get_terms(args)
 
         if not result:
-            console.print("[yellow]No glossary terms found.[/yellow]")
+            console.print("[yellow]No terms found.[/yellow]")
             return
 
-        # The API returns glossaries with terms nested inside
-        # Extract all terms from all glossaries
+        # Unified Catalog API returns terms directly in value array
         all_terms = []
 
-        if isinstance(result, (list, tuple)):
-            glossaries = result
-        elif isinstance(result, dict):
-            glossaries = result.get("value", [])
+        if isinstance(result, dict):
+            all_terms = result.get("value", [])
+        elif isinstance(result, (list, tuple)):
+            all_terms = result
         else:
-            glossaries = []
-
-        # Extract terms from glossaries
-        for glossary in glossaries:
-            if isinstance(glossary, dict) and "terms" in glossary:
-                for term in glossary["terms"]:
-                    all_terms.append(
-                        {
-                            "id": term.get("termGuid"),
-                            "name": term.get("displayText"),
-                            "glossary": glossary.get("name"),
-                            "glossary_id": glossary.get("guid"),
-                        }
-                    )
+            console.print("[yellow]Unexpected response format.[/yellow]")
+            return
 
         if not all_terms:
-            console.print("[yellow]No glossary terms found.[/yellow]")
+            console.print("[yellow]No terms found.[/yellow]")
             return
 
         # Output in JSON format if requested
@@ -463,21 +863,30 @@ def list_terms(domain_id, output_json):
             _format_json_output(all_terms)
             return
 
-        table = Table(title="Glossary Terms")
-        table.add_column("Term ID", style="cyan")
+        table = Table(title="Unified Catalog Terms")
+        table.add_column("Term ID", style="cyan", no_wrap=False)
         table.add_column("Name", style="green")
-        table.add_column("Glossary", style="yellow")
-        table.add_column("Glossary ID", style="blue")
+        table.add_column("Status", style="yellow")
+        table.add_column("Description", style="white")
 
         for term in all_terms:
+            description = term.get("description", "")
+            # Strip HTML tags from description
+            import re
+            description = re.sub(r'<[^>]+>', '', description)
+            # Truncate long descriptions
+            if len(description) > 50:
+                description = description[:50] + "..."
+            
             table.add_row(
                 term.get("id", "N/A"),
                 term.get("name", "N/A"),
-                term.get("glossary", "N/A"),
-                term.get("glossary_id", "N/A"),
+                term.get("status", "N/A"),
+                description.strip(),
             )
 
         console.print(table)
+        console.print(f"\n[dim]Found {len(all_terms)} term(s)[/dim]")
 
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
@@ -485,7 +894,8 @@ def list_terms(domain_id, output_json):
 
 @term.command()
 @click.option("--term-id", required=True, help="ID of the glossary term")
-def show(term_id):
+@click.option("--json", "output_json", is_flag=True, help="Output results in JSON format")
+def show(term_id, output_json):
     """Show details of a glossary term."""
     try:
         client = UnifiedCatalogClient()
@@ -499,8 +909,66 @@ def show(term_id):
             console.print(f"[red]ERROR:[/red] {result.get('error', 'Term not found')}")
             return
 
-        console.print(json.dumps(result, indent=2))
+        if output_json:
+            _format_json_output(result)
+        else:
+            # Display key information in a readable format
+            if isinstance(result, dict):
+                console.print(f"[cyan]Term Name:[/cyan] {result.get('name', 'N/A')}")
+                console.print(f"[cyan]GUID:[/cyan] {result.get('guid', 'N/A')}")
+                console.print(f"[cyan]Status:[/cyan] {result.get('status', 'N/A')}")
+                console.print(f"[cyan]Qualified Name:[/cyan] {result.get('qualifiedName', 'N/A')}")
+                
+                # Show glossary info
+                anchor = result.get('anchor', {})
+                if anchor:
+                    console.print(f"[cyan]Glossary GUID:[/cyan] {anchor.get('glossaryGuid', 'N/A')}")
+                
+                # Show description
+                desc = result.get('shortDescription') or result.get('longDescription', '')
+                if desc:
+                    console.print(f"[cyan]Description:[/cyan] {desc}")
+                
+                # Show full JSON if needed
+                console.print(f"\n[dim]Full details (JSON):[/dim]")
+                console.print(json.dumps(result, indent=2))
+            else:
+                console.print(json.dumps(result, indent=2))
 
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@term.command()
+@click.option("--term-id", required=True, help="ID of the glossary term to delete")
+@click.option("--force", is_flag=True, help="Skip confirmation prompt")
+def delete(term_id, force):
+    """Delete a glossary term."""
+    try:
+        if not force:
+            # Show term details first
+            client = UnifiedCatalogClient()
+            term_info = client.get_term_by_id({"--term-id": [term_id]})
+            
+            if isinstance(term_info, dict) and term_info.get('name'):
+                console.print(f"[yellow]About to delete term:[/yellow]")
+                console.print(f"  Name: {term_info.get('name')}")
+                console.print(f"  GUID: {term_info.get('guid')}")
+                console.print(f"  Status: {term_info.get('status')}")
+            
+            confirm = click.confirm("Are you sure you want to delete this term?", default=False)
+            if not confirm:
+                console.print("[yellow]Deletion cancelled.[/yellow]")
+                return
+        
+        # Import glossary client to delete term
+        from purviewcli.client._glossary import Glossary
+        
+        gclient = Glossary()
+        result = gclient.glossaryDeleteTerm({"--termGuid": term_id})
+        
+        console.print(f"[green]✅ SUCCESS:[/green] Deleted term with ID: {term_id}")
+        
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
 
@@ -790,35 +1258,12 @@ def show(cde_id):
 
 
 # ========================================
-# HEALTH MANAGEMENT (Preview)
+# HEALTH MANAGEMENT - IMPLEMENTED! ✅
 # ========================================
 
-
-@uc.group()
-def health():
-    """Manage health controls and actions (preview)."""
-    pass
-
-
-@health.command(name="controls")
-def list_controls():
-    """List health controls (preview - not yet implemented)."""
-    console.print("[yellow]🚧 Health Controls are not yet implemented in the API[/yellow]")
-    console.print("This feature is coming soon to Microsoft Purview Unified Catalog")
-
-
-@health.command(name="actions")
-def list_actions():
-    """List health actions (preview - not yet implemented)."""
-    console.print("[yellow]🚧 Health Actions are not yet implemented in the API[/yellow]")
-    console.print("This feature is coming soon to Microsoft Purview Unified Catalog")
-
-
-@health.command(name="quality")
-def data_quality():
-    """Data quality management (not yet supported by API)."""
-    console.print("[yellow]🚧 Data Quality management is not yet supported by the API[/yellow]")
-    console.print("This feature requires complex API interactions not yet available")
+# Import and register health commands from dedicated module
+from purviewcli.cli.health import health as health_commands
+uc.add_command(health_commands, name="health")
 
 
 # ========================================

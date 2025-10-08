@@ -4,6 +4,8 @@ Implements comprehensive Unified Catalog functionality
 """
 
 from .endpoint import Endpoint, decorator, get_json, no_api_call_decorator
+import os
+import json
 
 
 class UnifiedCatalogClient(Endpoint):
@@ -72,12 +74,12 @@ class UnifiedCatalogClient(Endpoint):
     def get_data_products(self, args):
         """Get all data products."""
         self.method = "GET"
-        self.endpoint = "/datagovernance/catalog/dataProducts"
-        self.params = {}
-
+        self.endpoint = "/datagovernance/catalog/dataproducts"
+        
         # Add optional filters
-        if args.get("--domain-id"):
-            self.params["domainId"] = args["--domain-id"][0]
+        domain_id = args.get("--governance-domain-id", [""])[0] or args.get("--domain-id", [""])[0]
+        self.params = {"domainId": domain_id} if domain_id else {}
+        
         if args.get("--status"):
             self.params["status"] = args["--status"][0]
 
@@ -86,65 +88,110 @@ class UnifiedCatalogClient(Endpoint):
         """Get a data product by ID."""
         product_id = args.get("--product-id", [""])[0]
         self.method = "GET"
-        self.endpoint = f"/datagovernance/catalog/dataProducts/{product_id}"
+        self.endpoint = f"/datagovernance/catalog/dataproducts/{product_id}"
         self.params = {}
 
     @decorator
     def create_data_product(self, args):
         """Create a new data product."""
         self.method = "POST"
-        self.endpoint = "/datagovernance/catalog/dataProducts"
+        self.endpoint = "/datagovernance/catalog/dataproducts"
         
-        # Get domain ID from either parameter name (CLI uses --governance-domain-id)
+        # Get domain ID
         domain_id = args.get("--governance-domain-id", [""])[0] or args.get("--domain-id", [""])[0]
+        name = args.get("--name", [""])[0]
+        description = args.get("--description", [""])[0]
+        business_use = args.get("--business-use", [""])[0]
+        status = args.get("--status", ["Draft"])[0]
         
-        # Map CLI type values to API type values
-        type_mapping = {
-            "Operational": "Dataset",
-            "Analytical": "Dataset", 
-            "Reference": "MasterDataAndReferenceData"
-        }
-        cli_type = args.get("--type", ["Dataset"])[0]
-        api_type = type_mapping.get(cli_type, cli_type)  # Use mapping or pass through
+        # Type mapping for data products
+        dp_type = args.get("--type", ["Dataset"])[0]
         
-        # Build contacts field (required)
+        # Build contacts field
         owner_ids = args.get("--owner-id", [])
-        if not owner_ids:
-            # Default to current user if no owner specified
-            owner_ids = ["75d058e8-ac84-4d33-b01c-54a8d3cbbac1"]  # Current authenticated user
+        owners = []
+        if owner_ids:
+            for owner_id in owner_ids:
+                owners.append({"id": owner_id, "description": ""})
         
-        contacts = {
-            "owner": [{"id": owner_id, "description": "Owner"} for owner_id in owner_ids]
-        }
-        
-        self.payload = get_json(args, "--payloadFile") or {
-            "name": args.get("--name", [""])[0],
-            "description": args.get("--description", [""])[0],
+        payload = {
+            "name": name,
+            "description": description,
             "domain": domain_id,
-            "status": args.get("--status", ["Draft"])[0],
-            "type": api_type,
-            "contacts": contacts,
+            "type": dp_type,
+            "businessUse": business_use,
+            "status": status,
         }
+        
+        if owners:
+            payload["contacts"] = {"owner": owners}
+        
+        # Optional fields
+        if args.get("--audience"):
+            payload["audience"] = args["--audience"]
+        if args.get("--terms-of-use"):
+            payload["termsOfUse"] = args["--terms-of-use"]
+        if args.get("--documentation"):
+            payload["documentation"] = args["--documentation"]
+        if args.get("--update-frequency"):
+            payload["updateFrequency"] = args["--update-frequency"][0]
+        if args.get("--endorsed"):
+            payload["endorsed"] = args["--endorsed"][0]
+        
+        self.payload = payload
 
     @decorator
     def update_data_product(self, args):
-        """Update a data product."""
+        """Update a data product - fetches current state first, then applies updates."""
         product_id = args.get("--product-id", [""])[0]
+        
+        # First, get the current data product
+        get_args = {"--product-id": [product_id]}
+        current_product = self.get_data_product_by_id(get_args)
+        
+        if not current_product or (isinstance(current_product, dict) and current_product.get("error")):
+            raise ValueError(f"Failed to retrieve data product {product_id} for update")
+        
+        # Start with current product as base
+        payload = dict(current_product)
+        
+        # Update only the fields that were provided
+        if args.get("--name"):
+            payload["name"] = args.get("--name")[0]
+        if "--description" in args:
+            payload["description"] = args.get("--description")[0]
+        if args.get("--domain-id") or args.get("--governance-domain-id"):
+            payload["domain"] = args.get("--governance-domain-id", [""])[0] or args.get("--domain-id", [""])[0]
+        if args.get("--type"):
+            payload["type"] = args.get("--type")[0]
+        if args.get("--status"):
+            payload["status"] = args.get("--status")[0]
+        if "--business-use" in args:
+            payload["businessUse"] = args.get("--business-use")[0]
+        if args.get("--update-frequency"):
+            payload["updateFrequency"] = args.get("--update-frequency")[0]
+        if args.get("--endorsed"):
+            payload["endorsed"] = args.get("--endorsed")[0] == "true"
+        
+        # Handle owner updates
+        owner_ids = args.get("--owner-id", [])
+        if owner_ids:
+            owners = [{"id": owner_id, "description": "Owner"} for owner_id in owner_ids]
+            if "contacts" not in payload:
+                payload["contacts"] = {}
+            payload["contacts"]["owner"] = owners
+        
+        # Now perform the PUT request
         self.method = "PUT"
-        self.endpoint = f"/datagovernance/catalog/dataProducts/{product_id}"
-        self.payload = get_json(args, "--payloadFile") or {
-            "name": args.get("--name", [""])[0],
-            "description": args.get("--description", [""])[0],
-            "domainId": args.get("--domain-id", [""])[0],
-            "status": args.get("--status", [""])[0],
-        }
+        self.endpoint = f"/datagovernance/catalog/dataproducts/{product_id}"
+        self.payload = payload
 
     @decorator
     def delete_data_product(self, args):
         """Delete a data product."""
         product_id = args.get("--product-id", [""])[0]
         self.method = "DELETE"
-        self.endpoint = f"/datagovernance/catalog/dataProducts/{product_id}"
+        self.endpoint = f"/datagovernance/catalog/dataproducts/{product_id}"
         self.params = {}
 
     # ========================================
@@ -153,66 +200,346 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def get_terms(self, args):
-        """Get all glossary terms in a governance domain.""" 
+        """Get all Unified Catalog terms in a governance domain.
+        
+        Uses the Unified Catalog /terms endpoint which is separate from
+        Data Map glossary terms. These are business terms managed through
+        the Governance Domains interface.
+        """
         domain_id = args.get("--governance-domain-id", [""])[0]
+        
         self.method = "GET"
-        self.endpoint = "/catalog/api/atlas/v2/glossary"
-        self.params = {
-            "domainId": domain_id
-        } if domain_id else {}
+        
+        if domain_id:
+            # Use Unified Catalog terms API with domainId filter
+            self.endpoint = "/datagovernance/catalog/terms"
+            self.params = {"domainId": domain_id}
+        else:
+            # List all UC terms
+            self.endpoint = "/datagovernance/catalog/terms"
+            self.params = {}
+
+    # Keeping old Data Map glossary-based implementation for reference/fallback
+    def get_terms_from_glossary(self, args):
+        """Get glossary terms from Data Map API (Classic Types view).
+        
+        This is the OLD implementation that queries Data Map glossaries.
+        Use get_terms() for Unified Catalog (Governance Domain) terms.
+        """
+        domain_id = args.get("--governance-domain-id", [""])[0]
+
+        # If no domain provided, list all glossaries via the Glossary client
+        from ._glossary import Glossary
+
+        gclient = Glossary()
+
+        # Helper to normalize glossary list responses
+        def _normalize_glossary_list(resp):
+            if isinstance(resp, dict):
+                return resp.get("value", []) or []
+            elif isinstance(resp, (list, tuple)):
+                return resp
+            return []
+
+        try:
+            if not domain_id:
+                glossaries = gclient.glossaryRead({})
+                normalized = _normalize_glossary_list(glossaries)
+                if os.getenv("PURVIEWCLI_DEBUG"):
+                    try:
+                        print("[PURVIEWCLI DEBUG] get_terms returning (no domain_id):", json.dumps(normalized, default=str, indent=2))
+                    except Exception:
+                        print("[PURVIEWCLI DEBUG] get_terms returning (no domain_id): (could not serialize)")
+                return normalized
+
+            # 1) Get governance domain info to obtain a human-readable name
+            # Note: Nested domains may not be directly fetchable via /businessdomains/{id}
+            # If fetch fails, we'll match by domain_id in qualifiedName
+            domain_info = None
+            domain_name = None
+            try:
+                domain_info = self.get_governance_domain_by_id({"--domain-id": [domain_id]})
+                if isinstance(domain_info, dict):
+                    domain_name = domain_info.get("name") or domain_info.get("displayName") or domain_info.get("qualifiedName")
+            except Exception as e:
+                if os.getenv("PURVIEWCLI_DEBUG"):
+                    print(f"[PURVIEWCLI DEBUG] Could not fetch domain by ID (may be nested): {e}")
+                # Continue without domain_name; will match by domain_id in qualifiedName
+
+            # If explicit glossary GUID provided, fetch that glossary directly
+            explicit_guid_list = args.get("--glossary-guid")
+            if explicit_guid_list:
+                # Extract the GUID string from the list
+                explicit_guid = explicit_guid_list[0] if isinstance(explicit_guid_list, list) else explicit_guid_list
+                if os.getenv("PURVIEWCLI_DEBUG"):
+                    print(f"[PURVIEWCLI DEBUG] get_terms: Using explicit glossary GUID: {explicit_guid}")
+                # Pass as string, not list, to glossary client
+                detailed = gclient.glossaryReadDetailed({"--glossaryGuid": explicit_guid})
+                if isinstance(detailed, dict):
+                    return [{
+                        "guid": explicit_guid,
+                        "name": detailed.get("name") or detailed.get("qualifiedName"),
+                        "terms": detailed.get("terms") or [],
+                    }]
+                return []
+
+            # 2) List all glossaries and try to find ones that look associated
+            all_glossaries_resp = gclient.glossaryRead({})
+            all_glossaries = _normalize_glossary_list(all_glossaries_resp)
+
+            if os.getenv("PURVIEWCLI_DEBUG"):
+                try:
+                    print("[PURVIEWCLI DEBUG] get_terms: domain_id=", domain_id, "domain_name=", domain_name)
+                    print("[PURVIEWCLI DEBUG] all_glossaries:", json.dumps(all_glossaries, default=str, indent=2))
+                except Exception:
+                    print("[PURVIEWCLI DEBUG] get_terms: (could not serialize glossary list)")
+
+            matched = []
+            for g in all_glossaries:
+                if not isinstance(g, dict):
+                    continue
+                g_name = g.get("name") or g.get("qualifiedName") or ""
+                g_guid = g.get("guid") or g.get("id") or g.get("glossaryGuid")
+                qn = str(g.get("qualifiedName", ""))
+                
+                # For nested domains, look for domain_id in qualifiedName
+                # Pattern: "Domain Name@domain-id" or similar
+                if domain_id and domain_id in qn:
+                    matched.append((g_guid, g))
+                    continue
+                
+                # Match by exact name if we have domain_name
+                if domain_name and domain_name.lower() == str(g_name).lower():
+                    matched.append((g_guid, g))
+                    continue
+                    
+                # Match if domain_name appears in qualifiedName
+                if domain_name and domain_name.lower() in qn.lower():
+                    matched.append((g_guid, g))
+                    continue
+
+            # 3) For matched glossaries, fetch detailed glossary (which contains terms)
+            results = []
+            for guid, base_g in matched:
+                if not guid:
+                    continue
+                detailed = gclient.glossaryReadDetailed({"--glossaryGuid": [guid]})
+                # glossaryReadDetailed should return a dict representing the glossary
+                if isinstance(detailed, dict):
+                    # some endpoints return the glossary inside 'data' or as raw dict
+                    glossary_obj = detailed
+                else:
+                    glossary_obj = None
+
+                # Ensure 'terms' key exists and is a list of term objects
+                terms = []
+                if isinstance(glossary_obj, dict):
+                    terms = glossary_obj.get("terms") or []
+                results.append({
+                    "guid": guid,
+                    "name": base_g.get("name") or base_g.get("qualifiedName"),
+                    "terms": terms,
+                })
+
+            if os.getenv("PURVIEWCLI_DEBUG"):
+                try:
+                    print("[PURVIEWCLI DEBUG] get_terms matched results:", json.dumps(results, default=str, indent=2))
+                except Exception:
+                    print("[PURVIEWCLI DEBUG] get_terms matched results: (could not serialize)")
+            return results
+
+        except Exception as e:
+            # If anything fails, return an empty list rather than crashing
+            print(f"Warning: failed to list glossaries/terms for domain {domain_id}: {e}")
+            return []
 
     @decorator
     def get_term_by_id(self, args):
-        """Get a glossary term by ID."""
+        """Get a Unified Catalog term by ID."""
         term_id = args.get("--term-id", [""])[0]
         self.method = "GET"
-        self.endpoint = f"/catalog/api/atlas/v2/glossary/term/{term_id}"
+        self.endpoint = f"/datagovernance/catalog/terms/{term_id}"
         self.params = {}
 
     @decorator
     def create_term(self, args):
-        """Create a new glossary term."""
+        """Create a new Unified Catalog term (Governance Domain term)."""
         self.method = "POST"
-        self.endpoint = "/catalog/api/atlas/v2/glossary/term"
+        self.endpoint = "/datagovernance/catalog/terms"
 
-        # Build Atlas-compatible payload
+        # Build Unified Catalog term payload
         domain_id = args.get("--governance-domain-id", [""])[0]
+        name = args.get("--name", [""])[0]
+        description = args.get("--description", [""])[0]
+        status = args.get("--status", ["Draft"])[0]
         
-        # For now, we need to find a glossary in this domain
-        # This is a temporary solution - ideally CLI should accept glossary-id
-        glossary_guid = self._get_or_create_glossary_for_domain(domain_id)
+        # Get owner IDs if provided
+        owner_ids = args.get("--owner-id", [])
+        owners = []
+        if owner_ids:
+            for owner_id in owner_ids:
+                owners.append({"id": owner_id})
+        
+        # Get acronyms if provided
+        acronyms = args.get("--acronym", [])
+        
+        # Get resources if provided
+        resources = []
+        resource_names = args.get("--resource-name", [])
+        resource_urls = args.get("--resource-url", [])
+        if resource_names and resource_urls:
+            for i in range(min(len(resource_names), len(resource_urls))):
+                resources.append({
+                    "name": resource_names[i],
+                    "url": resource_urls[i]
+                })
         
         payload = {
-            "name": args.get("--name", [""])[0],
-            "shortDescription": args.get("--description", [""])[0],
-            "longDescription": args.get("--description", [""])[0],
-            "status": args.get("--status", ["ACTIVE"])[0].upper(),
-            "qualifiedName": f"{args.get('--name', [''])[0]}@{glossary_guid}",
+            "name": name,
+            "description": description,
+            "domain": domain_id,
+            "status": status,
         }
-
-        # Add optional fields
-        if args.get("--acronyms"):
-            payload["abbreviation"] = ",".join(args["--acronyms"])
         
-        # Associate with glossary
-        if glossary_guid:
-            payload["anchor"] = {"glossaryGuid": glossary_guid}
+        # Add optional fields
+        if owners:
+            payload["contacts"] = {"owner": owners}
+        if acronyms:
+            payload["acronyms"] = acronyms
+        if resources:
+            payload["resources"] = resources
 
         self.payload = payload
 
+    @decorator
+    def update_term(self, args):
+        """Update an existing Unified Catalog term."""
+        term_id = args.get("--term-id", [""])[0]
+        self.method = "PUT"
+        self.endpoint = f"/datagovernance/catalog/terms/{term_id}"
+
+        # Build payload with all fields (UC API requires full object)
+        domain_id = args.get("--governance-domain-id", [""])[0]
+        name = args.get("--name", [""])[0]
+        description = args.get("--description", [""])[0]
+        status = args.get("--status", ["Draft"])[0]
+        
+        # Get owner IDs if provided
+        owner_ids = args.get("--owner-id", [])
+        owners = []
+        if owner_ids:
+            for owner_id in owner_ids:
+                owners.append({"id": owner_id})
+        
+        # Get acronyms if provided
+        acronyms = args.get("--acronym", [])
+        
+        # Get resources if provided
+        resources = []
+        resource_names = args.get("--resource-name", [])
+        resource_urls = args.get("--resource-url", [])
+        if resource_names and resource_urls:
+            for i in range(min(len(resource_names), len(resource_urls))):
+                resources.append({
+                    "name": resource_names[i],
+                    "url": resource_urls[i]
+                })
+        
+        payload = {
+            "id": term_id,
+            "name": name,
+            "description": description,
+            "domain": domain_id,
+            "status": status,
+        }
+        
+        # Add optional fields
+        if owners:
+            payload["contacts"] = {"owner": owners}
+        if acronyms:
+            payload["acronyms"] = acronyms
+        if resources:
+            payload["resources"] = resources
+
+        self.payload = payload
+
+    @decorator
+    def delete_term(self, args):
+        """Delete a Unified Catalog term."""
+        term_id = args.get("--term-id", [""])[0]
+        self.method = "DELETE"
+        self.endpoint = f"/datagovernance/catalog/terms/{term_id}"
+        self.params = {}
+
     def _get_or_create_glossary_for_domain(self, domain_id):
         """Get or create a default glossary for the domain."""
-        # Temporary solution: Use the known glossary GUID we created earlier
-        # In a real implementation, this would query the API to find/create glossaries
-        
-        # For now, hardcode the glossary we know exists
-        if domain_id == "d4cdd762-eeca-4401-81b1-e93d8aff3fe4":
-            return "69a6aff1-e7d9-4cd4-8d8c-08d6fa95594d"  # HR Domain Glossary
-        
-        # For other domains, fall back to domain_id (will likely fail)
-        # TODO: Implement proper glossary lookup/creation
-        print(f"Warning: Using domain_id as glossary_id for domain {domain_id} - this may fail")
-        return domain_id
+        # Improved implementation:
+        # 1. Try to find existing glossaries associated with the domain using get_terms()
+        # 2. If none found, attempt to create a new glossary (using the Glossary client) and return its GUID
+        # 3. If anything fails, return None so callers don't send an invalid GUID to the API
+        if not domain_id:
+            return None
+
+        try:
+            # Try to list glossaries for this domain using the existing get_terms API
+            glossaries = self.get_terms({"--governance-domain-id": [domain_id]})
+
+            # Normalize response to a list of glossary objects
+            if isinstance(glossaries, dict):
+                candidates = glossaries.get("value", []) or []
+            elif isinstance(glossaries, (list, tuple)):
+                candidates = glossaries
+            else:
+                candidates = []
+
+            # If we have candidate glossaries, prefer the first valid GUID we find
+            for g in candidates:
+                if not isinstance(g, dict):
+                    continue
+                guid = g.get("guid") or g.get("glossaryGuid") or g.get("id")
+                if guid:
+                    return guid
+
+            # Nothing found -> attempt to create a glossary for this domain.
+            # Try to fetch domain metadata to produce a sensible glossary name.
+            # Note: For nested domains, the direct fetch may fail with 404
+            domain_info = None
+            domain_name = None
+            try:
+                domain_info = self.get_governance_domain_by_id({"--domain-id": [domain_id]})
+                if isinstance(domain_info, dict):
+                    domain_name = domain_info.get("name") or domain_info.get("displayName")
+            except Exception as e:
+                if os.getenv("PURVIEWCLI_DEBUG"):
+                    print(f"[PURVIEWCLI DEBUG] Could not fetch domain for glossary creation (may be nested): {e}")
+                # Continue without domain_name
+
+            glossary_name = domain_name or f"Glossary for domain {domain_id[:8]}"
+            payload = {
+                "name": glossary_name,
+                "qualifiedName": f"{glossary_name}@{domain_id}",
+                "shortDescription": f"Auto-created glossary for governance domain {domain_name or domain_id}",
+            }
+
+            # Import Glossary client lazily to avoid circular imports
+            from ._glossary import Glossary
+
+            gclient = Glossary()
+            created = gclient.glossaryCreate({"--payloadFile": payload})
+
+            # Attempt to extract GUID from the created response
+            if isinstance(created, dict):
+                new_guid = created.get("guid") or created.get("id") or created.get("glossaryGuid")
+                if new_guid:
+                    return new_guid
+
+        except Exception as e:
+            # Log a helpful warning and continue to safe fallback
+            print(f"Warning: error looking up/creating glossary for domain {domain_id}: {e}")
+
+        # Final safe fallback: return None so create_term doesn't send an invalid GUID
+        print(f"Warning: No glossary found or created for domain {domain_id}")
+        return None
 
     # ========================================
     # OBJECTIVES AND KEY RESULTS (OKRs)
@@ -223,8 +550,8 @@ class UnifiedCatalogClient(Endpoint):
         """Get all objectives in a governance domain."""
         domain_id = args.get("--governance-domain-id", [""])[0]
         self.method = "GET"
-        self.endpoint = f"/datagovernance/catalog/businessdomains/{domain_id}/objectives"
-        self.params = {}
+        self.endpoint = "/datagovernance/catalog/objectives"
+        self.params = {"domainId": domain_id} if domain_id else {}
 
     @decorator
     def get_objective_by_id(self, args):
@@ -240,18 +567,151 @@ class UnifiedCatalogClient(Endpoint):
         self.method = "POST"
         self.endpoint = "/datagovernance/catalog/objectives"
 
+        domain_id = args.get("--governance-domain-id", [""])[0]
+        definition = args.get("--definition", [""])[0]
+        status = args.get("--status", ["Draft"])[0]
+        
+        # Get owner IDs if provided
+        owner_ids = args.get("--owner-id", [])
+        owners = []
+        if owner_ids:
+            for owner_id in owner_ids:
+                owners.append({"id": owner_id})
+
         payload = {
-            "definition": args.get("--definition", [""])[0],
-            "governanceDomainId": args.get("--governance-domain-id", [""])[0],
-            "status": args.get("--status", ["Draft"])[0],
+            "domain": domain_id,
+            "definition": definition,
+            "status": status,
         }
 
-        if args.get("--owner-id"):
-            payload["ownerIds"] = args["--owner-id"]
+        if owners:
+            payload["contacts"] = {"owner": owners}
         if args.get("--target-date"):
             payload["targetDate"] = args["--target-date"][0]
 
         self.payload = payload
+
+    @decorator
+    def update_objective(self, args):
+        """Update an existing objective."""
+        objective_id = args.get("--objective-id", [""])[0]
+        self.method = "PUT"
+        self.endpoint = f"/datagovernance/catalog/objectives/{objective_id}"
+
+        domain_id = args.get("--governance-domain-id", [""])[0]
+        definition = args.get("--definition", [""])[0]
+        status = args.get("--status", ["Draft"])[0]
+        
+        # Get owner IDs if provided
+        owner_ids = args.get("--owner-id", [])
+        owners = []
+        if owner_ids:
+            for owner_id in owner_ids:
+                owners.append({"id": owner_id})
+
+        payload = {
+            "id": objective_id,
+            "domain": domain_id,
+            "definition": definition,
+            "status": status,
+        }
+
+        if owners:
+            payload["contacts"] = {"owner": owners}
+        if args.get("--target-date"):
+            payload["targetDate"] = args["--target-date"][0]
+
+        self.payload = payload
+
+    @decorator
+    def delete_objective(self, args):
+        """Delete an objective."""
+        objective_id = args.get("--objective-id", [""])[0]
+        self.method = "DELETE"
+        self.endpoint = f"/datagovernance/catalog/objectives/{objective_id}"
+        self.params = {}
+
+    # ========================================
+    # KEY RESULTS (Part of OKRs)
+    # ========================================
+
+    @decorator
+    def get_key_results(self, args):
+        """Get all key results for an objective."""
+        objective_id = args.get("--objective-id", [""])[0]
+        self.method = "GET"
+        self.endpoint = f"/datagovernance/catalog/objectives/{objective_id}/keyResults"
+        self.params = {}
+
+    @decorator
+    def get_key_result_by_id(self, args):
+        """Get a key result by ID."""
+        objective_id = args.get("--objective-id", [""])[0]
+        key_result_id = args.get("--key-result-id", [""])[0]
+        self.method = "GET"
+        self.endpoint = f"/datagovernance/catalog/objectives/{objective_id}/keyResults/{key_result_id}"
+        self.params = {}
+
+    @decorator
+    def create_key_result(self, args):
+        """Create a new key result."""
+        objective_id = args.get("--objective-id", [""])[0]
+        self.method = "POST"
+        self.endpoint = f"/datagovernance/catalog/objectives/{objective_id}/keyResults"
+
+        domain_id = args.get("--governance-domain-id", [""])[0]
+        progress = int(args.get("--progress", ["0"])[0])
+        goal = int(args.get("--goal", ["100"])[0])
+        max_value = int(args.get("--max", ["100"])[0])
+        status = args.get("--status", ["OnTrack"])[0]
+        definition = args.get("--definition", [""])[0]
+
+        payload = {
+            "progress": progress,
+            "goal": goal,
+            "max": max_value,
+            "status": status,
+            "definition": definition,
+            "domainId": domain_id,
+        }
+
+        self.payload = payload
+
+    @decorator
+    def update_key_result(self, args):
+        """Update an existing key result."""
+        objective_id = args.get("--objective-id", [""])[0]
+        key_result_id = args.get("--key-result-id", [""])[0]
+        self.method = "PUT"
+        self.endpoint = f"/datagovernance/catalog/objectives/{objective_id}/keyResults/{key_result_id}"
+
+        domain_id = args.get("--governance-domain-id", [""])[0]
+        progress = int(args.get("--progress", ["0"])[0])
+        goal = int(args.get("--goal", ["100"])[0])
+        max_value = int(args.get("--max", ["100"])[0])
+        status = args.get("--status", ["OnTrack"])[0]
+        definition = args.get("--definition", [""])[0]
+
+        payload = {
+            "id": key_result_id,
+            "progress": progress,
+            "goal": goal,
+            "max": max_value,
+            "status": status,
+            "definition": definition,
+            "domainId": domain_id,
+        }
+
+        self.payload = payload
+
+    @decorator
+    def delete_key_result(self, args):
+        """Delete a key result."""
+        objective_id = args.get("--objective-id", [""])[0]
+        key_result_id = args.get("--key-result-id", [""])[0]
+        self.method = "DELETE"
+        self.endpoint = f"/datagovernance/catalog/objectives/{objective_id}/keyResults/{key_result_id}"
+        self.params = {}
 
     # ========================================
     # CRITICAL DATA ELEMENTS (CDEs)
@@ -262,35 +722,190 @@ class UnifiedCatalogClient(Endpoint):
         """Get all critical data elements in a governance domain."""
         domain_id = args.get("--governance-domain-id", [""])[0]
         self.method = "GET"
-        self.endpoint = f"/datagovernance/catalog/businessdomains/{domain_id}/criticaldataelements"
-        self.params = {}
+        self.endpoint = "/datagovernance/catalog/criticalDataElements"
+        self.params = {"domainId": domain_id} if domain_id else {}
 
     @decorator
     def get_critical_data_element_by_id(self, args):
         """Get a critical data element by ID."""
         cde_id = args.get("--cde-id", [""])[0]
         self.method = "GET"
-        self.endpoint = f"/datagovernance/catalog/criticaldataelements/{cde_id}"
+        self.endpoint = f"/datagovernance/catalog/criticalDataElements/{cde_id}"
         self.params = {}
 
     @decorator
     def create_critical_data_element(self, args):
         """Create a new critical data element."""
         self.method = "POST"
-        self.endpoint = "/datagovernance/catalog/criticaldataelements"
+        self.endpoint = "/datagovernance/catalog/criticalDataElements"
+
+        domain_id = args.get("--governance-domain-id", [""])[0]
+        name = args.get("--name", [""])[0]
+        description = args.get("--description", [""])[0]
+        data_type = args.get("--data-type", ["Number"])[0]
+        status = args.get("--status", ["Draft"])[0]
+        
+        # Get owner IDs if provided
+        owner_ids = args.get("--owner-id", [])
+        owners = []
+        if owner_ids:
+            for owner_id in owner_ids:
+                owners.append({"id": owner_id})
 
         payload = {
-            "name": args.get("--name", [""])[0],
-            "description": args.get("--description", [""])[0],
-            "governanceDomainId": args.get("--governance-domain-id", [""])[0],
-            "dataType": args.get("--data-type", ["String"])[0],
-            "status": args.get("--status", ["Draft"])[0],
+            "name": name,
+            "description": description,
+            "domain": domain_id,
+            "dataType": data_type,
+            "status": status,
         }
 
-        if args.get("--owner-id"):
-            payload["ownerIds"] = args["--owner-id"]
+        if owners:
+            payload["contacts"] = {"owner": owners}
 
         self.payload = payload
+
+    @decorator
+    def update_critical_data_element(self, args):
+        """Update an existing critical data element."""
+        cde_id = args.get("--cde-id", [""])[0]
+        self.method = "PUT"
+        self.endpoint = f"/datagovernance/catalog/criticalDataElements/{cde_id}"
+
+        domain_id = args.get("--governance-domain-id", [""])[0]
+        name = args.get("--name", [""])[0]
+        description = args.get("--description", [""])[0]
+        data_type = args.get("--data-type", ["Number"])[0]
+        status = args.get("--status", ["Draft"])[0]
+        
+        # Get owner IDs if provided
+        owner_ids = args.get("--owner-id", [])
+        owners = []
+        if owner_ids:
+            for owner_id in owner_ids:
+                owners.append({"id": owner_id})
+
+        payload = {
+            "id": cde_id,
+            "name": name,
+            "description": description,
+            "domain": domain_id,
+            "dataType": data_type,
+            "status": status,
+        }
+
+        if owners:
+            payload["contacts"] = {"owner": owners}
+
+        self.payload = payload
+
+    @decorator
+    def delete_critical_data_element(self, args):
+        """Delete a critical data element."""
+        cde_id = args.get("--cde-id", [""])[0]
+        self.method = "DELETE"
+        self.endpoint = f"/datagovernance/catalog/criticalDataElements/{cde_id}"
+        self.params = {}
+
+    # ========================================
+    # RELATIONSHIPS
+    # ========================================
+    
+    @decorator
+    def get_relationships(self, args):
+        """Get all relationships for an entity (term, data product, or CDE).
+        
+        Supported entity types for filtering:
+        - CustomMetadata: Custom attributes attached to the entity
+        - DataAsset: Data assets (tables, columns) linked to the entity
+        - DataProduct: Data products related to the entity
+        - CriticalDataColumn: Critical data columns related to the entity
+        - CriticalDataElement: Critical data elements related to the entity
+        - Term: Other terms related to this entity
+        """
+        entity_type = args.get("--entity-type", [""])[0]  # Term, DataProduct, CriticalDataElement
+        entity_id = args.get("--entity-id", [""])[0]
+        filter_type = args.get("--filter-type", [""])[0]  # Optional: CustomMetadata, DataAsset, DataProduct, etc.
+        
+        # Map entity type to endpoint
+        endpoint_map = {
+            "Term": "terms",
+            "DataProduct": "dataproducts", 
+            "CriticalDataElement": "criticalDataElements",
+        }
+        
+        endpoint_base = endpoint_map.get(entity_type)
+        if not endpoint_base:
+            raise ValueError(f"Invalid entity type: {entity_type}. Must be Term, DataProduct, or CriticalDataElement")
+        
+        self.method = "GET"
+        self.endpoint = f"/datagovernance/catalog/{endpoint_base}/{entity_id}/relationships"
+        
+        # Add optional entity type filter
+        if filter_type:
+            valid_filters = ["CustomMetadata", "DataAsset", "DataProduct", "CriticalDataColumn", "CriticalDataElement", "Term"]
+            if filter_type not in valid_filters:
+                raise ValueError(f"Invalid filter type: {filter_type}. Must be one of: {', '.join(valid_filters)}")
+            self.params = {"entityType": filter_type}
+        else:
+            self.params = {}
+
+    @decorator
+    def create_relationship(self, args):
+        """Create a relationship between entities (terms, data products, CDEs)."""
+        entity_type = args.get("--entity-type", [""])[0]  # Term, DataProduct, CriticalDataElement
+        entity_id = args.get("--entity-id", [""])[0]
+        target_entity_id = args.get("--target-entity-id", [""])[0]
+        relationship_type = args.get("--relationship-type", ["Related"])[0]  # Synonym, Related
+        description = args.get("--description", [""])[0]
+        
+        # Map entity type to endpoint
+        endpoint_map = {
+            "Term": "terms",
+            "DataProduct": "dataproducts",
+            "CriticalDataElement": "criticalDataElements",
+        }
+        
+        endpoint_base = endpoint_map.get(entity_type)
+        if not endpoint_base:
+            raise ValueError(f"Invalid entity type: {entity_type}. Must be Term, DataProduct, or CriticalDataElement")
+        
+        self.method = "POST"
+        self.endpoint = f"/datagovernance/catalog/{endpoint_base}/{entity_id}/relationships"
+        self.params = {"entityType": entity_type}
+        
+        self.payload = {
+            "entityId": target_entity_id,
+            "relationshipType": relationship_type,
+            "description": description,
+        }
+
+    @decorator
+    def delete_relationship(self, args):
+        """Delete a relationship between entities."""
+        entity_type = args.get("--entity-type", [""])[0]
+        entity_id = args.get("--entity-id", [""])[0]
+        target_entity_id = args.get("--target-entity-id", [""])[0]
+        relationship_type = args.get("--relationship-type", ["Related"])[0]
+        
+        # Map entity type to endpoint
+        endpoint_map = {
+            "Term": "terms",
+            "DataProduct": "dataproducts",
+            "CriticalDataElement": "criticalDataElements",
+        }
+        
+        endpoint_base = endpoint_map.get(entity_type)
+        if not endpoint_base:
+            raise ValueError(f"Invalid entity type: {entity_type}")
+        
+        self.method = "DELETE"
+        self.endpoint = f"/datagovernance/catalog/{endpoint_base}/{entity_id}/relationships"
+        self.params = {
+            "entityId": target_entity_id,
+            "entityType": entity_type,
+            "relationshipType": relationship_type,
+        }
 
     # ========================================
     # UTILITY METHODS
@@ -305,11 +920,16 @@ Microsoft Purview Unified Catalog Client
 Available Operations:
 - Governance Domains: list, get, create, update, delete
 - Data Products: list, get, create, update, delete
-- Glossary Terms: list, get, create
-- Objectives (OKRs): list, get, create  
-- Critical Data Elements: list, get, create
+- Terms: list, get, create, update, delete
+- Objectives (OKRs): list, get, create, update, delete
+- Key Results: list, get, create, update, delete
+- Critical Data Elements: list, get, create, update, delete
+- Relationships: create, delete (between terms, data products, CDEs)
 
 Use --payloadFile to provide JSON payload for create/update operations.
 Use individual flags like --name, --description for simple operations.
+
+Note: This client uses the Unified Catalog API (/datagovernance/catalog/*)
+which is separate from the Data Map API (/catalog/api/atlas/*).
 """
         return {"message": help_text}

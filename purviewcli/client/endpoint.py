@@ -37,12 +37,33 @@ def get_data(http_dict):
         client = SyncPurviewClient(config)
 
         # Make the request
+        # If debug enabled via PURVIEWCLI_DEBUG env var, print helpful diagnostics
+        debug = os.getenv("PURVIEWCLI_DEBUG")
+        if debug:
+            try:
+                base_info = {
+                    "app": http_dict.get("app"),
+                    "method": http_dict.get("method", "GET"),
+                    "endpoint": http_dict.get("endpoint", "/"),
+                    "params": http_dict.get("params"),
+                    "payload": http_dict.get("payload"),
+                }
+                print("[PURVIEWCLI DEBUG] Request:", json.dumps(base_info, default=str, indent=2))
+            except Exception:
+                print("[PURVIEWCLI DEBUG] Request: (could not serialize request info)")
+
         result = client.make_request(
             method=http_dict.get("method", "GET"),
             endpoint=http_dict.get("endpoint", "/"),
             params=http_dict.get("params"),
             json=http_dict.get("payload"),
         )
+
+        if debug:
+            try:
+                print("[PURVIEWCLI DEBUG] Response:", json.dumps(result, default=str, indent=2))
+            except Exception:
+                print("[PURVIEWCLI DEBUG] Response: (could not serialize response)")
 
         # The synchronous client returns a wrapper dict like
         # {"status": "success", "data": <json>, "status_code": 200}

@@ -113,8 +113,13 @@ class SyncPurviewClient:
     def make_request(self, method: str, endpoint: str, **kwargs) -> Dict:
         """Make actual HTTP request to Microsoft Purview"""
         try:
-            # Determine if this is a Unified Catalog request
-            is_unified_catalog = endpoint.startswith('/datagovernance/catalog')
+            # Determine if this is a Unified Catalog / Data Map (Atlas) request
+            # Several endpoints use '/catalog' or '/datamap' prefixes (Atlas/DataMap APIs)
+            is_unified_catalog = (
+                endpoint.startswith('/datagovernance/catalog')
+                or endpoint.startswith('/catalog')
+                or endpoint.startswith('/datamap')
+            )
             
             # Get the appropriate authentication token and base URL
             if is_unified_catalog:
