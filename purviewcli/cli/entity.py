@@ -168,6 +168,40 @@ def bulk_create(ctx, payload_file):
         console.print(f"[red]✗ Error executing entity bulk-create: {str(e)}[/red]")
 
 
+@entity.command(name="bulk-update")
+@click.option(
+    "--payload-file",
+    required=True,
+    type=click.Path(exists=True),
+    help="File path to a valid JSON document containing entities to update/create (same shape as bulk-create).",
+)
+@click.pass_context
+def bulk_update(ctx, payload_file):
+    """Bulk update/create entities from a JSON payload file (uses qualifiedName to match existing entities)."""
+    try:
+        if ctx.obj.get("mock"):
+            console.print("[yellow]🎭 Mock: entity bulk-update command[/yellow]")
+            console.print(f"[dim]Payload File: {payload_file}[/dim]")
+            console.print("[green]✓ Mock entity bulk-update completed successfully[/green]")
+            return
+
+        args = {"--payloadFile": payload_file}
+
+        from purviewcli.client._entity import Entity
+
+        entity_client = Entity()
+        result = entity_client.entityBulkCreateOrUpdate(args)
+
+        if result:
+            console.print("[green]✓ Entity bulk-update completed successfully[/green]")
+            console.print(json.dumps(result, indent=2))
+        else:
+            console.print("[yellow]⚠ Entity bulk-update completed with no result[/yellow]")
+
+    except Exception as e:
+        console.print(f"[red]✗ Error executing entity bulk-update: {str(e)}[/red]")
+
+
 # === BULK OPERATIONS ===
 
 
