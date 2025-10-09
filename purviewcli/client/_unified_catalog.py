@@ -39,12 +39,22 @@ class UnifiedCatalogClient(Endpoint):
         """Create a new governance domain."""
         self.method = "POST"
         self.endpoint = "/datagovernance/catalog/businessdomains"
-        self.payload = get_json(args, "--payloadFile") or {
-            "name": args.get("--name", [""])[0],
-            "description": args.get("--description", [""])[0],
-            "type": args.get("--type", ["FunctionalUnit"])[0],
-            "status": args.get("--status", ["Draft"])[0],
-        }
+        # Allow payload file to fully control creation; otherwise build payload from flags
+        payload = get_json(args, "--payloadFile")
+        if not payload:
+            payload = {
+                "name": args.get("--name", [""])[0],
+                "description": args.get("--description", [""])[0],
+                "type": args.get("--type", ["FunctionalUnit"])[0],
+                "status": args.get("--status", ["Draft"])[0],
+            }
+            # Support parent domain ID passed via CLI as --parent-domain-id
+            parent_id = args.get("--parent-domain-id", [""])[0]
+            if parent_id:
+                payload["parentId"] = parent_id
+
+        # If payload file contains parentId or parentDomainId, keep it as-is
+        self.payload = payload
 
     @decorator
     def update_governance_domain(self, args):
@@ -411,57 +421,102 @@ class UnifiedCatalogClient(Endpoint):
 
         self.payload = payload
 
-    @decorator
     def update_term(self, args):
-        """Update an existing Unified Catalog term."""
+        """Update an existing Unified Catalog term (supports partial updates)."""
+        from purviewcli.client.endpoint import get_data
+        
         term_id = args.get("--term-id", [""])[0]
-        self.method = "PUT"
-        self.endpoint = f"/datagovernance/catalog/terms/{term_id}"
-
-        # Build payload with all fields (UC API requires full object)
-        domain_id = args.get("--governance-domain-id", [""])[0]
-        name = args.get("--name", [""])[0]
-        description = args.get("--description", [""])[0]
-        status = args.get("--status", ["Draft"])[0]
         
-        # Get owner IDs if provided
-        owner_ids = args.get("--owner-id", [])
-        owners = []
-        if owner_ids:
-            for owner_id in owner_ids:
-                owners.append({"id": owner_id})
+        # First, fetch the existing term to get current values
+        fetch_client = UnifiedCatalogClient()
+        existing_term = fetch_client.get_term_by_id({"--term-id": [term_id]})
         
-        # Get acronyms if provided
-        acronyms = args.get("--acronym", [])
+        if not existing_term or (isinstance(existing_term, dict) and existing_term.get("error")):
+            return {"error": f"Could not fetch existing term {term_id}"}
         
-        # Get resources if provided
-        resources = []
+        # Start with existing term data
+        payload = {
+            "id": term_id,
+            "name": existing_term.get("name", ""),
+            "description": existing_term.get("description", ""),
+            "domain": existing_term.get("domain", ""),
+            "status": existing_term.get("status", "Draft"),
+        }
+        
+        # Update with provided values (only if explicitly provided)
+        if args.get("--name"):
+            payload["name"] = args["--name"][0]
+        if "--description" in args:  # Allow empty string
+            payload["description"] = args.get("--description", [""])[0]
+        if args.get("--governance-domain-id"):
+            payload["domain"] = args["--governance-domain-id"][0]
+        if args.get("--status"):
+            payload["status"] = args["--status"][0]
+        
+        # Handle owners - replace or add to existing
+        contacts = existing_term.get("contacts") or {}
+        existing_owners = contacts.get("owner", []) if isinstance(contacts, dict) else []
+        if args.get("--owner-id"):
+            # Replace owners
+            owners = [{"id": oid} for oid in args["--owner-id"]]
+            payload["contacts"] = {"owner": owners}
+        elif args.get("--add-owner-id"):
+            # Add to existing owners
+            existing_owner_ids = set()
+            if isinstance(existing_owners, list):
+                for o in existing_owners:
+                    if isinstance(o, dict) and o.get("id"):
+                        existing_owner_ids.add(o.get("id"))
+            new_owner_ids = args["--add-owner-id"]
+            combined_owner_ids = existing_owner_ids.union(set(new_owner_ids))
+            owners = [{"id": oid} for oid in combined_owner_ids]
+            payload["contacts"] = {"owner": owners}
+        elif existing_owners:
+            # Keep existing owners
+            payload["contacts"] = {"owner": existing_owners}
+        
+        # Handle acronyms - replace or add to existing
+        existing_acronyms = existing_term.get("acronyms", []) or []
+        if args.get("--acronym"):
+            # Replace acronyms
+            payload["acronyms"] = list(args["--acronym"])
+        elif args.get("--add-acronym"):
+            # Add to existing acronyms
+            combined_acronyms = list(set(existing_acronyms + list(args["--add-acronym"])))
+            payload["acronyms"] = combined_acronyms
+        elif existing_acronyms:
+            # Keep existing acronyms
+            payload["acronyms"] = existing_acronyms
+        
+        # Handle resources - replace with new ones if provided
+        existing_resources = existing_term.get("resources", []) or []
         resource_names = args.get("--resource-name", [])
         resource_urls = args.get("--resource-url", [])
         if resource_names and resource_urls:
+            # Replace resources
+            resources = []
             for i in range(min(len(resource_names), len(resource_urls))):
                 resources.append({
                     "name": resource_names[i],
                     "url": resource_urls[i]
                 })
-        
-        payload = {
-            "id": term_id,
-            "name": name,
-            "description": description,
-            "domain": domain_id,
-            "status": status,
+            payload["resources"] = resources
+        elif existing_resources:
+            # Keep existing resources
+            payload["resources"] = existing_resources
+
+        # Now make the actual PUT request
+        http_dict = {
+            "app": "datagovernance",
+            "method": "PUT",
+            "endpoint": f"/datagovernance/catalog/terms/{term_id}",
+            "params": {},
+            "payload": payload,
+            "files": None,
+            "headers": {},
         }
         
-        # Add optional fields
-        if owners:
-            payload["contacts"] = {"owner": owners}
-        if acronyms:
-            payload["acronyms"] = acronyms
-        if resources:
-            payload["resources"] = resources
-
-        self.payload = payload
+        return get_data(http_dict)
 
     @decorator
     def delete_term(self, args):
