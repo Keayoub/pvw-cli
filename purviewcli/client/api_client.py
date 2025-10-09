@@ -5,7 +5,10 @@ Supports the latest Microsoft Purview REST API specifications with comprehensive
 
 import json
 import asyncio
-import aiohttp
+try:
+    import aiohttp
+except Exception:
+    aiohttp = None
 import pandas as pd
 from typing import Dict, List, Optional, Union, Any
 from dataclasses import dataclass
@@ -73,6 +76,11 @@ class PurviewClient:
 
     async def _initialize_session(self):
         """Initialize HTTP session and authentication"""
+        if aiohttp is None:
+            raise RuntimeError(
+                "The 'aiohttp' package is required for Purview async operations. "
+                "Install it in your environment (e.g. '.venv\\Scripts\\pip.exe install aiohttp' or 'pip install aiohttp')."
+            )
         self._credential = DefaultAzureCredential()
 
         try:

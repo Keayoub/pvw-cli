@@ -51,8 +51,7 @@ def domain():
     "--type",
     required=False,
     default="FunctionalUnit",
-    type=click.Choice(["FunctionalUnit", "BusinessUnit", "Department"]),
-    help="Type of governance domain",
+    help="Type of governance domain (default: FunctionalUnit). Note: UC API currently only accepts 'FunctionalUnit'.",
 )
 @click.option(
     "--owner-id",
@@ -67,19 +66,46 @@ def domain():
     type=click.Choice(["Draft", "Published", "Archived"]),
     help="Status of the governance domain",
 )
-def create(name, description, type, owner_id, status):
+@click.option(
+    "--parent-id",
+    required=False,
+    help="Parent governance domain ID (create as subdomain under this domain)",
+)
+@click.option(
+    "--payload-file",
+    required=False,
+    type=click.Path(exists=True),
+    help="Optional JSON payload file to use for creating the domain (overrides flags if provided)",
+)
+def create(name, description, type, owner_id, status, parent_id, payload_file):
     """Create a new governance domain."""
     try:
         client = UnifiedCatalogClient()
 
         # Build args dictionary in Purview CLI format
-        args = {
-            "--name": [name],
-            "--description": [description],
-            "--type": [type],
-            "--status": [status],
-        }
+        # If payload-file is provided we will let the client read the file directly
+        # otherwise build args from individual flags.
+        args = {}
+        # Note: click will pass None for owner_id if not provided, but multiple=True returns ()
+        # We'll only include values if payload-file not used.
+        if locals().get('payload_file'):
+            args = {"--payloadFile": locals().get('payload_file')}
+        else:
+            args = {
+                "--name": [name],
+                "--description": [description],
+                "--type": [type],
+                "--status": [status],
+            }
+            if owner_id:
+                args["--owner-id"] = list(owner_id)
+            # include parent id if provided
+            parent_id = locals().get('parent_id')
+            if parent_id:
+                # use a consistent arg name for client lookup
+                args["--parent-domain-id"] = [parent_id]
 
+        # Call the client to create the governance domain
         result = client.create_governance_domain(args)
 
         if not result:
@@ -969,6 +995,84 @@ def delete(term_id, force):
         
         console.print(f"[green]✅ SUCCESS:[/green] Deleted term with ID: {term_id}")
         
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@term.command()
+@click.option("--term-id", required=True, help="ID of the glossary term to update")
+@click.option("--name", required=False, help="Name of the glossary term")
+@click.option("--description", required=False, help="Rich text description of the term")
+@click.option("--domain-id", required=False, help="Governance domain ID")
+@click.option(
+    "--status",
+    required=False,
+    type=click.Choice(["Draft", "Published", "Archived"]),
+    help="Status of the term",
+)
+@click.option(
+    "--acronym",
+    required=False,
+    help="Acronyms for the term (can be specified multiple times, replaces existing)",
+    multiple=True,
+)
+@click.option(
+    "--owner-id",
+    required=False,
+    help="Owner Entra ID (can be specified multiple times, replaces existing)",
+    multiple=True,
+)
+@click.option("--resource-name", required=False, help="Resource name for additional reading (can be specified multiple times, replaces existing)", multiple=True)
+@click.option("--resource-url", required=False, help="Resource URL for additional reading (can be specified multiple times, replaces existing)", multiple=True)
+@click.option("--add-acronym", required=False, help="Add acronym to existing ones (can be specified multiple times)", multiple=True)
+@click.option("--add-owner-id", required=False, help="Add owner to existing ones (can be specified multiple times)", multiple=True)
+def update(term_id, name, description, domain_id, status, acronym, owner_id, resource_name, resource_url, add_acronym, add_owner_id):
+    """Update an existing Unified Catalog term."""
+    try:
+        client = UnifiedCatalogClient()
+
+        # Build args dictionary - only include provided values
+        args = {"--term-id": [term_id]}
+        
+        if name:
+            args["--name"] = [name]
+        if description is not None:  # Allow empty string
+            args["--description"] = [description]
+        if domain_id:
+            args["--governance-domain-id"] = [domain_id]
+        if status:
+            args["--status"] = [status]
+        
+        # Handle acronyms - either replace or add
+        if acronym:
+            args["--acronym"] = list(acronym)
+        elif add_acronym:
+            args["--add-acronym"] = list(add_acronym)
+        
+        # Handle owners - either replace or add
+        if owner_id:
+            args["--owner-id"] = list(owner_id)
+        elif add_owner_id:
+            args["--add-owner-id"] = list(add_owner_id)
+        
+        # Handle resources
+        if resource_name:
+            args["--resource-name"] = list(resource_name)
+        if resource_url:
+            args["--resource-url"] = list(resource_url)
+
+        result = client.update_term(args)
+
+        if not result:
+            console.print("[red]ERROR:[/red] No response received")
+            return
+        if isinstance(result, dict) and "error" in result:
+            console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
+            return
+
+        console.print(f"[green]✅ SUCCESS:[/green] Updated glossary term '{term_id}'")
+        console.print(json.dumps(result, indent=2))
+
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
 
