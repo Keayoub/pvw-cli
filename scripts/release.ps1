@@ -104,7 +104,6 @@ Set-Content -Path $pyproject -Value $newPy -Encoding utf8
 
 Write-Info "Updating purviewcli/__init__.py..."
 # Read file as lines and replace the __version__ line or insert at top if missing
-$initLines = Get-Content -Path $initFile -Raw -Encoding UTF8 -ErrorAction Stop -Delimiter "`n" | Out-String
 $lines = (Get-Content -Path $initFile -Encoding UTF8)
 $found = $false
 for ($i = 0; $i -lt $lines.Count; $i++) {
@@ -128,6 +127,28 @@ if (Test-Path $readme) {
     $r = $readmeText -replace [regex]::Escape("v$oldVersion"), "v$NewVersion"
     $r = $r -replace [regex]::Escape("PVW CLI v$oldVersion"), "PVW CLI v$NewVersion"
     Set-Content -NoNewline -Path $readme -Value $r
+}
+
+# Verify package builds before committing
+Write-Info "Verifying package can be built before committing..."
+$buildScriptPS = Join-Path $repoRoot 'scripts' 'build_pypi.ps1'
+if (Test-Path $buildScriptPS) {
+  Write-Info "Running build verification script: $buildScriptPS (no upload)"
+  # Prefer pwsh if available, otherwise invoke using the current PowerShell
+  $pwshCmd = Get-Command pwsh -ErrorAction SilentlyContinue
+  if ($pwshCmd) {
+    & $pwshCmd.Source -NoProfile -ExecutionPolicy Bypass -File $buildScriptPS
+  } else {
+    # already in PowerShell; run script directly
+    & $buildScriptPS
+  }
+  if ($LASTEXITCODE -ne 0) {
+    Write-Err "Build verification failed. Aborting release. See build output above for details."
+    exit 14
+  }
+  Write-Info "Build verification succeeded. Proceeding to commit and tagging."
+} else {
+  Write-Warn "Build verification script not found at $buildScriptPS - skipping build verification."
 }
 
 Write-Info "Staging changes..."
@@ -154,14 +175,27 @@ if ($Push) {
 }
 
 if ($Build) {
+  # Prefer PowerShell build script (build_pypi.ps1); fall back to batch if missing
+  $buildScriptPS = Join-Path $repoRoot 'scripts' 'build_pypi.ps1'
+  if (Test-Path $buildScriptPS) {
+    Write-Info "Running PowerShell build script: $buildScriptPS"
+    $pwshCmd = Get-Command pwsh -ErrorAction SilentlyContinue
+    if ($pwshCmd) {
+      & $pwshCmd.Source -NoProfile -ExecutionPolicy Bypass -File $buildScriptPS
+    } else {
+      & $buildScriptPS
+    }
+    if ($LASTEXITCODE -ne 0) { Write-Err "PowerShell build script failed with exit code $LASTEXITCODE"; exit 13 }
+  } else {
     $buildScript = Join-Path $repoRoot 'build_pypi.bat'
     if (Test-Path $buildScript) {
-        Write-Info "Running build script: $buildScript"
-        & cmd /c $buildScript
-        if ($LASTEXITCODE -ne 0) { Write-Err "Build script failed with exit code $LASTEXITCODE"; exit 13 }
+      Write-Info "PowerShell build script not found; falling back to batch: $buildScript"
+      & cmd /c $buildScript
+      if ($LASTEXITCODE -ne 0) { Write-Err "Batch build script failed with exit code $LASTEXITCODE"; exit 13 }
     } else {
-        Write-Warn "Build script not found: $buildScript"
+      Write-Warn "No build script found: checked scripts\build_pypi.ps1 and build_pypi.bat"
     }
+  }
 }
 
 Write-Info "Release steps completed successfully. New tag: v$NewVersion"
