@@ -82,9 +82,13 @@ Write-Info "Current version: $oldVersion -> New version: $NewVersion"
 if ($oldVersion -eq $NewVersion) { Write-Warn "New version is identical to current version. Nothing to do."; exit 0 }
 
 function Backup-File($path) {
-    $bak = "$path.bak"
-    Copy-Item -Force -Path $path -Destination $bak
-    Write-Info "Backup created: $bak"
+  $bak = "$path.bak"
+  if (Test-Path $bak) {
+    $ts = Get-Date -Format yyyyMMddHHmmss
+    $bak = "$path.bak.$ts"
+  }
+  Copy-Item -Force -Path $path -Destination $bak
+  Write-Info "Backup created: $bak"
 }
 
 Backup-File $pyproject
@@ -92,13 +96,30 @@ Backup-File $initFile
 if (Test-Path $readme) { Backup-File $readme }
 
 Write-Info "Updating pyproject.toml..."
-$newPy = [regex]::Replace($pytext, '^(?m)(version\s*=\s*")[^"]+("\s*$)', "`$1$NewVersion`$2")
-Set-Content -NoNewline -Path $pyproject -Value $newPy
+# Use concatenation for replacement to avoid PowerShell/regex replacement string escape issues
+$patternPy = '^(?m)(version\s*=\s*")([^"]+)("\s*$)'
+$replacementPy = '$1' + $NewVersion + '$3'
+$newPy = [regex]::Replace($pytext, $patternPy, $replacementPy)
+Set-Content -Path $pyproject -Value $newPy -Encoding utf8
 
 Write-Info "Updating purviewcli/__init__.py..."
-$initText = Get-Content -Raw -Path $initFile
-$newInit = [regex]::Replace($initText, '(__version__\s*=\s*")[^"]+("\s*)', "`$1$NewVersion`$2")
-Set-Content -NoNewline -Path $initFile -Value $newInit
+# Read file as lines and replace the __version__ line or insert at top if missing
+$initLines = Get-Content -Path $initFile -Raw -Encoding UTF8 -ErrorAction Stop -Delimiter "`n" | Out-String
+$lines = (Get-Content -Path $initFile -Encoding UTF8)
+$found = $false
+for ($i = 0; $i -lt $lines.Count; $i++) {
+  if ($lines[$i] -match '^[ \t]*__version__\s*=') {
+    $lines[$i] = "__version__ = `"$NewVersion`""
+    $found = $true
+    break
+  }
+}
+if (-not $found) {
+  # insert at top
+  $lines = ,("__version__ = `"$NewVersion`"" ) + $lines
+}
+# Write back with UTF8 encoding
+Set-Content -Path $initFile -Value $lines -Encoding utf8
 
 if (Test-Path $readme) {
     Write-Info "Updating README.md occurrences of version..."
