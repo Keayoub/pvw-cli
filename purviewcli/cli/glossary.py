@@ -49,7 +49,7 @@ def create(payload_file):
         result = client.glossaryCreate(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @glossary.command()
 @click.option('--payload-file', required=True, type=click.Path(exists=True), help='Path to JSON file with categories data')
@@ -61,7 +61,7 @@ def create_categories(payload_file):
         result = client.glossaryCreateCategories(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @glossary.command()
 @click.option('--payload-file', required=True, type=click.Path(exists=True), help='Path to JSON file with category data')
@@ -73,7 +73,7 @@ def create_category(payload_file):
         result = client.glossaryCreateCategory(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @glossary.command()
 @click.option('--payload-file', required=True, type=click.Path(exists=True), help='Path to JSON file with term data')
@@ -86,7 +86,7 @@ def create_term(payload_file, include_term_hierarchy):
         result = client.glossaryCreateTerm(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @glossary.command()
 @click.option('--payload-file', required=True, type=click.Path(exists=True), help='Path to JSON file with terms data')
@@ -99,7 +99,7 @@ def create_terms(payload_file, include_term_hierarchy):
         result = client.glossaryCreateTerms(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 # === DELETE OPERATIONS ===
 
@@ -113,7 +113,7 @@ def delete(glossary_guid):
         result = client.glossaryDelete(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @glossary.command()
 @click.option('--category-guid', required=True, help='The globally unique identifier of the category')
@@ -125,7 +125,7 @@ def delete_category(category_guid):
         result = client.glossaryDeleteCategory(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @glossary.command()
 @click.option('--term-guid', required=True, help='The globally unique identifier for glossary term')
@@ -137,7 +137,7 @@ def delete_term(term_guid):
         result = client.glossaryDeleteTerm(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 # === PUT OPERATIONS ===
 
@@ -152,7 +152,7 @@ def put(glossary_guid, payload_file):
         result = client.glossaryPut(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @glossary.command()
 @click.option('--category-guid', required=True, help='The globally unique identifier of the category')
@@ -165,7 +165,7 @@ def put_category(category_guid, payload_file):
         result = client.glossaryPutCategory(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @glossary.command()
 @click.option('--category-guid', required=True, help='The globally unique identifier of the category')
@@ -178,7 +178,7 @@ def put_category_partial(category_guid, payload_file):
         result = client.glossaryPutCategoryPartial(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @glossary.command()
 @click.option('--glossary-guid', required=True, help='The globally unique identifier for glossary')
@@ -192,7 +192,7 @@ def put_partial(glossary_guid, payload_file, include_term_hierarchy):
         result = client.glossaryPutPartial(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @glossary.command()
 @click.option('--term-guid', required=True, help='The globally unique identifier for glossary term')
@@ -206,7 +206,7 @@ def put_term(term_guid, payload_file, include_term_hierarchy):
         result = client.glossaryPutTerm(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @glossary.command()
 @click.option('--term-guid', required=True, help='The globally unique identifier for glossary term')
@@ -220,7 +220,7 @@ def put_term_partial(term_guid, payload_file, include_term_hierarchy):
         result = client.glossaryPutTermPartial(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @glossary.command()
 @click.option('--term-guid', required=True, help='The globally unique identifier for glossary term')
@@ -233,7 +233,7 @@ def put_terms_assigned_entities(term_guid, payload_file):
         result = client.glossaryPutTermsAssignedEntities(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 # === READ OPERATIONS ===
 
@@ -251,7 +251,7 @@ def _read_glossaries_impl(glossary_guid, limit, offset, sort, ignore_terms_and_c
         result = client.glossaryRead(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @glossary.command(name="read", help="Read glossaries and list all glossaries")
 @click.option("--glossary-guid", help="The globally unique identifier for glossary")
@@ -286,7 +286,7 @@ def read_categories(glossary_guid, limit, offset, sort):
         result = client.glossaryReadCategories(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @glossary.command()
 @click.option('--glossary-guid', help='The globally unique identifier for glossary')
@@ -301,7 +301,7 @@ def read_categories_headers(glossary_guid, limit, offset, sort):
         result = client.glossaryReadCategoriesHeaders(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @glossary.command()
 @click.option('--category-guid', help='The globally unique identifier of the category')
@@ -316,7 +316,7 @@ def read_category(category_guid, limit, offset, sort):
         result = client.glossaryReadCategory(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @glossary.command()
 @click.option('--category-guid', help='The globally unique identifier of the category')
@@ -328,7 +328,7 @@ def read_category_related(category_guid):
         result = client.glossaryReadCategoryRelated(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @glossary.command()
 @click.option('--category-guid', help='The globally unique identifier of the category')
@@ -343,7 +343,7 @@ def read_category_terms(category_guid, limit, offset, sort):
         result = client.glossaryReadCategoryTerms(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @glossary.command()
 @click.option('--glossary-guid', help='The globally unique identifier for glossary')
@@ -356,7 +356,7 @@ def read_detailed(glossary_guid, include_term_hierarchy):
         result = client.glossaryReadDetailed(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @glossary.command()
 @click.option('--term-guid', help='The globally unique identifier for glossary term')
@@ -369,7 +369,7 @@ def read_term(term_guid, include_term_hierarchy):
         result = client.glossaryReadTerm(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @glossary.command()
 @click.option('--glossary-guid', help='The globally unique identifier for glossary')
@@ -386,7 +386,7 @@ def read_terms(glossary_guid, limit, offset, sort, ext_info, include_term_hierar
         result = client.glossaryReadTerms(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @glossary.command(name="list-terms", help="List all terms in a glossary (alias for read-terms)")
 @click.option('--glossary-guid', help='The globally unique identifier for glossary')
@@ -403,7 +403,7 @@ def list_terms(glossary_guid, limit, offset, sort, ext_info, include_term_hierar
         result = client.glossaryReadTerms(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @glossary.command()
 @click.option('--term-guid', help='The globally unique identifier for glossary term')
@@ -418,7 +418,7 @@ def read_terms_assigned_entities(term_guid, limit, offset, sort):
         result = client.glossaryReadTermsAssignedEntities(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @glossary.command()
 @click.option('--glossary-guid', help='The globally unique identifier for glossary')
@@ -433,7 +433,7 @@ def read_terms_headers(glossary_guid, limit, offset, sort):
         result = client.glossaryReadTermsHeaders(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @glossary.command()
 @click.option('--operation-guid', help='The globally unique identifier for async operation/job')
@@ -445,7 +445,7 @@ def read_terms_import(operation_guid):
         result = client.glossaryReadTermsImport(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @glossary.command()
 @click.option('--term-guid', help='The globally unique identifier for glossary term')
@@ -460,7 +460,7 @@ def read_terms_related(term_guid, limit, offset, sort):
         result = client.glossaryReadTermsRelated(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @glossary.command(name="import-terms")
 @click.option('--csv-file', required=False, type=click.Path(exists=True), help='CSV file with glossary terms')

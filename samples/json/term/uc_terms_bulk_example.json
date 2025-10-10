@@ -1,0 +1,131 @@
+{
+  "terms": [
+    {
+      "name": "Data Lake",
+      "description": "Centralized repository storing structured and unstructured data at scale",
+      "domain_id": "your-domain-id-here",
+      "status": "Draft",
+      "acronyms": [
+        "DL"
+      ],
+      "owner_ids": [
+        "0360aff3-add5-4b7c-b172-52add69b0199"
+      ],
+      "resources": [
+        {
+          "name": "Data Lake Architecture Guide",
+          "url": "https://architecture.example.com/data-lake"
+        }
+      ]
+    },
+    {
+      "name": "Data Warehouse",
+      "description": "Central repository of integrated data from disparate sources",
+      "domain_id": "your-domain-id-here",
+      "status": "Draft",
+      "acronyms": [
+        "DW",
+        "DWH"
+      ],
+      "owner_ids": [
+        "0360aff3-add5-4b7c-b172-52add69b0199"
+      ],
+      "resources": [
+        {
+          "name": "Data Warehouse Documentation",
+          "url": "https://docs.example.com/dwh"
+        }
+      ]
+    },
+    {
+      "name": "Extract Transform Load",
+      "description": "Process of extracting data, transforming it, and loading into target system",
+      "domain_id": "your-domain-id-here",
+      "status": "Draft",
+      "acronyms": [
+        "ETL"
+      ],
+      "owner_ids": [
+        "0360aff3-add5-4b7c-b172-52add69b0199"
+      ]
+    },
+    {
+      "name": "Master Data Management",
+      "description": "Process of creating and maintaining consistent, accurate master data",
+      "domain_id": "your-domain-id-here",
+      "status": "Draft",
+      "acronyms": [
+        "MDM"
+      ],
+      "owner_ids": [
+        "0360aff3-add5-4b7c-b172-52add69b0199"
+      ],
+      "resources": [
+        {
+          "name": "MDM Best Practices",
+          "url": "https://governance.example.com/mdm"
+        }
+      ]
+    },
+    {
+      "name": "Data Quality Score",
+      "description": "Metric measuring accuracy, completeness, and reliability of data",
+      "domain_id": "your-domain-id-here",
+      "status": "Draft",
+      "acronyms": [
+        "DQS"
+      ],
+      "owner_ids": [
+        "0360aff3-add5-4b7c-b172-52add69b0199"
+      ]
+    },
+    {
+      "name": "Business Intelligence",
+      "description": "Technologies and strategies for analyzing business information",
+      "domain_id": "your-domain-id-here",
+      "status": "Draft",
+      "acronyms": [
+        "BI"
+      ],
+      "owner_ids": [
+        "0360aff3-add5-4b7c-b172-52add69b0199"
+      ],
+      "resources": [
+        {
+          "name": "BI Portal",
+          "url": "https://bi.example.com"
+        }
+      ]
+    },
+    {
+      "name": "Data Catalog",
+      "description": "Organized inventory of data assets with metadata",
+      "domain_id": "your-domain-id-here",
+      "status": "Draft",
+      "acronyms": [
+        "DC"
+      ],
+      "owner_ids": [
+        "0360aff3-add5-4b7c-b172-52add69b0199"
+      ]
+    },
+    {
+      "name": "Data Lineage",
+      "description": "Visual representation of data flow from source to destination",
+      "domain_id": "your-domain-id-here",
+      "status": "Draft",
+      "acronyms": [
+        "DL"
+      ],
+      "owner_ids": [
+        "0360aff3-add5-4b7c-b172-52add69b0199"
+      ],
+      "resources": [
+        {
+          "name": "Lineage Tracking Guide",
+          "url": "https://governance.example.com/lineage"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+name,description,status,acronym,owner_id,resource_name,resource_url
+Customer Acquisition Cost,The cost associated with acquiring a new customer,Draft,CAC,0360aff3-add5-4b7c-b172-52add69b0199,Marketing Metrics Guide,https://docs.example.com/marketing/cac
+Monthly Recurring Revenue,Predictable revenue generated each month from subscriptions,Draft,MRR,0360aff3-add5-4b7c-b172-52add69b0199,Finance Dashboard,https://finance.example.com/mrr
+Net Promoter Score,Customer satisfaction and loyalty metric,Draft,NPS,0360aff3-add5-4b7c-b172-52add69b0199,Customer Satisfaction Portal,https://support.example.com/nps
+Key Performance Indicator,Measurable value demonstrating effectiveness of achieving objectives,Draft,KPI,0360aff3-add5-4b7c-b172-52add69b0199,,
+Return on Investment,Ratio between net profit and cost of investment,Draft,ROI,0360aff3-add5-4b7c-b172-52add69b0199,Investment Analysis Guide,https://finance.example.com/roi
+Service Level Agreement,Commitment between service provider and client,Draft,SLA,0360aff3-add5-4b7c-b172-52add69b0199,SLA Templates,https://legal.example.com/sla
+Customer Success Score,Measure of how successful customers are with your product,Draft,CSS,,,
+Total Contract Value,Total value of a customer contract over its full term,Draft,TCV,0360aff3-add5-4b7c-b172-52add69b0199,Sales Metrics,https://sales.example.com/tcv

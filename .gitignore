@@ -29,3 +29,7 @@ nginx/
 web-ui/node_modules/
 
 .env
+pyproject.toml.bak
+README.md.bak
+.gitignore
+purviewcli/__init__.py.bak

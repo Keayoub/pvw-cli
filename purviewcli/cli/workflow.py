@@ -27,7 +27,7 @@ def list(ctx, output_json):
     try:
         if ctx.obj and ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: workflow list command[/yellow]")
-            console.print("[green]✓ Mock workflow list completed successfully[/green]")
+            console.print("[green][OK] Mock workflow list completed successfully[/green]")
             return
 
         from purviewcli.client._workflow import Workflow
@@ -46,7 +46,7 @@ def list(ctx, output_json):
             workflows = []
 
         if not workflows:
-            console.print("[yellow]⚠ No workflows found[/yellow]")
+            console.print("[yellow][!] No workflows found[/yellow]")
             return
 
         # Output in JSON format if requested
@@ -81,7 +81,7 @@ def list(ctx, output_json):
         console.print(f"\n[dim]Total: {len(workflows)} workflow(s)[/dim]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing workflow list: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing workflow list: {str(e)}[/red]")
 
 
 @workflow.command()
@@ -100,7 +100,7 @@ def create(ctx, workflow_id, payload_file):
             console.print("[yellow]🎭 Mock: workflow create command[/yellow]")
             console.print(f"[dim]Workflow ID: {workflow_id}[/dim]")
             console.print(f"[dim]Payload File: {payload_file}[/dim]")
-            console.print("[green]✓ Mock workflow create completed successfully[/green]")
+            console.print("[green][OK] Mock workflow create completed successfully[/green]")
             return
 
         from purviewcli.client._workflow import Workflow
@@ -110,12 +110,12 @@ def create(ctx, workflow_id, payload_file):
         result = workflow_client.workflowCreateWorkflow(args)
 
         if result:
-            console.print("[green]✓ Workflow create completed successfully[/green]")
+            console.print("[green][OK] Workflow create completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Workflow create completed with no result[/yellow]")
+            console.print("[yellow][!] Workflow create completed with no result[/yellow]")
     except Exception as e:
-        console.print(f"[red]✗ Error executing workflow create: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing workflow create: {str(e)}[/red]")
 
 
 @workflow.command()
@@ -127,7 +127,7 @@ def get(ctx, workflow_id):
         if ctx.obj and ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: workflow get command[/yellow]")
             console.print(f"[dim]Workflow ID: {workflow_id}[/dim]")
-            console.print("[green]✓ Mock workflow get completed successfully[/green]")
+            console.print("[green][OK] Mock workflow get completed successfully[/green]")
             return
 
         from purviewcli.client._workflow import Workflow
@@ -137,12 +137,12 @@ def get(ctx, workflow_id):
         result = workflow_client.workflowGetWorkflow(args)
 
         if result:
-            console.print("[green]✓ Workflow get completed successfully[/green]")
+            console.print("[green][OK] Workflow get completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Workflow not found[/yellow]")
+            console.print("[yellow][!] Workflow not found[/yellow]")
     except Exception as e:
-        console.print(f"[red]✗ Error executing workflow get: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing workflow get: {str(e)}[/red]")
 
 
 @workflow.command()
@@ -159,7 +159,7 @@ def execute(ctx, workflow_id, payload_file):
             console.print(f"[dim]Workflow ID: {workflow_id}[/dim]")
             if payload_file:
                 console.print(f"[dim]Payload File: {payload_file}[/dim]")
-            console.print("[green]✓ Mock workflow execute completed successfully[/green]")
+            console.print("[green][OK] Mock workflow execute completed successfully[/green]")
             return
 
         from purviewcli.client._workflow import Workflow
@@ -171,12 +171,12 @@ def execute(ctx, workflow_id, payload_file):
         result = workflow_client.workflowExecuteWorkflow(args)
 
         if result:
-            console.print("[green]✓ Workflow execute completed successfully[/green]")
+            console.print("[green][OK] Workflow execute completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Workflow execute completed with no result[/yellow]")
+            console.print("[yellow][!] Workflow execute completed with no result[/yellow]")
     except Exception as e:
-        console.print(f"[red]✗ Error executing workflow: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing workflow: {str(e)}[/red]")
 
 
 @workflow.command()
@@ -188,7 +188,7 @@ def executions(ctx, workflow_id):
         if ctx.obj and ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: workflow executions command[/yellow]")
             console.print(f"[dim]Workflow ID: {workflow_id}[/dim]")
-            console.print("[green]✓ Mock workflow executions completed successfully[/green]")
+            console.print("[green][OK] Mock workflow executions completed successfully[/green]")
             return
 
         from purviewcli.client._workflow import Workflow
@@ -198,12 +198,12 @@ def executions(ctx, workflow_id):
         result = workflow_client.workflowListWorkflowExecutions(args)
 
         if result:
-            console.print("[green]✓ Workflow executions list completed successfully[/green]")
+            console.print("[green][OK] Workflow executions list completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ No workflow executions found[/yellow]")
+            console.print("[yellow][!] No workflow executions found[/yellow]")
     except Exception as e:
-        console.print(f"[red]✗ Error listing workflow executions: {str(e)}[/red]")
+        console.print(f"[red][X] Error listing workflow executions: {str(e)}[/red]")
 
 
 # ========== Approval Commands ==========
@@ -222,7 +222,7 @@ def approvals(ctx, status, assigned_to):
                 console.print(f"[dim]Status Filter: {status}[/dim]")
             if assigned_to:
                 console.print(f"[dim]Assigned To: {assigned_to}[/dim]")
-            console.print("[green]✓ Mock workflow approvals completed successfully[/green]")
+            console.print("[green][OK] Mock workflow approvals completed successfully[/green]")
             return
 
         from purviewcli.client._workflow import Workflow
@@ -236,12 +236,12 @@ def approvals(ctx, status, assigned_to):
         result = workflow_client.workflowGetApprovalRequests(args)
 
         if result:
-            console.print("[green]✓ Approval requests list completed successfully[/green]")
+            console.print("[green][OK] Approval requests list completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ No approval requests found[/yellow]")
+            console.print("[yellow][!] No approval requests found[/yellow]")
     except Exception as e:
-        console.print(f"[red]✗ Error listing approval requests: {str(e)}[/red]")
+        console.print(f"[red][X] Error listing approval requests: {str(e)}[/red]")
 
 
 @workflow.command()
@@ -256,7 +256,7 @@ def approve(ctx, request_id, comments):
             console.print(f"[dim]Request ID: {request_id}[/dim]")
             if comments:
                 console.print(f"[dim]Comments: {comments}[/dim]")
-            console.print("[green]✓ Mock workflow approve completed successfully[/green]")
+            console.print("[green][OK] Mock workflow approve completed successfully[/green]")
             return
 
         from purviewcli.client._workflow import Workflow
@@ -268,12 +268,12 @@ def approve(ctx, request_id, comments):
         result = workflow_client.workflowApproveRequest(args)
 
         if result:
-            console.print("[green]✓ Request approved successfully[/green]")
+            console.print("[green][OK] Request approved successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Request approval completed with no result[/yellow]")
+            console.print("[yellow][!] Request approval completed with no result[/yellow]")
     except Exception as e:
-        console.print(f"[red]✗ Error approving request: {str(e)}[/red]")
+        console.print(f"[red][X] Error approving request: {str(e)}[/red]")
 
 
 @workflow.command()
@@ -288,7 +288,7 @@ def reject(ctx, request_id, comments):
             console.print(f"[dim]Request ID: {request_id}[/dim]")
             if comments:
                 console.print(f"[dim]Comments: {comments}[/dim]")
-            console.print("[green]✓ Mock workflow reject completed successfully[/green]")
+            console.print("[green][OK] Mock workflow reject completed successfully[/green]")
             return
 
         from purviewcli.client._workflow import Workflow
@@ -300,12 +300,12 @@ def reject(ctx, request_id, comments):
         result = workflow_client.workflowRejectRequest(args)
 
         if result:
-            console.print("[green]✓ Request rejected successfully[/green]")
+            console.print("[green][OK] Request rejected successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Request rejection completed with no result[/yellow]")
+            console.print("[yellow][!] Request rejection completed with no result[/yellow]")
     except Exception as e:
-        console.print(f"[red]✗ Error rejecting request: {str(e)}[/red]")
+        console.print(f"[red][X] Error rejecting request: {str(e)}[/red]")
 
 
 # ========== Template Commands ==========
@@ -318,7 +318,7 @@ def templates(ctx):
     try:
         if ctx.obj and ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: workflow templates command[/yellow]")
-            console.print("[green]✓ Mock workflow templates completed successfully[/green]")
+            console.print("[green][OK] Mock workflow templates completed successfully[/green]")
             return
 
         from purviewcli.client._workflow import Workflow
@@ -328,12 +328,12 @@ def templates(ctx):
         result = workflow_client.workflowListWorkflowTemplates(args)
 
         if result:
-            console.print("[green]✓ Workflow templates list completed successfully[/green]")
+            console.print("[green][OK] Workflow templates list completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ No workflow templates found[/yellow]")
+            console.print("[yellow][!] No workflow templates found[/yellow]")
     except Exception as e:
-        console.print(f"[red]✗ Error listing workflow templates: {str(e)}[/red]")
+        console.print(f"[red][X] Error listing workflow templates: {str(e)}[/red]")
 
 
 @workflow.command()
@@ -345,7 +345,7 @@ def template(ctx, template_id):
         if ctx.obj and ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: workflow template command[/yellow]")
             console.print(f"[dim]Template ID: {template_id}[/dim]")
-            console.print("[green]✓ Mock workflow template completed successfully[/green]")
+            console.print("[green][OK] Mock workflow template completed successfully[/green]")
             return
 
         from purviewcli.client._workflow import Workflow
@@ -355,12 +355,12 @@ def template(ctx, template_id):
         result = workflow_client.workflowGetWorkflowTemplate(args)
 
         if result:
-            console.print("[green]✓ Workflow template get completed successfully[/green]")
+            console.print("[green][OK] Workflow template get completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Workflow template not found[/yellow]")
+            console.print("[yellow][!] Workflow template not found[/yellow]")
     except Exception as e:
-        console.print(f"[red]✗ Error getting workflow template: {str(e)}[/red]")
+        console.print(f"[red][X] Error getting workflow template: {str(e)}[/red]")
 
 
 # ========== Validation Commands ==========
@@ -380,7 +380,7 @@ def validate(ctx, payload_file):
         if ctx.obj and ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: workflow validate command[/yellow]")
             console.print(f"[dim]Payload File: {payload_file}[/dim]")
-            console.print("[green]✓ Mock workflow validate completed successfully[/green]")
+            console.print("[green][OK] Mock workflow validate completed successfully[/green]")
             return
 
         from purviewcli.client._workflow import Workflow
@@ -390,12 +390,12 @@ def validate(ctx, payload_file):
         result = workflow_client.workflowValidateWorkflow(args)
 
         if result:
-            console.print("[green]✓ Workflow validation completed successfully[/green]")
+            console.print("[green][OK] Workflow validation completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Workflow validation completed with no result[/yellow]")
+            console.print("[yellow][!] Workflow validation completed with no result[/yellow]")
     except Exception as e:
-        console.print(f"[red]✗ Error validating workflow: {str(e)}[/red]")
+        console.print(f"[red][X] Error validating workflow: {str(e)}[/red]")
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pvw-cli"
-version = "1.0.12"
+version = "1.0.14"
 description = "Microsoft Purview CLI with comprehensive automation capabilities"
 readme = "README.md"
 license = "MIT"
@@ -177,5 +177,6 @@ exclude_lines = [
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
 ]
+
 
 

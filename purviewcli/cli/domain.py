@@ -253,12 +253,12 @@ def create_using_collections(domain_name, show_examples):
         console.print("\n[bold blue]📋 Creating Domain-like Structures with Microsoft Purview Collections[/bold blue]")
         console.print("\n[yellow]OVERVIEW:[/yellow] Since governance domains are not available in the public API, you can use collections to create hierarchical, domain-like organizational structures.")
         
-        console.print("\n[cyan]🏗️  COLLECTIONS AS DOMAINS - KEY CAPABILITIES:[/cyan]")
-        console.print("✅ [green]Hierarchical Organization:[/green] Create nested collections up to 8 levels deep")
-        console.print("✅ [green]Custom Naming:[/green] Use friendly names (up to 100 chars) and descriptions")
-        console.print("✅ [green]Security Boundaries:[/green] Role-based access control per collection")
-        console.print("✅ [green]Asset Organization:[/green] Group data sources, scans, and assets by business unit")
-        console.print("✅ [green]Metadata Management:[/green] Organize metadata within business contexts")
+        console.print("\n[cyan][*]  COLLECTIONS AS DOMAINS - KEY CAPABILITIES:[/cyan]")
+        console.print("[OK] [green]Hierarchical Organization:[/green] Create nested collections up to 8 levels deep")
+        console.print("[OK] [green]Custom Naming:[/green] Use friendly names (up to 100 chars) and descriptions")
+        console.print("[OK] [green]Security Boundaries:[/green] Role-based access control per collection")
+        console.print("[OK] [green]Asset Organization:[/green] Group data sources, scans, and assets by business unit")
+        console.print("[OK] [green]Metadata Management:[/green] Organize metadata within business contexts")
         
         if domain_name:
             console.print(f"\n[cyan]🚀 CREATING DOMAIN-LIKE COLLECTION: '{domain_name}'[/cyan]")
@@ -339,7 +339,7 @@ def create_using_collections(domain_name, show_examples):
         console.print("• Set Data Curator role for metadata management")
         console.print("• Implement least-privilege access model")
         
-        console.print("\n[cyan]🏷️  ADDITIONAL ORGANIZATION METHODS:[/cyan]")
+        console.print("\n[cyan][*]  ADDITIONAL ORGANIZATION METHODS:[/cyan]")
         console.print("• [bold]Custom Attributes:[/bold] Tag assets with domain information")
         console.print("• [bold]Glossary Terms:[/bold] Create domain-specific business vocabularies")
         console.print("• [bold]Classifications:[/bold] Apply domain-based data classifications")
@@ -350,7 +350,7 @@ def create_using_collections(domain_name, show_examples):
         console.print("• Search domain assets: [bold]pvw domain search-assets --domain <domain-name>[/bold]")
         console.print("• Check organization options: [bold]pvw domain check-attributes[/bold]")
         
-        console.print("\n[green]✅ NEXT STEPS:[/green]")
+        console.print("\n[green][OK] NEXT STEPS:[/green]")
         console.print("1. Plan your domain hierarchy based on your organization structure")
         console.print("2. Create your root domain collection")
         console.print("3. Add department and team sub-collections")

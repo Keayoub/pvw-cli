@@ -8,6 +8,7 @@ import csv
 import json
 import tempfile
 import os
+import time
 from rich.console import Console
 from rich.table import Table
 from rich.text import Text
@@ -115,7 +116,7 @@ def create(name, description, type, owner_id, status, parent_id, payload_file):
             console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
             return
 
-        console.print(f"[green]✅ SUCCESS:[/green] Created governance domain '{name}'")
+        console.print(f"[green] SUCCESS:[/green] Created governance domain '{name}'")
         console.print(json.dumps(result, indent=2))
 
     except Exception as e:
@@ -123,9 +124,20 @@ def create(name, description, type, owner_id, status, parent_id, payload_file):
 
 
 @domain.command(name="list")
-@click.option("--json", "output_json", is_flag=True, help="Output results in JSON format")
-def list_domains(output_json):
-    """List all governance domains."""
+@click.option(
+    "--output",
+    type=click.Choice(["table", "json", "jsonc"]),
+    default="table",
+    help="Output format: table (default, formatted), json (plain, parseable), jsonc (colored JSON)"
+)
+def list_domains(output):
+    """List all governance domains.
+    
+    Output formats:
+    - table: Formatted table output with Rich (default)
+    - json: Plain JSON for scripting (use with PowerShell ConvertFrom-Json)
+    - jsonc: Colored JSON with syntax highlighting for viewing
+    """
     try:
         client = UnifiedCatalogClient()
         args = {}  # No arguments needed for list operation
@@ -147,8 +159,13 @@ def list_domains(output_json):
             console.print("[yellow]No governance domains found.[/yellow]")
             return
 
-        # Output in JSON format if requested
-        if output_json:
+        # Handle output format
+        if output == "json":
+            # Plain JSON for scripting (PowerShell compatible)
+            print(json.dumps(domains, indent=2))
+            return
+        elif output == "jsonc":
+            # Colored JSON for viewing
             _format_json_output(domains)
             return
 
@@ -274,7 +291,7 @@ def create(
             console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
             return
 
-        console.print(f"[green]✅ SUCCESS:[/green] Created data product '{name}'")
+        console.print(f"[green] SUCCESS:[/green] Created data product '{name}'")
         console.print(json.dumps(result, indent=2))
 
     except Exception as e:
@@ -444,7 +461,7 @@ def update(
             console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
             return
 
-        console.print(f"[green]✅ SUCCESS:[/green] Updated data product '{product_id}'")
+        console.print(f"[green] SUCCESS:[/green] Updated data product '{product_id}'")
         console.print(json.dumps(result, indent=2))
 
     except Exception as e:
@@ -472,11 +489,11 @@ def delete(product_id, yes):
 
         # DELETE operations may return empty response on success
         if result is None or (isinstance(result, dict) and not result.get("error")):
-            console.print(f"[green]✅ SUCCESS:[/green] Deleted data product '{product_id}'")
+            console.print(f"[green] SUCCESS:[/green] Deleted data product '{product_id}'")
         elif isinstance(result, dict) and "error" in result:
             console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
         else:
-            console.print(f"[green]✅ SUCCESS:[/green] Deleted data product '{product_id}'")
+            console.print(f"[green] SUCCESS:[/green] Deleted data product '{product_id}'")
             if result:
                 console.print(json.dumps(result, indent=2))
 
@@ -579,7 +596,7 @@ def create_glossary(name, description, domain_id):
             return
         
         guid = result.get("guid") if isinstance(result, dict) else None
-        console.print(f"[green]✅ SUCCESS:[/green] Created glossary '{name}'")
+        console.print(f"[green] SUCCESS:[/green] Created glossary '{name}'")
         if guid:
             console.print(f"[cyan]GUID:[/cyan] {guid}")
             console.print(f"\n[dim]Use this GUID: --glossary-guid {guid}[/dim]")
@@ -664,13 +681,13 @@ def create_glossaries_for_domains():
                 guid = result.get("guid") if isinstance(result, dict) else None
                 
                 if guid:
-                    console.print(f"[green]✅ Created:[/green] {glossary_name} (GUID: {guid})")
+                    console.print(f"[green] Created:[/green] {glossary_name} (GUID: {guid})")
                     created_count += 1
                 else:
-                    console.print(f"[yellow]⚠  Created {glossary_name} but no GUID returned[/yellow]")
+                    console.print(f"[yellow]  Created {glossary_name} but no GUID returned[/yellow]")
                     
             except Exception as e:
-                console.print(f"[red]❌ Failed to create {glossary_name}:[/red] {str(e)}")
+                console.print(f"[red] Failed to create {glossary_name}:[/red] {str(e)}")
         
         console.print(f"\n[cyan]Created {created_count} new glossaries[/cyan]")
         console.print("[dim]Run 'pvw uc glossary list' to see all glossaries[/dim]")
@@ -756,7 +773,7 @@ def verify_glossary_links():
                     domain_id[:8] + "...",
                     glossary_info["name"],
                     glossary_info["guid"][:8] + "...",
-                    "[green]✅ Linked[/green]"
+                    "[green] Linked[/green]"
                 )
                 linked_count += 1
             else:
@@ -765,7 +782,7 @@ def verify_glossary_links():
                     domain_id[:8] + "...",
                     "[dim]No glossary[/dim]",
                     "[dim]N/A[/dim]",
-                    "[yellow]⚠ Not Linked[/yellow]"
+                    "[yellow] Not Linked[/yellow]"
                 )
                 unlinked_count += 1
         
@@ -848,7 +865,7 @@ def create(name, description, domain_id, status, acronym, owner_id, resource_nam
             console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
             return
 
-        console.print(f"[green]✅ SUCCESS:[/green] Created glossary term '{name}'")
+        console.print(f"[green] SUCCESS:[/green] Created glossary term '{name}'")
         console.print(json.dumps(result, indent=2))
 
     except Exception as e:
@@ -857,9 +874,20 @@ def create(name, description, domain_id, status, acronym, owner_id, resource_nam
 
 @term.command(name="list")
 @click.option("--domain-id", required=True, help="Governance domain ID to list terms from")
-@click.option("--json", "output_json", is_flag=True, help="Output results in JSON format")
-def list_terms(domain_id, output_json):
-    """List all Unified Catalog terms in a governance domain."""
+@click.option(
+    "--output",
+    type=click.Choice(["table", "json", "jsonc"]),
+    default="table",
+    help="Output format: table (default, formatted), json (plain, parseable), jsonc (colored JSON)"
+)
+def list_terms(domain_id, output):
+    """List all Unified Catalog terms in a governance domain.
+    
+    Output formats:
+    - table: Formatted table output with Rich (default)
+    - json: Plain JSON for scripting (use with PowerShell ConvertFrom-Json)
+    - jsonc: Colored JSON with syntax highlighting for viewing
+    """
     try:
         client = UnifiedCatalogClient()
         args = {"--governance-domain-id": [domain_id]}
@@ -884,8 +912,13 @@ def list_terms(domain_id, output_json):
             console.print("[yellow]No terms found.[/yellow]")
             return
 
-        # Output in JSON format if requested
-        if output_json:
+        # Handle output format
+        if output == "json":
+            # Plain JSON for scripting (PowerShell compatible)
+            print(json.dumps(all_terms, indent=2))
+            return
+        elif output == "jsonc":
+            # Colored JSON for viewing
             _format_json_output(all_terms)
             return
 
@@ -993,7 +1026,7 @@ def delete(term_id, force):
         gclient = Glossary()
         result = gclient.glossaryDeleteTerm({"--termGuid": term_id})
         
-        console.print(f"[green]✅ SUCCESS:[/green] Deleted term with ID: {term_id}")
+        console.print(f"[green] SUCCESS:[/green] Deleted term with ID: {term_id}")
         
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
@@ -1070,11 +1103,545 @@ def update(term_id, name, description, domain_id, status, acronym, owner_id, res
             console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
             return
 
-        console.print(f"[green]✅ SUCCESS:[/green] Updated glossary term '{term_id}'")
+        console.print(f"[green] SUCCESS:[/green] Updated glossary term '{term_id}'")
         console.print(json.dumps(result, indent=2))
 
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@term.command(name="import-csv")
+@click.option("--csv-file", required=True, type=click.Path(exists=True), help="Path to CSV file with terms")
+@click.option("--domain-id", required=True, help="Governance domain ID for all terms")
+@click.option("--dry-run", is_flag=True, help="Preview terms without creating them")
+def import_terms_from_csv(csv_file, domain_id, dry_run):
+    """Bulk import glossary terms from a CSV file.
+    
+    CSV Format:
+    name,description,status,acronyms,owner_ids,resource_name,resource_url
+    
+    - name: Required term name
+    - description: Optional description
+    - status: Draft, Published, or Archived (default: Draft)
+    - acronyms: Comma-separated list (e.g., "API,REST")
+    - owner_ids: Comma-separated list of Entra Object IDs
+    - resource_name: Name of related resource
+    - resource_url: URL of related resource
+    
+    Multiple resources can be specified by separating with semicolons.
+    """
+    try:
+        client = UnifiedCatalogClient()
+        
+        # Read and parse CSV
+        terms = []
+        with open(csv_file, 'r', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                term = {
+                    "name": row.get("name", "").strip(),
+                    "description": row.get("description", "").strip(),
+                    "status": row.get("status", "Draft").strip(),
+                    "domain_id": domain_id,
+                    "acronyms": [],
+                    "owner_ids": [],
+                    "resources": []
+                }
+                
+                # Parse acronyms
+                if row.get("acronyms"):
+                    term["acronyms"] = [a.strip() for a in row["acronyms"].split(",") if a.strip()]
+                
+                # Parse owner IDs
+                if row.get("owner_ids"):
+                    term["owner_ids"] = [o.strip() for o in row["owner_ids"].split(",") if o.strip()]
+                
+                # Parse resources
+                resource_names = row.get("resource_name", "").strip()
+                resource_urls = row.get("resource_url", "").strip()
+                
+                if resource_names and resource_urls:
+                    names = [n.strip() for n in resource_names.split(";") if n.strip()]
+                    urls = [u.strip() for u in resource_urls.split(";") if u.strip()]
+                    term["resources"] = [{"name": n, "url": u} for n, u in zip(names, urls)]
+                
+                if term["name"]:  # Only add if name is present
+                    terms.append(term)
+        
+        if not terms:
+            console.print("[yellow]No valid terms found in CSV file.[/yellow]")
+            return
+        
+        console.print(f"[cyan]Found {len(terms)} term(s) in CSV file[/cyan]")
+        
+        if dry_run:
+            console.print("\n[yellow]DRY RUN - Preview of terms to be created:[/yellow]\n")
+            table = Table(title="Terms to Import")
+            table.add_column("#", style="dim", width=4)
+            table.add_column("Name", style="cyan")
+            table.add_column("Status", style="yellow")
+            table.add_column("Acronyms", style="magenta")
+            table.add_column("Owners", style="green")
+            
+            for i, term in enumerate(terms, 1):
+                acronyms = ", ".join(term.get("acronyms", []))
+                owners = ", ".join(term.get("owner_ids", []))
+                table.add_row(
+                    str(i),
+                    term["name"],
+                    term["status"],
+                    acronyms or "-",
+                    owners or "-"
+                )
+            
+            console.print(table)
+            console.print(f"\n[dim]Domain ID: {domain_id}[/dim]")
+            return
+        
+        # Import terms (one by one using single POST)
+        success_count = 0
+        failed_count = 0
+        failed_terms = []
+        
+        with console.status("[bold green]Importing terms...") as status:
+            for i, term in enumerate(terms, 1):
+                status.update(f"[bold green]Creating term {i}/{len(terms)}: {term['name']}")
+                
+                try:
+                    # Create individual term
+                    args = {
+                        "--name": [term["name"]],
+                        "--description": [term.get("description", "")],
+                        "--governance-domain-id": [term["domain_id"]],
+                        "--status": [term.get("status", "Draft")],
+                    }
+                    
+                    if term.get("acronyms"):
+                        args["--acronym"] = term["acronyms"]
+                    
+                    if term.get("owner_ids"):
+                        args["--owner-id"] = term["owner_ids"]
+                    
+                    if term.get("resources"):
+                        args["--resource-name"] = [r["name"] for r in term["resources"]]
+                        args["--resource-url"] = [r["url"] for r in term["resources"]]
+                    
+                    result = client.create_term(args)
+                    
+                    # Check if result contains an ID (indicates successful creation)
+                    if result and isinstance(result, dict) and result.get("id"):
+                        success_count += 1
+                        term_id = result.get("id")
+                        console.print(f"[green]Created: {term['name']} (ID: {term_id})[/green]")
+                    elif result and not (isinstance(result, dict) and "error" in result):
+                        # Got a response but no ID - might be an issue
+                        console.print(f"[yellow]WARNING: Response received for {term['name']} but no ID returned[/yellow]")
+                        console.print(f"[dim]Response: {json.dumps(result, indent=2)[:200]}...[/dim]")
+                        failed_count += 1
+                        failed_terms.append({"name": term["name"], "error": "No ID in response"})
+                    else:
+                        failed_count += 1
+                        error_msg = result.get("error", "Unknown error") if isinstance(result, dict) else "No response"
+                        failed_terms.append({"name": term["name"], "error": error_msg})
+                        console.print(f"[red]FAILED: {term['name']} - {error_msg}[/red]")
+                    
+                except Exception as e:
+                    failed_count += 1
+                    failed_terms.append({"name": term["name"], "error": str(e)})
+                    console.print(f"[red]FAILED: {term['name']} - {str(e)}[/red]")
+        
+        # Summary
+        console.print("\n" + "="*60)
+        console.print(f"[cyan]Import Summary:[/cyan]")
+        console.print(f"  Total terms: {len(terms)}")
+        console.print(f"  [green]Successfully created: {success_count}[/green]")
+        console.print(f"  [red]Failed: {failed_count}[/red]")
+        
+        if failed_terms:
+            console.print("\n[red]Failed Terms:[/red]")
+            for ft in failed_terms:
+                console.print(f"  • {ft['name']}: {ft['error']}")
+        
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@term.command(name="import-json")
+@click.option("--json-file", required=True, type=click.Path(exists=True), help="Path to JSON file with terms")
+@click.option("--dry-run", is_flag=True, help="Preview terms without creating them")
+def import_terms_from_json(json_file, dry_run):
+    """Bulk import glossary terms from a JSON file.
+    
+    JSON Format:
+    [
+        {
+            "name": "Term Name",
+            "description": "Description",
+            "domain_id": "domain-guid",
+            "status": "Draft",
+            "acronyms": ["API", "REST"],
+            "owner_ids": ["owner-guid-1"],
+            "resources": [
+                {"name": "Resource Name", "url": "https://example.com"}
+            ]
+        }
+    ]
+    
+    Each term must include domain_id.
+    """
+    try:
+        client = UnifiedCatalogClient()
+        
+        # Read and parse JSON
+        with open(json_file, 'r', encoding='utf-8') as f:
+            terms = json.load(f)
+        
+        if not isinstance(terms, list):
+            console.print("[red]ERROR:[/red] JSON file must contain an array of terms")
+            return
+        
+        if not terms:
+            console.print("[yellow]No terms found in JSON file.[/yellow]")
+            return
+        
+        console.print(f"[cyan]Found {len(terms)} term(s) in JSON file[/cyan]")
+        
+        if dry_run:
+            console.print("\n[yellow]DRY RUN - Preview of terms to be created:[/yellow]\n")
+            _format_json_output(terms)
+            return
+        
+        # Import terms
+        success_count = 0
+        failed_count = 0
+        failed_terms = []
+        
+        with console.status("[bold green]Importing terms...") as status:
+            for i, term in enumerate(terms, 1):
+                term_name = term.get("name", f"Term {i}")
+                status.update(f"[bold green]Creating term {i}/{len(terms)}: {term_name}")
+                
+                try:
+                    args = {
+                        "--name": [term.get("name", "")],
+                        "--description": [term.get("description", "")],
+                        "--governance-domain-id": [term.get("domain_id", "")],
+                        "--status": [term.get("status", "Draft")],
+                    }
+                    
+                    if term.get("acronyms"):
+                        args["--acronym"] = term["acronyms"]
+                    
+                    if term.get("owner_ids"):
+                        args["--owner-id"] = term["owner_ids"]
+                    
+                    if term.get("resources"):
+                        args["--resource-name"] = [r.get("name", "") for r in term["resources"]]
+                        args["--resource-url"] = [r.get("url", "") for r in term["resources"]]
+                    
+                    result = client.create_term(args)
+                    
+                    # Check if result contains an ID (indicates successful creation)
+                    if result and isinstance(result, dict) and result.get("id"):
+                        success_count += 1
+                        term_id = result.get("id")
+                        console.print(f"[green]Created: {term_name} (ID: {term_id})[/green]")
+                    elif result and not (isinstance(result, dict) and "error" in result):
+                        # Got a response but no ID - might be an issue
+                        console.print(f"[yellow]WARNING: Response received for {term_name} but no ID returned[/yellow]")
+                        console.print(f"[dim]Response: {json.dumps(result, indent=2)[:200]}...[/dim]")
+                        failed_count += 1
+                        failed_terms.append({"name": term_name, "error": "No ID in response"})
+                    else:
+                        failed_count += 1
+                        error_msg = result.get("error", "Unknown error") if isinstance(result, dict) else "No response"
+                        failed_terms.append({"name": term_name, "error": error_msg})
+                        console.print(f"[red]FAILED: {term_name} - {error_msg}[/red]")
+                    
+                except Exception as e:
+                    failed_count += 1
+                    failed_terms.append({"name": term_name, "error": str(e)})
+                    console.print(f"[red]FAILED: {term_name} - {str(e)}[/red]")
+        
+        # Summary
+        console.print("\n" + "="*60)
+        console.print(f"[cyan]Import Summary:[/cyan]")
+        console.print(f"  Total terms: {len(terms)}")
+        console.print(f"  [green]Successfully created: {success_count}[/green]")
+        console.print(f"  [red]Failed: {failed_count}[/red]")
+        
+        if failed_terms:
+            console.print("\n[red]Failed Terms:[/red]")
+            for ft in failed_terms:
+                console.print(f"  • {ft['name']}: {ft['error']}")
+        
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@term.command(name="update-csv")
+@click.option("--csv-file", required=True, type=click.Path(exists=True), help="Path to CSV file with term updates")
+@click.option("--dry-run", is_flag=True, help="Preview updates without applying them")
+def update_terms_from_csv(csv_file, dry_run):
+    """Bulk update glossary terms from a CSV file.
+    
+    CSV Format:
+    term_id,name,description,status,acronyms,owner_ids,add_acronyms,add_owner_ids
+    
+    Required:
+    - term_id: The ID of the term to update
+    
+    Optional (leave empty to skip update):
+    - name: New term name (replaces existing)
+    - description: New description (replaces existing)
+    - status: New status (Draft, Published, Archived)
+    - acronyms: New acronyms separated by semicolons (replaces all existing)
+    - owner_ids: New owner IDs separated by semicolons (replaces all existing)
+    - add_acronyms: Acronyms to add separated by semicolons (preserves existing)
+    - add_owner_ids: Owner IDs to add separated by semicolons (preserves existing)
+    
+    Example CSV:
+    term_id,name,description,status,add_acronyms,add_owner_ids
+    abc-123,,Updated description,Published,API;REST,user1@company.com
+    def-456,New Name,,,SQL,
+    """
+    import csv
+    
+    try:
+        # Read CSV file
+        with open(csv_file, 'r', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            updates = list(reader)
+        
+        if not updates:
+            console.print("[yellow]No updates found in CSV file.[/yellow]")
+            return
+        
+        console.print(f"Found {len(updates)} term(s) to update in CSV file")
+        
+        # Dry run preview
+        if dry_run:
+            console.print("\n[cyan]DRY RUN - Preview of updates to be applied:[/cyan]\n")
+            
+            table = Table(title="Terms to Update")
+            table.add_column("#", style="cyan")
+            table.add_column("Term ID", style="yellow")
+            table.add_column("Updates", style="white")
+            
+            for idx, update in enumerate(updates, 1):
+                term_id = update.get('term_id', '').strip()
+                if not term_id:
+                    continue
+                
+                changes = []
+                if update.get('name', '').strip():
+                    changes.append(f"name: {update['name']}")
+                if update.get('description', '').strip():
+                    changes.append(f"desc: {update['description'][:50]}...")
+                if update.get('status', '').strip():
+                    changes.append(f"status: {update['status']}")
+                if update.get('acronyms', '').strip():
+                    changes.append(f"acronyms: {update['acronyms']}")
+                if update.get('add_acronyms', '').strip():
+                    changes.append(f"add acronyms: {update['add_acronyms']}")
+                if update.get('owner_ids', '').strip():
+                    changes.append(f"owners: {update['owner_ids']}")
+                if update.get('add_owner_ids', '').strip():
+                    changes.append(f"add owners: {update['add_owner_ids']}")
+                
+                table.add_row(str(idx), term_id[:36], ", ".join(changes) if changes else "No changes")
+            
+            console.print(table)
+            console.print(f"\n[yellow]Total terms to update: {len(updates)}[/yellow]")
+            return
+        
+        # Apply updates
+        console.print("\n[cyan]Updating terms...[/cyan]\n")
+        
+        client = UnifiedCatalogClient()
+        success_count = 0
+        failed_count = 0
+        failed_terms = []
+        
+        for idx, update in enumerate(updates, 1):
+            term_id = update.get('term_id', '').strip()
+            if not term_id:
+                console.print(f"[yellow]Skipping row {idx}: Missing term_id[/yellow]")
+                continue
+            
+            # Build update arguments
+            args = {"--term-id": [term_id]}
+            
+            # Add replace operations
+            if update.get('name', '').strip():
+                args['--name'] = [update['name'].strip()]
+            if update.get('description', '').strip():
+                args['--description'] = [update['description'].strip()]
+            if update.get('status', '').strip():
+                args['--status'] = [update['status'].strip()]
+            if update.get('acronyms', '').strip():
+                args['--acronym'] = [a.strip() for a in update['acronyms'].split(';') if a.strip()]
+            if update.get('owner_ids', '').strip():
+                args['--owner-id'] = [o.strip() for o in update['owner_ids'].split(';') if o.strip()]
+            
+            # Add "add" operations
+            if update.get('add_acronyms', '').strip():
+                args['--add-acronym'] = [a.strip() for a in update['add_acronyms'].split(';') if a.strip()]
+            if update.get('add_owner_ids', '').strip():
+                args['--add-owner-id'] = [o.strip() for o in update['add_owner_ids'].split(';') if o.strip()]
+            
+            # Display progress
+            display_name = update.get('name', term_id[:36])
+            console.status(f"[{idx}/{len(updates)}] Updating: {display_name}...")
+            
+            try:
+                result = client.update_term(args)
+                console.print(f"[green]SUCCESS:[/green] Updated term {idx}/{len(updates)}")
+                success_count += 1
+            except Exception as e:
+                error_msg = str(e)
+                console.print(f"[red]FAILED:[/red] {display_name}: {error_msg}")
+                failed_terms.append({'term_id': term_id, 'name': display_name, 'error': error_msg})
+                failed_count += 1
+            
+            # Rate limiting
+            time.sleep(0.2)
+        
+        # Summary
+        console.print("\n" + "="*60)
+        console.print(f"[cyan]Update Summary:[/cyan]")
+        console.print(f"  Total terms: {len(updates)}")
+        console.print(f"  [green]Successfully updated: {success_count}[/green]")
+        console.print(f"  [red]Failed: {failed_count}[/red]")
+        
+        if failed_terms:
+            console.print("\n[red]Failed Updates:[/red]")
+            for ft in failed_terms:
+                console.print(f"  • {ft['name']}: {ft['error']}")
+        
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@term.command(name="update-json")
+@click.option("--json-file", required=True, type=click.Path(exists=True), help="Path to JSON file with term updates")
+@click.option("--dry-run", is_flag=True, help="Preview updates without applying them")
+def update_terms_from_json(json_file, dry_run):
+    """Bulk update glossary terms from a JSON file.
+    
+    JSON Format:
+    {
+        "updates": [
+            {
+                "term_id": "term-guid",
+                "name": "New Name",                    // Optional: Replace name
+                "description": "New description",      // Optional: Replace description
+                "status": "Published",                 // Optional: Change status
+                "acronyms": ["API", "REST"],          // Optional: Replace all acronyms
+                "owner_ids": ["user@company.com"],    // Optional: Replace all owners
+                "add_acronyms": ["SQL"],              // Optional: Add acronyms (preserves existing)
+                "add_owner_ids": ["user2@company.com"] // Optional: Add owners (preserves existing)
+            }
+        ]
+    }
+    
+    Note: Leave fields empty or omit them to skip that update.
+    """
+    import json
+    
+    try:
+        # Read JSON file
+        with open(json_file, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        
+        updates = data.get('updates', [])
+        
+        if not updates:
+            console.print("[yellow]No updates found in JSON file.[/yellow]")
+            return
+        
+        console.print(f"Found {len(updates)} term(s) to update in JSON file")
+        
+        # Dry run preview
+        if dry_run:
+            console.print("\n[cyan]DRY RUN - Preview of updates to be applied:[/cyan]\n")
+            
+            # Display updates in colored JSON
+            from rich.syntax import Syntax
+            json_str = json.dumps(data, indent=2)
+            syntax = Syntax(json_str, "json", theme="monokai", line_numbers=True)
+            console.print(syntax)
+            
+            console.print(f"\n[yellow]Total terms to update: {len(updates)}[/yellow]")
+            return
+        
+        # Apply updates
+        console.print("\n[cyan]Updating terms...[/cyan]\n")
+        
+        client = UnifiedCatalogClient()
+        success_count = 0
+        failed_count = 0
+        failed_terms = []
+        
+        for idx, update in enumerate(updates, 1):
+            term_id = update.get('term_id', '').strip() if isinstance(update.get('term_id'), str) else ''
+            if not term_id:
+                console.print(f"[yellow]Skipping update {idx}: Missing term_id[/yellow]")
+                continue
+            
+            # Build update arguments
+            args = {"--term-id": [term_id]}
+            
+            # Add replace operations
+            if update.get('name'):
+                args['--name'] = [update['name']]
+            if update.get('description'):
+                args['--description'] = [update['description']]
+            if update.get('status'):
+                args['--status'] = [update['status']]
+            if update.get('acronyms'):
+                args['--acronym'] = update['acronyms'] if isinstance(update['acronyms'], list) else [update['acronyms']]
+            if update.get('owner_ids'):
+                args['--owner-id'] = update['owner_ids'] if isinstance(update['owner_ids'], list) else [update['owner_ids']]
+            
+            # Add "add" operations
+            if update.get('add_acronyms'):
+                args['--add-acronym'] = update['add_acronyms'] if isinstance(update['add_acronyms'], list) else [update['add_acronyms']]
+            if update.get('add_owner_ids'):
+                args['--add-owner-id'] = update['add_owner_ids'] if isinstance(update['add_owner_ids'], list) else [update['add_owner_ids']]
+            
+            # Display progress
+            display_name = update.get('name', term_id[:36])
+            console.status(f"[{idx}/{len(updates)}] Updating: {display_name}...")
+            
+            try:
+                result = client.update_term(args)
+                console.print(f"[green]SUCCESS:[/green] Updated term {idx}/{len(updates)}")
+                success_count += 1
+            except Exception as e:
+                error_msg = str(e)
+                console.print(f"[red]FAILED:[/red] {display_name}: {error_msg}")
+                failed_terms.append({'term_id': term_id, 'name': display_name, 'error': error_msg})
+                failed_count += 1
+            
+            # Rate limiting
+            time.sleep(0.2)
+        
+        # Summary
+        console.print("\n" + "="*60)
+        console.print(f"[cyan]Update Summary:[/cyan]")
+        console.print(f"  Total terms: {len(updates)}")
+        console.print(f"  [green]Successfully updated: {success_count}[/green]")
+        console.print(f"  [red]Failed: {failed_count}[/red]")
+        
+        if failed_terms:
+            console.print("\n[red]Failed Updates:[/red]")
+            for ft in failed_terms:
+                console.print(f"  • {ft['name']}: {ft['error']}")
+        
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
 
 
 # ========================================
@@ -1132,7 +1699,7 @@ def create(definition, domain_id, status, owner_id, target_date):
             console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
             return
 
-        console.print(f"[green]✅ SUCCESS:[/green] Created objective")
+        console.print(f"[green] SUCCESS:[/green] Created objective")
         console.print(json.dumps(result, indent=2))
 
     except Exception as e:
@@ -1275,7 +1842,7 @@ def create(name, description, domain_id, data_type, status, owner_id):
             console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
             return
 
-        console.print(f"[green]✅ SUCCESS:[/green] Created critical data element '{name}'")
+        console.print(f"[green] SUCCESS:[/green] Created critical data element '{name}'")
         console.print(json.dumps(result, indent=2))
 
     except Exception as e:
@@ -1362,7 +1929,7 @@ def show(cde_id):
 
 
 # ========================================
-# HEALTH MANAGEMENT - IMPLEMENTED! ✅
+# HEALTH MANAGEMENT - IMPLEMENTED! 
 # ========================================
 
 # Import and register health commands from dedicated module
