@@ -47,7 +47,7 @@ def read(ctx, guid, ignore_relationships, min_ext_info):
             console.print(f"[dim]GUID: {guid}[/dim]")
             console.print(f"[dim]Ignore Relationships: {ignore_relationships}[/dim]")
             console.print(f"[dim]Min Ext Info: {min_ext_info}[/dim]")
-            console.print("[green]✓ Mock entity read completed successfully[/green]")
+            console.print("[green][OK] Mock entity read completed successfully[/green]")
             return
 
         args = {
@@ -62,13 +62,13 @@ def read(ctx, guid, ignore_relationships, min_ext_info):
         result = entity_client.entityRead(args)
 
         if result:
-            console.print("[green]✓ Entity read completed successfully[/green]")
+            console.print("[green][OK] Entity read completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Entity read completed with no result[/yellow]")
+            console.print("[yellow][!] Entity read completed with no result[/yellow]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity read: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity read: {str(e)}[/red]")
 
 
 @entity.command()
@@ -85,7 +85,7 @@ def create(ctx, payload_file):
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: entity create command[/yellow]")
             console.print(f"[dim]Payload File: {payload_file}[/dim]")
-            console.print("[green]✓ Mock entity create completed successfully[/green]")
+            console.print("[green][OK] Mock entity create completed successfully[/green]")
             return
 
         args = {"--payloadFile": payload_file}
@@ -96,13 +96,13 @@ def create(ctx, payload_file):
         result = entity_client.entityCreate(args)
 
         if result:
-            console.print("[green]✓ Entity create completed successfully[/green]")
+            console.print("[green][OK] Entity create completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Entity create completed with no result[/yellow]")
+            console.print("[yellow][!] Entity create completed with no result[/yellow]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity create: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity create: {str(e)}[/red]")
 
 
 @entity.command()
@@ -114,7 +114,7 @@ def delete(ctx, guid):
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: entity delete command[/yellow]")
             console.print(f"[dim]GUID: {guid}[/dim]")
-            console.print("[green]✓ Mock entity delete completed successfully[/green]")
+            console.print("[green][OK] Mock entity delete completed successfully[/green]")
             return
 
         args = {"--guid": guid}
@@ -125,13 +125,13 @@ def delete(ctx, guid):
         result = entity_client.entityDelete(args)
 
         if result:
-            console.print("[green]✓ Entity delete completed successfully[/green]")
+            console.print("[green][OK] Entity delete completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Entity delete completed with no result[/yellow]")
+            console.print("[yellow][!] Entity delete completed with no result[/yellow]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity delete: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity delete: {str(e)}[/red]")
 
 
 @entity.command()
@@ -148,7 +148,7 @@ def bulk_create(ctx, payload_file):
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: entity bulk-create command[/yellow]")
             console.print(f"[dim]Payload File: {payload_file}[/dim]")
-            console.print("[green]✓ Mock entity bulk-create completed successfully[/green]")
+            console.print("[green][OK] Mock entity bulk-create completed successfully[/green]")
             return
 
         args = {"--payloadFile": payload_file}
@@ -159,13 +159,13 @@ def bulk_create(ctx, payload_file):
         result = entity_client.entityBulkCreateOrUpdate(args)
 
         if result:
-            console.print("[green]✓ Entity bulk-create completed successfully[/green]")
+            console.print("[green][OK] Entity bulk-create completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Entity bulk-create completed with no result[/yellow]")
+            console.print("[yellow][!] Entity bulk-create completed with no result[/yellow]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity bulk-create: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity bulk-create: {str(e)}[/red]")
 
 
 @entity.command(name="bulk-update")
@@ -182,7 +182,7 @@ def bulk_update(ctx, payload_file):
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: entity bulk-update command[/yellow]")
             console.print(f"[dim]Payload File: {payload_file}[/dim]")
-            console.print("[green]✓ Mock entity bulk-update completed successfully[/green]")
+            console.print("[green][OK] Mock entity bulk-update completed successfully[/green]")
             return
 
         args = {"--payloadFile": payload_file}
@@ -193,13 +193,13 @@ def bulk_update(ctx, payload_file):
         result = entity_client.entityBulkCreateOrUpdate(args)
 
         if result:
-            console.print("[green]✓ Entity bulk-update completed successfully[/green]")
+            console.print("[green][OK] Entity bulk-update completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Entity bulk-update completed with no result[/yellow]")
+            console.print("[yellow][!] Entity bulk-update completed with no result[/yellow]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity bulk-update: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity bulk-update: {str(e)}[/red]")
 
 
 # === BULK OPERATIONS ===
@@ -224,7 +224,7 @@ def bulk_read(ctx, guid, ignore_relationships, min_ext_info):
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: entity bulk-read command[/yellow]")
             console.print(f"[dim]GUIDs: {', '.join(guid)}[/dim]")
-            console.print("[green]✓ Mock entity bulk-read completed successfully[/green]")
+            console.print("[green][OK] Mock entity bulk-read completed successfully[/green]")
             return
 
         args = {
@@ -239,13 +239,13 @@ def bulk_read(ctx, guid, ignore_relationships, min_ext_info):
         result = entity_client.entityReadBulk(args)
 
         if result:
-            console.print("[green]✓ Entity bulk-read completed successfully[/green]")
+            console.print("[green][OK] Entity bulk-read completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Entity bulk-read completed with no result[/yellow]")
+            console.print("[yellow][!] Entity bulk-read completed with no result[/yellow]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity bulk-read: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity bulk-read: {str(e)}[/red]")
 
 
 @entity.command()
@@ -259,7 +259,7 @@ def bulk_delete(ctx, guid):
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: entity bulk-delete command[/yellow]")
             console.print(f"[dim]GUIDs: {', '.join(guid)}[/dim]")
-            console.print("[green]✓ Mock entity bulk-delete completed successfully[/green]")
+            console.print("[green][OK] Mock entity bulk-delete completed successfully[/green]")
             return
 
         args = {"--guid": list(guid)}
@@ -270,13 +270,13 @@ def bulk_delete(ctx, guid):
         result = entity_client.entityDeleteBulk(args)
 
         if result:
-            console.print("[green]✓ Entity bulk-delete completed successfully[/green]")
+            console.print("[green][OK] Entity bulk-delete completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Entity bulk-delete completed with no result[/yellow]")
+            console.print("[yellow][!] Entity bulk-delete completed with no result[/yellow]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity bulk-delete: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity bulk-delete: {str(e)}[/red]")
 
 
 # === UNIQUE ATTRIBUTE OPERATIONS ===
@@ -300,7 +300,7 @@ def read_by_attribute(ctx, type_name, qualified_name, ignore_relationships, min_
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: entity read-by-attribute command[/yellow]")
             console.print(f"[dim]Type: {type_name}, Qualified Name: {qualified_name}[/dim]")
-            console.print("[green]✓ Mock entity read-by-attribute completed successfully[/green]")
+            console.print("[green][OK] Mock entity read-by-attribute completed successfully[/green]")
             return
 
         args = {
@@ -316,13 +316,13 @@ def read_by_attribute(ctx, type_name, qualified_name, ignore_relationships, min_
         result = entity_client.entityReadUniqueAttribute(args)
 
         if result:
-            console.print("[green]✓ Entity read-by-attribute completed successfully[/green]")
+            console.print("[green][OK] Entity read-by-attribute completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Entity read-by-attribute completed with no result[/yellow]")
+            console.print("[yellow][!] Entity read-by-attribute completed with no result[/yellow]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity read-by-attribute: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity read-by-attribute: {str(e)}[/red]")
 
 
 @entity.command()
@@ -348,7 +348,7 @@ def bulk_read_by_attribute(ctx, type_name, qualified_name, ignore_relationships,
                 f"[dim]Type: {type_name}, Qualified Names: {', '.join(qualified_name)}[/dim]"
             )
             console.print(
-                "[green]✓ Mock entity bulk-read-by-attribute completed successfully[/green]"
+                "[green][OK] Mock entity bulk-read-by-attribute completed successfully[/green]"
             )
             return
 
@@ -365,15 +365,15 @@ def bulk_read_by_attribute(ctx, type_name, qualified_name, ignore_relationships,
         result = entity_client.entityReadBulkUniqueAttribute(args)
 
         if result:
-            console.print("[green]✓ Entity bulk-read-by-attribute completed successfully[/green]")
+            console.print("[green][OK] Entity bulk-read-by-attribute completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
             console.print(
-                "[yellow]⚠ Entity bulk-read-by-attribute completed with no result[/yellow]"
+                "[yellow][!] Entity bulk-read-by-attribute completed with no result[/yellow]"
             )
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity bulk-read-by-attribute: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity bulk-read-by-attribute: {str(e)}[/red]")
 
 
 @entity.command()
@@ -386,7 +386,7 @@ def delete_by_attribute(ctx, type_name, qualified_name):
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: entity delete-by-attribute command[/yellow]")
             console.print(f"[dim]Type: {type_name}, Qualified Name: {qualified_name}[/dim]")
-            console.print("[green]✓ Mock entity delete-by-attribute completed successfully[/green]")
+            console.print("[green][OK] Mock entity delete-by-attribute completed successfully[/green]")
             return
 
         args = {
@@ -400,13 +400,13 @@ def delete_by_attribute(ctx, type_name, qualified_name):
         result = entity_client.entityDeleteUniqueAttribute(args)
 
         if result:
-            console.print("[green]✓ Entity delete-by-attribute completed successfully[/green]")
+            console.print("[green][OK] Entity delete-by-attribute completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Entity delete-by-attribute completed with no result[/yellow]")
+            console.print("[yellow][!] Entity delete-by-attribute completed with no result[/yellow]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity delete-by-attribute: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity delete-by-attribute: {str(e)}[/red]")
 
 
 @entity.command()
@@ -425,7 +425,7 @@ def update_by_attribute(ctx, type_name, qualified_name, payload_file):
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: entity update-by-attribute command[/yellow]")
             console.print(f"[dim]Type: {type_name}, Qualified Name: {qualified_name}[/dim]")
-            console.print("[green]✓ Mock entity update-by-attribute completed successfully[/green]")
+            console.print("[green][OK] Mock entity update-by-attribute completed successfully[/green]")
             return
 
         args = {
@@ -440,13 +440,13 @@ def update_by_attribute(ctx, type_name, qualified_name, payload_file):
         result = entity_client.entityPartialUpdateByUniqueAttribute(args)
 
         if result:
-            console.print("[green]✓ Entity update-by-attribute completed successfully[/green]")
+            console.print("[green][OK] Entity update-by-attribute completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Entity update-by-attribute completed with no result[/yellow]")
+            console.print("[yellow][!] Entity update-by-attribute completed with no result[/yellow]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity update-by-attribute: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity update-by-attribute: {str(e)}[/red]")
 
 
 # === HEADER OPERATIONS ===
@@ -461,7 +461,7 @@ def read_header(ctx, guid):
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: entity read-header command[/yellow]")
             console.print(f"[dim]GUID: {guid}[/dim]")
-            console.print("[green]✓ Mock entity read-header completed successfully[/green]")
+            console.print("[green][OK] Mock entity read-header completed successfully[/green]")
             return
 
         args = {"--guid": [guid]}
@@ -472,13 +472,13 @@ def read_header(ctx, guid):
         result = entity_client.entityReadHeader(args)
 
         if result:
-            console.print("[green]✓ Entity read-header completed successfully[/green]")
+            console.print("[green][OK] Entity read-header completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Entity read-header completed with no result[/yellow]")
+            console.print("[yellow][!] Entity read-header completed with no result[/yellow]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity read-header: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity read-header: {str(e)}[/red]")
 
 
 @entity.command()
@@ -492,7 +492,7 @@ def update_attribute(ctx, guid, attr_name, attr_value):
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: entity update-attribute command[/yellow]")
             console.print(f"[dim]GUID: {guid}, Attribute: {attr_name}, Value: {attr_value}[/dim]")
-            console.print("[green]✓ Mock entity update-attribute completed successfully[/green]")
+            console.print("[green][OK] Mock entity update-attribute completed successfully[/green]")
             return
 
         args = {
@@ -507,13 +507,13 @@ def update_attribute(ctx, guid, attr_name, attr_value):
         result = entity_client.entityPartialUpdateAttribute(args)
 
         if result:
-            console.print("[green]✓ Entity update-attribute completed successfully[/green]")
+            console.print("[green][OK] Entity update-attribute completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Entity update-attribute completed with no result[/yellow]")
+            console.print("[yellow][!] Entity update-attribute completed with no result[/yellow]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity update-attribute: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity update-attribute: {str(e)}[/red]")
 
 
 # === CLASSIFICATION OPERATIONS ===
@@ -529,7 +529,7 @@ def read_classification(ctx, guid, classification_name):
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: entity read-classification command[/yellow]")
             console.print(f"[dim]GUID: {guid}, Classification: {classification_name}[/dim]")
-            console.print("[green]✓ Mock entity read-classification completed successfully[/green]")
+            console.print("[green][OK] Mock entity read-classification completed successfully[/green]")
             return
 
         args = {
@@ -543,13 +543,13 @@ def read_classification(ctx, guid, classification_name):
         result = entity_client.entityReadClassification(args)
 
         if result:
-            console.print("[green]✓ Entity read-classification completed successfully[/green]")
+            console.print("[green][OK] Entity read-classification completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Entity read-classification completed with no result[/yellow]")
+            console.print("[yellow][!] Entity read-classification completed with no result[/yellow]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity read-classification: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity read-classification: {str(e)}[/red]")
 
 
 @entity.command()
@@ -562,7 +562,7 @@ def read_classifications(ctx, guid):
             console.print("[yellow]🎭 Mock: entity read-classifications command[/yellow]")
             console.print(f"[dim]GUID: {guid}[/dim]")
             console.print(
-                "[green]✓ Mock entity read-classifications completed successfully[/green]"
+                "[green][OK] Mock entity read-classifications completed successfully[/green]"
             )
             return
 
@@ -574,13 +574,13 @@ def read_classifications(ctx, guid):
         result = entity_client.entityReadClassifications(args)
 
         if result:
-            console.print("[green]✓ Entity read-classifications completed successfully[/green]")
+            console.print("[green][OK] Entity read-classifications completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Entity read-classifications completed with no result[/yellow]")
+            console.print("[yellow][!] Entity read-classifications completed with no result[/yellow]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity read-classifications: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity read-classifications: {str(e)}[/red]")
 
 
 @entity.command()
@@ -598,7 +598,7 @@ def add_classifications(ctx, guid, payload_file):
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: entity add-classifications command[/yellow]")
             console.print(f"[dim]GUID: {guid}, Payload File: {payload_file}[/dim]")
-            console.print("[green]✓ Mock entity add-classifications completed successfully[/green]")
+            console.print("[green][OK] Mock entity add-classifications completed successfully[/green]")
             return
 
         args = {
@@ -612,13 +612,13 @@ def add_classifications(ctx, guid, payload_file):
         result = entity_client.entityAddClassifications(args)
 
         if result:
-            console.print("[green]✓ Entity add-classifications completed successfully[/green]")
+            console.print("[green][OK] Entity add-classifications completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Entity add-classifications completed with no result[/yellow]")
+            console.print("[yellow][!] Entity add-classifications completed with no result[/yellow]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity add-classifications: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity add-classifications: {str(e)}[/red]")
 
 
 @entity.command()
@@ -637,7 +637,7 @@ def update_classifications(ctx, guid, payload_file):
             console.print("[yellow]🎭 Mock: entity update-classifications command[/yellow]")
             console.print(f"[dim]GUID: {guid}, Payload File: {payload_file}[/dim]")
             console.print(
-                "[green]✓ Mock entity update-classifications completed successfully[/green]"
+                "[green][OK] Mock entity update-classifications completed successfully[/green]"
             )
             return
 
@@ -652,15 +652,15 @@ def update_classifications(ctx, guid, payload_file):
         result = entity_client.entityUpdateClassifications(args)
 
         if result:
-            console.print("[green]✓ Entity update-classifications completed successfully[/green]")
+            console.print("[green][OK] Entity update-classifications completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
             console.print(
-                "[yellow]⚠ Entity update-classifications completed with no result[/yellow]"
+                "[yellow][!] Entity update-classifications completed with no result[/yellow]"
             )
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity update-classifications: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity update-classifications: {str(e)}[/red]")
 
 
 @entity.command()
@@ -676,7 +676,7 @@ def remove_classification(ctx, guid, classification_name):
             console.print("[yellow]🎭 Mock: entity remove-classification command[/yellow]")
             console.print(f"[dim]GUID: {guid}, Classification: {classification_name}[/dim]")
             console.print(
-                "[green]✓ Mock entity remove-classification completed successfully[/green]"
+                "[green][OK] Mock entity remove-classification completed successfully[/green]"
             )
             return
 
@@ -691,15 +691,15 @@ def remove_classification(ctx, guid, classification_name):
         result = entity_client.entityDeleteClassification(args)
 
         if result:
-            console.print("[green]✓ Entity remove-classification completed successfully[/green]")
+            console.print("[green][OK] Entity remove-classification completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
             console.print(
-                "[yellow]⚠ Entity remove-classification completed with no result[/yellow]"
+                "[yellow][!] Entity remove-classification completed with no result[/yellow]"
             )
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity remove-classification: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity remove-classification: {str(e)}[/red]")
 
 
 # === CLASSIFICATION OPERATIONS BY UNIQUE ATTRIBUTE ===
@@ -724,7 +724,7 @@ def add_classifications_by_attribute(ctx, type_name, qualified_name, payload_fil
             )
             console.print(f"[dim]Type: {type_name}, Qualified Name: {qualified_name}[/dim]")
             console.print(
-                "[green]✓ Mock entity add-classifications-by-attribute completed successfully[/green]"
+                "[green][OK] Mock entity add-classifications-by-attribute completed successfully[/green]"
             )
             return
 
@@ -741,17 +741,17 @@ def add_classifications_by_attribute(ctx, type_name, qualified_name, payload_fil
 
         if result:
             console.print(
-                "[green]✓ Entity add-classifications-by-attribute completed successfully[/green]"
+                "[green][OK] Entity add-classifications-by-attribute completed successfully[/green]"
             )
             console.print(json.dumps(result, indent=2))
         else:
             console.print(
-                "[yellow]⚠ Entity add-classifications-by-attribute completed with no result[/yellow]"
+                "[yellow][!] Entity add-classifications-by-attribute completed with no result[/yellow]"
             )
 
     except Exception as e:
         console.print(
-            f"[red]✗ Error executing entity add-classifications-by-attribute: {str(e)}[/red]"
+            f"[red][X] Error executing entity add-classifications-by-attribute: {str(e)}[/red]"
         )
 
 
@@ -774,7 +774,7 @@ def update_classifications_by_attribute(ctx, type_name, qualified_name, payload_
             )
             console.print(f"[dim]Type: {type_name}, Qualified Name: {qualified_name}[/dim]")
             console.print(
-                "[green]✓ Mock entity update-classifications-by-attribute completed successfully[/green]"
+                "[green][OK] Mock entity update-classifications-by-attribute completed successfully[/green]"
             )
             return
 
@@ -791,17 +791,17 @@ def update_classifications_by_attribute(ctx, type_name, qualified_name, payload_
 
         if result:
             console.print(
-                "[green]✓ Entity update-classifications-by-attribute completed successfully[/green]"
+                "[green][OK] Entity update-classifications-by-attribute completed successfully[/green]"
             )
             console.print(json.dumps(result, indent=2))
         else:
             console.print(
-                "[yellow]⚠ Entity update-classifications-by-attribute completed with no result[/yellow]"
+                "[yellow][!] Entity update-classifications-by-attribute completed with no result[/yellow]"
             )
 
     except Exception as e:
         console.print(
-            f"[red]✗ Error executing entity update-classifications-by-attribute: {str(e)}[/red]"
+            f"[red][X] Error executing entity update-classifications-by-attribute: {str(e)}[/red]"
         )
 
 
@@ -823,7 +823,7 @@ def remove_classification_by_attribute(ctx, type_name, qualified_name, classific
                 f"[dim]Type: {type_name}, Qualified Name: {qualified_name}, Classification: {classification_name}[/dim]"
             )
             console.print(
-                "[green]✓ Mock entity remove-classification-by-attribute completed successfully[/green]"
+                "[green][OK] Mock entity remove-classification-by-attribute completed successfully[/green]"
             )
             return
 
@@ -840,17 +840,17 @@ def remove_classification_by_attribute(ctx, type_name, qualified_name, classific
 
         if result:
             console.print(
-                "[green]✓ Entity remove-classification-by-attribute completed successfully[/green]"
+                "[green][OK] Entity remove-classification-by-attribute completed successfully[/green]"
             )
             console.print(json.dumps(result, indent=2))
         else:
             console.print(
-                "[yellow]⚠ Entity remove-classification-by-attribute completed with no result[/yellow]"
+                "[yellow][!] Entity remove-classification-by-attribute completed with no result[/yellow]"
             )
 
     except Exception as e:
         console.print(
-            f"[red]✗ Error executing entity remove-classification-by-attribute: {str(e)}[/red]"
+            f"[red][X] Error executing entity remove-classification-by-attribute: {str(e)}[/red]"
         )
 
 
@@ -872,7 +872,7 @@ def bulk_add_classification(ctx, payload_file):
             console.print("[yellow]🎭 Mock: entity bulk-add-classification command[/yellow]")
             console.print(f"[dim]Payload File: {payload_file}[/dim]")
             console.print(
-                "[green]✓ Mock entity bulk-add-classification completed successfully[/green]"
+                "[green][OK] Mock entity bulk-add-classification completed successfully[/green]"
             )
             return
 
@@ -884,15 +884,15 @@ def bulk_add_classification(ctx, payload_file):
         result = entity_client.entityAddClassification(args)
 
         if result:
-            console.print("[green]✓ Entity bulk-add-classification completed successfully[/green]")
+            console.print("[green][OK] Entity bulk-add-classification completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
             console.print(
-                "[yellow]⚠ Entity bulk-add-classification completed with no result[/yellow]"
+                "[yellow][!] Entity bulk-add-classification completed with no result[/yellow]"
             )
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity bulk-add-classification: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity bulk-add-classification: {str(e)}[/red]")
 
 
 @entity.command()
@@ -910,7 +910,7 @@ def bulk_set_classifications(ctx, payload_file):
             console.print("[yellow]🎭 Mock: entity bulk-set-classifications command[/yellow]")
             console.print(f"[dim]Payload File: {payload_file}[/dim]")
             console.print(
-                "[green]✓ Mock entity bulk-set-classifications completed successfully[/green]"
+                "[green][OK] Mock entity bulk-set-classifications completed successfully[/green]"
             )
             return
 
@@ -922,15 +922,15 @@ def bulk_set_classifications(ctx, payload_file):
         result = entity_client.entityBulkSetClassifications(args)
 
         if result:
-            console.print("[green]✓ Entity bulk-set-classifications completed successfully[/green]")
+            console.print("[green][OK] Entity bulk-set-classifications completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
             console.print(
-                "[yellow]⚠ Entity bulk-set-classifications completed with no result[/yellow]"
+                "[yellow][!] Entity bulk-set-classifications completed with no result[/yellow]"
             )
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity bulk-set-classifications: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity bulk-set-classifications: {str(e)}[/red]")
 
 
 # === LABEL OPERATIONS ===
@@ -951,7 +951,7 @@ def add_labels(ctx, guid, payload_file):
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: entity add-labels command[/yellow]")
             console.print(f"[dim]GUID: {guid}, Payload File: {payload_file}[/dim]")
-            console.print("[green]✓ Mock entity add-labels completed successfully[/green]")
+            console.print("[green][OK] Mock entity add-labels completed successfully[/green]")
             return
 
         args = {
@@ -965,13 +965,13 @@ def add_labels(ctx, guid, payload_file):
         result = entity_client.entityAddLabels(args)
 
         if result:
-            console.print("[green]✓ Entity add-labels completed successfully[/green]")
+            console.print("[green][OK] Entity add-labels completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Entity add-labels completed with no result[/yellow]")
+            console.print("[yellow][!] Entity add-labels completed with no result[/yellow]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity add-labels: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity add-labels: {str(e)}[/red]")
 
 
 @entity.command()
@@ -989,7 +989,7 @@ def set_labels(ctx, guid, payload_file):
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: entity set-labels command[/yellow]")
             console.print(f"[dim]GUID: {guid}, Payload File: {payload_file}[/dim]")
-            console.print("[green]✓ Mock entity set-labels completed successfully[/green]")
+            console.print("[green][OK] Mock entity set-labels completed successfully[/green]")
             return
 
         args = {
@@ -1003,13 +1003,13 @@ def set_labels(ctx, guid, payload_file):
         result = entity_client.entitySetLabels(args)
 
         if result:
-            console.print("[green]✓ Entity set-labels completed successfully[/green]")
+            console.print("[green][OK] Entity set-labels completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Entity set-labels completed with no result[/yellow]")
+            console.print("[yellow][!] Entity set-labels completed with no result[/yellow]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity set-labels: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity set-labels: {str(e)}[/red]")
 
 
 @entity.command()
@@ -1027,7 +1027,7 @@ def remove_labels(ctx, guid, payload_file):
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: entity remove-labels command[/yellow]")
             console.print(f"[dim]GUID: {guid}, Payload File: {payload_file}[/dim]")
-            console.print("[green]✓ Mock entity remove-labels completed successfully[/green]")
+            console.print("[green][OK] Mock entity remove-labels completed successfully[/green]")
             return
 
         args = {
@@ -1041,13 +1041,13 @@ def remove_labels(ctx, guid, payload_file):
         result = entity_client.entityRemoveLabels(args)
 
         if result:
-            console.print("[green]✓ Entity remove-labels completed successfully[/green]")
+            console.print("[green][OK] Entity remove-labels completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Entity remove-labels completed with no result[/yellow]")
+            console.print("[yellow][!] Entity remove-labels completed with no result[/yellow]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity remove-labels: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity remove-labels: {str(e)}[/red]")
 
 
 # === LABEL OPERATIONS BY UNIQUE ATTRIBUTE ===
@@ -1070,7 +1070,7 @@ def add_labels_by_attribute(ctx, type_name, qualified_name, payload_file):
             console.print("[yellow]🎭 Mock: entity add-labels-by-attribute command[/yellow]")
             console.print(f"[dim]Type: {type_name}, Qualified Name: {qualified_name}[/dim]")
             console.print(
-                "[green]✓ Mock entity add-labels-by-attribute completed successfully[/green]"
+                "[green][OK] Mock entity add-labels-by-attribute completed successfully[/green]"
             )
             return
 
@@ -1086,15 +1086,15 @@ def add_labels_by_attribute(ctx, type_name, qualified_name, payload_file):
         result = entity_client.entityAddLabelsByUniqueAttribute(args)
 
         if result:
-            console.print("[green]✓ Entity add-labels-by-attribute completed successfully[/green]")
+            console.print("[green][OK] Entity add-labels-by-attribute completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
             console.print(
-                "[yellow]⚠ Entity add-labels-by-attribute completed with no result[/yellow]"
+                "[yellow][!] Entity add-labels-by-attribute completed with no result[/yellow]"
             )
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity add-labels-by-attribute: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity add-labels-by-attribute: {str(e)}[/red]")
 
 
 @entity.command()
@@ -1114,7 +1114,7 @@ def set_labels_by_attribute(ctx, type_name, qualified_name, payload_file):
             console.print("[yellow]🎭 Mock: entity set-labels-by-attribute command[/yellow]")
             console.print(f"[dim]Type: {type_name}, Qualified Name: {qualified_name}[/dim]")
             console.print(
-                "[green]✓ Mock entity set-labels-by-attribute completed successfully[/green]"
+                "[green][OK] Mock entity set-labels-by-attribute completed successfully[/green]"
             )
             return
 
@@ -1130,15 +1130,15 @@ def set_labels_by_attribute(ctx, type_name, qualified_name, payload_file):
         result = entity_client.entitySetLabelsByUniqueAttribute(args)
 
         if result:
-            console.print("[green]✓ Entity set-labels-by-attribute completed successfully[/green]")
+            console.print("[green][OK] Entity set-labels-by-attribute completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
             console.print(
-                "[yellow]⚠ Entity set-labels-by-attribute completed with no result[/yellow]"
+                "[yellow][!] Entity set-labels-by-attribute completed with no result[/yellow]"
             )
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity set-labels-by-attribute: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity set-labels-by-attribute: {str(e)}[/red]")
 
 
 @entity.command()
@@ -1155,19 +1155,19 @@ def bulk_remove_labels(ctx, payload_file):
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: entity bulk-remove-labels command[/yellow]")
             console.print(f"[dim]Payload File: {payload_file}[/dim]")
-            console.print("[green]✓ Mock entity bulk-remove-labels completed successfully[/green]")
+            console.print("[green][OK] Mock entity bulk-remove-labels completed successfully[/green]")
             return
         args = {"--payloadFile": payload_file}
         from purviewcli.client._entity import Entity
         entity_client = Entity()
         result = entity_client.entityBulkRemoveLabels(args)
         if result:
-            console.print("[green]✓ Entity bulk-remove-labels completed successfully[/green]")
+            console.print("[green][OK] Entity bulk-remove-labels completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Entity bulk-remove-labels completed with no result[/yellow]")
+            console.print("[yellow][!] Entity bulk-remove-labels completed with no result[/yellow]")
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity bulk-remove-labels: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity bulk-remove-labels: {str(e)}[/red]")
 
 
 @entity.command()
@@ -1186,19 +1186,19 @@ def bulk_remove_labels_by_attribute(ctx, type_name, qualified_name, payload_file
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: entity bulk-remove-labels-by-attribute command[/yellow]")
             console.print(f"[dim]Type: {type_name}, Qualified Name: {qualified_name}, Payload File: {payload_file}[/dim]")
-            console.print("[green]✓ Mock entity bulk-remove-labels-by-attribute completed successfully[/green]")
+            console.print("[green][OK] Mock entity bulk-remove-labels-by-attribute completed successfully[/green]")
             return
         args = {"--typeName": type_name, "--qualifiedName": qualified_name, "--payloadFile": payload_file}
         from purviewcli.client._entity import Entity
         entity_client = Entity()
         result = entity_client.entityBulkRemoveLabelsByUniqueAttribute(args)
         if result:
-            console.print("[green]✓ Entity bulk-remove-labels-by-attribute completed successfully[/green]")
+            console.print("[green][OK] Entity bulk-remove-labels-by-attribute completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Entity bulk-remove-labels-by-attribute completed with no result[/yellow]")
+            console.print("[yellow][!] Entity bulk-remove-labels-by-attribute completed with no result[/yellow]")
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity bulk-remove-labels-by-attribute: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity bulk-remove-labels-by-attribute: {str(e)}[/red]")
 
 
 # === BUSINESS METADATA OPERATIONS ===
@@ -1223,7 +1223,7 @@ def add_business_metadata(ctx, guid, payload_file, is_overwrite):
             console.print("[yellow]🎭 Mock: entity add-business-metadata command[/yellow]")
             console.print(f"[dim]GUID: {guid}, Overwrite: {is_overwrite}[/dim]")
             console.print(
-                "[green]✓ Mock entity add-business-metadata completed successfully[/green]"
+                "[green][OK] Mock entity add-business-metadata completed successfully[/green]"
             )
             return
 
@@ -1239,15 +1239,15 @@ def add_business_metadata(ctx, guid, payload_file, is_overwrite):
         result = entity_client.entityAddOrUpdateBusinessMetadata(args)
 
         if result:
-            console.print("[green]✓ Entity add-business-metadata completed successfully[/green]")
+            console.print("[green][OK] Entity add-business-metadata completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
             console.print(
-                "[yellow]⚠ Entity add-business-metadata completed with no result[/yellow]"
+                "[yellow][!] Entity add-business-metadata completed with no result[/yellow]"
             )
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity add-business-metadata: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity add-business-metadata: {str(e)}[/red]")
 
 
 @entity.command()
@@ -1269,7 +1269,7 @@ def add_business_metadata_attributes(ctx, guid, bm_name, payload_file):
             )
             console.print(f"[dim]GUID: {guid}, BM Name: {bm_name}[/dim]")
             console.print(
-                "[green]✓ Mock entity add-business-metadata-attributes completed successfully[/green]"
+                "[green][OK] Mock entity add-business-metadata-attributes completed successfully[/green]"
             )
             return
 
@@ -1286,17 +1286,17 @@ def add_business_metadata_attributes(ctx, guid, bm_name, payload_file):
 
         if result:
             console.print(
-                "[green]✓ Entity add-business-metadata-attributes completed successfully[/green]"
+                "[green][OK] Entity add-business-metadata-attributes completed successfully[/green]"
             )
             console.print(json.dumps(result, indent=2))
         else:
             console.print(
-                "[yellow]⚠ Entity add-business-metadata-attributes completed with no result[/yellow]"
+                "[yellow][!] Entity add-business-metadata-attributes completed with no result[/yellow]"
             )
 
     except Exception as e:
         console.print(
-            f"[red]✗ Error executing entity add-business-metadata-attributes: {str(e)}[/red]"
+            f"[red][X] Error executing entity add-business-metadata-attributes: {str(e)}[/red]"
         )
 
 
@@ -1316,7 +1316,7 @@ def remove_business_metadata(ctx, guid, payload_file):
             console.print("[yellow]🎭 Mock: entity remove-business-metadata command[/yellow]")
             console.print(f"[dim]GUID: {guid}[/dim]")
             console.print(
-                "[green]✓ Mock entity remove-business-metadata completed successfully[/green]"
+                "[green][OK] Mock entity remove-business-metadata completed successfully[/green]"
             )
             return
 
@@ -1331,15 +1331,15 @@ def remove_business_metadata(ctx, guid, payload_file):
         result = entity_client.entityRemoveBusinessMetadata(args)
 
         if result:
-            console.print("[green]✓ Entity remove-business-metadata completed successfully[/green]")
+            console.print("[green][OK] Entity remove-business-metadata completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
             console.print(
-                "[yellow]⚠ Entity remove-business-metadata completed with no result[/yellow]"
+                "[yellow][!] Entity remove-business-metadata completed with no result[/yellow]"
             )
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity remove-business-metadata: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity remove-business-metadata: {str(e)}[/red]")
 
 
 @entity.command()
@@ -1361,7 +1361,7 @@ def remove_business_metadata_attributes(ctx, guid, bm_name, payload_file):
             )
             console.print(f"[dim]GUID: {guid}, BM Name: {bm_name}[/dim]")
             console.print(
-                "[green]✓ Mock entity remove-business-metadata-attributes completed successfully[/green]"
+                "[green][OK] Mock entity remove-business-metadata-attributes completed successfully[/green]"
             )
             return
 
@@ -1378,17 +1378,17 @@ def remove_business_metadata_attributes(ctx, guid, bm_name, payload_file):
 
         if result:
             console.print(
-                "[green]✓ Entity remove-business-metadata-attributes completed successfully[/green]"
+                "[green][OK] Entity remove-business-metadata-attributes completed successfully[/green]"
             )
             console.print(json.dumps(result, indent=2))
         else:
             console.print(
-                "[yellow]⚠ Entity remove-business-metadata-attributes completed with no result[/yellow]"
+                "[yellow][!] Entity remove-business-metadata-attributes completed with no result[/yellow]"
             )
 
     except Exception as e:
         console.print(
-            f"[red]✗ Error executing entity remove-business-metadata-attributes: {str(e)}[/red]"
+            f"[red][X] Error executing entity remove-business-metadata-attributes: {str(e)}[/red]"
         )
 
 
@@ -1407,7 +1407,7 @@ def import_business_metadata(ctx, bm_file):
             console.print("[yellow]🎭 Mock: entity import-business-metadata command[/yellow]")
             console.print(f"[dim]BM File: {bm_file}[/dim]")
             console.print(
-                "[green]✓ Mock entity import-business-metadata completed successfully[/green]"
+                "[green][OK] Mock entity import-business-metadata completed successfully[/green]"
             )
             return
 
@@ -1419,15 +1419,15 @@ def import_business_metadata(ctx, bm_file):
         result = entity_client.entityImportBusinessMetadata(args)
 
         if result:
-            console.print("[green]✓ Entity import-business-metadata completed successfully[/green]")
+            console.print("[green][OK] Entity import-business-metadata completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
             console.print(
-                "[yellow]⚠ Entity import-business-metadata completed with no result[/yellow]"
+                "[yellow][!] Entity import-business-metadata completed with no result[/yellow]"
             )
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity import-business-metadata: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity import-business-metadata: {str(e)}[/red]")
 
 
 @entity.command()
@@ -1438,7 +1438,7 @@ def get_business_metadata_template(ctx):
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: entity get-business-metadata-template command[/yellow]")
             console.print(
-                "[green]✓ Mock entity get-business-metadata-template completed successfully[/green]"
+                "[green][OK] Mock entity get-business-metadata-template completed successfully[/green]"
             )
             return
 
@@ -1451,17 +1451,17 @@ def get_business_metadata_template(ctx):
 
         if result:
             console.print(
-                "[green]✓ Entity get-business-metadata-template completed successfully[/green]"
+                "[green][OK] Entity get-business-metadata-template completed successfully[/green]"
             )
             console.print(json.dumps(result, indent=2))
         else:
             console.print(
-                "[yellow]⚠ Entity get-business-metadata-template completed with no result[/yellow]"
+                "[yellow][!] Entity get-business-metadata-template completed with no result[/yellow]"
             )
 
     except Exception as e:
         console.print(
-            f"[red]✗ Error executing entity get-business-metadata-template: {str(e)}[/red]"
+            f"[red][X] Error executing entity get-business-metadata-template: {str(e)}[/red]"
         )
 
 
@@ -1482,7 +1482,7 @@ def move_to_collection(ctx, payload_file):
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: entity move-to-collection command[/yellow]")
             console.print(f"[dim]Payload File: {payload_file}[/dim]")
-            console.print("[green]✓ Mock entity move-to-collection completed successfully[/green]")
+            console.print("[green][OK] Mock entity move-to-collection completed successfully[/green]")
             return
 
         args = {"--payloadFile": payload_file}
@@ -1493,13 +1493,13 @@ def move_to_collection(ctx, payload_file):
         result = entity_client.entityMoveEntitiesToCollection(args)
 
         if result:
-            console.print("[green]✓ Entity move-to-collection completed successfully[/green]")
+            console.print("[green][OK] Entity move-to-collection completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Entity move-to-collection completed with no result[/yellow]")
+            console.print("[yellow][!] Entity move-to-collection completed with no result[/yellow]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity move-to-collection: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity move-to-collection: {str(e)}[/red]")
 
 
 # === SAMPLE OPERATIONS ===
@@ -1514,7 +1514,7 @@ def read_sample(ctx, guid):
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: entity read-sample command[/yellow]")
             console.print(f"[dim]GUID: {guid}[/dim]")
-            console.print("[green]✓ Mock entity read-sample completed successfully[/green]")
+            console.print("[green][OK] Mock entity read-sample completed successfully[/green]")
             return
 
         args = {"--guid": [guid]}
@@ -1525,13 +1525,13 @@ def read_sample(ctx, guid):
         result = entity_client.entityReadSample(args)
 
         if result:
-            console.print("[green]✓ Entity read-sample completed successfully[/green]")
+            console.print("[green][OK] Entity read-sample completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Entity read-sample completed with no result[/yellow]")
+            console.print("[yellow][!] Entity read-sample completed with no result[/yellow]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity read-sample: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity read-sample: {str(e)}[/red]")
 
 
 @entity.command()
@@ -1547,12 +1547,12 @@ def bulk_classify_csv(ctx, csv_file, batch_size):
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: entity bulk-classify-csv command[/yellow]")
             console.print(f"[dim]CSV File: {csv_file}[/dim]")
-            console.print("[green]✓ Mock entity bulk-classify-csv completed successfully[/green]")
+            console.print("[green][OK] Mock entity bulk-classify-csv completed successfully[/green]")
             return
 
         df = pd.read_csv(csv_file)
         if "guid" not in df.columns or "classificationName" not in df.columns:
-            console.print("[red]✗ CSV must contain 'guid' and 'classificationName' columns[/red]")
+            console.print("[red][X] CSV must contain 'guid' and 'classificationName' columns[/red]")
             return
         entity_client = Entity()
         total = len(df)
@@ -1588,13 +1588,13 @@ def bulk_classify_csv(ctx, csv_file, batch_size):
             finally:
                 import os
                 os.remove(payload_file)
-        console.print(f"[green]✓ Bulk classification completed. Success: {success}, Failed: {failed}[/green]")
+        console.print(f"[green][OK] Bulk classification completed. Success: {success}, Failed: {failed}[/green]")
         if errors:
             console.print("[red]Errors:[/red]")
             for err in errors:
                 console.print(f"[red]- {err}[/red]")
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity bulk-classify-csv: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity bulk-classify-csv: {str(e)}[/red]")
 
 
 # === BULK ENTITY CSV OPERATIONS ===
@@ -1615,12 +1615,12 @@ def bulk_create_csv(ctx, csv_file, batch_size, dry_run, error_csv):
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: entity bulk-create-csv command[/yellow]")
             console.print(f"[dim]CSV File: {csv_file}[/dim]")
-            console.print("[green]✓ Mock entity bulk-create-csv completed successfully[/green]")
+            console.print("[green][OK] Mock entity bulk-create-csv completed successfully[/green]")
             return
 
         df = pd.read_csv(csv_file)
         if "typeName" not in df.columns or "qualifiedName" not in df.columns:
-            console.print("[red]✗ CSV must contain at least 'typeName' and 'qualifiedName' columns[/red]")
+            console.print("[red][X] CSV must contain at least 'typeName' and 'qualifiedName' columns[/red]")
             return
         entity_client = Entity()
         total = len(df)
@@ -1685,12 +1685,12 @@ def bulk_update_csv(ctx, csv_file, batch_size, dry_run, error_csv):
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: entity bulk-update-csv command[/yellow]")
             console.print(f"[dim]CSV File: {csv_file}[/dim]")
-            console.print("[green]✓ Mock entity bulk-update-csv completed successfully[/green]")
+            console.print("[green][OK] Mock entity bulk-update-csv completed successfully[/green]")
             return
 
         df = pd.read_csv(csv_file)
         if "guid" not in df.columns:
-            console.print("[red]✗ CSV must contain 'guid' column[/red]")
+            console.print("[red][X] CSV must contain 'guid' column[/red]")
             return
         entity_client = Entity()
         total = len(df)
@@ -1727,16 +1727,16 @@ def bulk_update_csv(ctx, csv_file, batch_size, dry_run, error_csv):
                 failed_rows.extend(batch.to_dict(orient="records"))
             finally:
                 os.remove(payload_file)
-        console.print(f"[green]✓ Bulk update completed. Success: {success}, Failed: {failed}[/green]")
+        console.print(f"[green][OK] Bulk update completed. Success: {success}, Failed: {failed}[/green]")
         if errors:
             console.print("[red]Errors:[/red]")
             for err in errors:
                 console.print(f"[red]- {err}[/red]")
         if error_csv and failed_rows:
             pd.DataFrame(failed_rows).to_csv(error_csv, index=False)
-            console.print(f"[yellow]✗ Failed rows written to {error_csv}[/yellow]")
+            console.print(f"[yellow][X] Failed rows written to {error_csv}[/yellow]")
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity bulk-update-csv: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity bulk-update-csv: {str(e)}[/red]")
 
 
 @entity.command()
@@ -1754,12 +1754,12 @@ def bulk_delete_csv(ctx, csv_file, batch_size, dry_run, error_csv):
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: entity bulk-delete-csv command[/yellow]")
             console.print(f"[dim]CSV File: {csv_file}[/dim]")
-            console.print("[green]✓ Mock entity bulk-delete-csv completed successfully[/green]")
+            console.print("[green][OK] Mock entity bulk-delete-csv completed successfully[/green]")
             return
 
         df = pd.read_csv(csv_file)
         if "guid" not in df.columns:
-            console.print("[red]✗ CSV must contain 'guid' column[/red]")
+            console.print("[red][X] CSV must contain 'guid' column[/red]")
             return
         entity_client = Entity()
         total = len(df)
@@ -1785,16 +1785,16 @@ def bulk_delete_csv(ctx, csv_file, batch_size, dry_run, error_csv):
                 failed += len(guids)
                 errors.append(f"Batch {i//batch_size+1}: {str(e)}")
                 failed_rows.extend(batch.to_dict(orient="records"))
-        console.print(f"[green]✓ Bulk delete completed. Success: {success}, Failed: {failed}[/green]")
+        console.print(f"[green][OK] Bulk delete completed. Success: {success}, Failed: {failed}[/green]")
         if errors:
             console.print("[red]Errors:[/red]")
             for err in errors:
                 console.print(f"[red]- {err}[/red]")
         if error_csv and failed_rows:
             pd.DataFrame(failed_rows).to_csv(error_csv, index=False)
-            console.print(f"[yellow]✗ Failed rows written to {error_csv}[/yellow]")
+            console.print(f"[yellow][X] Failed rows written to {error_csv}[/yellow]")
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity bulk-delete-csv: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity bulk-delete-csv: {str(e)}[/red]")
 
 
 # === AUDIT OPERATIONS ===
@@ -1809,19 +1809,19 @@ def audit(ctx, guid):
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: entity audit command[/yellow]")
             console.print(f"[dim]GUID: {guid}[/dim]")
-            console.print("[green]✓ Mock entity audit completed successfully[/green]")
+            console.print("[green][OK] Mock entity audit completed successfully[/green]")
             return
         args = {"--guid": guid}
         from purviewcli.client._entity import Entity
         entity_client = Entity()
         result = entity_client.entityReadAudit(args)
         if result:
-            console.print("[green]✓ Entity audit events retrieved successfully[/green]")
+            console.print("[green][OK] Entity audit events retrieved successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Entity audit completed with no result[/yellow]")
+            console.print("[yellow][!] Entity audit completed with no result[/yellow]")
     except Exception as e:
-        console.print(f"[red]✗ Error executing entity audit: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity audit: {str(e)}[/red]")
 
 
 @entity.command()
@@ -1859,7 +1859,7 @@ def list(type_name, limit):
     except Exception as e:
         from rich.console import Console
         console = Console()
-        console.print(f"[red]✗ Error executing entity list: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing entity list: {str(e)}[/red]")
 
 
 @entity.command("bulk-delete-optimized")
@@ -1904,8 +1904,8 @@ def bulk_delete_optimized(ctx, guids, bulk_size, max_parallel, throttle_ms,
             api_calls_per_job = math.ceil(assets_per_job / bulk_size)
             total_api_calls = api_calls_per_job * max_parallel
             
-            console.print(f"[blue]⚙️ Mathematical Optimization Analysis:[/blue]")
-            console.print(f"   📊 Total Assets: {total_assets}")
+            console.print(f"[blue][*] Mathematical Optimization Analysis:[/blue]")
+            console.print(f"   [INFO] Total Assets: {total_assets}")
             console.print(f"   🔄 Parallel Jobs: {max_parallel}")
             console.print(f"   📦 Assets per Job: {assets_per_job}")
             console.print(f"   🚀 Bulk Size: {bulk_size}")
@@ -1917,7 +1917,7 @@ def bulk_delete_optimized(ctx, guids, bulk_size, max_parallel, throttle_ms,
                 console.print(f"[green]✨ Perfect mathematical division achieved! Zero waste.[/green]")
             else:
                 waste_assets = (total_api_calls * bulk_size) - total_assets
-                console.print(f"[yellow]⚠ Mathematical waste: {waste_assets} empty slots in final requests[/yellow]")
+                console.print(f"[yellow][!] Mathematical waste: {waste_assets} empty slots in final requests[/yellow]")
 
         if continuous and collection_name:
             deleted_count = _continuous_collection_deletion(
@@ -1930,12 +1930,12 @@ def bulk_delete_optimized(ctx, guids, bulk_size, max_parallel, throttle_ms,
                 throttle_ms, batch_throttle_ms, dry_run
             )
         
-        console.print(f"[green]✓ {'Would delete' if dry_run else 'Successfully deleted'} {deleted_count} assets[/green]")
+        console.print(f"[green][OK] {'Would delete' if dry_run else 'Successfully deleted'} {deleted_count} assets[/green]")
 
     except Exception as e:
         from rich.console import Console
         console = Console()
-        console.print(f"[red]✗ Error in bulk-delete-optimized: {str(e)}[/red]")
+        console.print(f"[red][X] Error in bulk-delete-optimized: {str(e)}[/red]")
 
 
 @entity.command("bulk-delete-from-collection")
@@ -1973,12 +1973,12 @@ def bulk_delete_from_collection(ctx, collection_name, bulk_size, max_parallel,
             throttle_ms, 800, dry_run, batch_size
         )
         
-        console.print(f"[green]✓ Collection cleanup complete: {'Would delete' if dry_run else 'Deleted'} {deleted_count} total assets[/green]")
+        console.print(f"[green][OK] Collection cleanup complete: {'Would delete' if dry_run else 'Deleted'} {deleted_count} total assets[/green]")
 
     except Exception as e:
         from rich.console import Console
         console = Console()
-        console.print(f"[red]✗ Error in bulk-delete-from-collection: {str(e)}[/red]")
+        console.print(f"[red][X] Error in bulk-delete-from-collection: {str(e)}[/red]")
 
 
 @entity.command("count-assets")
@@ -1996,12 +1996,12 @@ def count_assets(ctx, collection_name, by_type, include_relationships):
         from rich.table import Table
         
         console = Console()
-        console.print(f"[blue]📊 Counting assets in collection: {collection_name}[/blue]")
+        console.print(f"[blue][INFO] Counting assets in collection: {collection_name}[/blue]")
         
         # Get asset count using search API
         total_count = _get_collection_asset_count(collection_name)
         
-        console.print(f"[green]✓ Total assets: {total_count}[/green]")
+        console.print(f"[green][OK] Total assets: {total_count}[/green]")
 
         if by_type:
             type_counts = _get_asset_type_breakdown(collection_name)
@@ -2014,7 +2014,7 @@ def count_assets(ctx, collection_name, by_type, include_relationships):
     except Exception as e:
         from rich.console import Console
         console = Console()
-        console.print(f"[red]✗ Error in count-assets: {str(e)}[/red]")
+        console.print(f"[red][X] Error in count-assets: {str(e)}[/red]")
 
 
 @entity.command("analyze-performance")
@@ -2073,7 +2073,7 @@ def analyze_performance(ctx, bulk_size, max_parallel, asset_count):
         console.print("\n[blue]💡 Optimization Recommendations:[/blue]")
         
         if asset_count % (max_parallel * bulk_size) == 0:
-            console.print("[green]✅ Perfect mathematical division - optimal configuration![/green]")
+            console.print("[green][OK] Perfect mathematical division - optimal configuration![/green]")
         else:
             # Calculate optimal configurations
             optimal_configs = _calculate_optimal_configs(asset_count, bulk_size)
@@ -2084,7 +2084,7 @@ def analyze_performance(ctx, bulk_size, max_parallel, asset_count):
     except Exception as e:
         from rich.console import Console
         console = Console()
-        console.print(f"[red]✗ Error in analyze-performance: {str(e)}[/red]")
+        console.print(f"[red][X] Error in analyze-performance: {str(e)}[/red]")
 
 
 # === ENHANCED BULK OPERATION FUNCTIONS ===
@@ -2109,7 +2109,7 @@ def _execute_optimized_bulk_delete(ctx, guids, bulk_size, max_parallel, throttle
     deleted_count = 0
 
     if dry_run:
-        console.print(f"[yellow]🔍 DRY RUN: Would delete {total_assets} assets[/yellow]")
+        console.print(f"[yellow][*] DRY RUN: Would delete {total_assets} assets[/yellow]")
         return total_assets
 
     from purviewcli.client._entity import Entity
@@ -2156,7 +2156,7 @@ def _execute_optimized_bulk_delete(ctx, guids, bulk_size, max_parallel, throttle
                         time.sleep(batch_throttle_ms / 1000)
                         
                 except Exception as e:
-                    console.print(f"[red]✗ Batch deletion failed: {str(e)}[/red]")
+                    console.print(f"[red][X] Batch deletion failed: {str(e)}[/red]")
 
     return deleted_count
 
@@ -2188,7 +2188,7 @@ def _delete_batch_job(entity_client, guid_batch, bulk_size, throttle_ms, job_id)
         except Exception as e:
             from rich.console import Console
             console = Console()
-            console.print(f"[red]✗ Job {job_id} bulk delete failed: {str(e)}[/red]")
+            console.print(f"[red][X] Job {job_id} bulk delete failed: {str(e)}[/red]")
     
     return deleted_in_job
 
@@ -2212,14 +2212,14 @@ def _continuous_collection_deletion(ctx, collection_name, bulk_size, max_paralle
         asset_guids = _get_collection_assets_batch(collection_name, batch_size)
         
         if not asset_guids:
-            console.print("[green]✅ No more assets found - collection is clean![/green]")
+            console.print("[green][OK] No more assets found - collection is clean![/green]")
             break
         
         found_count = len(asset_guids)
-        console.print(f"[blue]📊 Found {found_count} assets in iteration {iteration}[/blue]")
+        console.print(f"[blue][INFO] Found {found_count} assets in iteration {iteration}[/blue]")
         
         if dry_run:
-            console.print(f"[yellow]🔍 DRY RUN: Would delete {found_count} assets[/yellow]")
+            console.print(f"[yellow][*] DRY RUN: Would delete {found_count} assets[/yellow]")
             total_deleted += found_count
         else:
             # Execute optimized deletion for this batch
@@ -2229,14 +2229,14 @@ def _continuous_collection_deletion(ctx, collection_name, bulk_size, max_paralle
             )
             
             total_deleted += deleted_in_iteration
-            console.print(f"[green]✓ Iteration {iteration}: Deleted {deleted_in_iteration}/{found_count} assets[/green]")
+            console.print(f"[green][OK] Iteration {iteration}: Deleted {deleted_in_iteration}/{found_count} assets[/green]")
             console.print(f"[blue]📈 Running total: {total_deleted} assets deleted[/blue]")
         
         iteration += 1
         
         # Break after reasonable number of iterations in dry-run
         if dry_run and iteration > 5:
-            console.print("[yellow]🔍 DRY RUN: Simulated 5 iterations[/yellow]")
+            console.print("[yellow][*] DRY RUN: Simulated 5 iterations[/yellow]")
             break
 
     return total_deleted

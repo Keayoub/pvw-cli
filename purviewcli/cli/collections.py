@@ -169,7 +169,7 @@ def list_detailed(ctx, output_format, include_assets, include_scans, max_depth):
         collections_result = collections_client.collectionsRead({})
         
         if not collections_result or "value" not in collections_result:
-            console.print("[yellow]⚠ No collections found[/yellow]")
+            console.print("[yellow][!] No collections found[/yellow]")
             return
 
         collections_data = collections_result["value"]
@@ -183,7 +183,7 @@ def list_detailed(ctx, output_format, include_assets, include_scans, max_depth):
             _display_collections_table(collections_data, include_assets, include_scans)
 
     except Exception as e:
-        console.print(f"[red]✗ Error in collections list-detailed: {str(e)}[/red]")
+        console.print(f"[red][X] Error in collections list-detailed: {str(e)}[/red]")
 
 
 @collections.command("get-details")
@@ -222,7 +222,7 @@ def get_details(ctx, collection_name, include_assets, include_data_sources, incl
         
         collection_info = collections_client.collectionsRead({"--name": collection_name})
         if not collection_info:
-            console.print(f"[red]✗ Collection '{collection_name}' not found[/red]")
+            console.print(f"[red][X] Collection '{collection_name}' not found[/red]")
             return
 
         # Display basic collection info
@@ -230,22 +230,22 @@ def get_details(ctx, collection_name, include_assets, include_data_sources, incl
 
         # Get assets if requested
         if include_assets:
-            console.print(f"[blue]🔍 Retrieving assets (limit: {asset_limit})...[/blue]")
+            console.print(f"[blue][*] Retrieving assets (limit: {asset_limit})...[/blue]")
             assets = _get_collection_assets(search_client, collection_name, asset_limit)
             _display_asset_summary(assets)
 
         # Get data sources if requested
         if include_data_sources:
             console.print("[blue]🔌 Retrieving data sources...[/blue]")
-            console.print("[yellow]⚠ Data source information feature coming soon[/yellow]")
+            console.print("[yellow][!] Data source information feature coming soon[/yellow]")
 
         # Get scan information if requested
         if include_scans:
-            console.print("[blue]🔍 Retrieving scan information...[/blue]")
-            console.print("[yellow]⚠ Scan information feature coming soon[/yellow]")
+            console.print("[blue][*] Retrieving scan information...[/blue]")
+            console.print("[yellow][!] Scan information feature coming soon[/yellow]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error in collections get-details: {str(e)}[/red]")
+        console.print(f"[red][X] Error in collections get-details: {str(e)}[/red]")
 
 
 @collections.command("force-delete")
@@ -287,13 +287,13 @@ def force_delete(ctx, collection_name, delete_assets, delete_data_sources,
         console = Console()
 
         if dry_run:
-            console.print(f"[yellow]🔍 DRY RUN: Analyzing collection '{collection_name}' for deletion[/yellow]")
+            console.print(f"[yellow][*] DRY RUN: Analyzing collection '{collection_name}' for deletion[/yellow]")
 
         # Mathematical optimization validation (from PowerShell scripts)
         if delete_assets and batch_size > 0:
             assets_per_job = 1000 // max_parallel  # Default total per batch cycle
             api_calls_per_job = assets_per_job // batch_size
-            console.print(f"[blue]⚙️ Optimization: {max_parallel} parallel jobs, {assets_per_job} assets/job, {api_calls_per_job} API calls/job[/blue]")
+            console.print(f"[blue][*] Optimization: {max_parallel} parallel jobs, {assets_per_job} assets/job, {api_calls_per_job} API calls/job[/blue]")
 
         collections_client = Collections()
         entity_client = Entity()
@@ -302,36 +302,36 @@ def force_delete(ctx, collection_name, delete_assets, delete_data_sources,
         # Step 1: Verify collection exists
         collection_info = collections_client.collectionsRead({"--collectionName": collection_name})
         if not collection_info:
-            console.print(f"[red]✗ Collection '{collection_name}' not found[/red]")
+            console.print(f"[red][X] Collection '{collection_name}' not found[/red]")
             return
 
         # Step 2: Delete assets if requested
         if delete_assets:
-            console.print(f"[blue]🗑️ {'[DRY RUN] ' if dry_run else ''}Deleting assets in collection...[/blue]")
+            console.print(f"[blue][DEL] {'[DRY RUN] ' if dry_run else ''}Deleting assets in collection...[/blue]")
             deleted_count = _bulk_delete_collection_assets(
                 search_client, entity_client, collection_name, 
                 batch_size, max_parallel, dry_run
             )
-            console.print(f"[green]✓ {'Would delete' if dry_run else 'Deleted'} {deleted_count} assets[/green]")
+            console.print(f"[green][OK] {'Would delete' if dry_run else 'Deleted'} {deleted_count} assets[/green]")
 
         # Step 3: Delete data sources if requested
         if delete_data_sources:
             console.print(f"[blue]🔌 {'[DRY RUN] ' if dry_run else ''}Deleting data sources...[/blue]")
-            console.print("[yellow]⚠ Data source deletion feature coming soon[/yellow]")
+            console.print("[yellow][!] Data source deletion feature coming soon[/yellow]")
 
         # Step 4: Delete the collection itself
         if not dry_run:
-            console.print(f"[blue]🗑️ Deleting collection '{collection_name}'...[/blue]")
+            console.print(f"[blue][DEL] Deleting collection '{collection_name}'...[/blue]")
             result = collections_client.collectionsDelete({"--collectionName": collection_name})
             if result:
-                console.print(f"[green]✓ Collection '{collection_name}' deleted successfully[/green]")
+                console.print(f"[green][OK] Collection '{collection_name}' deleted successfully[/green]")
             else:
-                console.print(f"[yellow]⚠ Collection deletion completed with no result[/yellow]")
+                console.print(f"[yellow][!] Collection deletion completed with no result[/yellow]")
         else:
-            console.print(f"[yellow]🔍 DRY RUN: Would delete collection '{collection_name}'[/yellow]")
+            console.print(f"[yellow][*] DRY RUN: Would delete collection '{collection_name}'[/yellow]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error in collections force-delete: {str(e)}[/red]")
+        console.print(f"[red][X] Error in collections force-delete: {str(e)}[/red]")
 
 
 # === HELPER FUNCTIONS ===
@@ -441,10 +441,10 @@ def _display_asset_summary(assets):
     
     console = Console()
     if not assets:
-        console.print("[yellow]⚠ No assets found in collection[/yellow]")
+        console.print("[yellow][!] No assets found in collection[/yellow]")
         return
     
-    console.print(f"[green]✓ Found {len(assets)} assets[/green]")
+    console.print(f"[green][OK] Found {len(assets)} assets[/green]")
     # Would display asset type breakdown, etc.
 
 
@@ -462,7 +462,7 @@ def _bulk_delete_collection_assets(search_client, entity_client, collection_name
     console = Console()
     
     # Step 1: Get all asset GUIDs in the collection
-    console.print("[blue]🔍 Finding all assets in collection...[/blue]")
+    console.print("[blue][*] Finding all assets in collection...[/blue]")
     
     # This would use search API to get all assets
     # For now, return mock count
@@ -471,7 +471,7 @@ def _bulk_delete_collection_assets(search_client, entity_client, collection_name
     if total_assets == 0:
         return 0
     
-    console.print(f"[blue]📊 Found {total_assets} assets to delete[/blue]")
+    console.print(f"[blue][INFO] Found {total_assets} assets to delete[/blue]")
     
     if dry_run:
         return total_assets
@@ -480,7 +480,7 @@ def _bulk_delete_collection_assets(search_client, entity_client, collection_name
     assets_per_job = math.ceil(total_assets / max_parallel)
     api_calls_per_job = math.ceil(assets_per_job / batch_size)
     
-    console.print(f"[blue]⚙️ Parallel execution: {max_parallel} jobs, {assets_per_job} assets/job, {api_calls_per_job} API calls/job[/blue]")
+    console.print(f"[blue][*] Parallel execution: {max_parallel} jobs, {assets_per_job} assets/job, {api_calls_per_job} API calls/job[/blue]")
     
     # Step 3: Execute parallel bulk deletions
     deleted_count = 0

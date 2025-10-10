@@ -194,7 +194,7 @@ def update(action_id, status, assigned_to, reason):
     result = client.update_health_action(args)
     
     if result and result.get("status") == "success":
-        console.print(f"[green]✓[/green] Health action updated successfully: {action_id}")
+        console.print(f"[green][OK][/green] Health action updated successfully: {action_id}")
         if status:
             console.print(f"  Status: {status}")
         if assigned_to:
@@ -216,7 +216,7 @@ def delete(action_id):
     result = client.delete_health_action(args)
     
     if result and result.get("status") == "success":
-        console.print(f"[green]✓[/green] Health action deleted successfully: {action_id}")
+        console.print(f"[green][OK][/green] Health action deleted successfully: {action_id}")
     else:
         console.print(f"[red]Failed to delete health action: {action_id}[/red]")
 

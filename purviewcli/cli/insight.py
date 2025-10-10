@@ -37,7 +37,7 @@ def asset_distribution():
         result = client.assetDistribution({})
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @insight.command()
 def files_aggregation():
@@ -48,7 +48,7 @@ def files_aggregation():
         result = client.filesAggregation({})
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @insight.command()
 def files_without_resource_set():
@@ -59,7 +59,7 @@ def files_without_resource_set():
         result = client.filesWithoutResourceSet({})
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @insight.command()
 @click.option('--number-of-days', default=30, show_default=True, type=int, help='Trailing time period in days')
@@ -72,7 +72,7 @@ def scan_status_summary(number_of_days):
         result = client.scanStatusSummary(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @insight.command()
 @click.option('--number-of-days', default=30, show_default=True, type=int, help='Trailing time period in days')
@@ -85,7 +85,7 @@ def scan_status_summary_by_ts(number_of_days):
         result = client.scanStatusSummaryByTs(args)
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @insight.command()
 def tags():
@@ -96,7 +96,7 @@ def tags():
         result = client.tags({})
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 @insight.command()
 def tags_time_series():
@@ -107,7 +107,7 @@ def tags_time_series():
         result = client.tagsTimeSeries({})
         console.print(json.dumps(result, indent=2))
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red][X] Error: {e}[/red]")
 
 # Make the insight group available for import
 __all__ = ['insight']

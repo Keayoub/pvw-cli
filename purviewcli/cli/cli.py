@@ -38,97 +38,97 @@ def register_individual_cli_modules(main_group):
 
         main_group.add_command(lineage)
     except ImportError as e:
-        console.print(f"[yellow]⚠ Could not import lineage CLI module: {e}[/yellow]")
+        console.print(f"[yellow][!] Could not import lineage CLI module: {e}[/yellow]")
     try:
         from .account import account
 
         main_group.add_command(account)
     except ImportError as e:
-        console.print(f"[yellow]⚠ Could not import account CLI module: {e}[/yellow]")
+        console.print(f"[yellow][!] Could not import account CLI module: {e}[/yellow]")
     try:
         from .entity import entity
 
         main_group.add_command(entity)
     except ImportError as e:
-        console.print(f"[yellow]⚠ Could not import entity CLI module: {e}[/yellow]")
+        console.print(f"[yellow][!] Could not import entity CLI module: {e}[/yellow]")
     try:
         from .insight import insight
 
         main_group.add_command(insight)
     except ImportError as e:
-        console.print(f"[yellow]⚠ Could not import insight CLI module: {e}[/yellow]")
+        console.print(f"[yellow][!] Could not import insight CLI module: {e}[/yellow]")
     try:
         from .glossary import glossary
 
         main_group.add_command(glossary)
     except ImportError as e:
-        console.print(f"[yellow]⚠ Could not import glossary CLI module: {e}[/yellow]")
+        console.print(f"[yellow][!] Could not import glossary CLI module: {e}[/yellow]")
     try:
         from .management import management
 
         main_group.add_command(management)
     except ImportError as e:
-        console.print(f"[yellow]⚠ Could not import management CLI module: {e}[/yellow]")
+        console.print(f"[yellow][!] Could not import management CLI module: {e}[/yellow]")
     try:
         from .policystore import policystore
 
         main_group.add_command(policystore)
     except ImportError as e:
-        console.print(f"[yellow]⚠ Could not import policystore CLI module: {e}[/yellow]")
+        console.print(f"[yellow][!] Could not import policystore CLI module: {e}[/yellow]")
     try:
         from .relationship import relationship
 
         main_group.add_command(relationship)
     except ImportError as e:
-        console.print(f"[yellow]⚠ Could not import relationship CLI module: {e}[/yellow]")
+        console.print(f"[yellow][!] Could not import relationship CLI module: {e}[/yellow]")
     try:
         from .scan import scan
 
         main_group.add_command(scan)
 
     except ImportError as e:
-        console.print(f"[yellow]⚠ Could not import scan CLI module: {e}[/yellow]")
+        console.print(f"[yellow][!] Could not import scan CLI module: {e}[/yellow]")
     try:
         from .search import search
 
         main_group.add_command(search)
     except ImportError as e:
-        console.print(f"[yellow]⚠ Could not import search CLI module: {e}[/yellow]")
+        console.print(f"[yellow][!] Could not import search CLI module: {e}[/yellow]")
     try:
         from .share import share
 
         main_group.add_command(share)
     except ImportError as e:
-        console.print(f"[yellow]⚠ Could not import share CLI module: {e}[/yellow]")
+        console.print(f"[yellow][!] Could not import share CLI module: {e}[/yellow]")
     try:
         from .types import types
         main_group.add_command(types)
     except ImportError as e:
-        console.print(f"[yellow]⚠ Could not import types CLI module: {e}[/yellow]")
+        console.print(f"[yellow][!] Could not import types CLI module: {e}[/yellow]")
     try:
         from .collections import collections
         main_group.add_command(collections, name="collections")
         # Removed domain alias to avoid conflicts with dedicated domain module
     except ImportError as e:
-        console.print(f"[yellow]⚠ Could not import collections CLI module: {e}[/yellow]")
+        console.print(f"[yellow][!] Could not import collections CLI module: {e}[/yellow]")
     try:
         from .unified_catalog import uc
 
         main_group.add_command(uc)  # Main Unified Catalog command
     except ImportError as e:
-        console.print(f"[yellow]⚠ Could not import unified catalog (uc) CLI module: {e}[/yellow]")
+        console.print(f"[yellow][!] Could not import unified catalog (uc) CLI module: {e}[/yellow]")
     try:
         from .domain import domain
 
         main_group.add_command(domain)
     except ImportError as e:
-        console.print(f"[yellow]⚠ Could not import domain CLI module: {e}[/yellow]")
+        console.print(f"[yellow][!] Could not import domain CLI module: {e}[/yellow]")
     try:
         from .workflow import workflow
 
         main_group.add_command(workflow)
     except ImportError as e:
-        console.print(f"[yellow]⚠ Could not import workflow CLI module: {e}[/yellow]")
+        console.print(f"[yellow][!] Could not import workflow CLI module: {e}[/yellow]")
 
 
 @click.group()

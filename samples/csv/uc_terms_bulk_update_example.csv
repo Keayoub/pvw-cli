@@ -1,0 +1,6 @@
+term_id,name,description,status,acronyms,owner_ids,add_acronyms,add_owner_ids
+term-guid-1,Updated Term Name,This is an updated description,Published,,,API;REST,
+term-guid-2,,This term keeps its name but gets new description,,,,,user@company.com
+term-guid-3,,,Draft,,,,
+term-guid-4,,,,,SQL;DB,,
+term-guid-5,,,,,,NEW,admin@company.com

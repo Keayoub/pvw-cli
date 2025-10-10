@@ -1,0 +1,30 @@
+{
+  "updates": [
+    {
+      "term_id": "term-guid-1",
+      "name": "Updated Term Name",
+      "description": "This is an updated description with full details",
+      "status": "Published"
+    },
+    {
+      "term_id": "term-guid-2",
+      "description": "Only updating the description, keeping the name",
+      "add_acronyms": ["API", "REST", "HTTP"]
+    },
+    {
+      "term_id": "term-guid-3",
+      "status": "Draft",
+      "add_owner_ids": ["user@company.com", "admin@company.com"]
+    },
+    {
+      "term_id": "term-guid-4",
+      "acronyms": ["SQL", "DB"],
+      "owner_ids": ["dba@company.com"]
+    },
+    {
+      "term_id": "term-guid-5",
+      "add_acronyms": ["NEW"],
+      "add_owner_ids": ["newuser@company.com"]
+    }
+  ]
+}

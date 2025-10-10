@@ -38,7 +38,7 @@ def get_account(ctx):
     try:
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: account get-account command[/yellow]")
-            console.print("[green]✓ Mock account get-account completed successfully[/green]")
+            console.print("[green][OK] Mock account get-account completed successfully[/green]")
             return
 
         args = {}
@@ -48,13 +48,13 @@ def get_account(ctx):
         result = account_client.accountRead(args)
 
         if result:
-            console.print("[green]✓ Account information retrieved successfully[/green]")
+            console.print("[green][OK] Account information retrieved successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Account get-account completed with no result[/yellow]")
+            console.print("[yellow][!] Account get-account completed with no result[/yellow]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing account get-account: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing account get-account: {str(e)}[/red]")
 
 
 @account.command()
@@ -64,7 +64,7 @@ def get_access_keys(ctx):
     try:
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: account get-access-keys command[/yellow]")
-            console.print("[green]✓ Mock account get-access-keys completed successfully[/green]")
+            console.print("[green][OK] Mock account get-access-keys completed successfully[/green]")
             return
 
         args = {}
@@ -74,13 +74,13 @@ def get_access_keys(ctx):
         result = account_client.accountReadAccessKeys(args)
 
         if result:
-            console.print("[green]✓ Access keys retrieved successfully[/green]")
+            console.print("[green][OK] Access keys retrieved successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Account get-access-keys completed with no result[/yellow]")
+            console.print("[yellow][!] Account get-access-keys completed with no result[/yellow]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing account get-access-keys: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing account get-access-keys: {str(e)}[/red]")
 
 
 @account.command()
@@ -94,7 +94,7 @@ def regenerate_access_keys(ctx, key_type):
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: account regenerate-access-keys command[/yellow]")
             console.print(f"[dim]Key Type: {key_type}[/dim]")
-            console.print("[green]✓ Mock account regenerate-access-keys completed successfully[/green]")
+            console.print("[green][OK] Mock account regenerate-access-keys completed successfully[/green]")
             return
 
         args = {"--keyType": key_type}
@@ -104,13 +104,13 @@ def regenerate_access_keys(ctx, key_type):
         result = account_client.accountRegenerateAccessKey(args)
 
         if result:
-            console.print("[green]✓ Access keys regenerated successfully[/green]")
+            console.print("[green][OK] Access keys regenerated successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Account regenerate-access-keys completed with no result[/yellow]")
+            console.print("[yellow][!] Account regenerate-access-keys completed with no result[/yellow]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing account regenerate-access-keys: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing account regenerate-access-keys: {str(e)}[/red]")
 
 
 @account.command()
@@ -122,7 +122,7 @@ def update_account(ctx, friendly_name):
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: account update-account command[/yellow]")
             console.print(f"[dim]Friendly Name: {friendly_name}[/dim]")
-            console.print("[green]✓ Mock account update-account completed successfully[/green]")
+            console.print("[green][OK] Mock account update-account completed successfully[/green]")
             return
 
         args = {"--friendlyName": friendly_name}
@@ -132,13 +132,13 @@ def update_account(ctx, friendly_name):
         result = account_client.accountUpdate(args)
 
         if result:
-            console.print("[green]✓ Account updated successfully[/green]")
+            console.print("[green][OK] Account updated successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Account update-account completed with no result[/yellow]")
+            console.print("[yellow][!] Account update-account completed with no result[/yellow]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing account update-account: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing account update-account: {str(e)}[/red]")
 
 
 @account.command()
@@ -148,7 +148,7 @@ def get_collections(ctx):
     try:
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: account get-collections command[/yellow]")
-            console.print("[green]✓ Mock account get-collections completed successfully[/green]")
+            console.print("[green][OK] Mock account get-collections completed successfully[/green]")
             return
 
         args = {}
@@ -158,13 +158,13 @@ def get_collections(ctx):
         result = account_client.collectionsRead(args)
 
         if result:
-            console.print("[green]✓ Collections retrieved successfully[/green]")
+            console.print("[green][OK] Collections retrieved successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Account get-collections completed with no result[/yellow]")
+            console.print("[yellow][!] Account get-collections completed with no result[/yellow]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing account get-collections: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing account get-collections: {str(e)}[/red]")
 
 
 @account.command()
@@ -176,7 +176,7 @@ def get_collection(ctx, collection_name):
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: account get-collection command[/yellow]")
             console.print(f"[dim]Collection Name: {collection_name}[/dim]")
-            console.print("[green]✓ Mock account get-collection completed successfully[/green]")
+            console.print("[green][OK] Mock account get-collection completed successfully[/green]")
             return
 
         args = {"--collectionName": collection_name}
@@ -186,13 +186,13 @@ def get_collection(ctx, collection_name):
         result = account_client.collectionsRead(args)
 
         if result:
-            console.print("[green]✓ Collection information retrieved successfully[/green]")
+            console.print("[green][OK] Collection information retrieved successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Account get-collection completed with no result[/yellow]")
+            console.print("[yellow][!] Account get-collection completed with no result[/yellow]")
 
     except Exception as e:
-        console.print(f"[red]✗ Error executing account get-collection: {str(e)}[/red]")
+        console.print(f"[red][X] Error executing account get-collection: {str(e)}[/red]")
 
 
 # Make the account group available for import

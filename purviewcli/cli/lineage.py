@@ -156,7 +156,7 @@ def templates(ctx):
             console.print("[green]SUCCESS: Lineage templates retrieved successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Lineage templates completed with no result[/yellow]")
+            console.print("[yellow][!] Lineage templates completed with no result[/yellow]")
 
     except Exception as e:
         console.print(f"[red]ERROR: Error executing lineage templates: {str(e)}[/red]")
@@ -196,7 +196,7 @@ def read(ctx, guid, depth, width, direction, output):
             console.print("[green]SUCCESS: Lineage read completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Lineage read completed with no result[/yellow]")
+            console.print("[yellow][!] Lineage read completed with no result[/yellow]")
 
     except Exception as e:
         console.print(f"[red]ERROR: Error executing lineage read: {str(e)}[/red]")
@@ -229,7 +229,7 @@ def impact(ctx, entity_guid, output_file):
             console.print("[green]SUCCESS: Lineage impact analysis completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Lineage impact analysis completed with no result[/yellow]")
+            console.print("[yellow][!] Lineage impact analysis completed with no result[/yellow]")
 
     except Exception as e:
         console.print(f"[red]ERROR: Error executing lineage impact: {str(e)}[/red]")
@@ -267,7 +267,7 @@ def analyze(ctx, entity_guid, direction, depth, output_file):
             console.print("[green]SUCCESS: Lineage analysis completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Lineage analysis completed with no result[/yellow]")
+            console.print("[yellow][!] Lineage analysis completed with no result[/yellow]")
 
     except Exception as e:
         console.print(f"[red]ERROR: Error executing lineage analyze: {str(e)}[/red]")
@@ -289,7 +289,7 @@ def create_bulk(ctx, json_file):
         lineage_client = Lineage()
         args = {'--payloadFile': json_file}
         result = lineage_client.lineageBulkCreate(args)
-        console.print("[green]✓ Bulk lineage creation completed successfully[/green]")
+        console.print("[green][OK] Bulk lineage creation completed successfully[/green]")
         console.print(json.dumps(result, indent=2))
     except Exception as e:
         console.print(f"[red]ERROR: Error executing lineage create-bulk: {str(e)}[/red]")
@@ -327,7 +327,7 @@ def analyze_column(ctx, guid, column_name, direction, depth, output):
             console.print("[green]SUCCESS: Column-level lineage analysis completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Column-level lineage analysis completed with no result[/yellow]")
+            console.print("[yellow][!] Column-level lineage analysis completed with no result[/yellow]")
 
     except Exception as e:
         console.print(f"[red]ERROR: Error executing lineage analyze-column: {str(e)}[/red]")
@@ -384,7 +384,7 @@ def partial_lineage(ctx, guid, columns, relationship_types, depth, direction, ou
             console.print("[green]SUCCESS: Partial lineage query completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Partial lineage query completed with no result[/yellow]")
+            console.print("[yellow][!] Partial lineage query completed with no result[/yellow]")
     except Exception as e:
         console.print(f"[red]ERROR: Error executing lineage partial: {str(e)}[/red]")
 
@@ -407,7 +407,7 @@ def impact_report(ctx, entity_guid, output_file):
         reporting = LineageReporting(analyzer)
         import asyncio
         report = asyncio.run(reporting.generate_impact_report(entity_guid, output_file or f"impact_report_{entity_guid}.json"))
-        console.print("[green]✓ Impact analysis report generated successfully[/green]")
+        console.print("[green][OK] Impact analysis report generated successfully[/green]")
         if output_file:
             console.print(f"[cyan]Report saved to {output_file}[/cyan]")
         else:
@@ -448,10 +448,10 @@ def read_by_attribute(ctx, type_name, qualified_name, depth, width, direction, o
         lineage_client = Lineage()
         result = lineage_client.lineageReadUniqueAttribute(args)
         if result:
-            console.print("[green]✓ Lineage by attribute read completed successfully[/green]")
+            console.print("[green][OK] Lineage by attribute read completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow]⚠ Lineage by attribute read completed with no result[/yellow]")
+            console.print("[yellow][!] Lineage by attribute read completed with no result[/yellow]")
     except Exception as e:
         console.print(f"[red]ERROR: Error executing lineage read-by-attribute: {str(e)}[/red]")
 
@@ -468,7 +468,7 @@ def read_lineage(ctx, guid, direction, depth):
         lineage_client = Lineage()
         args = {"--guid": guid, "--direction": direction, "--depth": depth}
         result = lineage_client.get_lineage_by_guid(args)
-        console.print("[green]✓ Lineage read completed successfully[/green]")
+        console.print("[green][OK] Lineage read completed successfully[/green]")
         console.print(json.dumps(result, indent=2))
     except Exception as e:
         console.print(f"[red]ERROR: Error executing lineage read: {str(e)}[/red]")
