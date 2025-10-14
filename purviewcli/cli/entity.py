@@ -1689,44 +1689,150 @@ def bulk_update_csv(ctx, csv_file, batch_size, dry_run, error_csv):
             return
 
         df = pd.read_csv(csv_file)
-        if "guid" not in df.columns:
-            console.print("[red][X] CSV must contain 'guid' column[/red]")
+        if df.empty:
+            console.print("[yellow]No rows found in CSV. Exiting.[/yellow]")
             return
+
         entity_client = Entity()
         total = len(df)
         success, failed = 0, 0
         errors = []
         failed_rows = []
+
+        # Determine mode:
+        # - If CSV has both 'typeName' and 'qualifiedName' -> map rows to Purview entities and call bulk create-or-update
+        # - Else if CSV has 'guid' -> build guid-based payloads (preferred for partial attribute updates)
+        has_type_qn = ("typeName" in df.columns and "qualifiedName" in df.columns)
+        has_guid = "guid" in df.columns
+
         for i in range(0, total, batch_size):
-            batch = df.iloc[i:i+batch_size]
-            payload = {
-                "entities": [
-                    {col: row[col] for col in batch.columns if pd.notnull(row[col])}
-                    for _, row in batch.iterrows()
-                ]
-            }
-            if dry_run:
-                console.print(f"[blue]DRY RUN: Would update batch {i//batch_size+1} with {len(batch)} entities[/blue]")
-                continue
-            with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as tmpf:
-                json.dump(payload, tmpf, indent=2)
-                tmpf.flush()
-                payload_file = tmpf.name
-            try:
-                args = {"--payloadFile": payload_file}
-                result = entity_client.entityBulkUpdate(args)
-                if result and (not isinstance(result, dict) or result.get("status") != "error"):
-                    success += len(batch)
-                else:
+            batch = df.iloc[i : i + batch_size]
+
+            if has_type_qn:
+                # Map flat rows to Purview entity objects using helper
+                from purviewcli.client._entity import map_flat_entity_to_purview_entity
+
+                entities = [map_flat_entity_to_purview_entity(row) for _, row in batch.iterrows()]
+                payload = {"entities": entities}
+
+                if dry_run:
+                    console.print(f"[blue]DRY RUN: Would bulk-create/update batch {i//batch_size+1} with {len(batch)} entities[/blue]")
+                    continue
+
+                with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False, encoding="utf-8") as tmpf:
+                    json.dump(payload, tmpf, indent=2)
+                    tmpf.flush()
+                    payload_file = tmpf.name
+
+                try:
+                    args = {"--payloadFile": payload_file}
+                    result = entity_client.entityCreateBulk(args)
+                    if result and (not isinstance(result, dict) or result.get("status") != "error"):
+                        success += len(batch)
+                    else:
+                        failed += len(batch)
+                        errors.append(f"Batch {i//batch_size+1}: {result}")
+                        failed_rows.extend(batch.to_dict(orient="records"))
+                except Exception as e:
                     failed += len(batch)
-                    errors.append(f"Batch {i//batch_size+1}: {result}")
+                    errors.append(f"Batch {i//batch_size+1}: {str(e)}")
                     failed_rows.extend(batch.to_dict(orient="records"))
-            except Exception as e:
-                failed += len(batch)
-                errors.append(f"Batch {i//batch_size+1}: {str(e)}")
-                failed_rows.extend(batch.to_dict(orient="records"))
-            finally:
-                os.remove(payload_file)
+                finally:
+                    try:
+                        os.remove(payload_file)
+                    except Exception:
+                        pass
+
+            elif has_guid:
+                # Build guid-based updates. If the CSV contains only guid + attr columns, we'll attempt to perform
+                # partial attribute updates by calling entityPartialUpdateAttribute where possible.
+                # If a row contains multiple attributes, we will call entityCreateBulk with a payload containing
+                # the guid and attributes (server supports bulk create-or-update by guid in some endpoints).
+
+                # Normalize rows into dicts
+                rows = [row.to_dict() for _, row in batch.iterrows()]
+
+                # Attempt to detect single-attribute update pattern: columns [guid, attrName, attrValue]
+                if set(["guid", "attrName", "attrValue"]).issubset(set(batch.columns)):
+                    # perform per-guid partial updates in batch
+                    for r in rows:
+                        guid = str(r.get("guid"))
+                        attr_name = r.get("attrName")
+                        attr_value = r.get("attrValue")
+                        if pd.isna(guid) or pd.isna(attr_name):
+                            failed += 1
+                            failed_rows.append(r)
+                            continue
+                        if dry_run:
+                            console.print(f"[blue]DRY RUN: Would update GUID {guid} set {attr_name}={attr_value}[/blue]")
+                            success += 1
+                            continue
+                        try:
+                            args = {"--guid": [guid], "--attrName": attr_name, "--attrValue": attr_value}
+                            result = entity_client.entityPartialUpdateAttribute(args)
+                            if result and (not isinstance(result, dict) or result.get("status") != "error"):
+                                success += 1
+                            else:
+                                failed += 1
+                                errors.append(f"GUID {guid}: {result}")
+                                failed_rows.append(r)
+                        except Exception as e:
+                            failed += 1
+                            errors.append(f"GUID {guid}: {str(e)}")
+                            failed_rows.append(r)
+
+                else:
+                    # Fallback: call bulk create-or-update with guid included in each entity object.
+                    # Map each row into an entity dict keeping non-null columns.
+                    entities = []
+                    for r in rows:
+                        if pd.isna(r.get("guid")):
+                            failed_rows.append(r)
+                            failed += 1
+                            continue
+                        ent = {k: v for k, v in r.items() if pd.notnull(v)}
+                        # ensure guid is string under top-level 'guid' field for server bulk endpoints
+                        ent["guid"] = str(ent.get("guid"))
+                        entities.append(ent)
+
+                    if not entities:
+                        continue
+
+                    payload = {"entities": entities}
+                    if dry_run:
+                        console.print(f"[blue]DRY RUN: Would bulk-update (by guid) batch {i//batch_size+1} with {len(entities)} entities[/blue]")
+                        success += len(entities)
+                        continue
+
+                    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False, encoding="utf-8") as tmpf:
+                        json.dump(payload, tmpf, indent=2)
+                        tmpf.flush()
+                        payload_file = tmpf.name
+
+                    try:
+                        args = {"--payloadFile": payload_file}
+                        # Use the create-or-update bulk endpoint - server will use guid when present
+                        result = entity_client.entityCreateBulk(args)
+                        if result and (not isinstance(result, dict) or result.get("status") != "error"):
+                            success += len(entities)
+                        else:
+                            failed += len(entities)
+                            errors.append(f"Batch {i//batch_size+1}: {result}")
+                            failed_rows.extend(batch.to_dict(orient="records"))
+                    except Exception as e:
+                        failed += len(entities)
+                        errors.append(f"Batch {i//batch_size+1}: {str(e)}")
+                        failed_rows.extend(batch.to_dict(orient="records"))
+                    finally:
+                        try:
+                            os.remove(payload_file)
+                        except Exception:
+                            pass
+
+            else:
+                console.print(f"[red][X] CSV must contain either (typeName and qualifiedName) or guid column[/red]")
+                return
+
         console.print(f"[green][OK] Bulk update completed. Success: {success}, Failed: {failed}[/green]")
         if errors:
             console.print("[red]Errors:[/red]")
@@ -1734,7 +1840,7 @@ def bulk_update_csv(ctx, csv_file, batch_size, dry_run, error_csv):
                 console.print(f"[red]- {err}[/red]")
         if error_csv and failed_rows:
             pd.DataFrame(failed_rows).to_csv(error_csv, index=False)
-            console.print(f"[yellow][X] Failed rows written to {error_csv}[/yellow]")
+            console.print(f"[yellow]WARNING: Failed rows written to {error_csv}[/yellow]")
     except Exception as e:
         console.print(f"[red][X] Error executing entity bulk-update-csv: {str(e)}[/red]")
 
@@ -1774,7 +1880,7 @@ def bulk_delete_csv(ctx, csv_file, batch_size, dry_run, error_csv):
                 continue
             try:
                 args = {"--guid": guids}
-                result = entity_client.entityBulkDelete(args)
+                result = entity_client.entityDeleteBulk(args)
                 if result and (not isinstance(result, dict) or result.get("status") != "error"):
                     success += len(guids)
                 else:

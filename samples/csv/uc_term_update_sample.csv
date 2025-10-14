@@ -1,0 +1,26 @@
+# Sample CSV for bulk updating Unified Catalog terms
+# This file demonstrates various update operations including parent_id (hierarchical relationships)
+#
+# Required column:
+#   - term_id: The GUID of the term to update
+#
+# Optional columns (leave empty to skip):
+#   - name: New term name (replaces existing)
+#   - description: New description (replaces existing)
+#   - status: New status (Draft, Published, Archived)
+#   - parent_id: Parent term GUID for hierarchical relationships
+#   - acronyms: New acronyms separated by semicolons (replaces all existing)
+#   - owner_ids: New owner IDs separated by semicolons (replaces all existing)
+#   - add_acronyms: Acronyms to add separated by semicolons (preserves existing)
+#   - add_owner_ids: Owner IDs to add separated by semicolons (preserves existing)
+#
+# Usage: pvw uc term update-csv --csv-file uc_term_update_sample.csv
+# Dry run: pvw uc term update-csv --csv-file uc_term_update_sample.csv --dry-run
+
+term_id,name,description,status,parent_id,acronyms,owner_ids,add_acronyms,add_owner_ids
+term-guid-1,Updated Term Name,This is an updated description with full details,Published,,,,,
+term-guid-2,,This term keeps its name but gets new description and parent,,parent-term-guid,,,,
+term-guid-3,Child Term One,,Draft,parent-term-guid,,,,
+term-guid-4,,,,,parent-term-guid,SQL;DB,,
+term-guid-5,,,,,,,API;REST,user1@company.com;user2@company.com
+term-guid-6,Updated with Parent,New description for hierarchical term,Published,parent-term-guid,DATA;MGMT,owner@company.com,,

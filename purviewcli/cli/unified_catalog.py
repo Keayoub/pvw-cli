@@ -813,6 +813,7 @@ def term():
 @click.option("--name", required=True, help="Name of the glossary term")
 @click.option("--description", required=False, default="", help="Rich text description of the term")
 @click.option("--domain-id", required=True, help="Governance domain ID")
+@click.option("--parent-id", required=False, help="Parent term ID (for hierarchical terms)")
 @click.option(
     "--status",
     required=False,
@@ -834,7 +835,7 @@ def term():
 )
 @click.option("--resource-name", required=False, help="Resource name for additional reading (can be specified multiple times)", multiple=True)
 @click.option("--resource-url", required=False, help="Resource URL for additional reading (can be specified multiple times)", multiple=True)
-def create(name, description, domain_id, status, acronym, owner_id, resource_name, resource_url):
+def create(name, description, domain_id, parent_id, status, acronym, owner_id, resource_name, resource_url):
     """Create a new Unified Catalog term (Governance Domain term)."""
     try:
         client = UnifiedCatalogClient()
@@ -847,6 +848,8 @@ def create(name, description, domain_id, status, acronym, owner_id, resource_nam
             "--status": [status],
         }
 
+        if parent_id:
+            args["--parent-id"] = [parent_id]
         if acronym:
             args["--acronym"] = list(acronym)
         if owner_id:
@@ -1037,6 +1040,7 @@ def delete(term_id, force):
 @click.option("--name", required=False, help="Name of the glossary term")
 @click.option("--description", required=False, help="Rich text description of the term")
 @click.option("--domain-id", required=False, help="Governance domain ID")
+@click.option("--parent-id", required=False, help="Parent term ID (for hierarchical terms)")
 @click.option(
     "--status",
     required=False,
@@ -1059,7 +1063,7 @@ def delete(term_id, force):
 @click.option("--resource-url", required=False, help="Resource URL for additional reading (can be specified multiple times, replaces existing)", multiple=True)
 @click.option("--add-acronym", required=False, help="Add acronym to existing ones (can be specified multiple times)", multiple=True)
 @click.option("--add-owner-id", required=False, help="Add owner to existing ones (can be specified multiple times)", multiple=True)
-def update(term_id, name, description, domain_id, status, acronym, owner_id, resource_name, resource_url, add_acronym, add_owner_id):
+def update(term_id, name, description, domain_id, parent_id, status, acronym, owner_id, resource_name, resource_url, add_acronym, add_owner_id):
     """Update an existing Unified Catalog term."""
     try:
         client = UnifiedCatalogClient()
@@ -1073,6 +1077,8 @@ def update(term_id, name, description, domain_id, status, acronym, owner_id, res
             args["--description"] = [description]
         if domain_id:
             args["--governance-domain-id"] = [domain_id]
+        if parent_id:
+            args["--parent-id"] = [parent_id]
         if status:
             args["--status"] = [status]
         
@@ -1386,7 +1392,7 @@ def update_terms_from_csv(csv_file, dry_run):
     """Bulk update glossary terms from a CSV file.
     
     CSV Format:
-    term_id,name,description,status,acronyms,owner_ids,add_acronyms,add_owner_ids
+    term_id,name,description,status,parent_id,acronyms,owner_ids,add_acronyms,add_owner_ids
     
     Required:
     - term_id: The ID of the term to update
@@ -1395,15 +1401,16 @@ def update_terms_from_csv(csv_file, dry_run):
     - name: New term name (replaces existing)
     - description: New description (replaces existing)
     - status: New status (Draft, Published, Archived)
+    - parent_id: Parent term ID for hierarchical relationships (replaces existing)
     - acronyms: New acronyms separated by semicolons (replaces all existing)
     - owner_ids: New owner IDs separated by semicolons (replaces all existing)
     - add_acronyms: Acronyms to add separated by semicolons (preserves existing)
     - add_owner_ids: Owner IDs to add separated by semicolons (preserves existing)
     
     Example CSV:
-    term_id,name,description,status,add_acronyms,add_owner_ids
-    abc-123,,Updated description,Published,API;REST,user1@company.com
-    def-456,New Name,,,SQL,
+    term_id,name,description,status,parent_id,add_acronyms,add_owner_ids
+    abc-123,,Updated description,Published,parent-term-guid,API;REST,user1@company.com
+    def-456,New Name,,,parent-term-guid,SQL,
     """
     import csv
     
@@ -1440,6 +1447,8 @@ def update_terms_from_csv(csv_file, dry_run):
                     changes.append(f"desc: {update['description'][:50]}...")
                 if update.get('status', '').strip():
                     changes.append(f"status: {update['status']}")
+                if update.get('parent_id', '').strip():
+                    changes.append(f"parent: {update['parent_id'][:20]}...")
                 if update.get('acronyms', '').strip():
                     changes.append(f"acronyms: {update['acronyms']}")
                 if update.get('add_acronyms', '').strip():
@@ -1479,6 +1488,8 @@ def update_terms_from_csv(csv_file, dry_run):
                 args['--description'] = [update['description'].strip()]
             if update.get('status', '').strip():
                 args['--status'] = [update['status'].strip()]
+            if update.get('parent_id', '').strip():
+                args['--parent-id'] = [update['parent_id'].strip()]
             if update.get('acronyms', '').strip():
                 args['--acronym'] = [a.strip() for a in update['acronyms'].split(';') if a.strip()]
             if update.get('owner_ids', '').strip():
@@ -1537,6 +1548,7 @@ def update_terms_from_json(json_file, dry_run):
                 "name": "New Name",                    // Optional: Replace name
                 "description": "New description",      // Optional: Replace description
                 "status": "Published",                 // Optional: Change status
+                "parent_id": "parent-term-guid",       // Optional: Set parent term (hierarchical)
                 "acronyms": ["API", "REST"],          // Optional: Replace all acronyms
                 "owner_ids": ["user@company.com"],    // Optional: Replace all owners
                 "add_acronyms": ["SQL"],              // Optional: Add acronyms (preserves existing)
@@ -1599,6 +1611,8 @@ def update_terms_from_json(json_file, dry_run):
                 args['--description'] = [update['description']]
             if update.get('status'):
                 args['--status'] = [update['status']]
+            if update.get('parent_id'):
+                args['--parent-id'] = [update['parent_id']]
             if update.get('acronyms'):
                 args['--acronym'] = update['acronyms'] if isinstance(update['acronyms'], list) else [update['acronyms']]
             if update.get('owner_ids'):

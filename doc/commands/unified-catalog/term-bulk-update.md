@@ -44,6 +44,7 @@ pvw uc term update-json --json-file <path> [--dry-run]
 - `name`: New term name (replaces existing)
 - `description`: New description (replaces existing)
 - `status`: New status (Draft, Published, Archived)
+- `parent_id`: Parent term GUID for hierarchical relationships (replaces existing)
 - `acronyms`: New acronyms separated by semicolons (replaces all existing)
 - `owner_ids`: New owner IDs separated by semicolons (replaces all existing)
 
@@ -54,15 +55,17 @@ pvw uc term update-json --json-file <path> [--dry-run]
 ### CSV Example
 
 ```csv
-term_id,name,description,status,acronyms,owner_ids,add_acronyms,add_owner_ids
-abc-123,Updated Name,New description,Published,,,API;REST,
-def-456,,Only updating description,,,,,user@company.com
-ghi-789,,,Draft,,,,
+term_id,name,description,status,parent_id,acronyms,owner_ids,add_acronyms,add_owner_ids
+abc-123,Updated Name,New description,Published,,,,API;REST,
+def-456,,Only updating description,,parent-guid,,,user@company.com
+ghi-789,,,Draft,parent-guid,,,,
+jkl-012,Child Term,New child term,,parent-guid,,,,
 ```
 
 **Row 1:** Updates name, description, status, and adds acronyms API and REST
-**Row 2:** Updates description only and adds an owner
-**Row 3:** Changes status to Draft
+**Row 2:** Updates description, sets parent relationship, and adds an owner
+**Row 3:** Changes status to Draft and sets parent
+**Row 4:** Updates name and sets parent (creates hierarchical relationship)
 
 ## JSON Format
 
@@ -76,6 +79,7 @@ ghi-789,,,Draft,,,,
       "name": "New Name",                    // Optional: Replace name
       "description": "New description",      // Optional: Replace description
       "status": "Published",                 // Optional: Change status
+      "parent_id": "parent-term-guid",       // Optional: Set parent term (hierarchical)
       "acronyms": ["API", "REST"],          // Optional: Replace all acronyms
       "owner_ids": ["user@company.com"],    // Optional: Replace all owners
       "add_acronyms": ["SQL"],              // Optional: Add acronyms (preserves existing)

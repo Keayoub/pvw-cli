@@ -19,6 +19,41 @@ from .endpoint import Endpoint, decorator, get_json, no_api_call_decorator
 from .endpoints import ENDPOINTS, get_api_version_params
 
 
+def map_flat_entity_to_purview_entity(row):
+    """Map a flat row (pandas Series or dict) into a Purview entity dict.
+
+    Expected minimal input: { 'typeName': 'DataSet', 'qualifiedName': '...','attr1': 'v', ... }
+    Produces: { 'typeName': ..., 'attributes': { 'qualifiedName': ..., 'attr1': 'v', ... } }
+    """
+    try:
+        data = row.to_dict()
+    except Exception:
+        data = dict(row)
+
+    # pop typeName
+    type_name = data.pop("typeName", None)
+
+    # build attributes, skipping null-like values
+    attrs = {}
+    from math import isnan
+
+    for k, v in data.items():
+        # skip empty column names
+        if k is None or (isinstance(k, str) and k.strip() == ""):
+            continue
+        # treat NaN/None as missing
+        try:
+            if v is None:
+                continue
+            if isinstance(v, float) and isnan(v):
+                continue
+        except Exception:
+            pass
+        attrs[k] = v
+
+    return {"typeName": type_name, "attributes": attrs}
+
+
 class Entity(Endpoint):
     """Entity Management Operations - Complete Official API Implementation with 100% Coverage"""
 

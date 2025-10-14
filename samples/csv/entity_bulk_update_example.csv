@@ -1,0 +1,11 @@
+typeName,qualifiedName,displayName,description,owner,source,collection
+DataSet,//storage/data/sales_2024_Q1.csv@myaccount,Sales Q1 2024,First quarter sales data for 2024,sales-team,ERP System,sales-collection
+DataSet,//storage/data/sales_2024_Q2.csv@myaccount,Sales Q2 2024,Second quarter sales data for 2024,sales-team,ERP System,sales-collection
+DataSet,//storage/data/customers_master.csv@myaccount,Customer Master,Master customer database,data-team,CRM System,customer-collection
+DataSet,//storage/data/products_catalog.csv@myaccount,Product Catalog,Complete product catalog,product-team,PIM System,products-collection
+DataSet,//storage/data/inventory_current.csv@myaccount,Current Inventory,Real-time inventory levels,warehouse-team,WMS System,inventory-collection
+azure_sql_table,mssql://sqlserver.database.windows.net/SalesDB/dbo/Orders,Orders Table,Customer order transactions,dba-team,SQL Server,finance-collection
+azure_sql_table,mssql://sqlserver.database.windows.net/SalesDB/dbo/OrderDetails,Order Details,Line items for each order,dba-team,SQL Server,finance-collection
+azure_sql_table,mssql://sqlserver.database.windows.net/CustomerDB/dbo/Customers,Customers Table,Customer information,dba-team,SQL Server,customer-collection
+azure_datalake_gen2_path,https://mystorage.dfs.core.windows.net/raw/sales/,Sales Raw Data,Raw sales data landing zone,data-eng-team,Azure Data Lake,sales-collection
+azure_datalake_gen2_path,https://mystorage.dfs.core.windows.net/processed/sales/,Sales Processed,Processed and cleaned sales data,data-eng-team,Azure Data Lake,sales-collection

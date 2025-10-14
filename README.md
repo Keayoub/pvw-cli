@@ -1,4 +1,4 @@
-# PURVIEW CLI v1.0.14 - Microsoft Purview Automation & Data Governance
+# PURVIEW CLI v1.2.0 - Microsoft Purview Automation & Data Governance
 
 > **LATEST UPDATE (October 2025):**
 > - **� NEW: Bulk Term Import/Export** - Import multiple terms from CSV/JSON with dry-run support
@@ -14,7 +14,7 @@
 
 ## What is PVW CLI?
 
-**PVW CLI v1.0.14** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* including:
+**PVW CLI v1.2.0** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* including:
 
 - **Unified Catalog (UC) Management** - Complete governance domains, glossary terms, data products, OKRs, CDEs
 - **Bulk Operations** - Import/export terms from CSV/JSON, bulk delete scripts with progress tracking
@@ -106,7 +106,7 @@ For more advanced usage, see the documentation in `doc/` or the project docs: ht
 
 ## Overview
 
-**PVW CLI v1.0.14** is a modern command-line interface and Python library for Microsoft Purview, enabling:
+**PVW CLI v1.2.0** is a modern command-line interface and Python library for Microsoft Purview, enabling:
 
 - Advanced data catalog search and discovery
 - Bulk import/export of entities, glossary terms, and lineage
@@ -1145,6 +1145,6 @@ See [LICENSE](LICENSE) file for details.
 
 ---
 
-**PVW CLI v1.0.14 empowers data engineers, stewards, and architects to automate, scale, and enhance their Microsoft Purview experience with powerful command-line and programmatic capabilities.**
+**PVW CLI v1.2.0 empowers data engineers, stewards, and architects to automate, scale, and enhance their Microsoft Purview experience with powerful command-line and programmatic capabilities.**
 
 **Latest Features:** Bulk term import/export, PowerShell integration, multiple output formats, and comprehensive bulk delete scripts with beautiful progress tracking.

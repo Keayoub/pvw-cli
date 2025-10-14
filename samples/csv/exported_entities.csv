@@ -1,0 +1,6 @@
+typeName,qualifiedName,name,description
+azure_sql_table,mssql://fabricdemos001.database.windows.net/Adventureworks/SalesLT/Customer,Customer,Bulk updated description from PVW
+azure_sql_table,mssql://fabricdemos001.database.windows.net/Adventureworks/SalesLT/Address,Address,Bulk updated description from PVW
+fabric_data_warehouse,https://app.fabric.microsoft.com/groups/8457f746-f2d9-4d27-8221-5714601e40c6/datawarehouses/39a665ee-d827-43c1-a4f9-10aa1a7e8a09,39a665ee-d827-43c1-a4f9-10aa1a7e8a09,Bulk updated description from PVW
+powerbi_dataset,https://app.powerbi.com/groups/8457f746-f2d9-4d27-8221-5714601e40c6/datasets/292521d7-2a1d-475a-b534-ea66d422d925,292521d7-2a1d-475a-b534-ea66d422d925,Bulk updated description from PVW
+azure_sql_table,mssql://fabricdemos001.database.windows.net/Adventureworks/SalesLT/ProductCategory,ProductCategory,Bulk updated description from PVW
