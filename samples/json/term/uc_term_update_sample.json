@@ -1,0 +1,64 @@
+{
+  "_comment": "Sample JSON for bulk updating Unified Catalog terms",
+  "_usage": "pvw uc term update-json --json-file uc_term_update_sample.json",
+  "_dry_run": "pvw uc term update-json --json-file uc_term_update_sample.json --dry-run",
+  "_documentation": {
+    "required_fields": {
+      "term_id": "The GUID of the term to update"
+    },
+    "optional_fields": {
+      "name": "New term name (replaces existing)",
+      "description": "New description (replaces existing)",
+      "status": "New status: Draft, Published, or Archived",
+      "parent_id": "Parent term GUID for hierarchical relationships (replaces existing)",
+      "acronyms": "Array of acronyms (replaces all existing)",
+      "owner_ids": "Array of owner Entra IDs (replaces all existing)",
+      "add_acronyms": "Array of acronyms to add (preserves existing)",
+      "add_owner_ids": "Array of owner IDs to add (preserves existing)"
+    }
+  },
+  "updates": [
+    {
+      "term_id": "term-guid-1",
+      "name": "Updated Term Name",
+      "description": "This is an updated description with full details",
+      "status": "Published"
+    },
+    {
+      "term_id": "term-guid-2",
+      "description": "This term keeps its name but gets new description and parent",
+      "parent_id": "parent-term-guid"
+    },
+    {
+      "term_id": "term-guid-3",
+      "name": "Child Term One",
+      "status": "Draft",
+      "parent_id": "parent-term-guid"
+    },
+    {
+      "term_id": "term-guid-4",
+      "parent_id": "parent-term-guid",
+      "acronyms": ["SQL", "DB"]
+    },
+    {
+      "term_id": "term-guid-5",
+      "add_acronyms": ["API", "REST", "HTTP"],
+      "add_owner_ids": ["user1@company.com", "user2@company.com"]
+    },
+    {
+      "term_id": "term-guid-6",
+      "name": "Updated with Parent",
+      "description": "New description for hierarchical term",
+      "status": "Published",
+      "parent_id": "parent-term-guid",
+      "acronyms": ["DATA", "MGMT"],
+      "owner_ids": ["owner@company.com"]
+    },
+    {
+      "term_id": "term-guid-7",
+      "parent_id": "parent-term-guid",
+      "add_acronyms": ["NEW"],
+      "add_owner_ids": ["newuser@company.com"]
+    }
+  ]
+}

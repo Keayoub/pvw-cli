@@ -411,6 +411,11 @@ class UnifiedCatalogClient(Endpoint):
             "status": status,
         }
         
+        # Add parent_id if provided
+        parent_id = args.get("--parent-id", [""])[0]
+        if parent_id:
+            payload["parentId"] = parent_id
+        
         # Add optional fields
         if owners:
             payload["contacts"] = {"owner": owners}
@@ -450,6 +455,8 @@ class UnifiedCatalogClient(Endpoint):
             payload["description"] = args.get("--description", [""])[0]
         if args.get("--governance-domain-id"):
             payload["domain"] = args["--governance-domain-id"][0]
+        if args.get("--parent-id"):
+            payload["parentId"] = args["--parent-id"][0]
         if args.get("--status"):
             payload["status"] = args["--status"][0]
         
