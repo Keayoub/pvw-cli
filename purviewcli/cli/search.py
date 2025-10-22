@@ -157,11 +157,17 @@ def _format_search_results(data, show_ids=False):
         # Handle collection - try multiple sources
         collection = 'N/A'
         if 'collection' in item and item['collection']:
-            collection = item['collection'].get('name', 'N/A')
-        elif 'collectionId' in item:
+            if isinstance(item['collection'], dict):
+                collection = item['collection'].get('name', 'N/A')
+            else:
+                collection = str(item['collection'])
+        elif 'collectionId' in item and item['collectionId']:
             collection = item.get('collectionId', 'N/A')
-        elif 'assetName' in item:
-            collection = item.get('assetName', 'N/A')
+        elif 'assetName' in item and item['assetName']:
+            # Try to extract collection from asset name
+            asset_name = item.get('assetName', '')
+            if asset_name and asset_name != 'N/A':
+                collection = asset_name
         
         # Build row data with ID always shown
         row_data = [name, entity_type, entity_id, collection, qualified_name]
