@@ -96,11 +96,15 @@ Backup-File $initFile
 if (Test-Path $readme) { Backup-File $readme }
 
 Write-Info "Updating pyproject.toml..."
-# Use concatenation for replacement to avoid PowerShell/regex replacement string escape issues
-$patternPy = '^(?m)(version\s*=\s*")([^"]+)("\s*$)'
-$replacementPy = '$1' + $NewVersion + '$3'
-$newPy = [regex]::Replace($pytext, $patternPy, $replacementPy)
-Set-Content -Path $pyproject -Value $newPy -Encoding utf8
+# Use a MatchEvaluator to avoid PowerShell string interpolation issues
+$patternPy = '(version\s*=\s*")([^"]+)(")'
+$newPy = [regex]::Replace($pytext, $patternPy, {
+    param($match)
+    return $match.Groups[1].Value + $NewVersion + $match.Groups[3].Value
+}, [System.Text.RegularExpressions.RegexOptions]::Multiline)
+# Write without BOM to avoid TOML parsing issues
+$Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
+[System.IO.File]::WriteAllText($pyproject, $newPy, $Utf8NoBomEncoding)
 
 Write-Info "Updating purviewcli/__init__.py..."
 # Read file as lines and replace the __version__ line or insert at top if missing
@@ -117,8 +121,10 @@ if (-not $found) {
   # insert at top
   $lines = ,("__version__ = `"$NewVersion`"" ) + $lines
 }
-# Write back with UTF8 encoding
-Set-Content -Path $initFile -Value $lines -Encoding utf8
+# Write back with UTF8 encoding without BOM
+$content = $lines -join "`n"
+$Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
+[System.IO.File]::WriteAllText($initFile, $content, $Utf8NoBomEncoding)
 
 if (Test-Path $readme) {
     Write-Info "Updating README.md occurrences of version..."
@@ -126,12 +132,14 @@ if (Test-Path $readme) {
     # Replace v<oldVersion> and PVW CLI v<oldVersion>
     $r = $readmeText -replace [regex]::Escape("v$oldVersion"), "v$NewVersion"
     $r = $r -replace [regex]::Escape("PVW CLI v$oldVersion"), "PVW CLI v$NewVersion"
-    Set-Content -NoNewline -Path $readme -Value $r
+    # Write without BOM
+    $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
+    [System.IO.File]::WriteAllText($readme, $r, $Utf8NoBomEncoding)
 }
 
 # Verify package builds before committing
 Write-Info "Verifying package can be built before committing..."
-$buildScriptPS = Join-Path $repoRoot 'scripts' 'build_pypi.ps1'
+$buildScriptPS = Join-Path (Join-Path $repoRoot 'scripts') 'build_pypi.ps1'
 if (Test-Path $buildScriptPS) {
   Write-Info "Running build verification script: $buildScriptPS (no upload)"
   # Prefer pwsh if available, otherwise invoke using the current PowerShell
@@ -176,7 +184,7 @@ if ($Push) {
 
 if ($Build) {
   # Prefer PowerShell build script (build_pypi.ps1); fall back to batch if missing
-  $buildScriptPS = Join-Path $repoRoot 'scripts' 'build_pypi.ps1'
+  $buildScriptPS = Join-Path (Join-Path $repoRoot 'scripts') 'build_pypi.ps1'
   if (Test-Path $buildScriptPS) {
     Write-Info "Running PowerShell build script: $buildScriptPS"
     $pwshCmd = Get-Command pwsh -ErrorAction SilentlyContinue
