@@ -100,7 +100,9 @@ Write-Info "Updating pyproject.toml..."
 $patternPy = '(version\s*=\s*")([^"]+)(")'
 $replacementPy = '$1' + $NewVersion + '$3'
 $newPy = [regex]::Replace($pytext, $patternPy, $replacementPy, [System.Text.RegularExpressions.RegexOptions]::Multiline)
-Set-Content -Path $pyproject -Value $newPy -Encoding utf8
+# Write without BOM to avoid TOML parsing issues
+$Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
+[System.IO.File]::WriteAllText($pyproject, $newPy, $Utf8NoBomEncoding)
 
 Write-Info "Updating purviewcli/__init__.py..."
 # Read file as lines and replace the __version__ line or insert at top if missing
@@ -117,8 +119,10 @@ if (-not $found) {
   # insert at top
   $lines = ,("__version__ = `"$NewVersion`"" ) + $lines
 }
-# Write back with UTF8 encoding
-Set-Content -Path $initFile -Value $lines -Encoding utf8
+# Write back with UTF8 encoding without BOM
+$content = $lines -join "`n"
+$Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
+[System.IO.File]::WriteAllText($initFile, $content, $Utf8NoBomEncoding)
 
 if (Test-Path $readme) {
     Write-Info "Updating README.md occurrences of version..."
@@ -126,7 +130,9 @@ if (Test-Path $readme) {
     # Replace v<oldVersion> and PVW CLI v<oldVersion>
     $r = $readmeText -replace [regex]::Escape("v$oldVersion"), "v$NewVersion"
     $r = $r -replace [regex]::Escape("PVW CLI v$oldVersion"), "PVW CLI v$NewVersion"
-    Set-Content -NoNewline -Path $readme -Value $r
+    # Write without BOM
+    $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
+    [System.IO.File]::WriteAllText($readme, $r, $Utf8NoBomEncoding)
 }
 
 # Verify package builds before committing

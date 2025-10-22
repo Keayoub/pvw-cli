@@ -55,21 +55,21 @@ Write-Info "Build artifacts in dist/:"
 if (Test-Path dist) { 
     Get-ChildItem -Path dist -File | ForEach-Object { 
         $sizeKB = [math]::Round($_.Length / 1024, 1)
-        Write-Host ("   {0} ({1} KB)" -f $_.Name, $sizeKB)
+        Write-Host ('   {0} ({1} KB)' -f $_.Name, $sizeKB)
     } 
 } else { 
-    Write-Host "  (no dist directory found)" 
+    Write-Host '  (no dist directory found)' 
 }
-Write-Host ""
+Write-Host ''
 
 Write-Info "Validating package with twine..."
 & python -m twine check dist/*
 if ($LASTEXITCODE -ne 0) { Write-ErrorAndExit "Package validation failed" 5 }
 Write-Success "Package validation passed`n"
 
-Write-Info "Testing local installation (first wheel found)..."
+Write-Info 'Testing local installation (first wheel found)...'
 $wheel = Get-ChildItem -Path dist -Filter *.whl -File | Select-Object -First 1
-if (-not $wheel) { Write-ErrorAndExit "No wheel file found in dist/ to test." 6 }
+if (-not $wheel) { Write-ErrorAndExit 'No wheel file found in dist/ to test.' 6 }
 Write-Host "  Installing: $($wheel.Name)"
 & python -m pip install --force-reinstall "dist\$($wheel.Name)"
 if ($LASTEXITCODE -ne 0) { Write-ErrorAndExit "Local installation failed" 7 }
@@ -104,7 +104,7 @@ Write-Host "Package Info:`n"
 if (Test-Path dist) { 
     Get-ChildItem -Path dist -File | ForEach-Object { 
         $sizeKB = [math]::Round($_.Length / 1024, 1)
-        Write-Host ("   [package] {0} ({1} KB)" -f $_.Name, $sizeKB)
+        Write-Host ('   [package] {0} ({1} KB)' -f $_.Name, $sizeKB)
     } 
 }
 
