@@ -1,7 +1,10 @@
-# PURVIEW CLI v1.2.1 - Microsoft Purview Automation & Data Governance
+# PURVIEW CLI v1.2.3 - Microsoft Purview Automation & Data Governance
 
-> **LATEST UPDATE (October 2025):**
-> - **� NEW: Bulk Term Import/Export** - Import multiple terms from CSV/JSON with dry-run support
+> **LATEST UPDATE v1.2.3 (October 2025):**
+> - **🔍 FIXED: Search API Integration** - Fixed `suggest` and `autocomplete` API payload format (HTTP 400 errors resolved)
+> - **📊 ENHANCED: Collection Display** - Improved collection name detection in search results with proper fallback logic
+> - **✅ VALIDATED: All Search Commands** - Comprehensive testing of query, browse, suggest, find-table operations
+> - **📦 NEW: Bulk Term Import/Export** - Import multiple terms from CSV/JSON with dry-run support
 > - **🗑️ NEW: Bulk Delete Scripts** - PowerShell and Python scripts for bulk term deletion
 > - **📊 NEW: Multiple Output Formats** - `--output` flag supports table, json, and jsonc formats
 > - **🔧 NEW: PowerShell Integration** - Plain JSON output works with `ConvertFrom-Json`
@@ -14,7 +17,7 @@
 
 ## What is PVW CLI?
 
-**PVW CLI v1.2.1** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* including:
+**PVW CLI v1.2.3** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* including:
 
 - **Unified Catalog (UC) Management** - Complete governance domains, glossary terms, data products, OKRs, CDEs
 - **Bulk Operations** - Import/export terms from CSV/JSON, bulk delete scripts with progress tracking
@@ -106,7 +109,7 @@ For more advanced usage, see the documentation in `doc/` or the project docs: ht
 
 ## Overview
 
-**PVW CLI v1.2.1** is a modern command-line interface and Python library for Microsoft Purview, enabling:
+**PVW CLI v1.2.3** is a modern command-line interface and Python library for Microsoft Purview, enabling:
 
 - Advanced data catalog search and discovery
 - Bulk import/export of entities, glossary terms, and lineage
@@ -452,6 +455,11 @@ The PVW CLI provides advanced search using the latest Microsoft Purview Discover
 - Search for assets, tables, files, and more with flexible filters
 - Use autocomplete and suggestion endpoints
 - Perform faceted, time-based, and entity-type-specific queries
+
+**✅ v1.2.3 Improvements:**
+- Fixed `suggest` and `autocomplete` API payload format (removed empty filter causing HTTP 400 errors)
+- Enhanced collection display with robust type checking and fallback logic
+- All search commands validated and working correctly (query, browse, suggest, find-table)
 
 ### CLI Usage Examples
 
@@ -1091,10 +1099,13 @@ PVW CLI includes comprehensive sample files and scripts for bulk operations:
 - Success/failure tracking per term
 - Rate limiting (200ms delay)
 
-### ✅ Critical Fixes
+### ✅ Critical Fixes (v1.2.3)
+- **Search API Suggest/Autocomplete:** Fixed HTTP 400 errors by removing empty filter objects from payload
+- **Collection Display:** Enhanced collection name detection with proper fallback logic (isinstance checks)
 - **Owner ID Format:** Must use Entra ID Object IDs (GUIDs), not email addresses
 - **Domain Status:** Terms cannot be "Published" in unpublished domains - use "Draft"
 - **Error Validation:** Enhanced error handling shows actual API responses
+- **Windows Console Compatibility:** All emoji removed for CP-1252 encoding support
 
 ---
 
@@ -1145,6 +1156,12 @@ See [LICENSE](LICENSE) file for details.
 
 ---
 
-**PVW CLI v1.2.1 empowers data engineers, stewards, and architects to automate, scale, and enhance their Microsoft Purview experience with powerful command-line and programmatic capabilities.**
+**PVW CLI v1.2.3 empowers data engineers, stewards, and architects to automate, scale, and enhance their Microsoft Purview experience with powerful command-line and programmatic capabilities.**
 
-**Latest Features:** Bulk term import/export, PowerShell integration, multiple output formats, and comprehensive bulk delete scripts with beautiful progress tracking.
+**Latest in v1.2.3:**
+- Fixed Search API suggest/autocomplete (HTTP 400 errors resolved)
+- Enhanced collection display with robust fallback logic
+- Comprehensive search command validation
+- Bulk term import/export with dry-run support
+- PowerShell integration with plain JSON output
+- Multiple output formats and beautiful progress tracking
