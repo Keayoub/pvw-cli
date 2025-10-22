@@ -97,9 +97,9 @@ if (Test-Path $readme) { Backup-File $readme }
 
 Write-Info "Updating pyproject.toml..."
 # Use concatenation for replacement to avoid PowerShell/regex replacement string escape issues
-$patternPy = '^(?m)(version\s*=\s*")([^"]+)("\s*$)'
+$patternPy = '(version\s*=\s*")([^"]+)(")'
 $replacementPy = '$1' + $NewVersion + '$3'
-$newPy = [regex]::Replace($pytext, $patternPy, $replacementPy)
+$newPy = [regex]::Replace($pytext, $patternPy, $replacementPy, [System.Text.RegularExpressions.RegexOptions]::Multiline)
 Set-Content -Path $pyproject -Value $newPy -Encoding utf8
 
 Write-Info "Updating purviewcli/__init__.py..."
