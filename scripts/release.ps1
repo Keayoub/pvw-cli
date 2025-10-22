@@ -96,10 +96,12 @@ Backup-File $initFile
 if (Test-Path $readme) { Backup-File $readme }
 
 Write-Info "Updating pyproject.toml..."
-# Use concatenation for replacement to avoid PowerShell/regex replacement string escape issues
+# Use a MatchEvaluator to avoid PowerShell string interpolation issues
 $patternPy = '(version\s*=\s*")([^"]+)(")'
-$replacementPy = '$1' + $NewVersion + '$3'
-$newPy = [regex]::Replace($pytext, $patternPy, $replacementPy, [System.Text.RegularExpressions.RegexOptions]::Multiline)
+$newPy = [regex]::Replace($pytext, $patternPy, {
+    param($match)
+    return $match.Groups[1].Value + $NewVersion + $match.Groups[3].Value
+}, [System.Text.RegularExpressions.RegexOptions]::Multiline)
 # Write without BOM to avoid TOML parsing issues
 $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
 [System.IO.File]::WriteAllText($pyproject, $newPy, $Utf8NoBomEncoding)
