@@ -139,12 +139,8 @@ def _format_search_results(data, show_ids=False):
     table = Table(title=f"Search Results ({len(items)} of {count} total)")
     table.add_column("Name", style="cyan", min_width=15, max_width=25)
     table.add_column("Type", style="green", min_width=15, max_width=20)
+    table.add_column("ID", style="yellow", min_width=36, max_width=36)
     table.add_column("Collection", style="blue", min_width=12, max_width=20)
-    table.add_column("Classifications", style="magenta", min_width=15, max_width=30)
-    
-    if show_ids:
-        table.add_column("ID", style="yellow", min_width=36, max_width=36)
-    
     table.add_column("Qualified Name", style="white", min_width=30)
     
     for item in items:
@@ -158,34 +154,17 @@ def _format_search_results(data, show_ids=False):
         if len(qualified_name) > 60:
             qualified_name = qualified_name[:57] + "..."
         
-        # Handle collection
+        # Handle collection - try multiple sources
         collection = 'N/A'
         if 'collection' in item and item['collection']:
             collection = item['collection'].get('name', 'N/A')
+        elif 'collectionId' in item:
+            collection = item.get('collectionId', 'N/A')
+        elif 'assetName' in item:
+            collection = item.get('assetName', 'N/A')
         
-        # Handle classifications - truncate long classification lists
-        classifications = []
-        if 'classification' in item and item['classification']:
-            for cls in item['classification']:
-                if isinstance(cls, dict):
-                    cls_name = cls.get('typeName', str(cls))
-                    # Simplify Microsoft classifications for display
-                    if cls_name.startswith('MICROSOFT.'):
-                        cls_name = cls_name.replace('MICROSOFT.', 'MS.')
-                    classifications.append(cls_name)
-                else:
-                    classifications.append(str(cls))
-        
-        # Truncate classifications if too long
-        cls_display = ", ".join(classifications) if classifications else ""
-        if len(cls_display) > 40:
-            cls_display = cls_display[:37] + "..."
-        
-        # Build row data
-        row_data = [name, entity_type, collection, cls_display]
-        if show_ids:
-            row_data.append(entity_id)
-        row_data.append(qualified_name)
+        # Build row data with ID always shown
+        row_data = [name, entity_type, entity_id, collection, qualified_name]
         
         # Add row to table
         table.add_row(*row_data)
@@ -214,9 +193,9 @@ def _invoke_search_method(method_name, **kwargs):
         # Choose output format
         if output_json:
             _format_json_output(result)
-        elif detailed and method_name in ['searchQuery', 'searchBrowse', 'searchSuggest', 'searchAutoComplete']:
+        elif detailed and method_name in ['searchQuery', 'searchBrowse', 'searchSuggest', 'searchAutocomplete', 'searchFaceted']:
             _format_detailed_output(result)
-        elif method_name in ['searchQuery', 'searchBrowse', 'searchSuggest', 'searchAutoComplete']:
+        elif method_name in ['searchQuery', 'searchBrowse', 'searchSuggest', 'searchAutocomplete', 'searchFaceted']:
             _format_search_results(result, show_ids=show_ids)
         else:
             _format_json_output(result)
@@ -230,7 +209,7 @@ def _invoke_search_method(method_name, **kwargs):
 @click.option('--json', 'output_json', is_flag=True, help='Show full JSON details instead of table')
 def autocomplete(keywords, limit, filterfile, output_json):
     """Autocomplete search suggestions"""
-    _invoke_search_method('searchAutoComplete', keywords=keywords, limit=limit, filterFile=filterfile, output_json=output_json)
+    _invoke_search_method('searchAutocomplete', keywords=keywords, limit=limit, filterFile=filterfile, output_json=output_json)
 
 @search.command()
 @click.option('--entityType', required=False)
@@ -305,7 +284,7 @@ def advanced(keywords, limit, offset, filterfile, facets_file, businessmetadata,
         with open(businessmetadata, 'r', encoding='utf-8') as f:
             business_metadata_content = json.load(f)
     _invoke_search_method(
-        'searchAdvancedQuery',
+        'searchAdvanced',
         keywords=keywords,
         limit=limit,
         offset=offset,
@@ -315,5 +294,228 @@ def advanced(keywords, limit, offset, filterfile, facets_file, businessmetadata,
         classifications=classifications,
         termAssignments=termassignments
     )
+
+@search.command('find-table')
+@click.option('--name', required=False, help='Table name (e.g., Address)')
+@click.option('--schema', required=False, help='Schema name (e.g., SalesLT, dbo)')
+@click.option('--database', required=False, help='Database name (e.g., Adventureworks)')
+@click.option('--server', required=False, help='Server name (e.g., fabricdemos001.database.windows.net)')
+@click.option('--qualified-name', required=False, help='Full qualified name from Purview (e.g., mssql://server/database/schema/table)')
+@click.option('--entity-type', required=False, help='Entity type to search for (e.g., azure_sql_table, mssql_table)')
+@click.option('--limit', required=False, type=int, default=25, help='Maximum number of results to return')
+@click.option('--show-ids', is_flag=True, help='Show entity IDs in the results')
+@click.option('--json', 'output_json', is_flag=True, help='Show full JSON details')
+@click.option('--detailed', is_flag=True, help='Show detailed information')
+@click.option('--id-only', is_flag=True, help='Output only the GUID (useful for scripts and automation)')
+def find_table(name, schema, database, server, qualified_name, entity_type, limit, show_ids, output_json, detailed, id_only):
+    """Find a table by name, schema, database, or get all tables in a schema/database.
+    
+    Perfect for getting the GUID of a data asset before updating it.
+    You can search for ONE specific table or ALL tables in a schema/database.
+    
+    \b
+    SEARCH ONE SPECIFIC TABLE:
+      pvw search find-table --name Address --schema SalesLT --database Adventureworks
+      pvw search find-table --qualified-name "mssql://server/database/schema/table"
+    
+    \b
+    SEARCH MULTIPLE TABLES:
+      pvw search find-table --schema SalesLT --database Adventureworks
+      pvw search find-table --database Adventureworks
+      pvw search find-table --schema SalesLT
+    
+    \b
+    GET GUIDS FOR AUTOMATION:
+      pvw search find-table --name Address --schema SalesLT --database Adventureworks --id-only
+      pvw search find-table --schema SalesLT --database Adventureworks --id-only
+    
+    \b
+    USE IN SCRIPTS (PowerShell):
+      $guid = pvw search find-table --name Address --schema SalesLT --database Adventureworks --id-only
+      pvw entity update --guid $guid --payload update.json
+      
+      $guids = pvw search find-table --schema SalesLT --database Adventureworks --id-only
+      foreach ($guid in $guids) { pvw entity update --guid $guid --payload update.json }
+    """
+    search_client = Search()
+
+    # Validate that at least some search criteria is provided
+    if not name and not qualified_name and not schema and not database:
+        console.print("[red]ERROR:[/red] You must provide at least --name, --qualified-name, --schema, or --database")
+        return
+
+    # Build search pattern
+    search_pattern = qualified_name
+    if not search_pattern:
+        # Build pattern from components
+        # Try to build a full qualified name pattern that matches Purview's format
+        if server and database and schema and name:
+            # Full path with server: mssql://server/database/schema/table
+            search_pattern = f"mssql://{server}/{database}/{schema}/{name}"
+        elif database and schema and name:
+            # Database.schema.table format
+            search_pattern = f"{database}/{schema}/{name}"
+        elif database and schema:
+            # Database.schema format (all tables in schema)
+            search_pattern = f"{database}/{schema}"
+        elif schema and name:
+            # Schema.table format
+            search_pattern = f"{schema}/{name}"
+        elif database:
+            # Just database (all tables in database)
+            search_pattern = database
+        elif schema:
+            # Just schema (all tables in schema)
+            search_pattern = schema
+        elif name:
+            # Just the table name
+            search_pattern = name
+        else:
+            console.print("[red]ERROR:[/red] You must provide at least one search criterion")
+            return
+
+    # For keyword search, use different strategies based on what we have
+    if name:
+        search_keywords = name
+    elif schema:
+        search_keywords = schema
+    elif database:
+        search_keywords = database
+    else:
+        search_keywords = search_pattern.split('/')[-1]
+
+    # Build search arguments - use keywords that will match
+    args = {
+        '--keywords': search_keywords,
+        '--limit': limit,
+        '--offset': 0
+    }
+
+    # Create filter for entity type if specified
+    import tempfile
+    import json
+    import os
+
+    temp_filter_file = None
+
+    if entity_type:
+        filter_obj = {
+            'entityType': entity_type
+        }
+
+        # Write filter to temp file
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False, encoding='utf-8') as f:
+            json.dump(filter_obj, f)
+            temp_filter_file = f.name
+
+        args['--filterFile'] = temp_filter_file
+
+    try:
+        # Execute search
+        result = search_client.searchQuery(args)
+
+        if not result:
+            console.print("[yellow]No results returned from search[/yellow]")
+            if temp_filter_file:
+                os.unlink(temp_filter_file)
+            return
+
+        # Filter results by qualified name match if provided
+        if result and 'value' in result and result['value']:
+            filtered_results = []
+            search_lower = search_pattern.lower()
+
+            for item in result.get('value', []):
+                item_qn = item.get('qualifiedName', '').lower()
+                item_name = item.get('name', '').lower()
+
+                # Build matching criteria
+                matches = False
+
+                # If we have all components, do strict matching
+                if name and schema and database:
+                    # Exact name match (not substring) - critical for precision
+                    name_match = name.lower() == item_name
+                    schema_match = schema.lower() in item_qn
+                    database_match = database.lower() in item_qn
+                    server_match = not server or server.lower() in item_qn
+                    matches = name_match and schema_match and database_match and server_match
+                
+                # If we have database and schema (all tables in this schema)
+                elif database and schema and not name:
+                    schema_match = schema.lower() in item_qn
+                    database_match = database.lower() in item_qn
+                    server_match = not server or server.lower() in item_qn
+                    matches = schema_match and database_match and server_match
+
+                # If we have schema and name
+                elif name and schema:
+                    # Exact name match
+                    name_match = name.lower() == item_name
+                    schema_match = schema.lower() in item_qn
+                    matches = name_match and schema_match
+                
+                # If we have just database (all tables in this database)
+                elif database and not name and not schema:
+                    database_match = database.lower() in item_qn
+                    server_match = not server or server.lower() in item_qn
+                    matches = database_match and server_match
+                
+                # If we have just schema (all tables in this schema)
+                elif schema and not name and not database:
+                    schema_match = schema.lower() in item_qn
+                    matches = schema_match
+
+                # If we have just name or a qualified name pattern
+                elif name or qualified_name:
+                    # If qualified_name was provided, do exact match
+                    if qualified_name:
+                        # Check for exact match of the qualified name
+                        matches = search_lower == item_qn or item_qn.endswith('/' + search_keywords.lower())
+                    else:
+                        # Just name provided, match by name
+                        matches = search_keywords.lower() == item_name
+
+                if matches:
+                    filtered_results.append(item)
+
+            if filtered_results:
+                result['value'] = filtered_results
+                result['@search.count'] = len(filtered_results)
+            else:
+                console.print(f"[yellow]No results found matching '{search_pattern}'[/yellow]")
+                if temp_filter_file:
+                    os.unlink(temp_filter_file)
+                return
+
+        # Display results
+        if id_only:
+            # Output only the ID(s) for scripting purposes
+            if result and 'value' in result and result['value']:
+                for item in result['value']:
+                    print(item.get('id', ''))
+            else:
+                console.print("[yellow]No results found[/yellow]")
+        elif output_json:
+            _format_json_output(result)
+        elif detailed:
+            _format_detailed_output(result)
+        else:
+            _format_search_results(result, show_ids=show_ids)
+
+        # Clean up temp file
+        if temp_filter_file:
+            import os
+            os.unlink(temp_filter_file)
+
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+        # Clean up temp file on error
+        if temp_filter_file:
+            import os
+            try:
+                os.unlink(temp_filter_file)
+            except:
+                pass
 
 __all__ = ['search']
