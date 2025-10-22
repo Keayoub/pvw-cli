@@ -131,7 +131,7 @@ if (Test-Path $readme) {
 
 # Verify package builds before committing
 Write-Info "Verifying package can be built before committing..."
-$buildScriptPS = Join-Path $repoRoot 'scripts' 'build_pypi.ps1'
+$buildScriptPS = Join-Path (Join-Path $repoRoot 'scripts') 'build_pypi.ps1'
 if (Test-Path $buildScriptPS) {
   Write-Info "Running build verification script: $buildScriptPS (no upload)"
   # Prefer pwsh if available, otherwise invoke using the current PowerShell
@@ -176,7 +176,7 @@ if ($Push) {
 
 if ($Build) {
   # Prefer PowerShell build script (build_pypi.ps1); fall back to batch if missing
-  $buildScriptPS = Join-Path $repoRoot 'scripts' 'build_pypi.ps1'
+  $buildScriptPS = Join-Path (Join-Path $repoRoot 'scripts') 'build_pypi.ps1'
   if (Test-Path $buildScriptPS) {
     Write-Info "Running PowerShell build script: $buildScriptPS"
     $pwshCmd = Get-Command pwsh -ErrorAction SilentlyContinue

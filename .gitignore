@@ -33,3 +33,7 @@ pyproject.toml.bak
 README.md.bak
 .gitignore
 purviewcli/__init__.py.bak
+scripts/release.ps1
+pyproject.toml.bak.20251022093657
+README.md.bak.20251022093657
+purviewcli/__init__.py.bak.20251022093657
