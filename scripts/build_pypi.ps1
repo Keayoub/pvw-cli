@@ -37,7 +37,7 @@ if (Test-Path *.egg-info) { Get-ChildItem -Filter *.egg-info | Remove-Item -Recu
 Write-Success "Previous builds cleaned`n"
 
 Write-Info "Checking version consistency (reads purviewcli.__version__)..."
-$verCmd = 'import sys; sys.path.insert(0, ".."); from purviewcli import __version__; print(__version__)'
+$verCmd = "import sys; sys.path.insert(0, '.'); from purviewcli import __version__; print(__version__)"
 try {
     $verOutput = & python -c $verCmd 2>&1
 } catch {
@@ -52,8 +52,15 @@ if ($LASTEXITCODE -ne 0) { Write-ErrorAndExit "Package build failed" 4 }
 Write-Success "Package built successfully`n"
 
 Write-Info "Build artifacts in dist/:"
-if (Test-Path dist) { Get-ChildItem -Path dist -File | ForEach-Object { Write-Host "   $_.Name (`$([math]::Round($_.Length / 1024, 1)) KB)" } } else { Write-Host "  (no dist directory found)" }
-Write-Host `n
+if (Test-Path dist) { 
+    Get-ChildItem -Path dist -File | ForEach-Object { 
+        $sizeKB = [math]::Round($_.Length / 1024, 1)
+        Write-Host ("   {0} ({1} KB)" -f $_.Name, $sizeKB)
+    } 
+} else { 
+    Write-Host "  (no dist directory found)" 
+}
+Write-Host ""
 
 Write-Info "Validating package with twine..."
 & python -m twine check dist/*
@@ -94,6 +101,11 @@ Write-Host "  Install from TestPyPI:`n  pip install --index-url https://test.pyp
 Write-Host "Tips:`n  - Test installation from TestPyPI before production upload`n  - Ensure TWINE_USERNAME and TWINE_PASSWORD are set for automated upload`n  - Use API tokens instead of passwords for better security`n"
 
 Write-Host "Package Info:`n"
-if (Test-Path dist) { Get-ChildItem -Path dist -File | ForEach-Object { Write-Host "   [package] $($_.Name) ($([math]::Round($_.Length / 1024,1)) KB)" } }
+if (Test-Path dist) { 
+    Get-ChildItem -Path dist -File | ForEach-Object { 
+        $sizeKB = [math]::Round($_.Length / 1024, 1)
+        Write-Host ("   [package] {0} ({1} KB)" -f $_.Name, $sizeKB)
+    } 
+}
 
 exit 0
