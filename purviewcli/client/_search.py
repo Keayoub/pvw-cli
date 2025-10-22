@@ -93,13 +93,13 @@ class Search(Endpoint):
         self.endpoint = ENDPOINTS["discovery"]["suggest"]
         self.params = get_api_version_params("datamap")
         
+        # Suggest API expects keywords in search field, not keywords field
         suggest_request = {
-            "keywords": args.get("--keywords", ""),
-            "limit": args.get("--limit", 5),
-            "filter": {}
+            "keywords": args.get("--keywords", "*"),
+            "limit": args.get("--limit", 5)
         }
         
-        # Add filters if provided
+        # Only add filter if provided and not empty
         if args.get("--filter"):
             suggest_request["filter"] = self._parse_filter(args["--filter"])
             
@@ -107,18 +107,18 @@ class Search(Endpoint):
 
     @decorator
     def searchAutocomplete(self, args):
-        """Get autocomplete suggestions (Official API: Autocomplete)"""
+        """Get search autocomplete suggestions (Official API: AutoComplete)"""
         self.method = "POST"
         self.endpoint = ENDPOINTS["discovery"]["autocomplete"]
         self.params = get_api_version_params("datamap")
         
+        # Autocomplete API expects keywords (text to complete)
         autocomplete_request = {
             "keywords": args.get("--keywords", ""),
-            "limit": args.get("--limit", 10),
-            "filter": {}
+            "limit": args.get("--limit", 5)
         }
         
-        # Add filters if provided
+        # Only add filter if provided and not empty
         if args.get("--filter"):
             autocomplete_request["filter"] = self._parse_filter(args["--filter"])
             
