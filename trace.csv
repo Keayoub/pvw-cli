@@ -1,0 +1,2 @@
+source_entity_guid,target_entity_guid,relationship_type,process_name,description,confidence_score,owner,metadata
+dcfc99ed-c74d-49aa-bd0b-72f6f6f60000,1db9c650-acfb-4914-8bc5-1cf6f6f60000,Process,Transform_Product_Data,Transform product data for analytics,0.95,data-engineering,"{""tool"": ""Azure Data Factory""}"

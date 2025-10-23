@@ -209,20 +209,29 @@ class Lineage(Endpoint):
         # Read CSV file
         df = pd.read_csv(csv_file)
         
-        # Validate required columns
-        required_columns = ['source_qualified_name', 'target_qualified_name']
-        missing_columns = [col for col in required_columns if col not in df.columns]
-        if missing_columns:
-            raise ValueError(f"Missing required columns: {missing_columns}")
+        # Determine which format is being used (GUID-based or qualified name-based)
+        has_guid_columns = 'source_entity_guid' in df.columns and 'target_entity_guid' in df.columns
+        has_qn_columns = 'source_qualified_name' in df.columns and 'target_qualified_name' in df.columns
+        
+        if not has_guid_columns and not has_qn_columns:
+            raise ValueError(
+                "CSV must contain either (source_entity_guid, target_entity_guid) "
+                "or (source_qualified_name, target_qualified_name) columns"
+            )
         
         # Generate lineage entities and relationships
         lineage_entities = []
         lineage_relationships = []
         
-        for _, row in df.iterrows():
+        for idx, row in df.iterrows():
             # Create process entity for each lineage relationship
             process_guid = str(uuid.uuid4())
-            process_name = row.get('process_name', f"Process_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
+            process_name = row.get('process_name', f"Process_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{idx}")
+            
+            # Clean GUIDs if present (remove guid= prefix and quotes)
+            if has_guid_columns:
+                source_guid = str(row['source_entity_guid']).strip().replace('guid=', '').strip('"')
+                target_guid = str(row['target_entity_guid']).strip().replace('guid=', '').strip('"')
             
             # Process entity
             process_entity = {
@@ -231,8 +240,8 @@ class Lineage(Endpoint):
                 "attributes": {
                     "qualifiedName": f"{process_name}@{args.get('--cluster', 'default')}",
                     "name": process_name,
-                    "description": row.get('description', ''),
-                    "owner": row.get('owner', ''),
+                    "description": str(row.get('description', '')),
+                    "owner": str(row.get('owner', '')),
                 },
                 "classifications": [],
                 "meanings": []
@@ -241,7 +250,7 @@ class Lineage(Endpoint):
             # Add custom attributes if present
             custom_attrs = ['confidence_score', 'metadata', 'tags']
             for attr in custom_attrs:
-                if attr in row and pd.notna(row[attr]):
+                if attr in row and pd.notna(row[attr]) and str(row[attr]).strip():
                     if attr == 'tags':
                         process_entity["attributes"][attr] = str(row[attr]).split(',')
                     elif attr == 'metadata':
@@ -254,41 +263,74 @@ class Lineage(Endpoint):
             
             lineage_entities.append(process_entity)
             
-            # Input relationship (source -> process)
-            input_relationship = {
-                "guid": str(uuid.uuid4()),
-                "typeName": "Process",
-                "end1": {
-                    "guid": "-1",  # Will be resolved by qualified name
-                    "typeName": row.get('source_type', 'DataSet'),
-                    "uniqueAttributes": {
-                        "qualifiedName": row['source_qualified_name']
-                    }
-                },
-                "end2": {
-                    "guid": process_guid,
-                    "typeName": "Process"
-                },
-                "label": "inputToProcesses"
-            }
+            # Determine relationship type
+            relationship_type = str(row.get('relationship_type', 'Process')).strip() or 'Process'
             
-            # Output relationship (process -> target)
-            output_relationship = {
-                "guid": str(uuid.uuid4()),
-                "typeName": "Process",
-                "end1": {
-                    "guid": process_guid,
-                    "typeName": "Process"
-                },
-                "end2": {
-                    "guid": "-1",  # Will be resolved by qualified name
-                    "typeName": row.get('target_type', 'DataSet'),
-                    "uniqueAttributes": {
-                        "qualifiedName": row['target_qualified_name']
-                    }
-                },
-                "label": "outputFromProcesses"
-            }
+            # Input relationship (source -> process)
+            if has_guid_columns:
+                input_relationship = {
+                    "guid": str(uuid.uuid4()),
+                    "typeName": relationship_type,
+                    "end1": {
+                        "guid": source_guid,
+                        "typeName": row.get('source_type', 'DataSet')
+                    },
+                    "end2": {
+                        "guid": process_guid,
+                        "typeName": "Process"
+                    },
+                    "label": "inputToProcesses"
+                }
+                
+                # Output relationship (process -> target)
+                output_relationship = {
+                    "guid": str(uuid.uuid4()),
+                    "typeName": relationship_type,
+                    "end1": {
+                        "guid": process_guid,
+                        "typeName": "Process"
+                    },
+                    "end2": {
+                        "guid": target_guid,
+                        "typeName": row.get('target_type', 'DataSet')
+                    },
+                    "label": "outputFromProcesses"
+                }
+            else:
+                # Use qualified names
+                input_relationship = {
+                    "guid": str(uuid.uuid4()),
+                    "typeName": relationship_type,
+                    "end1": {
+                        "guid": "-1",
+                        "typeName": row.get('source_type', 'DataSet'),
+                        "uniqueAttributes": {
+                            "qualifiedName": row['source_qualified_name']
+                        }
+                    },
+                    "end2": {
+                        "guid": process_guid,
+                        "typeName": "Process"
+                    },
+                    "label": "inputToProcesses"
+                }
+                
+                output_relationship = {
+                    "guid": str(uuid.uuid4()),
+                    "typeName": relationship_type,
+                    "end1": {
+                        "guid": process_guid,
+                        "typeName": "Process"
+                    },
+                    "end2": {
+                        "guid": "-1",
+                        "typeName": row.get('target_type', 'DataSet'),
+                        "uniqueAttributes": {
+                            "qualifiedName": row['target_qualified_name']
+                        }
+                    },
+                    "label": "outputFromProcesses"
+                }
             
             lineage_relationships.extend([input_relationship, output_relationship])
         
@@ -296,6 +338,126 @@ class Lineage(Endpoint):
             "entities": lineage_entities,
             "relationships": lineage_relationships,
             "referredEntities": {}
+        }
+
+    # === CSV LINEAGE OPERATIONS ===
+
+    @decorator
+    def lineageCSVProcess(self, args):
+        """Process CSV file and create lineage relationships"""
+        csv_file = args.get("csv_file") or args.get("--csv-file")
+        if not csv_file:
+            raise ValueError("CSV file path is required")
+        
+        # Process CSV and create lineage payload
+        lineage_data = self._process_csv_lineage(csv_file, args)
+        
+        # Create lineage using the API
+        self.method = "POST"
+        self.endpoint = ENDPOINTS["lineage"]["create_lineage"]
+        self.params = get_api_version_params("datamap")
+        self.payload = lineage_data
+        
+        # Return the payload for inspection (actual API call handled by decorator)
+        return lineage_data
+
+    def lineageCSVValidate(self, args):
+        """Validate CSV lineage file format (no API call)"""
+        import pandas as pd
+        
+        csv_file = args.get("csv_file") or args.get("--csv-file")
+        if not csv_file:
+            return {"success": False, "error": "CSV file path is required"}
+        
+        try:
+            # Read CSV
+            df = pd.read_csv(csv_file)
+            
+            # Check required columns
+            required_columns = ['source_entity_guid', 'target_entity_guid']
+            missing_columns = [col for col in required_columns if col not in df.columns]
+            
+            if missing_columns:
+                return {
+                    "success": False,
+                    "error": f"Missing required columns: {', '.join(missing_columns)}",
+                    "expected_columns": required_columns
+                }
+            
+            # Validate GUIDs format
+            import re
+            guid_pattern = re.compile(r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$', re.IGNORECASE)
+            
+            invalid_guids = []
+            for idx, row in df.iterrows():
+                source_guid = str(row['source_entity_guid']).strip()
+                target_guid = str(row['target_entity_guid']).strip()
+                
+                # Remove guid= prefix if present
+                source_guid = source_guid.replace('guid=', '').strip('"')
+                target_guid = target_guid.replace('guid=', '').strip('"')
+                
+                if not guid_pattern.match(source_guid):
+                    invalid_guids.append(f"Row {int(idx) + 1}: Invalid source GUID '{source_guid}'")
+                if not guid_pattern.match(target_guid):
+                    invalid_guids.append(f"Row {int(idx) + 1}: Invalid target GUID '{target_guid}'")
+            
+            if invalid_guids:
+                return {
+                    "success": False,
+                    "error": "Invalid GUID format(s) found",
+                    "details": invalid_guids
+                }
+            
+            return {
+                "success": True,
+                "rows": len(df),
+                "columns": list(df.columns)
+            }
+            
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+
+    def lineageCSVSample(self, args):
+        """Generate sample CSV lineage file (no API call)"""
+        sample_data = """source_entity_guid,target_entity_guid,relationship_type,process_name,description,confidence_score,owner,metadata
+ea3412c3-7387-4bc1-9923-11f6f6f60000,2d21eba5-b08b-4571-b31d-7bf6f6f60000,Process,ETL_Customer_Transform,Transform customer data,0.95,data-engineering,"{""tool"": ""Azure Data Factory""}"
+2d21eba5-b08b-4571-b31d-7bf6f6f60000,4fae348b-e960-42f7-834c-38f6f6f60000,Process,Customer_Address_Join,Join customer with address,0.90,data-engineering,"{""tool"": ""Databricks""}"
+"""
+        output_file = args.get("--output-file") or args.get("output_file") or "lineage_sample.csv"
+        
+        try:
+            with open(output_file, 'w', encoding='utf-8') as f:
+                f.write(sample_data)
+            
+            return {
+                "success": True,
+                "file": output_file,
+                "message": f"Sample CSV file created: {output_file}"
+            }
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+
+    def lineageCSVTemplates(self, args):
+        """Get available CSV lineage templates (no API call)"""
+        templates = {
+            "basic": {
+                "columns": ["source_entity_guid", "target_entity_guid", "relationship_type", "process_name"],
+                "description": "Basic lineage with source, target, and process name"
+            },
+            "detailed": {
+                "columns": ["source_entity_guid", "target_entity_guid", "relationship_type", "process_name", "description", "confidence_score", "owner", "metadata"],
+                "description": "Detailed lineage with additional metadata"
+            },
+            "qualified_names": {
+                "columns": ["source_qualified_name", "target_qualified_name", "source_type", "target_type", "process_name", "description"],
+                "description": "Lineage using qualified names instead of GUIDs"
+            }
+        }
+        
+        return {
+            "templates": templates,
+            "recommended": "detailed"
         }
 
     # === LINEAGE ANALYTICS AND REPORTING ===
