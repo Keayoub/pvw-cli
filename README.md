@@ -1,7 +1,8 @@
 # PURVIEW CLI v1.2.3 - Microsoft Purview Automation & Data Governance
 
 > **LATEST UPDATE v1.2.3 (October 2025):**
-> - **🔍 FIXED: Search API Integration** - Fixed `suggest` and `autocomplete` API payload format (HTTP 400 errors resolved)
+> - **� NEW: Lineage CSV Import** - Bulk import lineage relationships from CSV files with validation and sample generation
+> - **�🔍 FIXED: Search API Integration** - Fixed `suggest` and `autocomplete` API payload format (HTTP 400 errors resolved)
 > - **📊 ENHANCED: Collection Display** - Improved collection name detection in search results with proper fallback logic
 > - **✅ VALIDATED: All Search Commands** - Comprehensive testing of query, browse, suggest, find-table operations
 > - **📦 NEW: Bulk Term Import/Export** - Import multiple terms from CSV/JSON with dry-run support
@@ -945,6 +946,87 @@ pvw search query --keywords="FOUND_GUID" --detailed
 
 ---
 
+## Lineage CSV Import & Management
+
+PVW CLI provides powerful lineage management capabilities including CSV-based bulk import for automating data lineage creation.
+
+### 📊 **Lineage CSV Import**
+
+Import lineage relationships from CSV files to automate the creation of data flow documentation in Microsoft Purview.
+
+#### **CSV Format**
+
+The CSV file must contain the following columns:
+
+**Required columns:**
+- `source_entity_guid` - GUID of the source entity
+- `target_entity_guid` - GUID of the target entity
+
+**Optional columns:**
+- `relationship_type` - Type of relationship (default: "Process")
+- `process_name` - Name of the transformation process
+- `description` - Description of the transformation
+- `confidence_score` - Confidence score (0-1)
+- `owner` - Process owner
+- `metadata` - Additional JSON metadata
+
+**Example CSV:**
+```csv
+source_entity_guid,target_entity_guid,relationship_type,process_name,description,confidence_score,owner,metadata
+dcfc99ed-c74d-49aa-bd0b-72f6f6f60000,1db9c650-acfb-4914-8bc5-1cf6f6f60000,Process,Transform_Product_Data,Transform product data for analytics,0.95,data-engineering,"{""tool"": ""Azure Data Factory""}"
+```
+
+#### **Lineage Commands**
+
+```bash
+# Validate CSV format before import (no API calls)
+pvw lineage validate lineage_data.csv
+
+# Import lineage relationships from CSV
+pvw lineage import lineage_data.csv
+
+# Generate sample CSV file with examples
+pvw lineage sample output.csv --num-samples 10 --template detailed
+
+# View available CSV templates
+pvw lineage templates
+```
+
+#### **Available Templates**
+
+- **`basic`** - Minimal columns (source, target, process name)
+- **`detailed`** - All columns including metadata and confidence scores
+- **`qualified_names`** - Use qualified names instead of GUIDs
+
+#### **Workflow Example**
+
+```bash
+# 1. Find entity GUIDs using search
+pvw search find-table --name "Product" --schema "dbo" --id-only
+
+# 2. Create CSV file with lineage relationships
+# (use the GUIDs from step 1)
+
+# 3. Validate CSV format
+pvw lineage validate my_lineage.csv
+# Output: SUCCESS: Lineage validation passed (5 rows, 8 columns)
+
+# 4. Import to Purview
+pvw lineage import my_lineage.csv
+# Output: SUCCESS: Lineage import completed successfully
+```
+
+#### **Advanced Features**
+
+- **GUID Validation**: Automatic validation of GUID format with helpful error messages
+- **Process Entity Creation**: Creates intermediate "Process" entities to link source→target relationships
+- **Metadata Support**: Add custom JSON metadata to each lineage relationship
+- **Dry-Run Validation**: Validate CSV format locally before making API calls
+
+**📚 For detailed documentation, see:** [`doc/guides/lineage-csv-import.md`](doc/guides/lineage-csv-import.md)
+
+---
+
 ## Data Product Management (Legacy)
 
 PVW CLI also includes the original `data-product` command group for backward compatibility with traditional data product lifecycle management.
@@ -990,7 +1072,17 @@ pvw data-product show-lineage --qualified-name="product.test.1"
   # Create and manage glossary terms
   pvw glossary create-term --payload-file term.json
   ```
-- **Lineage Operations**: Lineage discovery, CSV-based bulk lineage
+- **Lineage Operations**: Lineage discovery, CSV-based bulk lineage import/export
+  ```bash
+  # Import lineage relationships from CSV
+  pvw lineage import lineage_data.csv
+  
+  # Validate CSV format before import
+  pvw lineage validate lineage_data.csv
+  
+  # Generate sample CSV file
+  pvw lineage sample output.csv --num-samples 10
+  ```
 - **Monitoring & Analytics**: Real-time dashboards, metrics, and reporting
 - **Plugin System**: Extensible with custom plugins
 
@@ -1039,6 +1131,15 @@ PVW CLI includes comprehensive sample files and scripts for bulk operations:
 - **JSON Samples:** 
   - `samples/json/term/uc_terms_bulk_example.json` (8 data management terms)
   - `samples/json/term/uc_terms_sample.json` (8 business terms)
+- **Lineage CSV Samples:** `samples/csv/lineage_example.csv` - Multiple lineage relationships with metadata
+
+### Lineage Documentation
+
+- **Comprehensive Guide:** `doc/guides/lineage-csv-import.md` - Complete lineage CSV import documentation
+  - CSV format specification with required/optional columns
+  - Command examples for validate, import, sample, templates
+  - Workflow recommendations and troubleshooting
+  - Advanced scenarios with metadata and multiple transformations
 
 ### Bulk Delete Scripts
 
