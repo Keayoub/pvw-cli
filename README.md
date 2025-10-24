@@ -1,24 +1,24 @@
-# PURVIEW CLI v1.2.3 - Microsoft Purview Automation & Data Governance
+# PURVIEW CLI v1.2.4 - Microsoft Purview Automation & Data Governance
 
-> **LATEST UPDATE v1.2.3 (October 2025):**
-> - **� NEW: Lineage CSV Import** - Bulk import lineage relationships from CSV files with validation and sample generation
-> - **�🔍 FIXED: Search API Integration** - Fixed `suggest` and `autocomplete` API payload format (HTTP 400 errors resolved)
-> - **📊 ENHANCED: Collection Display** - Improved collection name detection in search results with proper fallback logic
-> - **✅ VALIDATED: All Search Commands** - Comprehensive testing of query, browse, suggest, find-table operations
-> - **📦 NEW: Bulk Term Import/Export** - Import multiple terms from CSV/JSON with dry-run support
-> - **🗑️ NEW: Bulk Delete Scripts** - PowerShell and Python scripts for bulk term deletion
-> - **📊 NEW: Multiple Output Formats** - `--output` flag supports table, json, and jsonc formats
-> - **🔧 NEW: PowerShell Integration** - Plain JSON output works with `ConvertFrom-Json`
-> - **🚀 Complete Data Product CRUD** - Full update and delete support with smart partial updates
-> - **🏥 Health Monitoring API** - Automated governance health checks and recommendations
-> - **🔄 Workflow Management** - Approval workflows and business process automation
-> - **🚀 Complete Microsoft Purview Unified Catalog (UC)** - Full governance domains, glossary terms, data products, OKRs, and CDEs
+> **LATEST UPDATE v1.2.4 (October 2025):**
+> - **ï¿½ NEW: Lineage CSV Import** - Bulk import lineage relationships from CSV files with validation and sample generation
+> - **ï¿½ðŸ” FIXED: Search API Integration** - Fixed `suggest` and `autocomplete` API payload format (HTTP 400 errors resolved)
+> - **ðŸ“Š ENHANCED: Collection Display** - Improved collection name detection in search results with proper fallback logic
+> - **âœ… VALIDATED: All Search Commands** - Comprehensive testing of query, browse, suggest, find-table operations
+> - **ðŸ“¦ NEW: Bulk Term Import/Export** - Import multiple terms from CSV/JSON with dry-run support
+> - **ðŸ—‘ï¸ NEW: Bulk Delete Scripts** - PowerShell and Python scripts for bulk term deletion
+> - **ðŸ“Š NEW: Multiple Output Formats** - `--output` flag supports table, json, and jsonc formats
+> - **ðŸ”§ NEW: PowerShell Integration** - Plain JSON output works with `ConvertFrom-Json`
+> - **ðŸš€ Complete Data Product CRUD** - Full update and delete support with smart partial updates
+> - **ðŸ¥ Health Monitoring API** - Automated governance health checks and recommendations
+> - **ðŸ”„ Workflow Management** - Approval workflows and business process automation
+> - **ðŸš€ Complete Microsoft Purview Unified Catalog (UC)** - Full governance domains, glossary terms, data products, OKRs, and CDEs
 
 ---
 
 ## What is PVW CLI?
 
-**PVW CLI v1.2.3** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* including:
+**PVW CLI v1.2.4** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* including:
 
 - **Unified Catalog (UC) Management** - Complete governance domains, glossary terms, data products, OKRs, CDEs
 - **Bulk Operations** - Import/export terms from CSV/JSON, bulk delete scripts with progress tracking
@@ -110,7 +110,7 @@ For more advanced usage, see the documentation in `doc/` or the project docs: ht
 
 ## Overview
 
-**PVW CLI v1.2.3** is a modern command-line interface and Python library for Microsoft Purview, enabling:
+**PVW CLI v1.2.4** is a modern command-line interface and Python library for Microsoft Purview, enabling:
 
 - Advanced data catalog search and discovery
 - Bulk import/export of entities, glossary terms, and lineage
@@ -271,7 +271,7 @@ $terms = py -m purviewcli uc term list --domain-id $domainId --output json | Con
 # Access properties
 Write-Host "Found $($terms.Count) terms"
 foreach ($term in $terms) {
-    Write-Host "  • $($term.name) - $($term.status)"
+    Write-Host "  â€¢ $($term.name) - $($term.status)"
 }
 
 # Filter and export
@@ -340,7 +340,7 @@ pvw uc term list --domain-id "abc-123" --output jsonc   # Colored JSON (old beha
 
 Before using PVW CLI, you need to set three essential environment variables. Here's how to find them:
 
-### 🔍 **How to Find Your Purview Values**
+### ðŸ” **How to Find Your Purview Values**
 
 #### **1. PURVIEW_ACCOUNT_NAME**
 - This is your Purview account name as it appears in Azure Portal
@@ -348,7 +348,7 @@ Before using PVW CLI, you need to set three essential environment variables. Her
 
 #### **2. PURVIEW_ACCOUNT_ID** 
 - This is the GUID that identifies your Purview account for Unified Catalog APIs
-- **✅ Important: For most Purview deployments, this is your Azure Tenant ID**
+- **âœ… Important: For most Purview deployments, this is your Azure Tenant ID**
 
 - **Method 1 - Get your Tenant ID (recommended):**
   
@@ -372,14 +372,14 @@ Before using PVW CLI, you need to set three essential environment variables. Her
 
 - **Method 3 - Azure Portal:**
   1. Go to your Purview account in Azure Portal
-  2. Navigate to Properties → Atlas endpoint URL
+  2. Navigate to Properties â†’ Atlas endpoint URL
   3. Extract GUID from: `https://GUID-api.purview-service.microsoft.com/catalog`
 
 #### **3. PURVIEW_RESOURCE_GROUP**
 - The Azure resource group containing your Purview account
 - Example: `fabric-artifacts`
 
-### 📋 **Setting the Variables**
+### ðŸ“‹ **Setting the Variables**
 
 **Windows Command Prompt:**
 ```cmd
@@ -416,7 +416,7 @@ setx PURVIEW_RESOURCE_GROUP "your-resource-group"
 [Environment]::SetEnvironmentVariable("PURVIEW_RESOURCE_GROUP", "your-resource-group", "User")
 ```
 
-### 🔧 **Debug Environment Issues**
+### ðŸ”§ **Debug Environment Issues**
 
 If you experience issues with environment variables between different terminals, use these debug commands:
 
@@ -457,34 +457,34 @@ The PVW CLI provides advanced search using the latest Microsoft Purview Discover
 - Use autocomplete and suggestion endpoints
 - Perform faceted, time-based, and entity-type-specific queries
 
-**✅ v1.2.3 Improvements:**
+**âœ… v1.2.4 Improvements:**
 - Fixed `suggest` and `autocomplete` API payload format (removed empty filter causing HTTP 400 errors)
 - Enhanced collection display with robust type checking and fallback logic
 - All search commands validated and working correctly (query, browse, suggest, find-table)
 
 ### CLI Usage Examples
 
-#### 🎯 **Multiple Output Formats**
+#### ðŸŽ¯ **Multiple Output Formats**
 
 ```bash
 # 1. Table Format (Default) - Quick overview
 pvw search query --keywords="customer" --limit=5
-# → Clean table with Name, Type, Collection, Classifications, Qualified Name
+# â†’ Clean table with Name, Type, Collection, Classifications, Qualified Name
 
 # 2. Detailed Format - Human-readable with all metadata  
 pvw search query --keywords="customer" --limit=5 --detailed
-# → Rich panels showing full details, timestamps, search scores
+# â†’ Rich panels showing full details, timestamps, search scores
 
 # 3. JSON Format - Complete technical details with syntax highlighting (WELL-FORMATTED)
 pvw search query --keywords="customer" --limit=5 --json
-# → Full JSON response with indentation, line numbers and color coding
+# â†’ Full JSON response with indentation, line numbers and color coding
 
 # 4. Table with IDs - For entity operations
 pvw search query --keywords="customer" --limit=5 --show-ids
-# → Table format + entity GUIDs for copy/paste into update commands
+# â†’ Table format + entity GUIDs for copy/paste into update commands
 ```
 
-#### 🔍 **Search Operations**
+#### ðŸ” **Search Operations**
 
 ```bash
 # Basic search for assets with keyword 'customer'
@@ -502,15 +502,15 @@ pvw search autocomplete --keywords="ord" --limit=3
 # Get search suggestions (fuzzy matching)
 pvw search suggest --keywords="prod" --limit=2
 
-**⚠️ IMPORTANT - Command Line Quoting:**
+**âš ï¸ IMPORTANT - Command Line Quoting:**
 ```cmd
-# ✅ CORRECT - Use quotes around keywords
+# âœ… CORRECT - Use quotes around keywords
 pvw search query --keywords="customer" --limit=5
 
-# ✅ CORRECT - For wildcard searches, use quotes
+# âœ… CORRECT - For wildcard searches, use quotes
 pvw search query --keywords="*" --limit=5
 
-# ❌ WRONG - Don't use unquoted * (shell expands to file names)
+# âŒ WRONG - Don't use unquoted * (shell expands to file names)
 pvw search query --keywords=* --limit=5
 # This causes: "Error: Got unexpected extra arguments (dist doc ...)"
 ```
@@ -529,7 +529,7 @@ pvw search query --keywords="audit" --createdAfter="2024-01-01" --limit=1
 pvw search query --keywords="finance" --entityTypes="Files,Tables" --limit=2
 ```
 
-#### 💡 **Usage Scenarios**
+#### ðŸ’¡ **Usage Scenarios**
 
 - **Daily browsing**: Use default table format for quick scans
 - **Understanding assets**: Use `--detailed` for rich information panels  
@@ -566,13 +566,13 @@ See `tests/test_search_examples.py` for ready-to-run pytest examples covering al
 
 PVW CLI now includes comprehensive **Microsoft Purview Unified Catalog (UC)** support with the new `uc` command group. This provides complete management of modern data governance features including governance domains, glossary terms, data products, objectives (OKRs), and critical data elements.
 
-**🎯 Feature Parity**: Full compatibility with [UnifiedCatalogPy](https://github.com/olafwrieden/unifiedcatalogpy) functionality.
+**ðŸŽ¯ Feature Parity**: Full compatibility with [UnifiedCatalogPy](https://github.com/olafwrieden/unifiedcatalogpy) functionality.
 
 See [`doc/commands/unified-catalog.md`](doc/commands/unified-catalog.md) for complete documentation and examples.
 
 ### Quick UC Examples
 
-#### 🏛️ **Governance Domains Management**
+#### ðŸ›ï¸ **Governance Domains Management**
 
 ```bash
 # List all governance domains
@@ -588,7 +588,7 @@ pvw uc domain get --domain-id "abc-123-def-456"
 pvw uc domain update --domain-id "abc-123" --description "Updated financial governance"
 ```
 
-#### 📖 **Glossary Terms in UC**
+#### ðŸ“– **Glossary Terms in UC**
 
 ```bash
 # List all terms in a domain
@@ -609,7 +609,7 @@ pvw uc term update --term-id "term-456" --description "Updated description"
 pvw uc term delete --term-id "term-456" --confirm
 ```
 
-**📦 Bulk Import (NEW)**
+**ðŸ“¦ Bulk Import (NEW)**
 
 Import multiple terms from CSV or JSON files with validation and progress tracking:
 
@@ -629,12 +629,12 @@ pvw uc term import-json --json-file "samples/json/term/uc_terms_bulk_example.jso
 ```
 
 **Bulk Import Features:**
-- ✅ Import from CSV or JSON files
-- ✅ Dry-run mode to preview before importing
-- ✅ Support for multiple owners (Entra ID Object IDs), acronyms, and resources
-- ✅ Progress tracking with Rich console output
-- ✅ Detailed error messages and summary reports
-- ✅ Sequential POST requests (no native bulk endpoint available)
+- âœ… Import from CSV or JSON files
+- âœ… Dry-run mode to preview before importing
+- âœ… Support for multiple owners (Entra ID Object IDs), acronyms, and resources
+- âœ… Progress tracking with Rich console output
+- âœ… Detailed error messages and summary reports
+- âœ… Sequential POST requests (no native bulk endpoint available)
 
 **CSV Format Example:**
 ```csv
@@ -661,12 +661,12 @@ Monthly Recurring Revenue,Predictable monthly revenue,Draft,MRR,<guid>,Finance D
 ```
 
 **Important Notes:**
-- ⚠️ **Owner IDs must be Entra ID Object IDs (GUIDs)**, not email addresses
-- ⚠️ **Terms cannot be "Published" in unpublished domains** - use "Draft" status
-- ✅ Sample files available: `samples/csv/uc_terms_bulk_example.csv`, `samples/json/term/uc_terms_bulk_example.json`
-- 📖 Complete documentation: [`doc/commands/unified-catalog/term-bulk-import.md`](doc/commands/unified-catalog/term-bulk-import.md)
+- âš ï¸ **Owner IDs must be Entra ID Object IDs (GUIDs)**, not email addresses
+- âš ï¸ **Terms cannot be "Published" in unpublished domains** - use "Draft" status
+- âœ… Sample files available: `samples/csv/uc_terms_bulk_example.csv`, `samples/json/term/uc_terms_bulk_example.json`
+- ðŸ“– Complete documentation: [`doc/commands/unified-catalog/term-bulk-import.md`](doc/commands/unified-catalog/term-bulk-import.md)
 
-**🗑️ Bulk Delete (NEW)**
+**ðŸ—‘ï¸ Bulk Delete (NEW)**
 
 Delete all terms in a domain using PowerShell or Python scripts:
 
@@ -687,14 +687,14 @@ python scripts/delete_all_uc_terms_v2.py --domain-id "abc-123" --force
 ```
 
 **Bulk Delete Features:**
-- ✅ Interactive confirmation prompts (type "DELETE" to confirm)
-- ✅ Beautiful progress display with colors
-- ✅ Success/failure tracking per term
-- ✅ Detailed summary reports
-- ✅ Rate limiting (200ms delay between deletes)
-- ✅ Graceful error handling and Ctrl+C support
+- âœ… Interactive confirmation prompts (type "DELETE" to confirm)
+- âœ… Beautiful progress display with colors
+- âœ… Success/failure tracking per term
+- âœ… Detailed summary reports
+- âœ… Rate limiting (200ms delay between deletes)
+- âœ… Graceful error handling and Ctrl+C support
 
-#### 📦 **Data Products Management**
+#### ðŸ“¦ **Data Products Management**
 
 ```bash
 # List all data products in a domain
@@ -732,7 +732,7 @@ pvw uc dataproduct delete --product-id "prod-789"
 pvw uc dataproduct delete --product-id "prod-789" --yes
 ```
 
-#### 🎯 **Objectives & Key Results (OKRs)**
+#### ðŸŽ¯ **Objectives & Key Results (OKRs)**
 
 ```bash
 # List objectives for a domain
@@ -753,7 +753,7 @@ pvw uc objective update \
   --status "in-progress"
 ```
 
-#### 🔑 **Critical Data Elements (CDEs)**
+#### ðŸ”‘ **Critical Data Elements (CDEs)**
 
 ```bash
 # List critical data elements
@@ -774,7 +774,7 @@ pvw uc cde link \
   --asset-id "ea3412c3-7387-4bc1-9923-11f6f6f60000"
 ```
 
-#### 🏥 **Health Monitoring (NEW)**
+#### ðŸ¥ **Health Monitoring (NEW)**
 
 Monitor governance health and get automated recommendations to improve your data governance posture.
 
@@ -814,7 +814,7 @@ pvw uc health query --json
 - Description quality issues (Medium)
 - Business domains without critical data entities (Medium)
 
-#### 🔄 **Workflow Management (NEW)**
+#### ðŸ”„ **Workflow Management (NEW)**
 
 Manage approval workflows and business process automation in Purview.
 
@@ -853,7 +853,7 @@ pvw workflow list --json
 - Data product publishing approvals
 - Classification review processes
 
-#### 🔄 **Integrated Workflow Example**
+#### ðŸ”„ **Integrated Workflow Example**
 
 ```bash
 # 1. Discover assets to govern
@@ -878,7 +878,7 @@ pvw uc objective create --definition "Ensure 100% PII classification compliance"
 
 PVW CLI provides comprehensive entity management capabilities for updating Purview assets like descriptions, classifications, and custom attributes.
 
-### 🔄 **Entity Update Examples**
+### ðŸ”„ **Entity Update Examples**
 
 #### **Update Asset Descriptions**
 
@@ -925,7 +925,7 @@ pvw entity add-classification \
   --classification "MICROSOFT.PERSONAL.EMAIL"
 ```
 
-### 🔍 **Discovery to Update Workflow**
+### ðŸ” **Discovery to Update Workflow**
 
 ```bash
 # 1. Find assets that need updates
@@ -950,7 +950,7 @@ pvw search query --keywords="FOUND_GUID" --detailed
 
 PVW CLI provides powerful lineage management capabilities including CSV-based bulk import for automating data lineage creation.
 
-### 📊 **Lineage CSV Import**
+### ðŸ“Š **Lineage CSV Import**
 
 Import lineage relationships from CSV files to automate the creation of data flow documentation in Microsoft Purview.
 
@@ -1019,11 +1019,11 @@ pvw lineage import my_lineage.csv
 #### **Advanced Features**
 
 - **GUID Validation**: Automatic validation of GUID format with helpful error messages
-- **Process Entity Creation**: Creates intermediate "Process" entities to link source→target relationships
+- **Process Entity Creation**: Creates intermediate "Process" entities to link sourceâ†’target relationships
 - **Metadata Support**: Add custom JSON metadata to each lineage relationship
 - **Dry-Run Validation**: Validate CSV format locally before making API calls
 
-**📚 For detailed documentation, see:** [`doc/guides/lineage-csv-import.md`](doc/guides/lineage-csv-import.md)
+**ðŸ“š For detailed documentation, see:** [`doc/guides/lineage-csv-import.md`](doc/guides/lineage-csv-import.md)
 
 ---
 
@@ -1094,14 +1094,14 @@ PVW CLI provides comprehensive automation for all major Microsoft Purview APIs, 
 
 ### Supported API Groups
 
-- **Unified Catalog**: Complete governance domains, glossary terms, data products, OKRs, CDEs management ✅
-  - **Health Monitoring**: Automated governance health checks and recommendations ✅ NEW
-  - **Workflows**: Approval workflows and business process automation ✅ NEW
-- **Data Map**: Full entity and lineage management ✅
-- **Discovery**: Advanced search, browse, and query capabilities ✅
-- **Collections**: Collection and account management ✅
-- **Management**: Administrative operations ✅
-- **Scan**: Data source scanning and configuration ✅
+- **Unified Catalog**: Complete governance domains, glossary terms, data products, OKRs, CDEs management âœ…
+  - **Health Monitoring**: Automated governance health checks and recommendations âœ… NEW
+  - **Workflows**: Approval workflows and business process automation âœ… NEW
+- **Data Map**: Full entity and lineage management âœ…
+- **Discovery**: Advanced search, browse, and query capabilities âœ…
+- **Collections**: Collection and account management âœ…
+- **Management**: Administrative operations âœ…
+- **Scan**: Data source scanning and configuration âœ…
 
 ### API Version Support
 
@@ -1180,27 +1180,27 @@ PVW CLI includes comprehensive sample files and scripts for bulk operations:
 
 ## Recent Updates (October 2025)
 
-### ✅ Bulk Term Import/Export
+### âœ… Bulk Term Import/Export
 - Import multiple terms from CSV or JSON files
 - Dry-run mode for validation before import
 - Support for owners (Entra ID GUIDs), acronyms, resources
 - Progress tracking and detailed error reporting
 - 100% success rate in testing (8/8 terms)
 
-### ✅ PowerShell & Scripting Integration
+### âœ… PowerShell & Scripting Integration
 - New `--output` parameter with table/json/jsonc formats
 - Plain JSON works with PowerShell's `ConvertFrom-Json`
 - Compatible with jq, Python json module, and other tools
 - Migration from deprecated `--json` flag
 
-### ✅ Bulk Delete Scripts
+### âœ… Bulk Delete Scripts
 - PowerShell script with interactive confirmation ("DELETE" to confirm)
 - Python script with Rich progress bars
 - Beautiful UI with colored output
 - Success/failure tracking per term
 - Rate limiting (200ms delay)
 
-### ✅ Critical Fixes (v1.2.3)
+### âœ… Critical Fixes (v1.2.4)
 - **Search API Suggest/Autocomplete:** Fixed HTTP 400 errors by removing empty filter objects from payload
 - **Collection Display:** Enhanced collection name detection with proper fallback logic (isinstance checks)
 - **Owner ID Format:** Must use Entra ID Object IDs (GUIDs), not email addresses
@@ -1212,29 +1212,29 @@ PVW CLI includes comprehensive sample files and scripts for bulk operations:
 
 ## Key Features Summary
 
-### 🚀 **Unified Catalog (UC) - Complete Management**
+### ðŸš€ **Unified Catalog (UC) - Complete Management**
 - Governance domains, glossary terms, data products
 - Objectives & Key Results (OKRs), Critical Data Elements (CDEs)
 - Health monitoring and workflow automation
 - Full CRUD operations with smart partial updates
 
-### 📦 **Bulk Operations**
+### ðŸ“¦ **Bulk Operations**
 - CSV/JSON import with dry-run validation
 - PowerShell and Python bulk delete scripts
 - Progress tracking and error handling
 - Sample files and templates included
 
-### 📊 **Multiple Output Formats**
+### ðŸ“Š **Multiple Output Formats**
 - Table format for human viewing (default)
 - Plain JSON for PowerShell/bash scripting
 - Colored JSON for visual inspection
 
-### 🔧 **Automation & Integration**
+### ðŸ”§ **Automation & Integration**
 - Azure CLI, Service Principal, Managed Identity auth
 - Works in local development, CI/CD, and production
 - Compatible with PowerShell, bash, Python, jq
 
-### 📚 **Comprehensive Documentation**
+### ðŸ“š **Comprehensive Documentation**
 - Complete API coverage documentation
 - Jupyter notebook examples
 - Troubleshooting guides
@@ -1257,9 +1257,9 @@ See [LICENSE](LICENSE) file for details.
 
 ---
 
-**PVW CLI v1.2.3 empowers data engineers, stewards, and architects to automate, scale, and enhance their Microsoft Purview experience with powerful command-line and programmatic capabilities.**
+**PVW CLI v1.2.4 empowers data engineers, stewards, and architects to automate, scale, and enhance their Microsoft Purview experience with powerful command-line and programmatic capabilities.**
 
-**Latest in v1.2.3:**
+**Latest in v1.2.4:**
 - Fixed Search API suggest/autocomplete (HTTP 400 errors resolved)
 - Enhanced collection display with robust fallback logic
 - Comprehensive search command validation
