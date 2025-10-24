@@ -128,12 +128,13 @@ $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
 
 if (Test-Path $readme) {
     Write-Info "Updating README.md occurrences of version..."
-    $readmeText = Get-Content -Raw -Path $readme
+    # Read with explicit UTF8 encoding to preserve Unicode characters (emojis, etc.)
+    $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
+    $readmeText = [System.IO.File]::ReadAllText($readme, $Utf8NoBomEncoding)
     # Replace v<oldVersion> and PVW CLI v<oldVersion>
     $r = $readmeText -replace [regex]::Escape("v$oldVersion"), "v$NewVersion"
     $r = $r -replace [regex]::Escape("PVW CLI v$oldVersion"), "PVW CLI v$NewVersion"
-    # Write without BOM
-    $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
+    # Write back with UTF8 encoding without BOM (preserves all Unicode characters)
     [System.IO.File]::WriteAllText($readme, $r, $Utf8NoBomEncoding)
 }
 
