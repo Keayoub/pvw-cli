@@ -54,7 +54,7 @@ def lineage(ctx):
 def import_cmd(ctx, csv_file):
     """Import lineage relationships from CSV file (calls client lineageCSVProcess)."""
     try:
-        if ctx.obj.get("mock"):
+        if ctx.obj and ctx.obj.get("mock"):
             console.print("[yellow][MOCK] lineage import command[/yellow]")
             console.print(f"[dim]File: {csv_file}[/dim]")
             console.print("[green]MOCK lineage import completed successfully[/green]")
@@ -68,6 +68,9 @@ def import_cmd(ctx, csv_file):
         console.print(json.dumps(result, indent=2))
     except Exception as e:
         console.print(f"[red]ERROR: Error executing lineage import: {str(e)}[/red]")
+        import traceback
+        if ctx.obj and ctx.obj.get("debug"):
+            console.print(f"[dim]{traceback.format_exc()}[/dim]")
 
 
 @lineage.command()

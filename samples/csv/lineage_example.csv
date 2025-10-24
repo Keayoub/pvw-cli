@@ -1,0 +1,4 @@
+source_entity_guid,target_entity_guid,relationship_type,process_name,description,confidence_score,owner,metadata
+ea3412c3-7387-4bc1-9923-11f6f6f60000,2d21eba5-b08b-4571-b31d-7bf6f6f60000,Process,ETL_Customer_Transform,Transform customer data from raw to curated,0.95,data-engineering,"{""tool"": ""Azure Data Factory"", ""schedule"": ""daily""}"
+2d21eba5-b08b-4571-b31d-7bf6f6f60000,4fae348b-e960-42f7-834c-38f6f6f60000,Process,Customer_Address_Join,Join customer data with address information,0.90,data-engineering,"{""tool"": ""Databricks"", ""cluster"": ""analytics-01""}"
+4fae348b-e960-42f7-834c-38f6f6f60000,06c63f51-65c3-4c75-930c-f1f6f6f60000,Process,Product_Enrichment,Enrich product data with customer insights,0.88,data-science,"{""tool"": ""Python"", ""framework"": ""PySpark""}"
