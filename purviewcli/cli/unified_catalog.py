@@ -1952,21 +1952,534 @@ uc.add_command(health_commands, name="health")
 
 
 # ========================================
-# CUSTOM ATTRIBUTES (Coming Soon)
+# DATA POLICIES (NEW)
+# ========================================
+
+
+@uc.group()
+def policy():
+    """Manage data governance policies."""
+    pass
+
+
+@policy.command(name="list")
+@click.option("--output", type=click.Choice(["table", "json"]), default="table", help="Output format")
+def list_policies(output):
+    """List all data governance policies."""
+    client = UnifiedCatalogClient()
+    response = client.list_policies({})
+    
+    if output == "json":
+        console.print_json(json.dumps(response))
+    else:
+        if "value" in response and response["value"]:
+            table = Table(title="[bold cyan]Data Governance Policies[/bold cyan]", show_header=True)
+            table.add_column("ID", style="cyan")
+            table.add_column("Name", style="green")
+            table.add_column("Type", style="yellow")
+            table.add_column("Status", style="magenta")
+            table.add_column("Description", style="white")
+            
+            for item in response["value"]:
+                table.add_row(
+                    item.get("id", "N/A"),
+                    item.get("name", "N/A"),
+                    item.get("policyType", "N/A"),
+                    item.get("status", "N/A"),
+                    item.get("description", "")[:50] + "..." if len(item.get("description", "")) > 50 else item.get("description", "")
+                )
+            console.print(table)
+        else:
+            console.print("[yellow]No policies found[/yellow]")
+
+
+@policy.command(name="get")
+@click.option("--policy-id", required=True, help="Policy ID")
+@click.option("--output", type=click.Choice(["table", "json"]), default="json", help="Output format")
+def get_policy(policy_id, output):
+    """Get a specific data governance policy."""
+    client = UnifiedCatalogClient()
+    args = {"--policy-id": [policy_id]}
+    response = client.get_policy(args)
+    
+    if output == "json":
+        _format_json_output(response)
+    else:
+        table = Table(title=f"[bold cyan]Policy: {response.get('name', 'N/A')}[/bold cyan]")
+        table.add_column("Property", style="cyan")
+        table.add_column("Value", style="white")
+        
+        for key, value in response.items():
+            table.add_row(key, str(value))
+        console.print(table)
+
+
+@policy.command(name="create")
+@click.option("--name", required=True, help="Policy name")
+@click.option("--policy-type", required=True, help="Policy type (e.g., access, retention)")
+@click.option("--description", default="", help="Policy description")
+@click.option("--status", default="active", help="Policy status (active, draft)")
+def create_policy(name, policy_type, description, status):
+    """Create a new data governance policy."""
+    client = UnifiedCatalogClient()
+    args = {
+        "--name": [name],
+        "--policy-type": [policy_type],
+        "--description": [description],
+        "--status": [status]
+    }
+    response = client.create_policy(args)
+    
+    console.print(f"[green]SUCCESS:[/green] Policy created")
+    _format_json_output(response)
+
+
+@policy.command(name="update")
+@click.option("--policy-id", required=True, help="Policy ID")
+@click.option("--name", help="New policy name")
+@click.option("--description", help="New policy description")
+@click.option("--status", help="New policy status")
+def update_policy(policy_id, name, description, status):
+    """Update an existing data governance policy."""
+    client = UnifiedCatalogClient()
+    args = {"--policy-id": [policy_id]}
+    
+    if name:
+        args["--name"] = [name]
+    if description:
+        args["--description"] = [description]
+    if status:
+        args["--status"] = [status]
+    
+    response = client.update_policy(args)
+    
+    console.print(f"[green]SUCCESS:[/green] Policy updated")
+    _format_json_output(response)
+
+
+@policy.command(name="delete")
+@click.option("--policy-id", required=True, help="Policy ID")
+@click.confirmation_option(prompt="Are you sure you want to delete this policy?")
+def delete_policy(policy_id):
+    """Delete a data governance policy."""
+    client = UnifiedCatalogClient()
+    args = {"--policy-id": [policy_id]}
+    response = client.delete_policy(args)
+    
+    console.print(f"[green]SUCCESS:[/green] Policy '{policy_id}' deleted")
+
+
+# ========================================
+# CUSTOM METADATA (NEW)
+# ========================================
+
+
+@uc.group()
+def metadata():
+    """Manage custom metadata for assets."""
+    pass
+
+
+@metadata.command(name="list")
+@click.option("--output", type=click.Choice(["table", "json"]), default="table", help="Output format")
+@click.option("--fallback/--no-fallback", default=True, help="Fallback to Business Metadata if UC is empty")
+def list_custom_metadata(output, fallback):
+    """List all custom metadata definitions.
+    
+    First tries UC Custom Metadata API. If empty and fallback is enabled,
+    automatically shows Business Metadata from Data Map API instead.
+    """
+    client = UnifiedCatalogClient()
+    response = client.list_custom_metadata({})
+    
+    # Check if UC API returned data
+    has_uc_data = response and "value" in response and response["value"]
+    
+    if output == "json":
+        if has_uc_data:
+            console.print_json(json.dumps(response))
+        elif fallback:
+            # Fallback to Business Metadata
+            console.print("[dim]UC Custom Metadata is empty. Showing Business Metadata from Data Map API...[/dim]\n")
+            from purviewcli.client._types import Types
+            types_client = Types()
+            types_result = types_client.typesRead({})
+            
+            if types_result:
+                biz_metadata = types_result.get('businessMetadataDefs', [])
+                
+                # Format as attribute list
+                attributes_list = []
+                for group in biz_metadata:
+                    group_name = group.get('name', 'N/A')
+                    group_guid = group.get('guid', 'N/A')
+                    
+                    for attr in group.get('attributeDefs', []):
+                        attributes_list.append({
+                            'source': 'DataMap.BusinessMetadata',
+                            'attributeName': attr.get('name'),
+                            'group': group_name,
+                            'groupGuid': group_guid,
+                            'type': attr.get('typeName'),
+                            'description': attr.get('description', ''),
+                            'isOptional': attr.get('isOptional', True),
+                            'isIndexable': attr.get('isIndexable', False)
+                        })
+                
+                console.print_json(json.dumps(attributes_list))
+            else:
+                console.print_json(json.dumps({"value": [], "message": "No UC or Business Metadata found"}))
+        else:
+            console.print_json(json.dumps(response))
+    else:
+        # Table output
+        if has_uc_data:
+            table = Table(title="[bold cyan]UC Custom Metadata Definitions[/bold cyan]", show_header=True)
+            table.add_column("Key", style="cyan")
+            table.add_column("Type", style="yellow")
+            table.add_column("Description", style="white")
+            
+            for item in response["value"]:
+                table.add_row(
+                    item.get("key", "N/A"),
+                    item.get("type", "N/A"),
+                    item.get("description", "")[:60] + "..." if len(item.get("description", "")) > 60 else item.get("description", "")
+                )
+            console.print(table)
+        elif fallback:
+            # Fallback to Business Metadata
+            console.print("[yellow]INFO:[/yellow] UC Custom Metadata is empty.")
+            console.print("[dim]Falling back to Business Metadata (Data Map API)...[/dim]\n")
+            
+            from purviewcli.client._types import Types
+            types_client = Types()
+            types_result = types_client.typesRead({})
+            
+            if types_result:
+                biz_metadata = types_result.get('businessMetadataDefs', [])
+                
+                if biz_metadata:
+                    table = Table(title="[bold green]Business Metadata Attributes (Data Map)[/bold green]", show_header=True)
+                    table.add_column("Attribute Name", style="green", no_wrap=True)
+                    table.add_column("Group", style="cyan")
+                    table.add_column("Type", style="yellow")
+                    table.add_column("Scope", style="magenta", max_width=25)
+                    table.add_column("Description", style="white", max_width=30)
+                    
+                    total_attrs = 0
+                    for group in biz_metadata:
+                        group_name = group.get('name', 'N/A')
+                        attributes = group.get('attributeDefs', [])
+                        
+                        # Parse group-level scope
+                        group_scope = "N/A"
+                        options = group.get('options', {})
+                        if 'dataGovernanceOptions' in options:
+                            try:
+                                dg_opts_str = options.get('dataGovernanceOptions', '{}')
+                                dg_opts = json.loads(dg_opts_str) if isinstance(dg_opts_str, str) else dg_opts_str
+                                applicable = dg_opts.get('applicableConstructs', [])
+                                if applicable:
+                                    # Categorize scope
+                                    has_business_concept = any('businessConcept' in c or 'domain' in c for c in applicable)
+                                    has_dataset = any('dataset' in c.lower() for c in applicable)
+                                    
+                                    if has_business_concept and has_dataset:
+                                        group_scope = "Universal (Concept + Dataset)"
+                                    elif has_business_concept:
+                                        group_scope = "Business Concept"
+                                    elif has_dataset:
+                                        group_scope = "Data Asset"
+                                    else:
+                                        # Show first 2 constructs
+                                        scope_parts = []
+                                        for construct in applicable[:2]:
+                                            if ':' in construct:
+                                                scope_parts.append(construct.split(':')[0])
+                                            else:
+                                                scope_parts.append(construct)
+                                        group_scope = ', '.join(scope_parts)
+                            except:
+                                pass
+                        
+                        for attr in attributes:
+                            total_attrs += 1
+                            attr_name = attr.get('name', 'N/A')
+                            attr_type = attr.get('typeName', 'N/A')
+                            
+                            # Simplify enum types
+                            if 'ATTRIBUTE_ENUM_' in attr_type:
+                                attr_type = 'Enum'
+                            
+                            attr_desc = attr.get('description', '')
+                            
+                            # Check if attribute has custom scope
+                            attr_scope = group_scope
+                            attr_opts = attr.get('options', {})
+                            
+                            # Check dataGovernanceOptions first
+                            if 'dataGovernanceOptions' in attr_opts:
+                                try:
+                                    attr_dg_str = attr_opts.get('dataGovernanceOptions', '{}')
+                                    attr_dg = json.loads(attr_dg_str) if isinstance(attr_dg_str, str) else attr_dg_str
+                                    inherit = attr_dg.get('inheritApplicableConstructsFromGroup', True)
+                                    if not inherit:
+                                        attr_applicable = attr_dg.get('applicableConstructs', [])
+                                        if attr_applicable:
+                                            # Categorize custom scope
+                                            has_business_concept = any('businessConcept' in c or 'domain' in c for c in attr_applicable)
+                                            has_dataset = any('dataset' in c.lower() for c in attr_applicable)
+                                            
+                                            if has_business_concept and has_dataset:
+                                                attr_scope = "Universal"
+                                            elif has_business_concept:
+                                                attr_scope = "Business Concept"
+                                            elif has_dataset:
+                                                attr_scope = "Data Asset"
+                                            else:
+                                                attr_scope = f"Custom ({len(attr_applicable)})"
+                                except:
+                                    pass
+                            
+                            # Fallback: Check applicableEntityTypes (older format)
+                            if attr_scope == "N/A" and 'applicableEntityTypes' in attr_opts:
+                                try:
+                                    entity_types_str = attr_opts.get('applicableEntityTypes', '[]')
+                                    # Parse if string, otherwise use as-is
+                                    if isinstance(entity_types_str, str):
+                                        entity_types = json.loads(entity_types_str)
+                                    else:
+                                        entity_types = entity_types_str
+                                    
+                                    if entity_types and isinstance(entity_types, list):
+                                        # Check if entity types are data assets (tables, etc.)
+                                        if any('table' in et.lower() or 'database' in et.lower() or 'file' in et.lower() 
+                                               for et in entity_types):
+                                            attr_scope = "Data Asset"
+                                        else:
+                                            attr_scope = f"Assets ({len(entity_types)} types)"
+                                except Exception as e:
+                                    # Silently fail but could log for debugging
+                                    pass
+                            
+                            table.add_row(
+                                attr_name,
+                                group_name,
+                                attr_type,
+                                attr_scope,
+                                attr_desc[:30] + "..." if len(attr_desc) > 30 else attr_desc
+                            )
+                    
+                    console.print(table)
+                    console.print(f"\n[cyan]Total:[/cyan] {total_attrs} business metadata attribute(s) in {len(biz_metadata)} group(s)")
+                    console.print("\n[dim]Legend:[/dim]")
+                    console.print("  [magenta]Business Concept[/magenta] = Applies to Terms, Domains, Business Rules")
+                    console.print("  [magenta]Data Asset[/magenta] = Applies to Tables, Files, Databases")
+                    console.print("  [magenta]Universal[/magenta] = Applies to both Concepts and Assets")
+                    console.print("\n[dim]Tip: Use 'pvw types list-business-attributes' for detailed business metadata view[/dim]")
+                    console.print("[dim]Tip: Use 'pvw uc metadata list --no-fallback' to see only UC metadata[/dim]")
+                else:
+                    console.print("[yellow]No business metadata found either[/yellow]")
+            else:
+                console.print("[red]ERROR:[/red] Failed to retrieve business metadata")
+        else:
+            console.print("[yellow]No custom metadata found[/yellow]")
+            console.print("[dim]Tip: Use --fallback to also check Business Metadata from Data Map API[/dim]")
+
+
+@metadata.command(name="get")
+@click.option("--asset-id", required=True, help="Asset ID")
+@click.option("--output", type=click.Choice(["table", "json"]), default="json", help="Output format")
+def get_custom_metadata(asset_id, output):
+    """Get custom metadata for a specific asset."""
+    client = UnifiedCatalogClient()
+    args = {"--asset-id": [asset_id]}
+    response = client.get_custom_metadata(args)
+    
+    if output == "json":
+        _format_json_output(response)
+    else:
+        table = Table(title=f"[bold cyan]Custom Metadata for Asset: {asset_id}[/bold cyan]")
+        table.add_column("Key", style="cyan")
+        table.add_column("Value", style="white")
+        table.add_column("Type", style="yellow")
+        
+        if "metadata" in response:
+            for key, value in response["metadata"].items():
+                table.add_row(key, str(value.get("value", "N/A")), value.get("type", "N/A"))
+        console.print(table)
+
+
+@metadata.command(name="add")
+@click.option("--asset-id", required=True, help="Asset ID")
+@click.option("--key", required=True, help="Metadata key")
+@click.option("--value", required=True, help="Metadata value")
+@click.option("--type", default="string", help="Metadata type (string, number, boolean)")
+def add_custom_metadata(asset_id, key, value, type):
+    """Add custom metadata to an asset."""
+    client = UnifiedCatalogClient()
+    args = {
+        "--asset-id": [asset_id],
+        "--key": [key],
+        "--value": [value],
+        "--type": [type]
+    }
+    response = client.add_custom_metadata(args)
+    
+    console.print(f"[green]SUCCESS:[/green] Custom metadata added to asset '{asset_id}'")
+    _format_json_output(response)
+
+
+@metadata.command(name="update")
+@click.option("--asset-id", required=True, help="Asset ID")
+@click.option("--key", required=True, help="Metadata key to update")
+@click.option("--value", required=True, help="New metadata value")
+def update_custom_metadata(asset_id, key, value):
+    """Update custom metadata for an asset."""
+    client = UnifiedCatalogClient()
+    args = {
+        "--asset-id": [asset_id],
+        "--key": [key],
+        "--value": [value]
+    }
+    response = client.update_custom_metadata(args)
+    
+    console.print(f"[green]SUCCESS:[/green] Custom metadata updated for asset '{asset_id}'")
+    _format_json_output(response)
+
+
+@metadata.command(name="delete")
+@click.option("--asset-id", required=True, help="Asset ID")
+@click.option("--key", required=True, help="Metadata key to delete")
+@click.confirmation_option(prompt="Are you sure you want to delete this metadata?")
+def delete_custom_metadata(asset_id, key):
+    """Delete custom metadata from an asset."""
+    client = UnifiedCatalogClient()
+    args = {
+        "--asset-id": [asset_id],
+        "--key": [key]
+    }
+    response = client.delete_custom_metadata(args)
+    
+    console.print(f"[green]SUCCESS:[/green] Custom metadata '{key}' deleted from asset '{asset_id}'")
+
+
+# ========================================
+# CUSTOM ATTRIBUTES (NEW)
 # ========================================
 
 
 @uc.group()
 def attribute():
-    """Manage custom attributes (coming soon)."""
+    """Manage custom attribute definitions."""
     pass
 
 
 @attribute.command(name="list")
-def list_attributes():
-    """List custom attributes (coming soon)."""
-    console.print("[yellow]🚧 Custom Attributes are coming soon[/yellow]")
-    console.print("This feature is under development in Microsoft Purview")
+@click.option("--output", type=click.Choice(["table", "json"]), default="table", help="Output format")
+def list_custom_attributes(output):
+    """List all custom attribute definitions."""
+    client = UnifiedCatalogClient()
+    response = client.list_custom_attributes({})
+    
+    if output == "json":
+        console.print_json(json.dumps(response))
+    else:
+        if "value" in response and response["value"]:
+            table = Table(title="[bold cyan]Custom Attribute Definitions[/bold cyan]", show_header=True)
+            table.add_column("ID", style="cyan")
+            table.add_column("Name", style="green")
+            table.add_column("Data Type", style="yellow")
+            table.add_column("Required", style="magenta")
+            table.add_column("Description", style="white")
+            
+            for item in response["value"]:
+                table.add_row(
+                    item.get("id", "N/A"),
+                    item.get("name", "N/A"),
+                    item.get("dataType", "N/A"),
+                    "Yes" if item.get("required") else "No",
+                    item.get("description", "")[:50] + "..." if len(item.get("description", "")) > 50 else item.get("description", "")
+                )
+            console.print(table)
+        else:
+            console.print("[yellow]No custom attributes found[/yellow]")
+
+
+@attribute.command(name="get")
+@click.option("--attribute-id", required=True, help="Attribute ID")
+@click.option("--output", type=click.Choice(["table", "json"]), default="json", help="Output format")
+def get_custom_attribute(attribute_id, output):
+    """Get a specific custom attribute definition."""
+    client = UnifiedCatalogClient()
+    args = {"--attribute-id": [attribute_id]}
+    response = client.get_custom_attribute(args)
+    
+    if output == "json":
+        _format_json_output(response)
+    else:
+        table = Table(title=f"[bold cyan]Attribute: {response.get('name', 'N/A')}[/bold cyan]")
+        table.add_column("Property", style="cyan")
+        table.add_column("Value", style="white")
+        
+        for key, value in response.items():
+            table.add_row(key, str(value))
+        console.print(table)
+
+
+@attribute.command(name="create")
+@click.option("--name", required=True, help="Attribute name")
+@click.option("--data-type", required=True, help="Data type (string, number, boolean, date)")
+@click.option("--description", default="", help="Attribute description")
+@click.option("--required", is_flag=True, help="Is this attribute required?")
+def create_custom_attribute(name, data_type, description, required):
+    """Create a new custom attribute definition."""
+    client = UnifiedCatalogClient()
+    args = {
+        "--name": [name],
+        "--data-type": [data_type],
+        "--description": [description],
+        "--required": ["true" if required else "false"]
+    }
+    response = client.create_custom_attribute(args)
+    
+    console.print(f"[green]SUCCESS:[/green] Custom attribute created")
+    _format_json_output(response)
+
+
+@attribute.command(name="update")
+@click.option("--attribute-id", required=True, help="Attribute ID")
+@click.option("--name", help="New attribute name")
+@click.option("--description", help="New attribute description")
+@click.option("--required", type=bool, help="Is this attribute required? (true/false)")
+def update_custom_attribute(attribute_id, name, description, required):
+    """Update an existing custom attribute definition."""
+    client = UnifiedCatalogClient()
+    args = {"--attribute-id": [attribute_id]}
+    
+    if name:
+        args["--name"] = [name]
+    if description:
+        args["--description"] = [description]
+    if required is not None:
+        args["--required"] = ["true" if required else "false"]
+    
+    response = client.update_custom_attribute(args)
+    
+    console.print(f"[green]SUCCESS:[/green] Custom attribute updated")
+    _format_json_output(response)
+
+
+@attribute.command(name="delete")
+@click.option("--attribute-id", required=True, help="Attribute ID")
+@click.confirmation_option(prompt="Are you sure you want to delete this attribute?")
+def delete_custom_attribute(attribute_id):
+    """Delete a custom attribute definition."""
+    client = UnifiedCatalogClient()
+    args = {"--attribute-id": [attribute_id]}
+    response = client.delete_custom_attribute(args)
+    
+    console.print(f"[green]SUCCESS:[/green] Custom attribute '{attribute_id}' deleted")
 
 
 # ========================================

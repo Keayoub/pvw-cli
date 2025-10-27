@@ -970,6 +970,208 @@ class UnifiedCatalogClient(Endpoint):
         }
 
     # ========================================
+    # DATA POLICIES (NEW)
+    # ========================================
+
+    @decorator
+    def list_policies(self, args):
+        """List all data policies."""
+        self.method = "GET"
+        self.endpoint = "/datagovernance/catalog/policies"
+        self.params = {}
+
+    @decorator
+    def get_policy(self, args):
+        """Get a specific data policy by ID."""
+        policy_id = args.get("--policy-id", [""])[0]
+        self.method = "GET"
+        self.endpoint = f"/datagovernance/catalog/policies/{policy_id}"
+        self.params = {}
+
+    @decorator
+    def create_policy(self, args):
+        """Create a new data policy."""
+        self.method = "POST"
+        self.endpoint = "/datagovernance/catalog/policies"
+        
+        name = args.get("--name", [""])[0]
+        description = args.get("--description", [""])[0]
+        policy_type = args.get("--type", ["Access"])[0]
+        status = args.get("--status", ["Draft"])[0]
+        
+        payload = {
+            "name": name,
+            "description": description,
+            "policyType": policy_type,
+            "status": status,
+        }
+        
+        self.payload = payload
+
+    @decorator
+    def update_policy(self, args):
+        """Update an existing data policy."""
+        policy_id = args.get("--policy-id", [""])[0]
+        self.method = "PUT"
+        self.endpoint = f"/datagovernance/catalog/policies/{policy_id}"
+        
+        name = args.get("--name", [""])[0]
+        description = args.get("--description", [""])[0]
+        policy_type = args.get("--type", ["Access"])[0]
+        status = args.get("--status", ["Draft"])[0]
+        
+        payload = {
+            "name": name,
+            "description": description,
+            "policyType": policy_type,
+            "status": status,
+        }
+        
+        self.payload = payload
+
+    @decorator
+    def delete_policy(self, args):
+        """Delete a data policy."""
+        policy_id = args.get("--policy-id", [""])[0]
+        self.method = "DELETE"
+        self.endpoint = f"/datagovernance/catalog/policies/{policy_id}"
+        self.params = {}
+
+    # ========================================
+    # CUSTOM METADATA (NEW)
+    # ========================================
+
+    @decorator
+    def list_custom_metadata(self, args):
+        """List all custom metadata definitions."""
+        self.method = "GET"
+        self.endpoint = "/datagovernance/catalog/custommetadata"
+        self.params = {}
+
+    @decorator
+    def get_custom_metadata(self, args):
+        """Get custom metadata for a specific asset."""
+        asset_id = args.get("--asset-id", [""])[0]
+        self.method = "GET"
+        self.endpoint = f"/datagovernance/catalog/custommetadata/{asset_id}"
+        self.params = {}
+
+    @decorator
+    def add_custom_metadata(self, args):
+        """Add custom metadata to an asset."""
+        asset_id = args.get("--asset-id", [""])[0]
+        self.method = "POST"
+        self.endpoint = f"/datagovernance/catalog/custommetadata/{asset_id}"
+        
+        key = args.get("--key", [""])[0]
+        value = args.get("--value", [""])[0]
+        metadata_type = args.get("--type", ["string"])[0]
+        
+        payload = {
+            "key": key,
+            "value": value,
+            "type": metadata_type,
+        }
+        
+        self.payload = payload
+
+    @decorator
+    def update_custom_metadata(self, args):
+        """Update custom metadata for an asset."""
+        asset_id = args.get("--asset-id", [""])[0]
+        self.method = "PUT"
+        self.endpoint = f"/datagovernance/catalog/custommetadata/{asset_id}"
+        
+        key = args.get("--key", [""])[0]
+        value = args.get("--value", [""])[0]
+        metadata_type = args.get("--type", ["string"])[0]
+        
+        payload = {
+            "key": key,
+            "value": value,
+            "type": metadata_type,
+        }
+        
+        self.payload = payload
+
+    @decorator
+    def delete_custom_metadata(self, args):
+        """Delete custom metadata from an asset."""
+        asset_id = args.get("--asset-id", [""])[0]
+        key = args.get("--key", [""])[0]
+        self.method = "DELETE"
+        self.endpoint = f"/datagovernance/catalog/custommetadata/{asset_id}"
+        self.params = {"key": key}
+
+    # ========================================
+    # CUSTOM ATTRIBUTES (NEW)
+    # ========================================
+
+    @decorator
+    def list_custom_attributes(self, args):
+        """List all custom attribute definitions."""
+        self.method = "GET"
+        self.endpoint = "/datagovernance/catalog/attributes"
+        self.params = {}
+
+    @decorator
+    def get_custom_attribute(self, args):
+        """Get a specific custom attribute definition."""
+        attribute_id = args.get("--attribute-id", [""])[0]
+        self.method = "GET"
+        self.endpoint = f"/datagovernance/catalog/attributes/{attribute_id}"
+        self.params = {}
+
+    @decorator
+    def create_custom_attribute(self, args):
+        """Create a new custom attribute definition."""
+        self.method = "POST"
+        self.endpoint = "/datagovernance/catalog/attributes"
+        
+        name = args.get("--name", [""])[0]
+        description = args.get("--description", [""])[0]
+        data_type = args.get("--type", ["string"])[0]
+        required = args.get("--required", ["false"])[0].lower() == "true"
+        
+        payload = {
+            "name": name,
+            "description": description,
+            "dataType": data_type,
+            "required": required,
+        }
+        
+        self.payload = payload
+
+    @decorator
+    def update_custom_attribute(self, args):
+        """Update a custom attribute definition."""
+        attribute_id = args.get("--attribute-id", [""])[0]
+        self.method = "PUT"
+        self.endpoint = f"/datagovernance/catalog/attributes/{attribute_id}"
+        
+        name = args.get("--name", [""])[0]
+        description = args.get("--description", [""])[0]
+        data_type = args.get("--type", ["string"])[0]
+        required = args.get("--required", ["false"])[0].lower() == "true"
+        
+        payload = {
+            "name": name,
+            "description": description,
+            "dataType": data_type,
+            "required": required,
+        }
+        
+        self.payload = payload
+
+    @decorator
+    def delete_custom_attribute(self, args):
+        """Delete a custom attribute definition."""
+        attribute_id = args.get("--attribute-id", [""])[0]
+        self.method = "DELETE"
+        self.endpoint = f"/datagovernance/catalog/attributes/{attribute_id}"
+        self.params = {}
+
+    # ========================================
     # UTILITY METHODS
     # ========================================
 
@@ -986,6 +1188,9 @@ Available Operations:
 - Objectives (OKRs): list, get, create, update, delete
 - Key Results: list, get, create, update, delete
 - Critical Data Elements: list, get, create, update, delete
+- Data Policies: list, get, create, update, delete (NEW)
+- Custom Metadata: list, get, add, update, delete (NEW)
+- Custom Attributes: list, get, create, update, delete (NEW)
 - Relationships: create, delete (between terms, data products, CDEs)
 
 Use --payloadFile to provide JSON payload for create/update operations.

@@ -1,0 +1,38 @@
+{
+  "businessMetadataDefs": [
+    {
+      "category": "BUSINESS_METADATA",
+      "name": "Governance",
+      "description": "Governance and compliance metadata for business concepts",
+      "attributeDefs": [
+        {
+          "name": "DataOwner",
+          "typeName": "string",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "options": {
+            "maxStrLength": "200"
+          }
+        },
+        {
+          "name": "ComplianceStatus",
+          "typeName": "string",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "options": {
+            "maxStrLength": "50"
+          }
+        },
+        {
+          "name": "ReviewDate",
+          "typeName": "date",
+          "isOptional": true,
+          "cardinality": "SINGLE"
+        }
+      ],
+      "options": {
+        "dataGovernanceOptions": "{\"applicableConstructs\":[\"domain:*\",\"businessConcept:*\"]}"
+      }
+    }
+  ]
+}

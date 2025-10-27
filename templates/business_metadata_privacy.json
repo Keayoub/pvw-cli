@@ -1,0 +1,38 @@
+{
+  "businessMetadataDefs": [
+    {
+      "category": "BUSINESS_METADATA",
+      "name": "Privacy",
+      "description": "Privacy classification for sensitive terms and data",
+      "attributeDefs": [
+        {
+          "name": "PrivacyLevel",
+          "typeName": "string",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "options": {
+            "maxStrLength": "50"
+          }
+        },
+        {
+          "name": "PIIContained",
+          "typeName": "boolean",
+          "isOptional": true,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "DataClassification",
+          "typeName": "string",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "options": {
+            "maxStrLength": "100"
+          }
+        }
+      ],
+      "options": {
+        "dataGovernanceOptions": "{\"applicableConstructs\":[\"businessConcept:*\"]}"
+      }
+    }
+  ]
+}
