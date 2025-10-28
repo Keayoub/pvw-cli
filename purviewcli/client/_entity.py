@@ -168,7 +168,9 @@ class Entity(Endpoint):
     def entityReadUniqueAttribute(self, args):
         """Get entity by unique attributes (Official API: Get By Unique Attributes)"""
         self.method = "GET"
-        self.endpoint = ENDPOINTS["entity"]["get_by_unique_attributes"].format(typeName=args["--typeName"])
+        self.endpoint = ENDPOINTS["entity"]["get_by_unique_attributes"].format(
+            typeName=args["--typeName"]
+        )
         self.params = {
             **get_api_version_params("datamap"),
             "attr:qualifiedName": args["--qualifiedName"],
@@ -180,7 +182,9 @@ class Entity(Endpoint):
     def entityReadBulkUniqueAttribute(self, args):
         """List entities by unique attributes (Official API: List By Unique Attributes)"""
         self.method = "GET"
-        self.endpoint = ENDPOINTS["entity"]["list_by_unique_attributes"].format(typeName=args["--typeName"])
+        self.endpoint = ENDPOINTS["entity"]["list_by_unique_attributes"].format(
+            typeName=args["--typeName"]
+        )
         params = {
             **get_api_version_params("datamap"),
             "ignoreRelationships": str(args.get("--ignoreRelationships", False)).lower(),
@@ -197,7 +201,9 @@ class Entity(Endpoint):
     def entityUpdateUniqueAttribute(self, args):
         """Update entity by unique attributes (Official API: Update By Unique Attributes)"""
         self.method = "PUT"
-        self.endpoint = ENDPOINTS["entity"]["update_by_unique_attributes"].format(typeName=args["--typeName"])
+        self.endpoint = ENDPOINTS["entity"]["update_by_unique_attributes"].format(
+            typeName=args["--typeName"]
+        )
         self.params = {
             **get_api_version_params("datamap"),
             "attr:qualifiedName": args["--qualifiedName"],
@@ -208,7 +214,9 @@ class Entity(Endpoint):
     def entityDeleteUniqueAttribute(self, args):
         """Delete entity by unique attributes (Official API: Delete By Unique Attribute)"""
         self.method = "DELETE"
-        self.endpoint = ENDPOINTS["entity"]["delete_by_unique_attribute"].format(typeName=args["--typeName"])
+        self.endpoint = ENDPOINTS["entity"]["delete_by_unique_attribute"].format(
+            typeName=args["--typeName"]
+        )
         self.params = {
             **get_api_version_params("datamap"),
             "attr:qualifiedName": args["--qualifiedName"],
@@ -290,7 +298,9 @@ class Entity(Endpoint):
     def entityUpdateClassificationsByUniqueAttribute(self, args):
         """Update classifications to an entity by unique attribute (Official API: Update Classifications By Unique Attribute)"""
         self.method = "PUT"
-        self.endpoint = ENDPOINTS["entity"]["update_classifications_by_unique_attribute"].format(typeName=args["--typeName"])
+        self.endpoint = ENDPOINTS["entity"]["update_classifications_by_unique_attribute"].format(
+            typeName=args["--typeName"]
+        )
         self.params = {
             **get_api_version_params("datamap"),
             "attr:qualifiedName": args["--qualifiedName"],
@@ -301,7 +311,9 @@ class Entity(Endpoint):
     def entityCreateClassificationsByUniqueAttribute(self, args):
         """Add classifications to an entity by unique attribute (Official API: Add Classifications By Unique Attribute)"""
         self.method = "POST"
-        self.endpoint = ENDPOINTS["entity"]["add_classifications_by_unique_attribute"].format(typeName=args["--typeName"])
+        self.endpoint = ENDPOINTS["entity"]["add_classifications_by_unique_attribute"].format(
+            typeName=args["--typeName"]
+        )
         self.params = {
             **get_api_version_params("datamap"),
             "attr:qualifiedName": args["--qualifiedName"],
@@ -322,8 +334,25 @@ class Entity(Endpoint):
     def entityDeleteBusinessMetadata(self, args):
         """Remove business metadata from an entity (Official API: Remove Business Metadata)"""
         self.method = "DELETE"
-        self.endpoint = ENDPOINTS["entity"]["remove_business_metadata"].format(guid=args["--guid"][0])
-        self.params = {**get_api_version_params("datamap"), "businessMetadataName": args["--businessMetadataName"]}
+        
+        # Support both --businessMetadataName (direct) and --payloadFile (from CLI)
+        if "--payloadFile" in args:
+            payload = get_json(args, "--payloadFile")
+            # Get the first business metadata name from the payload
+            business_metadata_names = list(payload.keys())
+            if not business_metadata_names:
+                raise ValueError("No business metadata names found in payload file")
+            business_metadata_name = business_metadata_names[0]
+        else:
+            business_metadata_name = args["--businessMetadataName"]
+        
+        self.endpoint = ENDPOINTS["entity"]["remove_business_metadata"].format(
+            guid=args["--guid"][0]
+        )
+        self.params = {
+            **get_api_version_params("datamap"),
+            "businessMetadataName": business_metadata_name,
+        }
 
     @decorator
     def entityCreateBusinessMetadataAttributes(self, args):
@@ -342,7 +371,10 @@ class Entity(Endpoint):
         self.endpoint = ENDPOINTS["entity"]["remove_business_metadata_attributes"].format(
             guid=args["--guid"][0], businessMetadataName=args["--businessMetadataName"]
         )
-        self.params = {**get_api_version_params("datamap"), "businessMetadataAttributes": args["--attributes"]}
+        self.params = {
+            **get_api_version_params("datamap"),
+            "businessMetadataAttributes": args["--attributes"],
+        }
 
     @decorator
     def entityImportBusinessMetadata(self, args):
@@ -358,6 +390,23 @@ class Entity(Endpoint):
         self.method = "GET"
         self.endpoint = ENDPOINTS["entity"]["business_metadata_template"]
         self.params = get_api_version_params("datamap")
+
+    # Aliases for CLI compatibility
+    def entityAddOrUpdateBusinessMetadata(self, args):
+        """Alias for entityCreateBusinessMetadata"""
+        return self.entityCreateBusinessMetadata(args)
+
+    def entityAddOrUpdateBusinessMetadataAttributes(self, args):
+        """Alias for entityCreateBusinessMetadataAttributes"""
+        return self.entityCreateBusinessMetadataAttributes(args)
+
+    def entityRemoveBusinessMetadata(self, args):
+        """Alias for entityDeleteBusinessMetadata"""
+        return self.entityDeleteBusinessMetadata(args)
+
+    def entityRemoveBusinessMetadataAttributes(self, args):
+        """Alias for entityDeleteBusinessMetadataAttributes"""
+        return self.entityDeleteBusinessMetadataAttributes(args)
 
     # === LABEL OPERATIONS ===
 
@@ -391,7 +440,9 @@ class Entity(Endpoint):
     def entityCreateLabelsByUniqueAttribute(self, args):
         """Add labels to an entity by unique attribute (Official API: Add Labels By Unique Attribute)"""
         self.method = "POST"
-        self.endpoint = ENDPOINTS["entity"]["add_labels_by_unique_attribute"].format(typeName=args["--typeName"])
+        self.endpoint = ENDPOINTS["entity"]["add_labels_by_unique_attribute"].format(
+            typeName=args["--typeName"]
+        )
         self.params = {
             **get_api_version_params("datamap"),
             "attr:qualifiedName": args["--qualifiedName"],
@@ -402,7 +453,9 @@ class Entity(Endpoint):
     def entityUpdateLabelsByUniqueAttribute(self, args):
         """Set labels to an entity by unique attribute (Official API: Set Labels By Unique Attribute)"""
         self.method = "PUT"
-        self.endpoint = ENDPOINTS["entity"]["set_labels_by_unique_attribute"].format(typeName=args["--typeName"])
+        self.endpoint = ENDPOINTS["entity"]["set_labels_by_unique_attribute"].format(
+            typeName=args["--typeName"]
+        )
         self.params = {
             **get_api_version_params("datamap"),
             "attr:qualifiedName": args["--qualifiedName"],
@@ -413,7 +466,9 @@ class Entity(Endpoint):
     def entityDeleteLabelsByUniqueAttribute(self, args):
         """Remove labels from an entity by unique attribute (Official API: Remove Labels By Unique Attribute)"""
         self.method = "DELETE"
-        self.endpoint = ENDPOINTS["entity"]["remove_labels_by_unique_attribute"].format(typeName=args["--typeName"])
+        self.endpoint = ENDPOINTS["entity"]["remove_labels_by_unique_attribute"].format(
+            typeName=args["--typeName"]
+        )
         self.params = {
             **get_api_version_params("datamap"),
             "attr:qualifiedName": args["--qualifiedName"],
@@ -440,7 +495,7 @@ class Entity(Endpoint):
         self.params = {
             **get_api_version_params("datamap"),
             "limit": args.get("--limit", 100),
-            "offset": args.get("--offset", 0)
+            "offset": args.get("--offset", 0),
         }
 
     @decorator
@@ -452,7 +507,7 @@ class Entity(Endpoint):
             **get_api_version_params("datamap"),
             "startTime": args.get("--startTime"),
             "endTime": args.get("--endTime"),
-            "auditAction": args.get("--auditAction")
+            "auditAction": args.get("--auditAction"),
         }
 
     @decorator
@@ -467,11 +522,13 @@ class Entity(Endpoint):
     def entityReadDependencies(self, args):
         """Get entity dependencies for given GUID (Advanced API: Get Entity Dependencies)"""
         self.method = "GET"
-        self.endpoint = ENDPOINTS["entity"]["get_entity_dependencies"].format(guid=args["--guid"][0])
+        self.endpoint = ENDPOINTS["entity"]["get_entity_dependencies"].format(
+            guid=args["--guid"][0]
+        )
         self.params = {
             **get_api_version_params("datamap"),
             "direction": args.get("--direction", "both"),
-            "depth": args.get("--depth", 1)
+            "depth": args.get("--depth", 1),
         }
 
     @decorator
@@ -483,7 +540,7 @@ class Entity(Endpoint):
             **get_api_version_params("datamap"),
             "startTime": args.get("--startTime"),
             "endTime": args.get("--endTime"),
-            "aggregation": args.get("--aggregation", "daily")
+            "aggregation": args.get("--aggregation", "daily"),
         }
 
     # === LEGACY COMPATIBILITY METHODS ===

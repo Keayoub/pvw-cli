@@ -1,0 +1,52 @@
+{
+  "businessMetadataDefs": [
+    {
+      "category": "BUSINESS_METADATA",
+      "name": "AdvancedGovernance",
+      "description": "Advanced governance metadata with enum types (Glossary Terms only)",
+      "attributeDefs": [
+        {
+          "name": "Status",
+          "typeName": "StatusEnum",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "options": {
+            "applicableEntityTypes": "[\"AtlasGlossaryTerm\"]"
+          }
+        },
+        {
+          "name": "Confidentiality",
+          "typeName": "ConfidentialityEnum",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "options": {
+            "applicableEntityTypes": "[\"AtlasGlossaryTerm\"]"
+          }
+        },
+        {
+          "name": "ApprovedBy",
+          "typeName": "string",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "options": {
+            "maxStrLength": "200",
+            "applicableEntityTypes": "[\"AtlasGlossaryTerm\"]"
+          }
+        },
+        {
+          "name": "ApprovalDate",
+          "typeName": "date",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "options": {
+            "applicableEntityTypes": "[\"AtlasGlossaryTerm\"]"
+          }
+        }
+      ],
+      "options": {
+        "dataGovernanceOptions": "{\"applicableConstructs\":[\"businessConcept:AtlasGlossaryTerm\"]}",
+        "applicableEntityTypes": "[\"AtlasGlossaryTerm\"]"
+      }
+    }
+  ]
+}

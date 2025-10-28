@@ -120,6 +120,37 @@ class Types(Endpoint):
         self.endpoint = ENDPOINTS["types"]["get_business_metadata_def_by_name"].format(name=args["--name"])
         self.params = get_api_version_params("datamap")
 
+    @decorator
+    def createBusinessMetadataDef(self, args):
+        """Create business metadata definition (Official API: Create Business Metadata Definition)"""
+        self.method = "POST"
+        self.endpoint = ENDPOINTS["types"]["bulk_create"]
+        self.params = get_api_version_params("datamap")
+        self.payload = get_json(args, "--payloadFile")
+
+    @decorator
+    def updateBusinessMetadataDef(self, args):
+        """Update business metadata definition (Official API: Update Business Metadata Definition)"""
+        self.method = "PUT"
+        self.endpoint = ENDPOINTS["types"]["bulk_update"]
+        self.params = get_api_version_params("datamap")
+        self.payload = get_json(args, "--payloadFile")
+
+    @decorator
+    def deleteBusinessMetadataDef(self, args):
+        """Delete business metadata definition by name (Official API: Delete Business Metadata Definition)"""
+        self.method = "DELETE"
+        self.endpoint = ENDPOINTS["types"]["bulk_delete"]
+        self.params = get_api_version_params("datamap")
+        # Construct payload with businessMetadataDefs array containing the name to delete
+        self.payload = {
+            "businessMetadataDefs": [
+                {
+                    "name": args["--name"]
+                }
+            ]
+        }
+
     # === CLASSIFICATION DEFINITIONS ===
 
     @decorator

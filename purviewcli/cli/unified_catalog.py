@@ -2086,282 +2086,264 @@ def metadata():
 def list_custom_metadata(output, fallback):
     """List all custom metadata definitions.
     
-    First tries UC Custom Metadata API. If empty and fallback is enabled,
-    automatically shows Business Metadata from Data Map API instead.
+    Uses Atlas API to get Business Metadata definitions. 
+    With fallback enabled, shows user-friendly table format.
     """
     client = UnifiedCatalogClient()
     response = client.list_custom_metadata({})
     
-    # Check if UC API returned data
-    has_uc_data = response and "value" in response and response["value"]
+    # Check if UC API returned business metadata (Atlas returns businessMetadataDefs)
+    has_uc_data = (response and "businessMetadataDefs" in response 
+                   and response["businessMetadataDefs"])
     
     if output == "json":
         if has_uc_data:
             console.print_json(json.dumps(response))
         elif fallback:
-            # Fallback to Business Metadata
-            console.print("[dim]UC Custom Metadata is empty. Showing Business Metadata from Data Map API...[/dim]\n")
-            from purviewcli.client._types import Types
-            types_client = Types()
-            types_result = types_client.typesRead({})
-            
-            if types_result:
-                biz_metadata = types_result.get('businessMetadataDefs', [])
-                
-                # Format as attribute list
-                attributes_list = []
-                for group in biz_metadata:
-                    group_name = group.get('name', 'N/A')
-                    group_guid = group.get('guid', 'N/A')
-                    
-                    for attr in group.get('attributeDefs', []):
-                        attributes_list.append({
-                            'source': 'DataMap.BusinessMetadata',
-                            'attributeName': attr.get('name'),
-                            'group': group_name,
-                            'groupGuid': group_guid,
-                            'type': attr.get('typeName'),
-                            'description': attr.get('description', ''),
-                            'isOptional': attr.get('isOptional', True),
-                            'isIndexable': attr.get('isIndexable', False)
-                        })
-                
-                console.print_json(json.dumps(attributes_list))
-            else:
-                console.print_json(json.dumps({"value": [], "message": "No UC or Business Metadata found"}))
+            # Fallback message (though Atlas API should always return something)
+            console.print("[dim]No business metadata found.[/dim]\n")
+            console.print_json(json.dumps({"businessMetadataDefs": []}))
         else:
             console.print_json(json.dumps(response))
     else:
         # Table output
         if has_uc_data:
-            table = Table(title="[bold cyan]UC Custom Metadata Definitions[/bold cyan]", show_header=True)
-            table.add_column("Key", style="cyan")
-            table.add_column("Type", style="yellow")
-            table.add_column("Description", style="white")
+            biz_metadata = response.get('businessMetadataDefs', [])
             
-            for item in response["value"]:
-                table.add_row(
-                    item.get("key", "N/A"),
-                    item.get("type", "N/A"),
-                    item.get("description", "")[:60] + "..." if len(item.get("description", "")) > 60 else item.get("description", "")
-                )
-            console.print(table)
-        elif fallback:
-            # Fallback to Business Metadata
-            console.print("[yellow]INFO:[/yellow] UC Custom Metadata is empty.")
-            console.print("[dim]Falling back to Business Metadata (Data Map API)...[/dim]\n")
-            
-            from purviewcli.client._types import Types
-            types_client = Types()
-            types_result = types_client.typesRead({})
-            
-            if types_result:
-                biz_metadata = types_result.get('businessMetadataDefs', [])
+            if biz_metadata:
+                table = Table(title="[bold green]Business Metadata Attributes[/bold green]", show_header=True)
+                table.add_column("Attribute Name", style="green", no_wrap=True)
+                table.add_column("Group", style="cyan")
+                table.add_column("Type", style="yellow")
+                table.add_column("Scope", style="magenta", max_width=25)
+                table.add_column("Description", style="white", max_width=30)
                 
-                if biz_metadata:
-                    table = Table(title="[bold green]Business Metadata Attributes (Data Map)[/bold green]", show_header=True)
-                    table.add_column("Attribute Name", style="green", no_wrap=True)
-                    table.add_column("Group", style="cyan")
-                    table.add_column("Type", style="yellow")
-                    table.add_column("Scope", style="magenta", max_width=25)
-                    table.add_column("Description", style="white", max_width=30)
+                total_attrs = 0
+                for group in biz_metadata:
+                    group_name = group.get('name', 'N/A')
+                    attributes = group.get('attributeDefs', [])
                     
-                    total_attrs = 0
-                    for group in biz_metadata:
-                        group_name = group.get('name', 'N/A')
-                        attributes = group.get('attributeDefs', [])
+                    # Parse group-level scope
+                    group_scope = "N/A"
+                    options = group.get('options', {})
+                    if 'dataGovernanceOptions' in options:
+                        try:
+                            dg_opts_str = options.get('dataGovernanceOptions', '{}')
+                            dg_opts = json.loads(dg_opts_str) if isinstance(dg_opts_str, str) else dg_opts_str
+                            applicable = dg_opts.get('applicableConstructs', [])
+                            if applicable:
+                                # Categorize scope
+                                has_business_concept = any('businessConcept' in c or 'domain' in c for c in applicable)
+                                has_dataset = any('dataset' in c.lower() for c in applicable)
+                                
+                                if has_business_concept and has_dataset:
+                                    group_scope = "Universal (Concept + Dataset)"
+                                elif has_business_concept:
+                                    group_scope = "Business Concept"
+                                elif has_dataset:
+                                    group_scope = "Data Asset"
+                                else:
+                                    # Show first 2 constructs
+                                    scope_parts = []
+                                    for construct in applicable[:2]:
+                                        if ':' in construct:
+                                            scope_parts.append(construct.split(':')[0])
+                                        else:
+                                            scope_parts.append(construct)
+                                    group_scope = ', '.join(scope_parts)
+                        except:
+                            pass
+                    
+                    for attr in attributes:
+                        total_attrs += 1
+                        attr_name = attr.get('name', 'N/A')
+                        attr_type = attr.get('typeName', 'N/A')
                         
-                        # Parse group-level scope
-                        group_scope = "N/A"
-                        options = group.get('options', {})
-                        if 'dataGovernanceOptions' in options:
+                        # Simplify enum types
+                        if 'ATTRIBUTE_ENUM_' in attr_type:
+                            attr_type = 'Enum'
+                        
+                        attr_desc = attr.get('description', '')
+                        
+                        # Check if attribute has custom scope
+                        attr_scope = group_scope
+                        attr_opts = attr.get('options', {})
+                        
+                        # Check dataGovernanceOptions first
+                        if 'dataGovernanceOptions' in attr_opts:
                             try:
-                                dg_opts_str = options.get('dataGovernanceOptions', '{}')
-                                dg_opts = json.loads(dg_opts_str) if isinstance(dg_opts_str, str) else dg_opts_str
-                                applicable = dg_opts.get('applicableConstructs', [])
-                                if applicable:
-                                    # Categorize scope
-                                    has_business_concept = any('businessConcept' in c or 'domain' in c for c in applicable)
-                                    has_dataset = any('dataset' in c.lower() for c in applicable)
-                                    
-                                    if has_business_concept and has_dataset:
-                                        group_scope = "Universal (Concept + Dataset)"
-                                    elif has_business_concept:
-                                        group_scope = "Business Concept"
-                                    elif has_dataset:
-                                        group_scope = "Data Asset"
-                                    else:
-                                        # Show first 2 constructs
-                                        scope_parts = []
-                                        for construct in applicable[:2]:
-                                            if ':' in construct:
-                                                scope_parts.append(construct.split(':')[0])
-                                            else:
-                                                scope_parts.append(construct)
-                                        group_scope = ', '.join(scope_parts)
+                                attr_dg_str = attr_opts.get('dataGovernanceOptions', '{}')
+                                attr_dg = json.loads(attr_dg_str) if isinstance(attr_dg_str, str) else attr_dg_str
+                                inherit = attr_dg.get('inheritApplicableConstructsFromGroup', True)
+                                if not inherit:
+                                    attr_applicable = attr_dg.get('applicableConstructs', [])
+                                    if attr_applicable:
+                                        # Categorize custom scope
+                                        has_business_concept = any('businessConcept' in c or 'domain' in c for c in attr_applicable)
+                                        has_dataset = any('dataset' in c.lower() for c in attr_applicable)
+                                        
+                                        if has_business_concept and has_dataset:
+                                            attr_scope = "Universal"
+                                        elif has_business_concept:
+                                            attr_scope = "Business Concept"
+                                        elif has_dataset:
+                                            attr_scope = "Data Asset"
+                                        else:
+                                            attr_scope = f"Custom ({len(attr_applicable)})"
                             except:
                                 pass
                         
-                        for attr in attributes:
-                            total_attrs += 1
-                            attr_name = attr.get('name', 'N/A')
-                            attr_type = attr.get('typeName', 'N/A')
-                            
-                            # Simplify enum types
-                            if 'ATTRIBUTE_ENUM_' in attr_type:
-                                attr_type = 'Enum'
-                            
-                            attr_desc = attr.get('description', '')
-                            
-                            # Check if attribute has custom scope
-                            attr_scope = group_scope
-                            attr_opts = attr.get('options', {})
-                            
-                            # Check dataGovernanceOptions first
-                            if 'dataGovernanceOptions' in attr_opts:
-                                try:
-                                    attr_dg_str = attr_opts.get('dataGovernanceOptions', '{}')
-                                    attr_dg = json.loads(attr_dg_str) if isinstance(attr_dg_str, str) else attr_dg_str
-                                    inherit = attr_dg.get('inheritApplicableConstructsFromGroup', True)
-                                    if not inherit:
-                                        attr_applicable = attr_dg.get('applicableConstructs', [])
-                                        if attr_applicable:
-                                            # Categorize custom scope
-                                            has_business_concept = any('businessConcept' in c or 'domain' in c for c in attr_applicable)
-                                            has_dataset = any('dataset' in c.lower() for c in attr_applicable)
-                                            
-                                            if has_business_concept and has_dataset:
-                                                attr_scope = "Universal"
-                                            elif has_business_concept:
-                                                attr_scope = "Business Concept"
-                                            elif has_dataset:
-                                                attr_scope = "Data Asset"
-                                            else:
-                                                attr_scope = f"Custom ({len(attr_applicable)})"
-                                except:
-                                    pass
-                            
-                            # Fallback: Check applicableEntityTypes (older format)
-                            if attr_scope == "N/A" and 'applicableEntityTypes' in attr_opts:
-                                try:
-                                    entity_types_str = attr_opts.get('applicableEntityTypes', '[]')
-                                    # Parse if string, otherwise use as-is
-                                    if isinstance(entity_types_str, str):
-                                        entity_types = json.loads(entity_types_str)
+                        # Fallback: Check applicableEntityTypes (older format)
+                        if attr_scope == "N/A" and 'applicableEntityTypes' in attr_opts:
+                            try:
+                                entity_types_str = attr_opts.get('applicableEntityTypes', '[]')
+                                # Parse if string, otherwise use as-is
+                                if isinstance(entity_types_str, str):
+                                    entity_types = json.loads(entity_types_str)
+                                else:
+                                    entity_types = entity_types_str
+                                
+                                if entity_types and isinstance(entity_types, list):
+                                    # Check if entity types are data assets (tables, etc.)
+                                    if any('table' in et.lower() or 'database' in et.lower() or 'file' in et.lower() 
+                                           for et in entity_types):
+                                        attr_scope = "Data Asset"
                                     else:
-                                        entity_types = entity_types_str
-                                    
-                                    if entity_types and isinstance(entity_types, list):
-                                        # Check if entity types are data assets (tables, etc.)
-                                        if any('table' in et.lower() or 'database' in et.lower() or 'file' in et.lower() 
-                                               for et in entity_types):
-                                            attr_scope = "Data Asset"
-                                        else:
-                                            attr_scope = f"Assets ({len(entity_types)} types)"
-                                except Exception as e:
-                                    # Silently fail but could log for debugging
-                                    pass
-                            
-                            table.add_row(
-                                attr_name,
-                                group_name,
-                                attr_type,
-                                attr_scope,
-                                attr_desc[:30] + "..." if len(attr_desc) > 30 else attr_desc
-                            )
-                    
-                    console.print(table)
-                    console.print(f"\n[cyan]Total:[/cyan] {total_attrs} business metadata attribute(s) in {len(biz_metadata)} group(s)")
-                    console.print("\n[dim]Legend:[/dim]")
-                    console.print("  [magenta]Business Concept[/magenta] = Applies to Terms, Domains, Business Rules")
-                    console.print("  [magenta]Data Asset[/magenta] = Applies to Tables, Files, Databases")
-                    console.print("  [magenta]Universal[/magenta] = Applies to both Concepts and Assets")
-                    console.print("\n[dim]Tip: Use 'pvw types list-business-attributes' for detailed business metadata view[/dim]")
-                    console.print("[dim]Tip: Use 'pvw uc metadata list --no-fallback' to see only UC metadata[/dim]")
-                else:
-                    console.print("[yellow]No business metadata found either[/yellow]")
+                                        attr_scope = f"Assets ({len(entity_types)} types)"
+                            except Exception as e:
+                                # Silently fail but could log for debugging
+                                pass
+                        
+                        table.add_row(
+                            attr_name,
+                            group_name,
+                            attr_type,
+                            attr_scope,
+                            attr_desc[:30] + "..." if len(attr_desc) > 30 else attr_desc
+                        )
+                
+                console.print(table)
+                console.print(f"\n[cyan]Total:[/cyan] {total_attrs} business metadata attribute(s) in {len(biz_metadata)} group(s)")
+                console.print("\n[dim]Legend:[/dim]")
+                console.print("  [magenta]Business Concept[/magenta] = Applies to Terms, Domains, Business Rules")
+                console.print("  [magenta]Data Asset[/magenta] = Applies to Tables, Files, Databases")
+                console.print("  [magenta]Universal[/magenta] = Applies to both Concepts and Assets")
             else:
-                console.print("[red]ERROR:[/red] Failed to retrieve business metadata")
+                console.print("[yellow]No business metadata found[/yellow]")
         else:
-            console.print("[yellow]No custom metadata found[/yellow]")
-            console.print("[dim]Tip: Use --fallback to also check Business Metadata from Data Map API[/dim]")
+            console.print("[yellow]No business metadata found[/yellow]")
 
 
 @metadata.command(name="get")
-@click.option("--asset-id", required=True, help="Asset ID")
+@click.option("--asset-id", required=True, help="Asset GUID")
 @click.option("--output", type=click.Choice(["table", "json"]), default="json", help="Output format")
 def get_custom_metadata(asset_id, output):
-    """Get custom metadata for a specific asset."""
+    """Get custom metadata (business metadata) for a specific asset."""
     client = UnifiedCatalogClient()
     args = {"--asset-id": [asset_id]}
     response = client.get_custom_metadata(args)
     
     if output == "json":
-        _format_json_output(response)
+        # Extract businessAttributes from entity response
+        # Note: API returns "businessAttributes" not "businessMetadata"
+        if response and "entity" in response:
+            business_metadata = response["entity"].get("businessAttributes", {})
+            _format_json_output(business_metadata)
+        elif response and isinstance(response, dict):
+            business_metadata = response.get("businessAttributes", {})
+            _format_json_output(business_metadata)
+        else:
+            _format_json_output({})
     else:
-        table = Table(title=f"[bold cyan]Custom Metadata for Asset: {asset_id}[/bold cyan]")
-        table.add_column("Key", style="cyan")
+        table = Table(title=f"[bold cyan]Business Metadata for Asset: {asset_id}[/bold cyan]")
+        table.add_column("Group", style="cyan")
+        table.add_column("Attribute", style="green")
         table.add_column("Value", style="white")
-        table.add_column("Type", style="yellow")
         
-        if "metadata" in response:
-            for key, value in response["metadata"].items():
-                table.add_row(key, str(value.get("value", "N/A")), value.get("type", "N/A"))
+        if response and "entity" in response:
+            business_metadata = response["entity"].get("businessAttributes", {})
+            if business_metadata:
+                for group_name, attributes in business_metadata.items():
+                    if isinstance(attributes, dict):
+                        for attr_name, attr_value in attributes.items():
+                            table.add_row(group_name, attr_name, str(attr_value))
+        elif response and isinstance(response, dict):
+            business_metadata = response.get("businessAttributes", {})
+            if business_metadata:
+                for group_name, attributes in business_metadata.items():
+                    if isinstance(attributes, dict):
+                        for attr_name, attr_value in attributes.items():
+                            table.add_row(group_name, attr_name, str(attr_value))
+        
         console.print(table)
 
 
 @metadata.command(name="add")
-@click.option("--asset-id", required=True, help="Asset ID")
-@click.option("--key", required=True, help="Metadata key")
-@click.option("--value", required=True, help="Metadata value")
-@click.option("--type", default="string", help="Metadata type (string, number, boolean)")
-def add_custom_metadata(asset_id, key, value, type):
-    """Add custom metadata to an asset."""
+@click.option("--asset-id", required=True, help="Asset GUID")
+@click.option("--group", required=True, help="Business metadata group name (e.g., 'Governance', 'Privacy')")
+@click.option("--key", required=True, help="Attribute name")
+@click.option("--value", required=True, help="Attribute value")
+def add_custom_metadata(asset_id, group, key, value):
+    """Add custom metadata (business metadata) to an asset.
+    
+    Example: pvw uc metadata add --asset-id <guid> --group Governance --key DataOwner --value "John Doe"
+    """
     client = UnifiedCatalogClient()
     args = {
         "--asset-id": [asset_id],
+        "--group": [group],
         "--key": [key],
-        "--value": [value],
-        "--type": [type]
+        "--value": [value]
     }
     response = client.add_custom_metadata(args)
     
-    console.print(f"[green]SUCCESS:[/green] Custom metadata added to asset '{asset_id}'")
-    _format_json_output(response)
+    console.print(f"[green]SUCCESS:[/green] Business metadata '{key}' added to group '{group}' on asset '{asset_id}'")
+    if response:
+        _format_json_output(response)
 
 
 @metadata.command(name="update")
-@click.option("--asset-id", required=True, help="Asset ID")
-@click.option("--key", required=True, help="Metadata key to update")
-@click.option("--value", required=True, help="New metadata value")
-def update_custom_metadata(asset_id, key, value):
-    """Update custom metadata for an asset."""
+@click.option("--asset-id", required=True, help="Asset GUID")
+@click.option("--group", required=True, help="Business metadata group name")
+@click.option("--key", required=True, help="Attribute name to update")
+@click.option("--value", required=True, help="New attribute value")
+def update_custom_metadata(asset_id, group, key, value):
+    """Update custom metadata (business metadata) for an asset.
+    
+    Example: pvw uc metadata update --asset-id <guid> --group Governance --key DataOwner --value "Jane Smith"
+    """
     client = UnifiedCatalogClient()
     args = {
         "--asset-id": [asset_id],
+        "--group": [group],
         "--key": [key],
         "--value": [value]
     }
     response = client.update_custom_metadata(args)
     
-    console.print(f"[green]SUCCESS:[/green] Custom metadata updated for asset '{asset_id}'")
-    _format_json_output(response)
+    console.print(f"[green]SUCCESS:[/green] Business metadata '{key}' updated in group '{group}' on asset '{asset_id}'")
+    if response:
+        _format_json_output(response)
 
 
 @metadata.command(name="delete")
-@click.option("--asset-id", required=True, help="Asset ID")
-@click.option("--key", required=True, help="Metadata key to delete")
-@click.confirmation_option(prompt="Are you sure you want to delete this metadata?")
-def delete_custom_metadata(asset_id, key):
-    """Delete custom metadata from an asset."""
+@click.option("--asset-id", required=True, help="Asset GUID")
+@click.option("--group", required=True, help="Business metadata group name to delete")
+@click.confirmation_option(prompt="Are you sure you want to delete this business metadata group?")
+def delete_custom_metadata(asset_id, group):
+    """Delete custom metadata (business metadata) from an asset.
+    
+    This removes the entire business metadata group from the asset.
+    Example: pvw uc metadata delete --asset-id <guid> --group Governance
+    """
     client = UnifiedCatalogClient()
     args = {
         "--asset-id": [asset_id],
-        "--key": [key]
+        "--group": [group]
     }
     response = client.delete_custom_metadata(args)
     
-    console.print(f"[green]SUCCESS:[/green] Custom metadata '{key}' deleted from asset '{asset_id}'")
+    console.print(f"[green]SUCCESS:[/green] Business metadata group '{group}' deleted from asset '{asset_id}'")
 
 
 # ========================================

@@ -1043,65 +1043,108 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def list_custom_metadata(self, args):
-        """List all custom metadata definitions."""
+        """List all custom metadata definitions with UC term template filter.
+        
+        Uses Atlas API with includeTermTemplate=true to get UC Custom Metadata.
+        This is the same API used by Purview UI for UC metadata.
+        """
         self.method = "GET"
-        self.endpoint = "/datagovernance/catalog/custommetadata"
-        self.params = {}
+        self.endpoint = "/catalog/api/atlas/v2/types/typedefs"
+        self.params = {
+            "type": "business_metadata",
+            "includeTermTemplate": "true",
+            "api-version": "2022-11-03"
+        }
 
     @decorator
     def get_custom_metadata(self, args):
-        """Get custom metadata for a specific asset."""
+        """Get custom metadata (business metadata) for a specific asset.
+        
+        Uses Entity API to get business metadata attached to a GUID.
+        This returns all business metadata groups attached to the entity.
+        """
         asset_id = args.get("--asset-id", [""])[0]
         self.method = "GET"
-        self.endpoint = f"/datagovernance/catalog/custommetadata/{asset_id}"
-        self.params = {}
+        self.endpoint = f"/datamap/api/atlas/v2/entity/guid/{asset_id}"
+        self.params = {
+            "api-version": "2023-09-01",
+            "minExtInfo": "false",
+            "ignoreRelationships": "true"
+        }
 
     @decorator
     def add_custom_metadata(self, args):
-        """Add custom metadata to an asset."""
+        """Add custom metadata (business metadata) to an asset.
+        
+        Uses Entity API to add business metadata to a GUID.
+        Format: { "GroupName": { "attribute1": "value1", "attribute2": "value2" } }
+        """
         asset_id = args.get("--asset-id", [""])[0]
         self.method = "POST"
-        self.endpoint = f"/datagovernance/catalog/custommetadata/{asset_id}"
+        self.endpoint = f"/datamap/api/atlas/v2/entity/guid/{asset_id}/businessmetadata"
+        self.params = {"api-version": "2023-09-01"}
         
+        # Build payload based on parameters
         key = args.get("--key", [""])[0]
         value = args.get("--value", [""])[0]
-        metadata_type = args.get("--type", ["string"])[0]
+        group = args.get("--group", ["Custom"])[0]  # Default group name
         
+        # Format: { "GroupName": { "attributeName": "value" } }
         payload = {
-            "key": key,
-            "value": value,
-            "type": metadata_type,
+            group: {
+                key: value
+            }
         }
         
         self.payload = payload
 
     @decorator
     def update_custom_metadata(self, args):
-        """Update custom metadata for an asset."""
+        """Update custom metadata (business metadata) for an asset.
+        
+        Uses Entity API to update business metadata on a GUID.
+        POST method overwrites existing values for the specified attributes.
+        Format: { "GroupName": { "attribute1": "newValue" } }
+        """
         asset_id = args.get("--asset-id", [""])[0]
-        self.method = "PUT"
-        self.endpoint = f"/datagovernance/catalog/custommetadata/{asset_id}"
+        self.method = "POST"
+        self.endpoint = f"/datamap/api/atlas/v2/entity/guid/{asset_id}/businessmetadata"
+        self.params = {"api-version": "2023-09-01"}
         
         key = args.get("--key", [""])[0]
         value = args.get("--value", [""])[0]
-        metadata_type = args.get("--type", ["string"])[0]
+        group = args.get("--group", ["Custom"])[0]
         
         payload = {
-            "key": key,
-            "value": value,
-            "type": metadata_type,
+            group: {
+                key: value
+            }
         }
         
         self.payload = payload
 
     @decorator
     def delete_custom_metadata(self, args):
-        """Delete custom metadata from an asset."""
+        """Delete custom metadata (business metadata) from an asset.
+        
+        Uses Entity API to remove business metadata from a GUID.
+        Removes entire business metadata group by passing it in params + empty payload.
+        """
         asset_id = args.get("--asset-id", [""])[0]
-        key = args.get("--key", [""])[0]
+        group = args.get("--group", [""])[0]
+        
+        if not group:
+            raise ValueError("--group parameter is required to delete business metadata")
+        
         self.method = "DELETE"
-        self.endpoint = f"/datagovernance/catalog/custommetadata/{asset_id}"
-        self.params = {"key": key}
+        self.endpoint = f"/datamap/api/atlas/v2/entity/guid/{asset_id}/businessmetadata"
+        self.params = {
+            "api-version": "2023-09-01"
+        }
+        # Payload must contain the group with empty dict to delete entire group
+        self.payload = {
+            group: {}
+        }
 
     # ========================================
     # CUSTOM ATTRIBUTES (NEW)
