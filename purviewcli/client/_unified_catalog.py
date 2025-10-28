@@ -205,6 +205,142 @@ class UnifiedCatalogClient(Endpoint):
         self.endpoint = ENDPOINTS["unified_catalog"]["get_data_product"].format(productId=product_id)
         self.params = {}
 
+    @decorator
+    def create_data_product_relationship(self, args):
+        """Create a relationship for a data product.
+        
+        Creates a relationship between a data product and another entity
+        (e.g., critical data column, term, asset).
+        
+        API: POST /datagovernance/catalog/dataproducts/{productId}/relationships
+        API Version: 2025-09-15-preview
+        """
+        product_id = args.get("--product-id", [""])[0]
+        entity_type = args.get("--entity-type", [""])[0]  # e.g., "CRITICALDATACOLUMN"
+        entity_id = args.get("--entity-id", [""])[0]
+        asset_id = args.get("--asset-id", [""])[0] if args.get("--asset-id") else entity_id
+        relationship_type = args.get("--relationship-type", ["Related"])[0]
+        description = args.get("--description", [""])[0]
+        
+        # Build request body
+        payload = {
+            "relationship1": {
+                "description": description,
+                "relationshipType": relationship_type,
+                "assetId": asset_id,
+                "entityId": entity_id
+            }
+        }
+        
+        self.method = "POST"
+        self.endpoint = ENDPOINTS["unified_catalog"]["create_data_product_relationship"].format(
+            productId=product_id
+        )
+        self.params = {"entityType": entity_type.upper()}
+        self.payload = payload
+
+    @decorator
+    def get_data_product_relationships(self, args):
+        """List relationships for a data product.
+        
+        Lists all relationships for a data product, optionally filtered by entity type.
+        
+        API: GET /datagovernance/catalog/dataproducts/{productId}/relationships
+        API Version: 2025-09-15-preview
+        """
+        product_id = args.get("--product-id", [""])[0]
+        entity_type = args.get("--entity-type", [""])[0] if args.get("--entity-type") else None
+        
+        self.method = "GET"
+        self.endpoint = ENDPOINTS["unified_catalog"]["list_data_product_relationships"].format(
+            productId=product_id
+        )
+        
+        # Entity type is optional filter
+        if entity_type:
+            self.params = {"entityType": entity_type.upper()}
+        else:
+            self.params = {}
+
+    @decorator
+    def delete_data_product_relationship(self, args):
+        """Delete a relationship between a data product and an entity.
+        
+        Deletes a specific relationship identified by entity type and entity ID.
+        
+        API: DELETE /datagovernance/catalog/dataproducts/{productId}/relationships
+        API Version: 2025-09-15-preview
+        """
+        product_id = args.get("--product-id", [""])[0]
+        entity_type = args.get("--entity-type", [""])[0]
+        entity_id = args.get("--entity-id", [""])[0]
+        
+        self.method = "DELETE"
+        self.endpoint = ENDPOINTS["unified_catalog"]["delete_data_product_relationship"].format(
+            productId=product_id
+        )
+        self.params = {
+            "entityType": entity_type.upper(),
+            "entityId": entity_id
+        }
+
+    @decorator
+    def query_data_products(self, args):
+        """Query data products with advanced filters.
+        
+        Supports filtering by domain, owner, status, name keyword, type, and more.
+        Includes pagination (skip/top) and sorting (orderBy).
+        
+        API: POST /datagovernance/catalog/dataproducts/query
+        API Version: 2025-09-15-preview
+        """
+        # Build query payload from args
+        payload = {}
+        
+        # IDs and domain filters
+        if args.get("--ids"):
+            payload["ids"] = args["--ids"]
+        if args.get("--domain-ids"):
+            payload["domainIds"] = args["--domain-ids"]
+        
+        # Name/keyword search
+        if args.get("--name-keyword"):
+            payload["nameKeyword"] = args["--name-keyword"][0]
+        
+        # Owner filter
+        if args.get("--owners"):
+            payload["owners"] = args["--owners"]
+        
+        # Status filters
+        if args.get("--status"):
+            payload["status"] = args["--status"][0]
+        if args.get("--multi-status"):
+            payload["multiStatus"] = args["--multi-status"]
+        
+        # Type filters
+        if args.get("--type"):
+            payload["type"] = args["--type"][0]
+        if args.get("--types"):
+            payload["types"] = args["--types"]
+        
+        # Pagination
+        if args.get("--skip"):
+            payload["skip"] = int(args["--skip"][0])
+        if args.get("--top"):
+            payload["top"] = int(args["--top"][0])
+        
+        # Sorting
+        if args.get("--order-by-field"):
+            payload["orderby"] = [{
+                "field": args["--order-by-field"][0],
+                "direction": args.get("--order-by-direction", ["asc"])[0]
+            }]
+        
+        self.method = "POST"
+        self.endpoint = ENDPOINTS["unified_catalog"]["query_data_products"]
+        self.params = {}
+        self.payload = payload
+
     # ========================================
     # GLOSSARY TERMS
     # ========================================
@@ -534,6 +670,61 @@ class UnifiedCatalogClient(Endpoint):
         self.endpoint = ENDPOINTS["unified_catalog"]["get_term"].format(termId=term_id)
         self.params = {}
 
+    @decorator
+    def query_terms(self, args):
+        """Query terms with advanced filters.
+        
+        Supports filtering by domain, owner, status, name keyword, acronyms, and more.
+        Includes pagination (skip/top) and sorting (orderBy).
+        
+        API: POST /datagovernance/catalog/terms/query
+        API Version: 2025-09-15-preview
+        """
+        # Build query payload from args
+        payload = {}
+        
+        # IDs and domain filters
+        if args.get("--ids"):
+            payload["ids"] = args["--ids"]
+        if args.get("--domain-ids"):
+            payload["domainIds"] = args["--domain-ids"]
+        
+        # Name/keyword search
+        if args.get("--name-keyword"):
+            payload["nameKeyword"] = args["--name-keyword"][0]
+        
+        # Acronym filter (terms-specific)
+        if args.get("--acronyms"):
+            payload["acronyms"] = args["--acronyms"]
+        
+        # Owner filter
+        if args.get("--owners"):
+            payload["owners"] = args["--owners"]
+        
+        # Status filters
+        if args.get("--status"):
+            payload["status"] = args["--status"][0]
+        if args.get("--multi-status"):
+            payload["multiStatus"] = args["--multi-status"]
+        
+        # Pagination
+        if args.get("--skip"):
+            payload["skip"] = int(args["--skip"][0])
+        if args.get("--top"):
+            payload["top"] = int(args["--top"][0])
+        
+        # Sorting
+        if args.get("--order-by-field"):
+            payload["orderby"] = [{
+                "field": args["--order-by-field"][0],
+                "direction": args.get("--order-by-direction", ["asc"])[0]
+            }]
+        
+        self.method = "POST"
+        self.endpoint = ENDPOINTS["unified_catalog"]["query_terms"]
+        self.params = {}
+        self.payload = payload
+
     def _get_or_create_glossary_for_domain(self, domain_id):
         """Get or create a default glossary for the domain."""
         # Improved implementation:
@@ -693,6 +884,57 @@ class UnifiedCatalogClient(Endpoint):
         self.method = "DELETE"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_objective"].format(objectiveId=objective_id)
         self.params = {}
+
+    @decorator
+    def query_objectives(self, args):
+        """Query objectives with advanced filters.
+        
+        Supports filtering by domain, owner, status, definition keyword, and more.
+        Includes pagination (skip/top) and sorting (orderBy).
+        
+        API: POST /datagovernance/catalog/objectives/query
+        API Version: 2025-09-15-preview
+        """
+        # Build query payload from args
+        payload = {}
+        
+        # IDs and domain filters
+        if args.get("--ids"):
+            payload["ids"] = args["--ids"]
+        if args.get("--domain-ids"):
+            payload["domainIds"] = args["--domain-ids"]
+        
+        # Definition keyword search (objectives-specific)
+        if args.get("--definition"):
+            payload["definition"] = args["--definition"][0]
+        
+        # Owner filter
+        if args.get("--owners"):
+            payload["owners"] = args["--owners"]
+        
+        # Status filters
+        if args.get("--status"):
+            payload["status"] = args["--status"][0]
+        if args.get("--multi-status"):
+            payload["multiStatus"] = args["--multi-status"]
+        
+        # Pagination
+        if args.get("--skip"):
+            payload["skip"] = int(args["--skip"][0])
+        if args.get("--top"):
+            payload["top"] = int(args["--top"][0])
+        
+        # Sorting
+        if args.get("--order-by-field"):
+            payload["orderby"] = [{
+                "field": args["--order-by-field"][0],
+                "direction": args.get("--order-by-direction", ["asc"])[0]
+            }]
+        
+        self.method = "POST"
+        self.endpoint = ENDPOINTS["unified_catalog"]["query_objectives"]
+        self.params = {}
+        self.payload = payload
 
     # ========================================
     # KEY RESULTS (Part of OKRs)
@@ -869,6 +1111,130 @@ class UnifiedCatalogClient(Endpoint):
         self.method = "DELETE"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_cde"].format(cdeId=cde_id)
         self.params = {}
+
+    @decorator
+    def query_critical_data_elements(self, args):
+        """Query critical data elements with advanced filters.
+        
+        Supports filtering by domain, owner, status, name keyword, and more.
+        Includes pagination (skip/top) and sorting (orderBy).
+        
+        API: POST /datagovernance/catalog/criticalDataElements/query
+        API Version: 2025-09-15-preview
+        """
+        # Build query payload from args
+        payload = {}
+        
+        # IDs and domain filters
+        if args.get("--ids"):
+            payload["ids"] = args["--ids"]
+        if args.get("--domain-ids"):
+            payload["domainIds"] = args["--domain-ids"]
+        
+        # Name/keyword search
+        if args.get("--name-keyword"):
+            payload["nameKeyword"] = args["--name-keyword"][0]
+        
+        # Owner filter
+        if args.get("--owners"):
+            payload["owners"] = args["--owners"]
+        
+        # Status filters
+        if args.get("--status"):
+            payload["status"] = args["--status"][0]
+        if args.get("--multi-status"):
+            payload["multiStatus"] = args["--multi-status"]
+        
+        # Pagination
+        if args.get("--skip"):
+            payload["skip"] = int(args["--skip"][0])
+        if args.get("--top"):
+            payload["top"] = int(args["--top"][0])
+        
+        # Sorting
+        if args.get("--order-by-field"):
+            payload["orderby"] = [{
+                "field": args["--order-by-field"][0],
+                "direction": args.get("--order-by-direction", ["asc"])[0]
+            }]
+        
+        self.method = "POST"
+        self.endpoint = ENDPOINTS["unified_catalog"]["query_critical_data_elements"]
+        self.params = {}
+        self.payload = payload
+
+    @decorator
+    def create_cde_relationship(self, args):
+        """Create a relationship for a critical data element.
+        
+        Creates a relationship between a CDE and another entity
+        (e.g., critical data column, term, asset).
+        
+        API: POST /datagovernance/catalog/criticalDataElements/{cdeId}/relationships
+        API Version: 2025-09-15-preview
+        """
+        cde_id = args.get("--cde-id", [""])[0]
+        entity_type = args.get("--entity-type", [""])[0]  # e.g., "CRITICALDATACOLUMN"
+        entity_id = args.get("--entity-id", [""])[0]
+        asset_id = args.get("--asset-id", [""])[0] if args.get("--asset-id") else entity_id
+        relationship_type = args.get("--relationship-type", ["Related"])[0]
+        description = args.get("--description", [""])[0]
+        
+        # Build request body (same structure as data product relationships)
+        payload = {
+            "relationship1": {
+                "description": description,
+                "relationshipType": relationship_type,
+                "assetId": asset_id,
+                "entityId": entity_id
+            }
+        }
+        
+        self.method = "POST"
+        self.endpoint = ENDPOINTS["unified_catalog"]["create_cde_relationship"].format(cdeId=cde_id)
+        self.params = {"entityType": entity_type.upper()}
+        self.payload = payload
+
+    @decorator
+    def get_cde_relationships(self, args):
+        """List relationships for a critical data element.
+        
+        Lists all relationships for a CDE, optionally filtered by entity type.
+        
+        API: GET /datagovernance/catalog/criticalDataElements/{cdeId}/relationships
+        API Version: 2025-09-15-preview
+        """
+        cde_id = args.get("--cde-id", [""])[0]
+        entity_type = args.get("--entity-type", [""])[0] if args.get("--entity-type") else None
+        
+        self.method = "GET"
+        self.endpoint = ENDPOINTS["unified_catalog"]["list_cde_relationships"].format(cdeId=cde_id)
+        
+        # Entity type is optional filter
+        if entity_type:
+            self.params = {"entityType": entity_type.upper()}
+        else:
+            self.params = {}
+
+    @decorator
+    def delete_cde_relationship(self, args):
+        """Delete a relationship between a CDE and an entity.
+        
+        Deletes a specific relationship identified by entity type and entity ID.
+        
+        API: DELETE /datagovernance/catalog/criticalDataElements/{cdeId}/relationships
+        API Version: 2025-09-15-preview
+        """
+        cde_id = args.get("--cde-id", [""])[0]
+        entity_type = args.get("--entity-type", [""])[0]
+        entity_id = args.get("--entity-id", [""])[0]
+        
+        self.method = "DELETE"
+        self.endpoint = ENDPOINTS["unified_catalog"]["delete_cde_relationship"].format(cdeId=cde_id)
+        self.params = {
+            "entityType": entity_type.upper(),
+            "entityId": entity_id
+        }
 
     # ========================================
     # RELATIONSHIPS

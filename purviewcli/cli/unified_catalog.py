@@ -491,7 +491,7 @@ def delete(product_id, yes):
         if result is None or (isinstance(result, dict) and not result.get("error")):
             console.print(f"[green] SUCCESS:[/green] Deleted data product '{product_id}'")
         elif isinstance(result, dict) and "error" in result:
-            console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
+                console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
         else:
             console.print(f"[green] SUCCESS:[/green] Deleted data product '{product_id}'")
             if result:
@@ -501,11 +501,288 @@ def delete(product_id, yes):
         console.print(f"[red]ERROR:[/red] {str(e)}")
 
 
+@dataproduct.command(name="add-relationship")
+@click.option("--product-id", required=True, help="Data product ID (GUID)")
+@click.option("--entity-type", required=True, 
+              type=click.Choice(["CRITICALDATACOLUMN", "TERM", "DATAASSET", "CRITICALDATAELEMENT"], case_sensitive=False),
+              help="Type of entity to relate to")
+@click.option("--entity-id", required=True, help="Entity ID (GUID) to relate to")
+@click.option("--asset-id", help="Asset ID (GUID) - defaults to entity-id if not provided")
+@click.option("--relationship-type", default="Related", help="Relationship type (default: Related)")
+@click.option("--description", default="", help="Description of the relationship")
+@click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
+def add_relationship(product_id, entity_type, entity_id, asset_id, relationship_type, description, output):
+    """Create a relationship for a data product.
+    
+    Links a data product to another entity like a critical data column, term, or asset.
+    
+    Examples:
+        pvw uc dataproduct add-relationship --product-id <id> --entity-type CRITICALDATACOLUMN --entity-id <col-id>
+        pvw uc dataproduct add-relationship --product-id <id> --entity-type TERM --entity-id <term-id> --description "Primary term"
+    """
+    try:
+        client = UnifiedCatalogClient()
+        args = {
+            "--product-id": [product_id],
+            "--entity-type": [entity_type],
+            "--entity-id": [entity_id],
+            "--relationship-type": [relationship_type],
+            "--description": [description]
+        }
+        
+        if asset_id:
+            args["--asset-id"] = [asset_id]
+        
+        result = client.create_data_product_relationship(args)
+        
+        if output == "json":
+            console.print_json(data=result)
+        else:
+            if result and isinstance(result, dict):
+                console.print("[green]SUCCESS:[/green] Created relationship")
+                table = Table(title="Data Product Relationship", show_header=True)
+                table.add_column("Property", style="cyan")
+                table.add_column("Value", style="white")
+                
+                table.add_row("Entity ID", result.get("entityId", "N/A"))
+                table.add_row("Relationship Type", result.get("relationshipType", "N/A"))
+                table.add_row("Description", result.get("description", "N/A"))
+                
+                if "systemData" in result:
+                    sys_data = result["systemData"]
+                    table.add_row("Created By", sys_data.get("createdBy", "N/A"))
+                    table.add_row("Created At", sys_data.get("createdAt", "N/A"))
+                
+                console.print(table)
+            else:
+                console.print("[green]SUCCESS:[/green] Created relationship")
+                
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@dataproduct.command(name="list-relationships")
+@click.option("--product-id", required=True, help="Data product ID (GUID)")
+@click.option("--entity-type", 
+              type=click.Choice(["CRITICALDATACOLUMN", "TERM", "DATAASSET", "CRITICALDATAELEMENT"], case_sensitive=False),
+              help="Filter by entity type (optional)")
+@click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
+def list_relationships(product_id, entity_type, output):
+    """List relationships for a data product.
+    
+    Shows all entities linked to this data product, optionally filtered by type.
+    
+    Examples:
+        pvw uc dataproduct list-relationships --product-id <id>
+        pvw uc dataproduct list-relationships --product-id <id> --entity-type CRITICALDATACOLUMN
+    """
+    try:
+        client = UnifiedCatalogClient()
+        args = {"--product-id": [product_id]}
+        
+        if entity_type:
+            args["--entity-type"] = [entity_type]
+        
+        result = client.get_data_product_relationships(args)
+        
+        if output == "json":
+            console.print_json(data=result)
+        else:
+            relationships = result.get("value", []) if result else []
+            
+            if not relationships:
+                console.print(f"[yellow]No relationships found for data product '{product_id}'[/yellow]")
+                return
+            
+            table = Table(title=f"Data Product Relationships ({len(relationships)} found)", show_header=True)
+            table.add_column("Entity ID", style="cyan")
+            table.add_column("Relationship Type", style="white")
+            table.add_column("Description", style="white")
+            table.add_column("Created", style="dim")
+            
+            for rel in relationships:
+                table.add_row(
+                    rel.get("entityId", "N/A"),
+                    rel.get("relationshipType", "N/A"),
+                    rel.get("description", "")[:50] + ("..." if len(rel.get("description", "")) > 50 else ""),
+                    rel.get("systemData", {}).get("createdAt", "N/A")[:10]
+                )
+            
+            console.print(table)
+            
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@dataproduct.command(name="remove-relationship")
+@click.option("--product-id", required=True, help="Data product ID (GUID)")
+@click.option("--entity-type", required=True,
+              type=click.Choice(["CRITICALDATACOLUMN", "TERM", "DATAASSET", "CRITICALDATAELEMENT"], case_sensitive=False),
+              help="Type of entity to unlink")
+@click.option("--entity-id", required=True, help="Entity ID (GUID) to unlink")
+@click.option("--confirm/--no-confirm", default=True, help="Ask for confirmation before deleting")
+def remove_relationship(product_id, entity_type, entity_id, confirm):
+    """Delete a relationship between a data product and an entity.
+    
+    Removes the link between a data product and a specific entity.
+    
+    Examples:
+        pvw uc dataproduct remove-relationship --product-id <id> --entity-type CRITICALDATACOLUMN --entity-id <col-id>
+        pvw uc dataproduct remove-relationship --product-id <id> --entity-type TERM --entity-id <term-id> --no-confirm
+    """
+    try:
+        if confirm:
+            confirm = click.confirm(
+                f"Are you sure you want to delete relationship to {entity_type} '{entity_id}'?",
+                default=False
+            )
+            if not confirm:
+                console.print("[yellow]Deletion cancelled.[/yellow]")
+                return
+        
+        client = UnifiedCatalogClient()
+        args = {
+            "--product-id": [product_id],
+            "--entity-type": [entity_type],
+            "--entity-id": [entity_id]
+        }
+        
+        result = client.delete_data_product_relationship(args)
+        
+        # DELETE returns 204 No Content on success
+        if result is None or (isinstance(result, dict) and not result.get("error")):
+            console.print(f"[green]SUCCESS:[/green] Deleted relationship to {entity_type} '{entity_id}'")
+        elif isinstance(result, dict) and "error" in result:
+            console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
+        else:
+            console.print(f"[green]SUCCESS:[/green] Deleted relationship")
+            
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@dataproduct.command(name="query")
+@click.option("--ids", multiple=True, help="Filter by specific product IDs (GUIDs)")
+@click.option("--domain-ids", multiple=True, help="Filter by domain IDs (GUIDs)")
+@click.option("--name-keyword", help="Filter by name keyword (partial match)")
+@click.option("--owners", multiple=True, help="Filter by owner IDs (GUIDs)")
+@click.option("--status", type=click.Choice(["Draft", "Published", "Expired"], case_sensitive=False),
+              help="Filter by status")
+@click.option("--multi-status", multiple=True,
+              type=click.Choice(["Draft", "Published", "Expired"], case_sensitive=False),
+              help="Filter by multiple statuses")
+@click.option("--type", help="Filter by data product type (e.g., Master, Operational)")
+@click.option("--types", multiple=True, help="Filter by multiple data product types")
+@click.option("--skip", type=int, default=0, help="Number of items to skip (pagination)")
+@click.option("--top", type=int, default=100, help="Number of items to return (max 1000)")
+@click.option("--order-by-field", help="Field to sort by (e.g., 'name', 'status')")
+@click.option("--order-by-direction", type=click.Choice(["asc", "desc"]), default="asc",
+              help="Sort direction")
+@click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
+def query_data_products(ids, domain_ids, name_keyword, owners, status, multi_status, type, types,
+                       skip, top, order_by_field, order_by_direction, output):
+    """Query data products with advanced filters.
+    
+    Perform complex searches across data products using multiple filter criteria.
+    Supports pagination and custom sorting.
+    
+    Examples:
+        # Find all data products in a specific domain
+        pvw uc dataproduct query --domain-ids <domain-guid>
+        
+        # Search by keyword
+        pvw uc dataproduct query --name-keyword "customer"
+        
+        # Filter by owner and status
+        pvw uc dataproduct query --owners <user-guid> --status Published
+        
+        # Pagination example
+        pvw uc dataproduct query --skip 0 --top 50 --order-by-field name
+        
+        # Multiple filters
+        pvw uc dataproduct query --domain-ids <guid1> <guid2> --status Published --type Master
+    """
+    try:
+        client = UnifiedCatalogClient()
+        args = {}
+        
+        # Build args dict from parameters
+        if ids:
+            args["--ids"] = list(ids)
+        if domain_ids:
+            args["--domain-ids"] = list(domain_ids)
+        if name_keyword:
+            args["--name-keyword"] = [name_keyword]
+        if owners:
+            args["--owners"] = list(owners)
+        if status:
+            args["--status"] = [status]
+        if multi_status:
+            args["--multi-status"] = list(multi_status)
+        if type:
+            args["--type"] = [type]
+        if types:
+            args["--types"] = list(types)
+        if skip:
+            args["--skip"] = [str(skip)]
+        if top:
+            args["--top"] = [str(top)]
+        if order_by_field:
+            args["--order-by-field"] = [order_by_field]
+            args["--order-by-direction"] = [order_by_direction]
+        
+        result = client.query_data_products(args)
+        
+        if output == "json":
+            console.print_json(data=result)
+        else:
+            products = result.get("value", []) if result else []
+            
+            if not products:
+                console.print("[yellow]No data products found matching the query.[/yellow]")
+                return
+            
+            # Check for pagination
+            next_link = result.get("nextLink")
+            if next_link:
+                console.print(f"[dim]Note: More results available (nextLink provided)[/dim]\n")
+            
+            table = Table(title=f"Query Results ({len(products)} found)", show_header=True)
+            table.add_column("Name", style="cyan")
+            table.add_column("ID", style="dim", no_wrap=True)
+            table.add_column("Domain", style="yellow", no_wrap=True)
+            table.add_column("Type", style="green")
+            table.add_column("Status", style="white")
+            table.add_column("Owner", style="magenta")
+            
+            for product in products:
+                # Extract owner info
+                contacts = product.get("contacts", {})
+                owners_list = contacts.get("owner", [])
+                owner_display = owners_list[0].get("id", "N/A")[:8] if owners_list else "N/A"
+                
+                table.add_row(
+                    product.get("name", "N/A"),
+                    product.get("id", "N/A")[:13] + "...",
+                    product.get("domain", "N/A")[:13] + "...",
+                    product.get("type", "N/A"),
+                    product.get("status", "N/A"),
+                    owner_display + "..."
+                )
+            
+            console.print(table)
+            
+            # Show pagination info
+            if skip > 0 or next_link:
+                console.print(f"\n[dim]Showing items {skip + 1} to {skip + len(products)}[/dim]")
+            
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
 # ========================================
 # GLOSSARIES
 # ========================================
-
-
 @uc.group()
 def glossary():
     """Manage glossaries (for finding glossary GUIDs)."""
@@ -1657,6 +1934,119 @@ def update_terms_from_json(json_file, dry_run):
         console.print(f"[red]ERROR:[/red] {str(e)}")
 
 
+@term.command(name="query")
+@click.option("--ids", multiple=True, help="Filter by specific term IDs (GUIDs)")
+@click.option("--domain-ids", multiple=True, help="Filter by domain IDs (GUIDs)")
+@click.option("--name-keyword", help="Filter by name keyword (partial match)")
+@click.option("--acronyms", multiple=True, help="Filter by acronyms")
+@click.option("--owners", multiple=True, help="Filter by owner IDs (GUIDs)")
+@click.option("--status", type=click.Choice(["DRAFT", "PUBLISHED", "EXPIRED"], case_sensitive=False),
+              help="Filter by status")
+@click.option("--multi-status", multiple=True,
+              type=click.Choice(["DRAFT", "PUBLISHED", "EXPIRED"], case_sensitive=False),
+              help="Filter by multiple statuses")
+@click.option("--skip", type=int, default=0, help="Number of items to skip (pagination)")
+@click.option("--top", type=int, default=100, help="Number of items to return (max 1000)")
+@click.option("--order-by-field", help="Field to sort by (e.g., 'name', 'status')")
+@click.option("--order-by-direction", type=click.Choice(["asc", "desc"]), default="asc",
+              help="Sort direction")
+@click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
+def query_terms(ids, domain_ids, name_keyword, acronyms, owners, status, multi_status,
+               skip, top, order_by_field, order_by_direction, output):
+    """Query terms with advanced filters.
+    
+    Perform complex searches across glossary terms using multiple filter criteria.
+    Supports pagination and custom sorting.
+    
+    Examples:
+        # Find all terms in a specific domain
+        pvw uc term query --domain-ids <domain-guid>
+        
+        # Search by keyword
+        pvw uc term query --name-keyword "customer"
+        
+        # Filter by acronym
+        pvw uc term query --acronyms "PII" "GDPR"
+        
+        # Filter by owner and status
+        pvw uc term query --owners <user-guid> --status PUBLISHED
+        
+        # Pagination example
+        pvw uc term query --skip 0 --top 50 --order-by-field name --order-by-direction desc
+    """
+    try:
+        client = UnifiedCatalogClient()
+        args = {}
+        
+        # Build args dict from parameters
+        if ids:
+            args["--ids"] = list(ids)
+        if domain_ids:
+            args["--domain-ids"] = list(domain_ids)
+        if name_keyword:
+            args["--name-keyword"] = [name_keyword]
+        if acronyms:
+            args["--acronyms"] = list(acronyms)
+        if owners:
+            args["--owners"] = list(owners)
+        if status:
+            args["--status"] = [status]
+        if multi_status:
+            args["--multi-status"] = list(multi_status)
+        if skip:
+            args["--skip"] = [str(skip)]
+        if top:
+            args["--top"] = [str(top)]
+        if order_by_field:
+            args["--order-by-field"] = [order_by_field]
+            args["--order-by-direction"] = [order_by_direction]
+        
+        result = client.query_terms(args)
+        
+        if output == "json":
+            console.print_json(data=result)
+        else:
+            terms = result.get("value", []) if result else []
+            
+            if not terms:
+                console.print("[yellow]No terms found matching the query.[/yellow]")
+                return
+            
+            # Check for pagination
+            next_link = result.get("nextLink")
+            if next_link:
+                console.print(f"[dim]Note: More results available (nextLink provided)[/dim]\n")
+            
+            table = Table(title=f"Query Results ({len(terms)} found)", show_header=True)
+            table.add_column("Name", style="cyan")
+            table.add_column("ID", style="dim", no_wrap=True)
+            table.add_column("Domain", style="yellow", no_wrap=True)
+            table.add_column("Status", style="white")
+            table.add_column("Acronyms", style="green")
+            
+            for term in terms:
+                acronyms_list = term.get("acronyms", [])
+                acronyms_display = ", ".join(acronyms_list[:2]) if acronyms_list else "N/A"
+                if len(acronyms_list) > 2:
+                    acronyms_display += f" +{len(acronyms_list) - 2}"
+                
+                table.add_row(
+                    term.get("name", "N/A"),
+                    term.get("id", "N/A")[:13] + "...",
+                    term.get("domain", "N/A")[:13] + "...",
+                    term.get("status", "N/A"),
+                    acronyms_display
+                )
+            
+            console.print(table)
+            
+            # Show pagination info
+            if skip > 0 or next_link:
+                console.print(f"\n[dim]Showing items {skip + 1} to {skip + len(terms)}[/dim]")
+            
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
 
 # ========================================
 # OBJECTIVES AND KEY RESULTS (OKRs)
@@ -1793,6 +2183,116 @@ def show(objective_id):
 
         console.print(json.dumps(result, indent=2))
 
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@objective.command(name="query")
+@click.option("--ids", multiple=True, help="Filter by specific objective IDs (GUIDs)")
+@click.option("--domain-ids", multiple=True, help="Filter by domain IDs (GUIDs)")
+@click.option("--definition", help="Filter by definition text (partial match)")
+@click.option("--owners", multiple=True, help="Filter by owner IDs (GUIDs)")
+@click.option("--status", type=click.Choice(["DRAFT", "ACTIVE", "COMPLETED", "ARCHIVED"], case_sensitive=False),
+              help="Filter by status")
+@click.option("--multi-status", multiple=True,
+              type=click.Choice(["DRAFT", "ACTIVE", "COMPLETED", "ARCHIVED"], case_sensitive=False),
+              help="Filter by multiple statuses")
+@click.option("--skip", type=int, default=0, help="Number of items to skip (pagination)")
+@click.option("--top", type=int, default=100, help="Number of items to return (max 1000)")
+@click.option("--order-by-field", help="Field to sort by (e.g., 'name', 'status')")
+@click.option("--order-by-direction", type=click.Choice(["asc", "desc"]), default="asc",
+              help="Sort direction")
+@click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
+def query_objectives(ids, domain_ids, definition, owners, status, multi_status,
+                    skip, top, order_by_field, order_by_direction, output):
+    """Query objectives with advanced filters.
+    
+    Perform complex searches across OKR objectives using multiple filter criteria.
+    Supports pagination and custom sorting.
+    
+    Examples:
+        # Find all objectives in a specific domain
+        pvw uc objective query --domain-ids <domain-guid>
+        
+        # Search by definition text
+        pvw uc objective query --definition "customer satisfaction"
+        
+        # Filter by owner and status
+        pvw uc objective query --owners <user-guid> --status ACTIVE
+        
+        # Find all completed objectives
+        pvw uc objective query --multi-status COMPLETED ARCHIVED
+        
+        # Pagination example
+        pvw uc objective query --skip 0 --top 50 --order-by-field name --order-by-direction asc
+    """
+    try:
+        client = UnifiedCatalogClient()
+        args = {}
+        
+        # Build args dict from parameters
+        if ids:
+            args["--ids"] = list(ids)
+        if domain_ids:
+            args["--domain-ids"] = list(domain_ids)
+        if definition:
+            args["--definition"] = [definition]
+        if owners:
+            args["--owners"] = list(owners)
+        if status:
+            args["--status"] = [status]
+        if multi_status:
+            args["--multi-status"] = list(multi_status)
+        if skip:
+            args["--skip"] = [str(skip)]
+        if top:
+            args["--top"] = [str(top)]
+        if order_by_field:
+            args["--order-by-field"] = [order_by_field]
+            args["--order-by-direction"] = [order_by_direction]
+        
+        result = client.query_objectives(args)
+        
+        if output == "json":
+            console.print_json(data=result)
+        else:
+            objectives = result.get("value", []) if result else []
+            
+            if not objectives:
+                console.print("[yellow]No objectives found matching the query.[/yellow]")
+                return
+            
+            # Check for pagination
+            next_link = result.get("nextLink")
+            if next_link:
+                console.print(f"[dim]Note: More results available (nextLink provided)[/dim]\n")
+            
+            table = Table(title=f"Query Results ({len(objectives)} found)", show_header=True)
+            table.add_column("Name", style="cyan")
+            table.add_column("ID", style="dim", no_wrap=True)
+            table.add_column("Domain", style="yellow", no_wrap=True)
+            table.add_column("Status", style="white")
+            table.add_column("Owner", style="green", no_wrap=True)
+            
+            for obj in objectives:
+                owner_display = "N/A"
+                if obj.get("owner"):
+                    owner_display = obj["owner"].get("id", "N/A")[:13] + "..."
+                
+                table.add_row(
+                    obj.get("name", "N/A"),
+                    obj.get("id", "N/A")[:13] + "...",
+                    obj.get("domain", "N/A")[:13] + "...",
+                    obj.get("status", "N/A"),
+                    owner_display
+                )
+            
+            console.print(table)
+            
+            # Show pagination info
+            if skip > 0 or next_link:
+                console.print(f"\n[dim]Showing items {skip + 1} to {skip + len(objectives)}[/dim]")
+            
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
 
@@ -1938,6 +2438,272 @@ def show(cde_id):
 
         console.print(json.dumps(result, indent=2))
 
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@cde.command(name="add-relationship")
+@click.option("--cde-id", required=True, help="Critical data element ID (GUID)")
+@click.option("--entity-type", required=True, 
+              type=click.Choice(["CRITICALDATACOLUMN", "TERM", "DATAASSET", "DATAPRODUCT"], case_sensitive=False),
+              help="Type of entity to relate to")
+@click.option("--entity-id", required=True, help="Entity ID (GUID) to relate to")
+@click.option("--asset-id", help="Asset ID (GUID) - defaults to entity-id if not provided")
+@click.option("--relationship-type", default="Related", help="Relationship type (default: Related)")
+@click.option("--description", default="", help="Description of the relationship")
+@click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
+def add_cde_relationship(cde_id, entity_type, entity_id, asset_id, relationship_type, description, output):
+    """Create a relationship for a critical data element.
+    
+    Links a CDE to another entity like a critical data column, term, or data product.
+    
+    Examples:
+        pvw uc cde add-relationship --cde-id <id> --entity-type CRITICALDATACOLUMN --entity-id <col-id>
+        pvw uc cde add-relationship --cde-id <id> --entity-type TERM --entity-id <term-id> --description "Primary term"
+    """
+    try:
+        client = UnifiedCatalogClient()
+        args = {
+            "--cde-id": [cde_id],
+            "--entity-type": [entity_type],
+            "--entity-id": [entity_id],
+            "--relationship-type": [relationship_type],
+            "--description": [description]
+        }
+        
+        if asset_id:
+            args["--asset-id"] = [asset_id]
+        
+        result = client.create_cde_relationship(args)
+        
+        if output == "json":
+            console.print_json(data=result)
+        else:
+            if result and isinstance(result, dict):
+                console.print("[green]SUCCESS:[/green] Created CDE relationship")
+                table = Table(title="CDE Relationship", show_header=True)
+                table.add_column("Property", style="cyan")
+                table.add_column("Value", style="white")
+                
+                table.add_row("Entity ID", result.get("entityId", "N/A"))
+                table.add_row("Relationship Type", result.get("relationshipType", "N/A"))
+                table.add_row("Description", result.get("description", "N/A"))
+                
+                if "systemData" in result:
+                    sys_data = result["systemData"]
+                    table.add_row("Created By", sys_data.get("createdBy", "N/A"))
+                    table.add_row("Created At", sys_data.get("createdAt", "N/A"))
+                
+                console.print(table)
+            else:
+                console.print("[green]SUCCESS:[/green] Created CDE relationship")
+                
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@cde.command(name="list-relationships")
+@click.option("--cde-id", required=True, help="Critical data element ID (GUID)")
+@click.option("--entity-type", 
+              type=click.Choice(["CRITICALDATACOLUMN", "TERM", "DATAASSET", "DATAPRODUCT"], case_sensitive=False),
+              help="Filter by entity type (optional)")
+@click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
+def list_cde_relationships(cde_id, entity_type, output):
+    """List relationships for a critical data element.
+    
+    Shows all entities linked to this CDE, optionally filtered by type.
+    
+    Examples:
+        pvw uc cde list-relationships --cde-id <id>
+        pvw uc cde list-relationships --cde-id <id> --entity-type CRITICALDATACOLUMN
+    """
+    try:
+        client = UnifiedCatalogClient()
+        args = {"--cde-id": [cde_id]}
+        
+        if entity_type:
+            args["--entity-type"] = [entity_type]
+        
+        result = client.get_cde_relationships(args)
+        
+        if output == "json":
+            console.print_json(data=result)
+        else:
+            relationships = result.get("value", []) if result else []
+            
+            if not relationships:
+                console.print(f"[yellow]No relationships found for CDE '{cde_id}'[/yellow]")
+                return
+            
+            table = Table(title=f"CDE Relationships ({len(relationships)} found)", show_header=True)
+            table.add_column("Entity ID", style="cyan")
+            table.add_column("Relationship Type", style="white")
+            table.add_column("Description", style="white")
+            table.add_column("Created", style="dim")
+            
+            for rel in relationships:
+                table.add_row(
+                    rel.get("entityId", "N/A"),
+                    rel.get("relationshipType", "N/A"),
+                    rel.get("description", "")[:50] + ("..." if len(rel.get("description", "")) > 50 else ""),
+                    rel.get("systemData", {}).get("createdAt", "N/A")[:10]
+                )
+            
+            console.print(table)
+            
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@cde.command(name="remove-relationship")
+@click.option("--cde-id", required=True, help="Critical data element ID (GUID)")
+@click.option("--entity-type", required=True,
+              type=click.Choice(["CRITICALDATACOLUMN", "TERM", "DATAASSET", "DATAPRODUCT"], case_sensitive=False),
+              help="Type of entity to unlink")
+@click.option("--entity-id", required=True, help="Entity ID (GUID) to unlink")
+@click.option("--confirm/--no-confirm", default=True, help="Ask for confirmation before deleting")
+def remove_cde_relationship(cde_id, entity_type, entity_id, confirm):
+    """Delete a relationship between a CDE and an entity.
+    
+    Removes the link between a critical data element and a specific entity.
+    
+    Examples:
+        pvw uc cde remove-relationship --cde-id <id> --entity-type CRITICALDATACOLUMN --entity-id <col-id>
+        pvw uc cde remove-relationship --cde-id <id> --entity-type TERM --entity-id <term-id> --no-confirm
+    """
+    try:
+        if confirm:
+            confirm = click.confirm(
+                f"Are you sure you want to delete CDE relationship to {entity_type} '{entity_id}'?",
+                default=False
+            )
+            if not confirm:
+                console.print("[yellow]Deletion cancelled.[/yellow]")
+                return
+        
+        client = UnifiedCatalogClient()
+        args = {
+            "--cde-id": [cde_id],
+            "--entity-type": [entity_type],
+            "--entity-id": [entity_id]
+        }
+        
+        result = client.delete_cde_relationship(args)
+        
+        # DELETE returns 204 No Content on success
+        if result is None or (isinstance(result, dict) and not result.get("error")):
+            console.print(f"[green]SUCCESS:[/green] Deleted CDE relationship to {entity_type} '{entity_id}'")
+        elif isinstance(result, dict) and "error" in result:
+            console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
+        else:
+            console.print(f"[green]SUCCESS:[/green] Deleted CDE relationship")
+            
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@cde.command(name="query")
+@click.option("--ids", multiple=True, help="Filter by specific CDE IDs (GUIDs)")
+@click.option("--domain-ids", multiple=True, help="Filter by domain IDs (GUIDs)")
+@click.option("--name-keyword", help="Filter by name keyword (partial match)")
+@click.option("--owners", multiple=True, help="Filter by owner IDs (GUIDs)")
+@click.option("--status", type=click.Choice(["DRAFT", "PUBLISHED", "EXPIRED"], case_sensitive=False),
+              help="Filter by status")
+@click.option("--multi-status", multiple=True,
+              type=click.Choice(["DRAFT", "PUBLISHED", "EXPIRED"], case_sensitive=False),
+              help="Filter by multiple statuses")
+@click.option("--skip", type=int, default=0, help="Number of items to skip (pagination)")
+@click.option("--top", type=int, default=100, help="Number of items to return (max 1000)")
+@click.option("--order-by-field", help="Field to sort by (e.g., 'name', 'status')")
+@click.option("--order-by-direction", type=click.Choice(["asc", "desc"]), default="asc",
+              help="Sort direction")
+@click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
+def query_cdes(ids, domain_ids, name_keyword, owners, status, multi_status,
+              skip, top, order_by_field, order_by_direction, output):
+    """Query critical data elements with advanced filters.
+    
+    Perform complex searches across CDEs using multiple filter criteria.
+    Supports pagination and custom sorting.
+    
+    Examples:
+        # Find all CDEs in a specific domain
+        pvw uc cde query --domain-ids <domain-guid>
+        
+        # Search by keyword
+        pvw uc cde query --name-keyword "customer"
+        
+        # Filter by owner and status
+        pvw uc cde query --owners <user-guid> --status PUBLISHED
+        
+        # Find all published or expired CDEs
+        pvw uc cde query --multi-status PUBLISHED EXPIRED
+        
+        # Pagination example
+        pvw uc cde query --skip 0 --top 50 --order-by-field name --order-by-direction desc
+    """
+    try:
+        client = UnifiedCatalogClient()
+        args = {}
+        
+        # Build args dict from parameters
+        if ids:
+            args["--ids"] = list(ids)
+        if domain_ids:
+            args["--domain-ids"] = list(domain_ids)
+        if name_keyword:
+            args["--name-keyword"] = [name_keyword]
+        if owners:
+            args["--owners"] = list(owners)
+        if status:
+            args["--status"] = [status]
+        if multi_status:
+            args["--multi-status"] = list(multi_status)
+        if skip:
+            args["--skip"] = [str(skip)]
+        if top:
+            args["--top"] = [str(top)]
+        if order_by_field:
+            args["--order-by-field"] = [order_by_field]
+            args["--order-by-direction"] = [order_by_direction]
+        
+        result = client.query_critical_data_elements(args)
+        
+        if output == "json":
+            console.print_json(data=result)
+        else:
+            cdes = result.get("value", []) if result else []
+            
+            if not cdes:
+                console.print("[yellow]No critical data elements found matching the query.[/yellow]")
+                return
+            
+            # Check for pagination
+            next_link = result.get("nextLink")
+            if next_link:
+                console.print(f"[dim]Note: More results available (nextLink provided)[/dim]\n")
+            
+            table = Table(title=f"Query Results ({len(cdes)} found)", show_header=True)
+            table.add_column("Name", style="cyan")
+            table.add_column("ID", style="dim", no_wrap=True)
+            table.add_column("Domain", style="yellow", no_wrap=True)
+            table.add_column("Status", style="white")
+            table.add_column("Data Type", style="green")
+            
+            for cde in cdes:
+                table.add_row(
+                    cde.get("name", "N/A"),
+                    cde.get("id", "N/A")[:13] + "...",
+                    cde.get("domain", "N/A")[:13] + "...",
+                    cde.get("status", "N/A"),
+                    cde.get("dataType", "N/A")
+                )
+            
+            console.print(table)
+            
+            # Show pagination info
+            if skip > 0 or next_link:
+                console.print(f"\n[dim]Showing items {skip + 1} to {skip + len(cdes)}[/dim]")
+            
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
 

@@ -391,24 +391,40 @@ ENDPOINTS = {
         "get_data_product": "/datagovernance/catalog/dataproducts/{productId}",
         "update_data_product": "/datagovernance/catalog/dataproducts/{productId}",
         "delete_data_product": "/datagovernance/catalog/dataproducts/{productId}",
+        # Data product relationships
+        "create_data_product_relationship": "/datagovernance/catalog/dataproducts/{productId}/relationships",
+        "list_data_product_relationships": "/datagovernance/catalog/dataproducts/{productId}/relationships",
+        "delete_data_product_relationship": "/datagovernance/catalog/dataproducts/{productId}/relationships",
+        # Data product query
+        "query_data_products": "/datagovernance/catalog/dataproducts/query",
         # Terms (UC specific)
         "list_terms": "/datagovernance/catalog/terms",
         "create_term": "/datagovernance/catalog/terms",
         "get_term": "/datagovernance/catalog/terms/{termId}",
         "update_term": "/datagovernance/catalog/terms/{termId}",
         "delete_term": "/datagovernance/catalog/terms/{termId}",
+        # Terms query
+        "query_terms": "/datagovernance/catalog/terms/query",
         # Objectives
         "list_objectives": "/datagovernance/catalog/objectives",
         "create_objective": "/datagovernance/catalog/objectives",
         "get_objective": "/datagovernance/catalog/objectives/{objectiveId}",
         "update_objective": "/datagovernance/catalog/objectives/{objectiveId}",
         "delete_objective": "/datagovernance/catalog/objectives/{objectiveId}",
+        # Objectives query
+        "query_objectives": "/datagovernance/catalog/objectives/query",
         # Critical Data Elements
         "list_critical_data_elements": "/datagovernance/catalog/criticalDataElements",
         "create_critical_data_element": "/datagovernance/catalog/criticalDataElements",
         "get_critical_data_element": "/datagovernance/catalog/criticalDataElements/{cdeId}",
         "update_critical_data_element": "/datagovernance/catalog/criticalDataElements/{cdeId}",
         "delete_critical_data_element": "/datagovernance/catalog/criticalDataElements/{cdeId}",
+        # CDE relationships
+        "create_cde_relationship": "/datagovernance/catalog/criticalDataElements/{cdeId}/relationships",
+        "list_cde_relationships": "/datagovernance/catalog/criticalDataElements/{cdeId}/relationships",
+        "delete_cde_relationship": "/datagovernance/catalog/criticalDataElements/{cdeId}/relationships",
+        # CDE query
+        "query_critical_data_elements": "/datagovernance/catalog/criticalDataElements/query",
         # Policies
         "list_policies": "/datagovernance/catalog/policies",
         "create_policy": "/datagovernance/catalog/policies",
