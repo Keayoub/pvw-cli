@@ -4,6 +4,7 @@ Implements comprehensive Unified Catalog functionality
 """
 
 from .endpoint import Endpoint, decorator, get_json, no_api_call_decorator
+from .endpoints import ENDPOINTS, get_api_version_params
 import os
 import json
 
@@ -23,7 +24,7 @@ class UnifiedCatalogClient(Endpoint):
     def get_governance_domains(self, args):
         """Get all governance domains."""
         self.method = "GET"
-        self.endpoint = "/datagovernance/catalog/businessdomains"
+        self.endpoint = ENDPOINTS["unified_catalog"]["list_domains"]
         self.params = {}
 
     @decorator
@@ -31,14 +32,14 @@ class UnifiedCatalogClient(Endpoint):
         """Get a governance domain by ID."""
         domain_id = args.get("--domain-id", [""])[0]
         self.method = "GET"
-        self.endpoint = f"/datagovernance/catalog/businessdomains/{domain_id}"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_domain"].format(domainId=domain_id)
         self.params = {}
 
     @decorator
     def create_governance_domain(self, args):
         """Create a new governance domain."""
         self.method = "POST"
-        self.endpoint = "/datagovernance/catalog/businessdomains"
+        self.endpoint = ENDPOINTS["unified_catalog"]["list_domains"]
         # Allow payload file to fully control creation; otherwise build payload from flags
         payload = get_json(args, "--payloadFile")
         if not payload:
@@ -61,7 +62,7 @@ class UnifiedCatalogClient(Endpoint):
         """Update a governance domain."""
         domain_id = args.get("--domain-id", [""])[0]
         self.method = "PUT"
-        self.endpoint = f"/datagovernance/catalog/businessdomains/{domain_id}"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_domain"].format(domainId=domain_id)
         self.payload = get_json(args, "--payloadFile") or {
             "name": args.get("--name", [""])[0],
             "description": args.get("--description", [""])[0],
@@ -74,7 +75,7 @@ class UnifiedCatalogClient(Endpoint):
         """Delete a governance domain."""
         domain_id = args.get("--domain-id", [""])[0]
         self.method = "DELETE"
-        self.endpoint = f"/datagovernance/catalog/businessdomains/{domain_id}"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_domain"].format(domainId=domain_id)
         self.params = {}
 
     # ========================================
@@ -84,7 +85,7 @@ class UnifiedCatalogClient(Endpoint):
     def get_data_products(self, args):
         """Get all data products."""
         self.method = "GET"
-        self.endpoint = "/datagovernance/catalog/dataproducts"
+        self.endpoint = ENDPOINTS["unified_catalog"]["list_data_products"]
         
         # Add optional filters
         domain_id = args.get("--governance-domain-id", [""])[0] or args.get("--domain-id", [""])[0]
@@ -98,14 +99,14 @@ class UnifiedCatalogClient(Endpoint):
         """Get a data product by ID."""
         product_id = args.get("--product-id", [""])[0]
         self.method = "GET"
-        self.endpoint = f"/datagovernance/catalog/dataproducts/{product_id}"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_data_product"].format(productId=product_id)
         self.params = {}
 
     @decorator
     def create_data_product(self, args):
         """Create a new data product."""
         self.method = "POST"
-        self.endpoint = "/datagovernance/catalog/dataproducts"
+        self.endpoint = ENDPOINTS["unified_catalog"]["list_data_products"]
         
         # Get domain ID
         domain_id = args.get("--governance-domain-id", [""])[0] or args.get("--domain-id", [""])[0]
@@ -193,7 +194,7 @@ class UnifiedCatalogClient(Endpoint):
         
         # Now perform the PUT request
         self.method = "PUT"
-        self.endpoint = f"/datagovernance/catalog/dataproducts/{product_id}"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_data_product"].format(productId=product_id)
         self.payload = payload
 
     @decorator
@@ -201,7 +202,7 @@ class UnifiedCatalogClient(Endpoint):
         """Delete a data product."""
         product_id = args.get("--product-id", [""])[0]
         self.method = "DELETE"
-        self.endpoint = f"/datagovernance/catalog/dataproducts/{product_id}"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_data_product"].format(productId=product_id)
         self.params = {}
 
     # ========================================
@@ -222,11 +223,11 @@ class UnifiedCatalogClient(Endpoint):
         
         if domain_id:
             # Use Unified Catalog terms API with domainId filter
-            self.endpoint = "/datagovernance/catalog/terms"
+            self.endpoint = ENDPOINTS["unified_catalog"]["list_terms"]
             self.params = {"domainId": domain_id}
         else:
             # List all UC terms
-            self.endpoint = "/datagovernance/catalog/terms"
+            self.endpoint = ENDPOINTS["unified_catalog"]["list_terms"]
             self.params = {}
 
     # Keeping old Data Map glossary-based implementation for reference/fallback
@@ -368,14 +369,14 @@ class UnifiedCatalogClient(Endpoint):
         """Get a Unified Catalog term by ID."""
         term_id = args.get("--term-id", [""])[0]
         self.method = "GET"
-        self.endpoint = f"/datagovernance/catalog/terms/{term_id}"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_term"].format(termId=term_id)
         self.params = {}
 
     @decorator
     def create_term(self, args):
         """Create a new Unified Catalog term (Governance Domain term)."""
         self.method = "POST"
-        self.endpoint = "/datagovernance/catalog/terms"
+        self.endpoint = ENDPOINTS["unified_catalog"]["list_terms"]
 
         # Build Unified Catalog term payload
         domain_id = args.get("--governance-domain-id", [""])[0]
@@ -530,7 +531,7 @@ class UnifiedCatalogClient(Endpoint):
         """Delete a Unified Catalog term."""
         term_id = args.get("--term-id", [""])[0]
         self.method = "DELETE"
-        self.endpoint = f"/datagovernance/catalog/terms/{term_id}"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_term"].format(termId=term_id)
         self.params = {}
 
     def _get_or_create_glossary_for_domain(self, domain_id):
@@ -612,7 +613,7 @@ class UnifiedCatalogClient(Endpoint):
         """Get all objectives in a governance domain."""
         domain_id = args.get("--governance-domain-id", [""])[0]
         self.method = "GET"
-        self.endpoint = "/datagovernance/catalog/objectives"
+        self.endpoint = ENDPOINTS["unified_catalog"]["list_objectives"]
         self.params = {"domainId": domain_id} if domain_id else {}
 
     @decorator
@@ -620,14 +621,14 @@ class UnifiedCatalogClient(Endpoint):
         """Get an objective by ID."""
         objective_id = args.get("--objective-id", [""])[0]
         self.method = "GET"
-        self.endpoint = f"/datagovernance/catalog/objectives/{objective_id}"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_objective"].format(objectiveId=objective_id)
         self.params = {}
 
     @decorator
     def create_objective(self, args):
         """Create a new objective."""
         self.method = "POST"
-        self.endpoint = "/datagovernance/catalog/objectives"
+        self.endpoint = ENDPOINTS["unified_catalog"]["list_objectives"]
 
         domain_id = args.get("--governance-domain-id", [""])[0]
         definition = args.get("--definition", [""])[0]
@@ -658,7 +659,7 @@ class UnifiedCatalogClient(Endpoint):
         """Update an existing objective."""
         objective_id = args.get("--objective-id", [""])[0]
         self.method = "PUT"
-        self.endpoint = f"/datagovernance/catalog/objectives/{objective_id}"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_objective"].format(objectiveId=objective_id)
 
         domain_id = args.get("--governance-domain-id", [""])[0]
         definition = args.get("--definition", [""])[0]
@@ -690,7 +691,7 @@ class UnifiedCatalogClient(Endpoint):
         """Delete an objective."""
         objective_id = args.get("--objective-id", [""])[0]
         self.method = "DELETE"
-        self.endpoint = f"/datagovernance/catalog/objectives/{objective_id}"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_objective"].format(objectiveId=objective_id)
         self.params = {}
 
     # ========================================
@@ -702,7 +703,7 @@ class UnifiedCatalogClient(Endpoint):
         """Get all key results for an objective."""
         objective_id = args.get("--objective-id", [""])[0]
         self.method = "GET"
-        self.endpoint = f"/datagovernance/catalog/objectives/{objective_id}/keyResults"
+        self.endpoint = ENDPOINTS["unified_catalog"]["list_key_results"].format(objectiveId=objective_id)
         self.params = {}
 
     @decorator
@@ -711,7 +712,7 @@ class UnifiedCatalogClient(Endpoint):
         objective_id = args.get("--objective-id", [""])[0]
         key_result_id = args.get("--key-result-id", [""])[0]
         self.method = "GET"
-        self.endpoint = f"/datagovernance/catalog/objectives/{objective_id}/keyResults/{key_result_id}"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_key_result"].format(objectiveId=objective_id, keyResultId=key_result_id)
         self.params = {}
 
     @decorator
@@ -719,7 +720,7 @@ class UnifiedCatalogClient(Endpoint):
         """Create a new key result."""
         objective_id = args.get("--objective-id", [""])[0]
         self.method = "POST"
-        self.endpoint = f"/datagovernance/catalog/objectives/{objective_id}/keyResults"
+        self.endpoint = ENDPOINTS["unified_catalog"]["list_key_results"].format(objectiveId=objective_id)
 
         domain_id = args.get("--governance-domain-id", [""])[0]
         progress = int(args.get("--progress", ["0"])[0])
@@ -745,7 +746,7 @@ class UnifiedCatalogClient(Endpoint):
         objective_id = args.get("--objective-id", [""])[0]
         key_result_id = args.get("--key-result-id", [""])[0]
         self.method = "PUT"
-        self.endpoint = f"/datagovernance/catalog/objectives/{objective_id}/keyResults/{key_result_id}"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_key_result"].format(objectiveId=objective_id, keyResultId=key_result_id)
 
         domain_id = args.get("--governance-domain-id", [""])[0]
         progress = int(args.get("--progress", ["0"])[0])
@@ -772,7 +773,7 @@ class UnifiedCatalogClient(Endpoint):
         objective_id = args.get("--objective-id", [""])[0]
         key_result_id = args.get("--key-result-id", [""])[0]
         self.method = "DELETE"
-        self.endpoint = f"/datagovernance/catalog/objectives/{objective_id}/keyResults/{key_result_id}"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_key_result"].format(objectiveId=objective_id, keyResultId=key_result_id)
         self.params = {}
 
     # ========================================
@@ -784,7 +785,7 @@ class UnifiedCatalogClient(Endpoint):
         """Get all critical data elements in a governance domain."""
         domain_id = args.get("--governance-domain-id", [""])[0]
         self.method = "GET"
-        self.endpoint = "/datagovernance/catalog/criticalDataElements"
+        self.endpoint = ENDPOINTS["unified_catalog"]["list_cdes"]
         self.params = {"domainId": domain_id} if domain_id else {}
 
     @decorator
@@ -792,14 +793,14 @@ class UnifiedCatalogClient(Endpoint):
         """Get a critical data element by ID."""
         cde_id = args.get("--cde-id", [""])[0]
         self.method = "GET"
-        self.endpoint = f"/datagovernance/catalog/criticalDataElements/{cde_id}"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_cde"].format(cdeId=cde_id)
         self.params = {}
 
     @decorator
     def create_critical_data_element(self, args):
         """Create a new critical data element."""
         self.method = "POST"
-        self.endpoint = "/datagovernance/catalog/criticalDataElements"
+        self.endpoint = ENDPOINTS["unified_catalog"]["list_cdes"]
 
         domain_id = args.get("--governance-domain-id", [""])[0]
         name = args.get("--name", [""])[0]
@@ -832,7 +833,7 @@ class UnifiedCatalogClient(Endpoint):
         """Update an existing critical data element."""
         cde_id = args.get("--cde-id", [""])[0]
         self.method = "PUT"
-        self.endpoint = f"/datagovernance/catalog/criticalDataElements/{cde_id}"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_cde"].format(cdeId=cde_id)
 
         domain_id = args.get("--governance-domain-id", [""])[0]
         name = args.get("--name", [""])[0]
@@ -866,7 +867,7 @@ class UnifiedCatalogClient(Endpoint):
         """Delete a critical data element."""
         cde_id = args.get("--cde-id", [""])[0]
         self.method = "DELETE"
-        self.endpoint = f"/datagovernance/catalog/criticalDataElements/{cde_id}"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_cde"].format(cdeId=cde_id)
         self.params = {}
 
     # ========================================
@@ -977,7 +978,7 @@ class UnifiedCatalogClient(Endpoint):
     def list_policies(self, args):
         """List all data policies."""
         self.method = "GET"
-        self.endpoint = "/datagovernance/catalog/policies"
+        self.endpoint = ENDPOINTS["unified_catalog"]["list_policies"]
         self.params = {}
 
     @decorator
@@ -985,14 +986,14 @@ class UnifiedCatalogClient(Endpoint):
         """Get a specific data policy by ID."""
         policy_id = args.get("--policy-id", [""])[0]
         self.method = "GET"
-        self.endpoint = f"/datagovernance/catalog/policies/{policy_id}"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_policy"].format(policyId=policy_id)
         self.params = {}
 
     @decorator
     def create_policy(self, args):
         """Create a new data policy."""
         self.method = "POST"
-        self.endpoint = "/datagovernance/catalog/policies"
+        self.endpoint = ENDPOINTS["unified_catalog"]["list_policies"]
         
         name = args.get("--name", [""])[0]
         description = args.get("--description", [""])[0]
@@ -1013,7 +1014,7 @@ class UnifiedCatalogClient(Endpoint):
         """Update an existing data policy."""
         policy_id = args.get("--policy-id", [""])[0]
         self.method = "PUT"
-        self.endpoint = f"/datagovernance/catalog/policies/{policy_id}"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_policy"].format(policyId=policy_id)
         
         name = args.get("--name", [""])[0]
         description = args.get("--description", [""])[0]
@@ -1034,7 +1035,7 @@ class UnifiedCatalogClient(Endpoint):
         """Delete a data policy."""
         policy_id = args.get("--policy-id", [""])[0]
         self.method = "DELETE"
-        self.endpoint = f"/datagovernance/catalog/policies/{policy_id}"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_policy"].format(policyId=policy_id)
         self.params = {}
 
     # ========================================
@@ -1049,7 +1050,7 @@ class UnifiedCatalogClient(Endpoint):
         This is the same API used by Purview UI for UC metadata.
         """
         self.method = "GET"
-        self.endpoint = "/catalog/api/atlas/v2/types/typedefs"
+        self.endpoint = ENDPOINTS["unified_catalog"]["list_custom_metadata"]
         self.params = {
             "type": "business_metadata",
             "includeTermTemplate": "true",
@@ -1065,7 +1066,7 @@ class UnifiedCatalogClient(Endpoint):
         """
         asset_id = args.get("--asset-id", [""])[0]
         self.method = "GET"
-        self.endpoint = f"/datamap/api/atlas/v2/entity/guid/{asset_id}"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_custom_metadata"].format(guid=asset_id)
         self.params = {
             "api-version": "2023-09-01",
             "minExtInfo": "false",
@@ -1081,7 +1082,7 @@ class UnifiedCatalogClient(Endpoint):
         """
         asset_id = args.get("--asset-id", [""])[0]
         self.method = "POST"
-        self.endpoint = f"/datamap/api/atlas/v2/entity/guid/{asset_id}/businessmetadata"
+        self.endpoint = ENDPOINTS["unified_catalog"]["add_custom_metadata"].format(guid=asset_id)
         self.params = {"api-version": "2023-09-01"}
         
         # Build payload based on parameters
@@ -1108,7 +1109,7 @@ class UnifiedCatalogClient(Endpoint):
         """
         asset_id = args.get("--asset-id", [""])[0]
         self.method = "POST"
-        self.endpoint = f"/datamap/api/atlas/v2/entity/guid/{asset_id}/businessmetadata"
+        self.endpoint = ENDPOINTS["unified_catalog"]["update_custom_metadata"].format(guid=asset_id)
         self.params = {"api-version": "2023-09-01"}
         
         key = args.get("--key", [""])[0]
@@ -1137,7 +1138,7 @@ class UnifiedCatalogClient(Endpoint):
             raise ValueError("--group parameter is required to delete business metadata")
         
         self.method = "DELETE"
-        self.endpoint = f"/datamap/api/atlas/v2/entity/guid/{asset_id}/businessmetadata"
+        self.endpoint = ENDPOINTS["unified_catalog"]["delete_custom_metadata"].format(guid=asset_id)
         self.params = {
             "api-version": "2023-09-01"
         }
@@ -1154,7 +1155,7 @@ class UnifiedCatalogClient(Endpoint):
     def list_custom_attributes(self, args):
         """List all custom attribute definitions."""
         self.method = "GET"
-        self.endpoint = "/datagovernance/catalog/attributes"
+        self.endpoint = ENDPOINTS["unified_catalog"]["list_custom_attributes"]
         self.params = {}
 
     @decorator
@@ -1162,14 +1163,14 @@ class UnifiedCatalogClient(Endpoint):
         """Get a specific custom attribute definition."""
         attribute_id = args.get("--attribute-id", [""])[0]
         self.method = "GET"
-        self.endpoint = f"/datagovernance/catalog/attributes/{attribute_id}"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_custom_attribute"].format(attributeId=attribute_id)
         self.params = {}
 
     @decorator
     def create_custom_attribute(self, args):
         """Create a new custom attribute definition."""
         self.method = "POST"
-        self.endpoint = "/datagovernance/catalog/attributes"
+        self.endpoint = ENDPOINTS["unified_catalog"]["list_custom_attributes"]
         
         name = args.get("--name", [""])[0]
         description = args.get("--description", [""])[0]
@@ -1190,7 +1191,7 @@ class UnifiedCatalogClient(Endpoint):
         """Update a custom attribute definition."""
         attribute_id = args.get("--attribute-id", [""])[0]
         self.method = "PUT"
-        self.endpoint = f"/datagovernance/catalog/attributes/{attribute_id}"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_custom_attribute"].format(attributeId=attribute_id)
         
         name = args.get("--name", [""])[0]
         description = args.get("--description", [""])[0]
@@ -1211,7 +1212,7 @@ class UnifiedCatalogClient(Endpoint):
         """Delete a custom attribute definition."""
         attribute_id = args.get("--attribute-id", [""])[0]
         self.method = "DELETE"
-        self.endpoint = f"/datagovernance/catalog/attributes/{attribute_id}"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_custom_attribute"].format(attributeId=attribute_id)
         self.params = {}
 
     # ========================================

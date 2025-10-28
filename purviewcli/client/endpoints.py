@@ -371,6 +371,64 @@ ENDPOINTS = {
         # Share analytics
         "get_share_analytics": "/sentShares/{sentShareId}/analytics",
     },
+    # ==================== UNIFIED CATALOG API ENDPOINTS ====================
+    # Current: Using /datagovernance/catalog/* endpoints (Working as of Oct 2025)
+    # Future: Microsoft announced new Unified Catalog API (2024-03-01-preview)
+    #         https://learn.microsoft.com/en-us/rest/api/purview/unified-catalog-api-overview
+    # TODO: Monitor and migrate to new UC API when documentation is complete
+    #       New API will cover: OKRs, Domains, CDEs, Data Products, Terms, Policies
+    #       Roadmap: Data Assets and Critical Data Columns support
+    "unified_catalog": {
+        # Business domains
+        "list_domains": "/datagovernance/catalog/businessdomains",
+        "create_domain": "/datagovernance/catalog/businessdomains",
+        "get_domain": "/datagovernance/catalog/businessdomains/{domainId}",
+        "update_domain": "/datagovernance/catalog/businessdomains/{domainId}",
+        "delete_domain": "/datagovernance/catalog/businessdomains/{domainId}",
+        # Data products
+        "list_data_products": "/datagovernance/catalog/dataproducts",
+        "create_data_product": "/datagovernance/catalog/dataproducts",
+        "get_data_product": "/datagovernance/catalog/dataproducts/{productId}",
+        "update_data_product": "/datagovernance/catalog/dataproducts/{productId}",
+        "delete_data_product": "/datagovernance/catalog/dataproducts/{productId}",
+        # Terms (UC specific)
+        "list_terms": "/datagovernance/catalog/terms",
+        "create_term": "/datagovernance/catalog/terms",
+        "get_term": "/datagovernance/catalog/terms/{termId}",
+        "update_term": "/datagovernance/catalog/terms/{termId}",
+        "delete_term": "/datagovernance/catalog/terms/{termId}",
+        # Objectives
+        "list_objectives": "/datagovernance/catalog/objectives",
+        "create_objective": "/datagovernance/catalog/objectives",
+        "get_objective": "/datagovernance/catalog/objectives/{objectiveId}",
+        "update_objective": "/datagovernance/catalog/objectives/{objectiveId}",
+        "delete_objective": "/datagovernance/catalog/objectives/{objectiveId}",
+        # Critical Data Elements
+        "list_critical_data_elements": "/datagovernance/catalog/criticalDataElements",
+        "create_critical_data_element": "/datagovernance/catalog/criticalDataElements",
+        "get_critical_data_element": "/datagovernance/catalog/criticalDataElements/{cdeId}",
+        "update_critical_data_element": "/datagovernance/catalog/criticalDataElements/{cdeId}",
+        "delete_critical_data_element": "/datagovernance/catalog/criticalDataElements/{cdeId}",
+        # Policies
+        "list_policies": "/datagovernance/catalog/policies",
+        "create_policy": "/datagovernance/catalog/policies",
+        "get_policy": "/datagovernance/catalog/policies/{policyId}",
+        "update_policy": "/datagovernance/catalog/policies/{policyId}",
+        "delete_policy": "/datagovernance/catalog/policies/{policyId}",
+        # Custom Metadata (Business Metadata via Atlas API)
+        # Note: Both /catalog/api and /datamap/api work, but /datamap/api is for new portal
+        "list_custom_metadata": "/datamap/api/atlas/v2/types/typedefs",
+        "get_custom_metadata": "/datamap/api/atlas/v2/entity/guid/{guid}",
+        "add_custom_metadata": "/datamap/api/atlas/v2/entity/guid/{guid}/businessmetadata",
+        "update_custom_metadata": "/datamap/api/atlas/v2/entity/guid/{guid}/businessmetadata",
+        "delete_custom_metadata": "/datamap/api/atlas/v2/entity/guid/{guid}/businessmetadata",
+        # Custom Attributes
+        "list_custom_attributes": "/datagovernance/catalog/attributes",
+        "create_custom_attribute": "/datagovernance/catalog/attributes",
+        "get_custom_attribute": "/datagovernance/catalog/attributes/{attributeId}",
+        "update_custom_attribute": "/datagovernance/catalog/attributes/{attributeId}",
+        "delete_custom_attribute": "/datagovernance/catalog/attributes/{attributeId}",
+    },
     # ==================== AZURE RESOURCE MANAGER ENDPOINTS ====================
     "management": {
         # Azure Resource Manager endpoints for Purview accounts
@@ -467,6 +525,7 @@ def get_endpoint_category(endpoint_name: str) -> str:
         "self_service_policies": "self_service_policies",
         "sharing": "sharing",
         "metadata_policies": "metadata_policies",
+        "unified_catalog": "datamap",
         "management": "management",
     }
 
