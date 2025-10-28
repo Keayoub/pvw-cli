@@ -975,6 +975,7 @@ class UnifiedCatalogClient(Endpoint):
     # ========================================
 
     @decorator
+    @decorator
     def list_policies(self, args):
         """List all data policies."""
         self.method = "GET"

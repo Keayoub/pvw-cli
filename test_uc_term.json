@@ -1,9 +1,0 @@
-{
-  "name": "Customer_Data",
-  "shortDescription": "Test term for UC metadata",
-  "longDescription": "This term will be used to test UC metadata operations",
-  "anchor": {
-    "glossaryGuid": "5578d58e-8d58-47ba-ae88-17294ba8b2c8"
-  },
-  "status": "Approved"
-}

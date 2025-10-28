@@ -1972,23 +1972,38 @@ def list_policies(output):
     if output == "json":
         console.print_json(json.dumps(response))
     else:
-        if "value" in response and response["value"]:
+        # API returns 'values' (plural), not 'value'
+        policies = response.get("values", response.get("value", []))
+        
+        if policies:
             table = Table(title="[bold cyan]Data Governance Policies[/bold cyan]", show_header=True)
-            table.add_column("ID", style="cyan")
+            table.add_column("ID", style="cyan", no_wrap=True)
             table.add_column("Name", style="green")
-            table.add_column("Type", style="yellow")
-            table.add_column("Status", style="magenta")
-            table.add_column("Description", style="white")
+            table.add_column("Entity Type", style="yellow")
+            table.add_column("Entity ID", style="magenta", no_wrap=True)
+            table.add_column("Rules", style="white")
             
-            for item in response["value"]:
+            for item in policies:
+                props = item.get("properties", {})
+                entity = props.get("entity", {})
+                entity_type = entity.get("type", "N/A")
+                entity_ref = entity.get("referenceName", "N/A")
+                
+                # Count rules
+                decision_rules = len(props.get("decisionRules", []))
+                attribute_rules = len(props.get("attributeRules", []))
+                rules_summary = f"{decision_rules} decision, {attribute_rules} attribute"
+                
                 table.add_row(
-                    item.get("id", "N/A"),
+                    item.get("id", "N/A")[:36],  # Show only GUID
                     item.get("name", "N/A"),
-                    item.get("policyType", "N/A"),
-                    item.get("status", "N/A"),
-                    item.get("description", "")[:50] + "..." if len(item.get("description", "")) > 50 else item.get("description", "")
+                    entity_type.replace("Reference", ""),  # Clean up type name
+                    entity_ref[:36],  # Show only GUID
+                    rules_summary
                 )
+            
             console.print(table)
+            console.print(f"\n[dim]Total: {len(policies)} policy/policies[/dim]")
         else:
             console.print("[yellow]No policies found[/yellow]")
 
@@ -1997,21 +2012,65 @@ def list_policies(output):
 @click.option("--policy-id", required=True, help="Policy ID")
 @click.option("--output", type=click.Choice(["table", "json"]), default="json", help="Output format")
 def get_policy(policy_id, output):
-    """Get a specific data governance policy."""
+    """Get a specific data governance policy by ID."""
     client = UnifiedCatalogClient()
-    args = {"--policy-id": [policy_id]}
-    response = client.get_policy(args)
+    
+    # Get all policies and filter (since GET by ID returns 404)
+    all_policies = client.list_policies({})
+    policies = all_policies.get("values", all_policies.get("value", []))
+    
+    # Find the requested policy
+    policy = next((p for p in policies if p.get("id") == policy_id), None)
+    
+    if not policy:
+        console.print(f"[red]ERROR:[/red] Policy with ID {policy_id} not found")
+        return
     
     if output == "json":
-        _format_json_output(response)
+        _format_json_output(policy)
     else:
-        table = Table(title=f"[bold cyan]Policy: {response.get('name', 'N/A')}[/bold cyan]")
-        table.add_column("Property", style="cyan")
-        table.add_column("Value", style="white")
+        # Display policy in formatted view
+        props = policy.get("properties", {})
+        entity = props.get("entity", {})
         
-        for key, value in response.items():
-            table.add_row(key, str(value))
-        console.print(table)
+        console.print(f"\n[bold cyan]Policy Details[/bold cyan]")
+        console.print(f"[bold]ID:[/bold] {policy.get('id')}")
+        console.print(f"[bold]Name:[/bold] {policy.get('name')}")
+        console.print(f"[bold]Version:[/bold] {policy.get('version', 0)}")
+        
+        console.print(f"\n[bold cyan]Entity[/bold cyan]")
+        console.print(f"[bold]Type:[/bold] {entity.get('type', 'N/A')}")
+        console.print(f"[bold]Reference:[/bold] {entity.get('referenceName', 'N/A')}")
+        console.print(f"[bold]Parent:[/bold] {props.get('parentEntityName', 'N/A')}")
+        
+        # Decision Rules
+        decision_rules = props.get("decisionRules", [])
+        if decision_rules:
+            console.print(f"\n[bold cyan]Decision Rules ({len(decision_rules)})[/bold cyan]")
+            for i, rule in enumerate(decision_rules, 1):
+                console.print(f"\n  [bold]Rule {i}:[/bold] {rule.get('kind', 'N/A')}")
+                console.print(f"  [bold]Effect:[/bold] {rule.get('effect', 'N/A')}")
+                if "dnfCondition" in rule:
+                    console.print(f"  [bold]Conditions:[/bold] {len(rule['dnfCondition'])} clause(s)")
+        
+        # Attribute Rules
+        attribute_rules = props.get("attributeRules", [])
+        if attribute_rules:
+            console.print(f"\n[bold cyan]Attribute Rules ({len(attribute_rules)})[/bold cyan]")
+            for i, rule in enumerate(attribute_rules, 1):
+                console.print(f"\n  [bold]Rule {i}:[/bold] {rule.get('name', rule.get('id', 'N/A'))}")
+                if "dnfCondition" in rule:
+                    conditions = rule.get("dnfCondition", [])
+                    console.print(f"  [bold]Conditions:[/bold] {len(conditions)} clause(s)")
+                    for j, clause in enumerate(conditions[:3], 1):  # Show first 3
+                        if clause:
+                            attr = clause[0] if isinstance(clause, list) else clause
+                            console.print(f"    {j}. {attr.get('attributeName', 'N/A')}")
+                    if len(conditions) > 3:
+                        console.print(f"    ... and {len(conditions) - 3} more")
+        
+        console.print()
+
 
 
 @policy.command(name="create")
