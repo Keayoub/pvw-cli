@@ -34,6 +34,15 @@
 
 The CLI is designed for data engineers, stewards, architects, and platform teams to automate, scale, and enhance their Microsoft Purview experience.
 
+### NEW: MCP Server for AI Assistants
+
+**[NEW]** Model Context Protocol (MCP) server enables LLM-powered data governance workflows! 
+
+- Natural language interface to Purview catalog
+- 20+ tools for AI assistants (Claude, Cline, etc.)
+- Automate complex multi-step operations
+- See `mcp/README.md` for setup instructions
+
 ---
 
 ## Getting Started
@@ -113,6 +122,7 @@ For more advanced usage, see the documentation in `doc/` or the project docs: <h
 
 **PVW CLI v1.2.4** is a modern command-line interface and Python library for Microsoft Purview, enabling:
 
+- **MCP Server** - Natural language interface for AI assistants (Claude, Cline)
 - Advanced data catalog search and discovery
 - Bulk import/export of entities, glossary terms, and lineage
 - Real-time monitoring and analytics
