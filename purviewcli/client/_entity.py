@@ -65,7 +65,74 @@ class Entity(Endpoint):
 
     @decorator
     def entityCreateOrUpdate(self, args):
-        """Create or update an entity (Official API: Create Or Update)"""
+        """
+Create a new entity.
+    
+    Creates a new entity in Microsoft Purview Data Map.
+    Requires appropriate permissions and valid entity definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created entity:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityCreateOrUpdate(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.entityCreateOrUpdate(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         self.method = "POST"
         self.endpoint = ENDPOINTS["entity"]["create_or_update"]
         self.params = get_api_version_params("datamap")
@@ -73,12 +140,132 @@ class Entity(Endpoint):
 
     @decorator
     def entityCreate(self, args):
-        """Create an entity (Alias for CreateOrUpdate)"""
+        """
+Create a new entity.
+    
+    Creates a new entity in Microsoft Purview Data Map.
+    Requires appropriate permissions and valid entity definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created entity:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityCreate(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.entityCreate(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         return self.entityCreateOrUpdate(args)
 
     @decorator
     def entityRead(self, args):
-        """Get complete definition of an entity given its GUID (Official API: Get)"""
+        """
+Retrieve entity information.
+    
+    Retrieves detailed information about the specified entity.
+    Returns complete entity metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing entity information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityRead(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["entity"]["get"].format(guid=args["--guid"][0])
         self.params = {
@@ -89,19 +276,198 @@ class Entity(Endpoint):
 
     @decorator
     def entityUpdate(self, args):
-        """Update an entity (Alias for CreateOrUpdate)"""
+        """
+Update an existing entity.
+    
+    Updates an existing entity with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated entity:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityUpdate(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.entityUpdate(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         return self.entityCreateOrUpdate(args)
 
     @decorator
     def entityDelete(self, args):
-        """Delete an entity identified by its GUID (Official API: Delete)"""
+        """
+Delete a entity.
+    
+    Permanently deletes the specified entity.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityDelete(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
         self.method = "DELETE"
         self.endpoint = ENDPOINTS["entity"]["delete"].format(guid=args["--guid"][0])
         self.params = get_api_version_params("datamap")
 
     @decorator
     def entityUpdateAttribute(self, args):
-        """Update entity attribute by GUID (Official API: Update Attribute)"""
+        """
+Update an existing entity.
+    
+    Updates an existing entity with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated entity:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityUpdateAttribute(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.entityUpdateAttribute(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         self.method = "PUT"
         self.endpoint = ENDPOINTS["entity"]["update_attribute"].format(guid=args["--guid"][0])
         self.params = {
@@ -114,7 +480,60 @@ class Entity(Endpoint):
 
     @decorator
     def entityReadHeader(self, args):
-        """Get entity header given its GUID (Official API: Get Header)"""
+        """
+Retrieve entity information.
+    
+    Retrieves detailed information about the specified entity.
+    Returns complete entity metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing entity information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityReadHeader(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["entity"]["get_header"].format(guid=args["--guid"][0])
         self.params = get_api_version_params("datamap")
@@ -131,7 +550,74 @@ class Entity(Endpoint):
 
     @decorator
     def entityBulkCreateOrUpdate(self, args):
-        """Create or update entities in bulk (Official API: Bulk Create Or Update)"""
+        """
+Create a new entity.
+    
+    Creates a new entity in Microsoft Purview Data Map.
+    Requires appropriate permissions and valid entity definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created entity:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityBulkCreateOrUpdate(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.entityBulkCreateOrUpdate(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         self._validate_entities_have_qualified_name(args)
         self.method = "POST"
         self.endpoint = ENDPOINTS["entity"]["bulk_create_or_update"]
@@ -140,19 +626,190 @@ class Entity(Endpoint):
 
     @decorator
     def entityCreateBulk(self, args):
-        """Create entities in bulk (Alias for BulkCreateOrUpdate)"""
+        """
+Create a new entity.
+    
+    Creates a new entity in Microsoft Purview Data Map.
+    Requires appropriate permissions and valid entity definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created entity:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityCreateBulk(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.entityCreateBulk(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         return self.entityBulkCreateOrUpdate(args)
 
     @decorator
     def entityDeleteBulk(self, args):
-        """Delete a list of entities in bulk (Official API: Bulk Delete)"""
+        """
+Delete a entity.
+    
+    Permanently deletes the specified entity.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityDeleteBulk(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
         self.method = "DELETE"
         self.endpoint = ENDPOINTS["entity"]["bulk_delete"]
         self.params = {**get_api_version_params("datamap"), "guid": args["--guid"]}
 
     @decorator
     def entityReadBulk(self, args):
-        """List entities in bulk identified by GUIDs (Official API: List By Guids)"""
+        """
+Retrieve entity information.
+    
+    Retrieves detailed information about the specified entity.
+    Returns complete entity metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing entity information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityReadBulk(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["entity"]["list_by_guids"]
         self.params = {
@@ -166,7 +823,60 @@ class Entity(Endpoint):
 
     @decorator
     def entityReadUniqueAttribute(self, args):
-        """Get entity by unique attributes (Official API: Get By Unique Attributes)"""
+        """
+Retrieve entity information.
+    
+    Retrieves detailed information about the specified entity.
+    Returns complete entity metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing entity information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityReadUniqueAttribute(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["entity"]["get_by_unique_attributes"].format(
             typeName=args["--typeName"]
@@ -180,7 +890,60 @@ class Entity(Endpoint):
 
     @decorator
     def entityReadBulkUniqueAttribute(self, args):
-        """List entities by unique attributes (Official API: List By Unique Attributes)"""
+        """
+Retrieve entity information.
+    
+    Retrieves detailed information about the specified entity.
+    Returns complete entity metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing entity information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityReadBulkUniqueAttribute(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["entity"]["list_by_unique_attributes"].format(
             typeName=args["--typeName"]
@@ -199,7 +962,71 @@ class Entity(Endpoint):
 
     @decorator
     def entityUpdateUniqueAttribute(self, args):
-        """Update entity by unique attributes (Official API: Update By Unique Attributes)"""
+        """
+Update an existing entity.
+    
+    Updates an existing entity with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated entity:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityUpdateUniqueAttribute(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.entityUpdateUniqueAttribute(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         self.method = "PUT"
         self.endpoint = ENDPOINTS["entity"]["update_by_unique_attributes"].format(
             typeName=args["--typeName"]
@@ -212,7 +1039,58 @@ class Entity(Endpoint):
 
     @decorator
     def entityDeleteUniqueAttribute(self, args):
-        """Delete entity by unique attributes (Official API: Delete By Unique Attribute)"""
+        """
+Delete a entity.
+    
+    Permanently deletes the specified entity.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityDeleteUniqueAttribute(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
         self.method = "DELETE"
         self.endpoint = ENDPOINTS["entity"]["delete_by_unique_attribute"].format(
             typeName=args["--typeName"]
@@ -226,7 +1104,60 @@ class Entity(Endpoint):
 
     @decorator
     def entityReadClassification(self, args):
-        """Get classification for given entity GUID and classification name (Official API: Get Classification)"""
+        """
+Retrieve entity information.
+    
+    Retrieves detailed information about the specified entity.
+    Returns complete entity metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing entity information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityReadClassification(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["entity"]["get_classification"].format(
             guid=args["--guid"][0], classificationName=args["--classificationName"]
@@ -235,7 +1166,58 @@ class Entity(Endpoint):
 
     @decorator
     def entityDeleteClassification(self, args):
-        """Remove classification from an entity identified by its GUID (Official API: Remove Classification)"""
+        """
+Delete a entity.
+    
+    Permanently deletes the specified entity.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityDeleteClassification(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
         self.method = "DELETE"
         self.endpoint = ENDPOINTS["entity"]["remove_classification"].format(
             guid=args["--guid"][0], classificationName=args["--classificationName"]
@@ -244,14 +1226,134 @@ class Entity(Endpoint):
 
     @decorator
     def entityReadClassifications(self, args):
-        """Get classifications for a given entity GUID (Official API: Get Classifications)"""
+        """
+Retrieve entity information.
+    
+    Retrieves detailed information about the specified entity.
+    Returns complete entity metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing entity information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityReadClassifications(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["entity"]["get_classifications"].format(guid=args["--guid"][0])
         self.params = get_api_version_params("datamap")
 
     @decorator
     def entityCreateClassifications(self, args):
-        """Add classifications to an entity GUID (Official API: Add Classifications)"""
+        """
+Create a new entity.
+    
+    Creates a new entity in Microsoft Purview Data Map.
+    Requires appropriate permissions and valid entity definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created entity:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityCreateClassifications(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.entityCreateClassifications(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         self.method = "POST"
         self.endpoint = ENDPOINTS["entity"]["add_classifications"].format(guid=args["--guid"][0])
         self.params = get_api_version_params("datamap")
@@ -259,7 +1361,71 @@ class Entity(Endpoint):
 
     @decorator
     def entityUpdateClassifications(self, args):
-        """Update classifications to an entity GUID (Official API: Update Classifications)"""
+        """
+Update an existing entity.
+    
+    Updates an existing entity with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated entity:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityUpdateClassifications(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.entityUpdateClassifications(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         self.method = "PUT"
         self.endpoint = ENDPOINTS["entity"]["update_classifications"].format(guid=args["--guid"][0])
         self.params = get_api_version_params("datamap")
@@ -267,7 +1433,71 @@ class Entity(Endpoint):
 
     @decorator
     def entityBulkSetClassifications(self, args):
-        """Set classifications on entities in bulk (Official API: Bulk Set Classifications)"""
+        """
+Update an existing entity.
+    
+    Updates an existing entity with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated entity:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityBulkSetClassifications(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.entityBulkSetClassifications(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         self.method = "POST"
         self.endpoint = ENDPOINTS["entity"]["bulk_set_classifications"]
         self.params = get_api_version_params("datamap")
@@ -275,7 +1505,59 @@ class Entity(Endpoint):
 
     @decorator
     def entityBulkClassification(self, args):
-        """Get/Set classifications for multiple entities (Official API: Bulk Classification)"""
+        """
+Perform batch operation on resources.
+    
+    Processes multiple resources in a single operation.
+    More efficient than individual operations for bulk data.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with batch operation results:
+            {
+                'succeeded': int,        # Success count
+                'failed': int,           # Failure count
+                'results': [...],        # Per-item results
+                'errors': [...]          # Error details
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityBulkClassification(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Bulk Import: Load large volumes of metadata
+        - Migration: Transfer catalog from other systems
+        - Mass Updates: Apply changes to many resources
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["entity"]["bulk_classification"]
         self.params = {**get_api_version_params("datamap"), "guid": args["--guid"]}
@@ -284,7 +1566,58 @@ class Entity(Endpoint):
 
     @decorator
     def entityDeleteClassificationByUniqueAttribute(self, args):
-        """Remove classification from an entity by unique attribute (Official API: Remove Classification By Unique Attribute)"""
+        """
+Delete a entity.
+    
+    Permanently deletes the specified entity.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityDeleteClassificationByUniqueAttribute(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
         self.method = "DELETE"
         self.endpoint = ENDPOINTS["entity"]["remove_classification_by_unique_attribute"].format(
             typeName=args["--typeName"], classificationName=args["--classificationName"]
@@ -296,7 +1629,71 @@ class Entity(Endpoint):
 
     @decorator
     def entityUpdateClassificationsByUniqueAttribute(self, args):
-        """Update classifications to an entity by unique attribute (Official API: Update Classifications By Unique Attribute)"""
+        """
+Update an existing entity.
+    
+    Updates an existing entity with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated entity:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityUpdateClassificationsByUniqueAttribute(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.entityUpdateClassificationsByUniqueAttribute(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         self.method = "PUT"
         self.endpoint = ENDPOINTS["entity"]["update_classifications_by_unique_attribute"].format(
             typeName=args["--typeName"]
@@ -309,7 +1706,74 @@ class Entity(Endpoint):
 
     @decorator
     def entityCreateClassificationsByUniqueAttribute(self, args):
-        """Add classifications to an entity by unique attribute (Official API: Add Classifications By Unique Attribute)"""
+        """
+Create a new entity.
+    
+    Creates a new entity in Microsoft Purview Data Map.
+    Requires appropriate permissions and valid entity definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created entity:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityCreateClassificationsByUniqueAttribute(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.entityCreateClassificationsByUniqueAttribute(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         self.method = "POST"
         self.endpoint = ENDPOINTS["entity"]["add_classifications_by_unique_attribute"].format(
             typeName=args["--typeName"]
@@ -324,7 +1788,74 @@ class Entity(Endpoint):
 
     @decorator
     def entityCreateBusinessMetadata(self, args):
-        """Add business metadata to an entity (Official API: Add Business Metadata)"""
+        """
+Create a new entity.
+    
+    Creates a new entity in Microsoft Purview Data Map.
+    Requires appropriate permissions and valid entity definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created entity:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityCreateBusinessMetadata(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.entityCreateBusinessMetadata(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         self.method = "POST"
         self.endpoint = ENDPOINTS["entity"]["add_business_metadata"].format(guid=args["--guid"][0])
         self.params = get_api_version_params("datamap")
@@ -332,7 +1863,58 @@ class Entity(Endpoint):
 
     @decorator
     def entityDeleteBusinessMetadata(self, args):
-        """Remove business metadata from an entity (Official API: Remove Business Metadata)"""
+        """
+Delete a entity.
+    
+    Permanently deletes the specified entity.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityDeleteBusinessMetadata(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
         self.method = "DELETE"
         
         # Support both --businessMetadataName (direct) and --payloadFile (from CLI)
@@ -356,7 +1938,74 @@ class Entity(Endpoint):
 
     @decorator
     def entityCreateBusinessMetadataAttributes(self, args):
-        """Add business metadata attributes to an entity (Official API: Add Business Metadata Attributes)"""
+        """
+Create a new entity.
+    
+    Creates a new entity in Microsoft Purview Data Map.
+    Requires appropriate permissions and valid entity definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created entity:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityCreateBusinessMetadataAttributes(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.entityCreateBusinessMetadataAttributes(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         self.method = "POST"
         self.endpoint = ENDPOINTS["entity"]["add_business_metadata_attributes"].format(
             guid=args["--guid"][0], businessMetadataName=args["--businessMetadataName"]
@@ -366,7 +2015,58 @@ class Entity(Endpoint):
 
     @decorator
     def entityDeleteBusinessMetadataAttributes(self, args):
-        """Remove business metadata attributes from an entity (Official API: Remove Business Metadata Attributes)"""
+        """
+Delete a entity.
+    
+    Permanently deletes the specified entity.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityDeleteBusinessMetadataAttributes(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
         self.method = "DELETE"
         self.endpoint = ENDPOINTS["entity"]["remove_business_metadata_attributes"].format(
             guid=args["--guid"][0], businessMetadataName=args["--businessMetadataName"]
@@ -378,7 +2078,59 @@ class Entity(Endpoint):
 
     @decorator
     def entityImportBusinessMetadata(self, args):
-        """Import business metadata for entities (Official API: Import Business Metadata)"""
+        """
+Perform batch operation on resources.
+    
+    Processes multiple resources in a single operation.
+    More efficient than individual operations for bulk data.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with batch operation results:
+            {
+                'succeeded': int,        # Success count
+                'failed': int,           # Failure count
+                'results': [...],        # Per-item results
+                'errors': [...]          # Error details
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityImportBusinessMetadata(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Bulk Import: Load large volumes of metadata
+        - Migration: Transfer catalog from other systems
+        - Mass Updates: Apply changes to many resources
+    """
         self.method = "POST"
         self.endpoint = ENDPOINTS["entity"]["import_business_metadata"]
         self.params = get_api_version_params("datamap")
@@ -386,33 +2138,389 @@ class Entity(Endpoint):
 
     @decorator
     def entityReadBusinessMetadataTemplate(self, args):
-        """Get the business metadata import template (Official API: Business Metadata Template)"""
+        """
+Retrieve entity information.
+    
+    Retrieves detailed information about the specified entity.
+    Returns complete entity metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing entity information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityReadBusinessMetadataTemplate(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["entity"]["business_metadata_template"]
         self.params = get_api_version_params("datamap")
 
     # Aliases for CLI compatibility
     def entityAddOrUpdateBusinessMetadata(self, args):
-        """Alias for entityCreateBusinessMetadata"""
+        """
+Create a new entity.
+    
+    Creates a new entity in Microsoft Purview Data Map.
+    Requires appropriate permissions and valid entity definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created entity:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityAddOrUpdateBusinessMetadata(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.entityAddOrUpdateBusinessMetadata(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         return self.entityCreateBusinessMetadata(args)
 
     def entityAddOrUpdateBusinessMetadataAttributes(self, args):
-        """Alias for entityCreateBusinessMetadataAttributes"""
+        """
+Create a new entity.
+    
+    Creates a new entity in Microsoft Purview Data Map.
+    Requires appropriate permissions and valid entity definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created entity:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityAddOrUpdateBusinessMetadataAttributes(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.entityAddOrUpdateBusinessMetadataAttributes(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         return self.entityCreateBusinessMetadataAttributes(args)
 
     def entityRemoveBusinessMetadata(self, args):
-        """Alias for entityDeleteBusinessMetadata"""
+        """
+Delete a entity.
+    
+    Permanently deletes the specified entity.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityRemoveBusinessMetadata(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
         return self.entityDeleteBusinessMetadata(args)
 
     def entityRemoveBusinessMetadataAttributes(self, args):
-        """Alias for entityDeleteBusinessMetadataAttributes"""
+        """
+Delete a entity.
+    
+    Permanently deletes the specified entity.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityRemoveBusinessMetadataAttributes(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
         return self.entityDeleteBusinessMetadataAttributes(args)
 
     # === LABEL OPERATIONS ===
 
     @decorator
     def entityCreateLabels(self, args):
-        """Add labels to an entity (Official API: Add Label)"""
+        """
+Create a new entity.
+    
+    Creates a new entity in Microsoft Purview Data Map.
+    Requires appropriate permissions and valid entity definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created entity:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityCreateLabels(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.entityCreateLabels(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         self.method = "POST"
         self.endpoint = ENDPOINTS["entity"]["add_label"].format(guid=args["--guid"][0])
         self.params = get_api_version_params("datamap")
@@ -420,7 +2528,71 @@ class Entity(Endpoint):
 
     @decorator
     def entityUpdateLabels(self, args):
-        """Set labels to an entity (Official API: Set Labels)"""
+        """
+Update an existing entity.
+    
+    Updates an existing entity with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated entity:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityUpdateLabels(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.entityUpdateLabels(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         self.method = "PUT"
         self.endpoint = ENDPOINTS["entity"]["set_labels"].format(guid=args["--guid"][0])
         self.params = get_api_version_params("datamap")
@@ -428,7 +2600,58 @@ class Entity(Endpoint):
 
     @decorator
     def entityDeleteLabels(self, args):
-        """Remove labels from an entity (Official API: Remove Labels)"""
+        """
+Delete a entity.
+    
+    Permanently deletes the specified entity.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityDeleteLabels(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
         self.method = "DELETE"
         self.endpoint = ENDPOINTS["entity"]["remove_labels"].format(guid=args["--guid"][0])
         self.params = get_api_version_params("datamap")
@@ -438,7 +2661,74 @@ class Entity(Endpoint):
 
     @decorator
     def entityCreateLabelsByUniqueAttribute(self, args):
-        """Add labels to an entity by unique attribute (Official API: Add Labels By Unique Attribute)"""
+        """
+Create a new entity.
+    
+    Creates a new entity in Microsoft Purview Data Map.
+    Requires appropriate permissions and valid entity definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created entity:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityCreateLabelsByUniqueAttribute(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.entityCreateLabelsByUniqueAttribute(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         self.method = "POST"
         self.endpoint = ENDPOINTS["entity"]["add_labels_by_unique_attribute"].format(
             typeName=args["--typeName"]
@@ -451,7 +2741,71 @@ class Entity(Endpoint):
 
     @decorator
     def entityUpdateLabelsByUniqueAttribute(self, args):
-        """Set labels to an entity by unique attribute (Official API: Set Labels By Unique Attribute)"""
+        """
+Update an existing entity.
+    
+    Updates an existing entity with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated entity:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityUpdateLabelsByUniqueAttribute(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.entityUpdateLabelsByUniqueAttribute(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         self.method = "PUT"
         self.endpoint = ENDPOINTS["entity"]["set_labels_by_unique_attribute"].format(
             typeName=args["--typeName"]
@@ -464,7 +2818,58 @@ class Entity(Endpoint):
 
     @decorator
     def entityDeleteLabelsByUniqueAttribute(self, args):
-        """Remove labels from an entity by unique attribute (Official API: Remove Labels By Unique Attribute)"""
+        """
+Delete a entity.
+    
+    Permanently deletes the specified entity.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityDeleteLabelsByUniqueAttribute(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
         self.method = "DELETE"
         self.endpoint = ENDPOINTS["entity"]["remove_labels_by_unique_attribute"].format(
             typeName=args["--typeName"]
@@ -479,7 +2884,53 @@ class Entity(Endpoint):
 
     @decorator
     def entityMoveToCollection(self, args):
-        """Move entities to a collection (Official API: Move Entities To Collection)"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityMoveToCollection(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = "POST"
         self.endpoint = ENDPOINTS["entity"]["move_entities_to_collection"]
         self.params = get_api_version_params("datamap")
@@ -489,7 +2940,60 @@ class Entity(Endpoint):
 
     @decorator
     def entityReadHistory(self, args):
-        """Get entity history for given GUID (Advanced API: Get Entity History)"""
+        """
+Retrieve entity information.
+    
+    Retrieves detailed information about the specified entity.
+    Returns complete entity metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing entity information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityReadHistory(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["entity"]["get_entity_history"].format(guid=args["--guid"][0])
         self.params = {
@@ -500,7 +3004,60 @@ class Entity(Endpoint):
 
     @decorator
     def entityReadAudit(self, args):
-        """Get entity audit trail for given GUID (Advanced API: Get Entity Audit)"""
+        """
+Retrieve entity information.
+    
+    Retrieves detailed information about the specified entity.
+    Returns complete entity metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing entity information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityReadAudit(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["entity"]["get_entity_audit"].format(guid=args["--guid"][0])
         self.params = {
@@ -512,7 +3069,53 @@ class Entity(Endpoint):
 
     @decorator
     def entityValidate(self, args):
-        """Validate entity definition (Advanced API: Validate Entity)"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityValidate(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = "POST"
         self.endpoint = ENDPOINTS["entity"]["validate_entity"]
         self.params = get_api_version_params("datamap")
@@ -520,7 +3123,74 @@ class Entity(Endpoint):
 
     @decorator
     def entityReadDependencies(self, args):
-        """Get entity dependencies for given GUID (Advanced API: Get Entity Dependencies)"""
+        """
+Create a new entity.
+    
+    Creates a new entity in Microsoft Purview Data Map.
+    Requires appropriate permissions and valid entity definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created entity:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityReadDependencies(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.entityReadDependencies(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["entity"]["get_entity_dependencies"].format(
             guid=args["--guid"][0]
@@ -533,7 +3203,60 @@ class Entity(Endpoint):
 
     @decorator
     def entityReadUsage(self, args):
-        """Get entity usage statistics for given GUID (Advanced API: Get Entity Usage)"""
+        """
+Retrieve entity information.
+    
+    Retrieves detailed information about the specified entity.
+    Returns complete entity metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing entity information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityReadUsage(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["entity"]["get_entity_usage"].format(guid=args["--guid"][0])
         self.params = {
@@ -547,20 +3270,276 @@ class Entity(Endpoint):
 
     @decorator
     def entityPut(self, args):
-        """Legacy alias for entityUpdateAttribute"""
+        """
+Update an existing entity.
+    
+    Updates an existing entity with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated entity:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityPut(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.entityPut(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         return self.entityUpdateAttribute(args)
 
     @decorator
     def entityPutClassifications(self, args):
-        """Legacy alias for entityUpdateClassifications"""
+        """
+Update an existing entity.
+    
+    Updates an existing entity with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated entity:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityPutClassifications(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.entityPutClassifications(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         return self.entityUpdateClassifications(args)
 
     @decorator
     def entityPartialUpdateByUniqueAttribute(self, args):
-        """Legacy alias for entityUpdateUniqueAttribute"""
+        """
+Update an existing entity.
+    
+    Updates an existing entity with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated entity:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityPartialUpdateByUniqueAttribute(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.entityPartialUpdateByUniqueAttribute(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         return self.entityUpdateUniqueAttribute(args)
 
     @decorator
     def entityPartialUpdateAttribute(self, args):
-        """Legacy alias for entityUpdateAttribute"""
+        """
+Update an existing entity.
+    
+    Updates an existing entity with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated entity:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityEntity()
+        
+        result = client.entityPartialUpdateAttribute(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.entityPartialUpdateAttribute(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         return self.entityUpdateAttribute(args)

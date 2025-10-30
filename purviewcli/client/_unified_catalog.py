@@ -22,14 +22,157 @@ class UnifiedCatalogClient(Endpoint):
     # ========================================
     @decorator
     def get_governance_domains(self, args):
-        """Get all governance domains."""
+        """
+        Get all governance domains in the Unified Catalog.
+        
+        Retrieves a list of all governance domains that organize business data assets
+        into logical business units. Domains represent organizational structures like
+        departments, business functions, or data products.
+        
+        Args:
+            args: Dictionary of operation arguments (currently no filters supported).
+                  Future versions may support status, type, or name filters.
+        
+        Returns:
+            List of governance domain dictionaries, each containing:
+                - id (str): Unique domain identifier (GUID)
+                - name (str): Domain name (e.g., "Sales", "Marketing")
+                - description (str): Domain description and purpose
+                - type (str): Domain type ("BusinessUnit", "FunctionalUnit", "DataProduct")
+                - status (str): Domain status ("Draft", "Active", "Deprecated")
+                - parentId (str): Parent domain ID for hierarchical domains
+                - createdBy (str): Creator user ID
+                - createdAt (str): Creation timestamp (ISO 8601)
+                - updatedBy (str): Last modifier user ID
+                - updatedAt (str): Last update timestamp (ISO 8601)
+            
+            Returns empty list if no domains exist.
+        
+        Raises:
+            AuthenticationError: When Azure credentials are invalid or expired
+            
+            HTTPError: When Purview API returns error:
+                - 401: Unauthorized (authentication failed)
+                - 403: Forbidden (requires Data Curator role)
+                - 429: Rate limit exceeded
+                - 500: Purview internal server error
+            
+            NetworkError: When network connectivity fails
+        
+        Example:
+            # List all governance domains
+            client = UnifiedCatalogClient()
+            args = {}
+            domains = client.get_governance_domains(args)
+            
+            print(f"Found {len(domains)} domains")
+            for domain in domains:
+                print(f"  - {domain['name']} ({domain['type']}): {domain['status']}")
+                if domain.get('parentId'):
+                    print(f"    Parent: {domain['parentId']}")
+            
+            # Find active business units
+            active_business_units = [
+                d for d in domains 
+                if d['type'] == 'BusinessUnit' and d['status'] == 'Active'
+            ]
+            print(f"Active business units: {len(active_business_units)}")
+        
+        Use Cases:
+            - Domain Discovery: Browse organizational structure in catalog
+            - Hierarchy Visualization: Build domain tree for navigation
+            - Governance Reporting: List all domains for compliance reports
+            - Domain Selection: Show domains in UI dropdowns for term assignment
+            - Impact Analysis: Identify which domains contain specific data
+        """
         self.method = "GET"
         self.endpoint = ENDPOINTS["unified_catalog"]["list_domains"]
         self.params = {}
 
     @decorator
     def get_governance_domain_by_id(self, args):
-        """Get a governance domain by ID."""
+        """
+        Get a specific governance domain by its ID.
+        
+        Retrieves detailed information about a single governance domain including
+        its metadata, hierarchical relationships, and associated terms/assets.
+        
+        Args:
+            args: Dictionary containing:
+                  - '--domain-id' (str): Required. Domain unique identifier (GUID).
+                                        Format: UUID (e.g., 'abcd1234-...')
+        
+        Returns:
+            Dictionary with complete domain information:
+                {
+                    'id': str,               # Domain unique identifier
+                    'name': str,             # Domain name
+                    'description': str,      # Domain description
+                    'type': str,             # "BusinessUnit", "FunctionalUnit", "DataProduct"
+                    'status': str,           # "Draft", "Active", "Deprecated"
+                    'parentId': str,         # Parent domain ID (None if root)
+                    'parentName': str,       # Parent domain name (if applicable)
+                    'childDomains': [        # Child domains (if any)
+                        {
+                            'id': str,
+                            'name': str,
+                            'type': str
+                        }
+                    ],
+                    'termCount': int,        # Number of terms in this domain
+                    'assetCount': int,       # Number of assets tagged with domain terms
+                    'owners': [              # Domain owners/stewards
+                        {
+                            'id': str,       # Entra Object ID (GUID)
+                            'name': str,     # Display name
+                            'email': str     # Email address
+                        }
+                    ],
+                    'createdBy': str,        # Creator user ID
+                    'createdAt': str,        # Creation timestamp (ISO 8601)
+                    'updatedBy': str,        # Last modifier
+                    'updatedAt': str         # Last update timestamp
+                }
+        
+        Raises:
+            ValueError: When domain-id is missing or invalid GUID format
+            
+            AuthenticationError: When Azure credentials invalid
+            
+            HTTPError: When Purview API returns error:
+                - 400: Invalid domain ID format
+                - 401: Unauthorized
+                - 403: Forbidden (insufficient permissions)
+                - 404: Domain not found
+                - 429: Rate limit exceeded
+                - 500: Internal server error
+        
+        Example:
+            # Get domain details
+            client = UnifiedCatalogClient()
+            args = {'--domain-id': ['abcd1234-5678-90ab-cdef-1234567890ab']}
+            domain = client.get_governance_domain_by_id(args)
+            
+            print(f"Domain: {domain['name']}")
+            print(f"Type: {domain['type']}, Status: {domain['status']}")
+            print(f"Terms: {domain['termCount']}, Assets: {domain['assetCount']}")
+            
+            # Show hierarchy
+            if domain.get('parentName'):
+                print(f"Parent: {domain['parentName']}")
+            if domain.get('childDomains'):
+                print(f"Children: {[c['name'] for c in domain['childDomains']]}")
+            
+            # Show owners
+            print(f"Owners: {[o['name'] for o in domain.get('owners', [])]}")
+        
+        Use Cases:
+            - Domain Details View: Display domain information in UI
+            - Hierarchy Navigation: Show parent/child relationships
+            - Access Control: Check domain owners before operations
+            - Metrics Dashboard: Display domain term/asset counts
+            - Validation: Verify domain exists before creating terms
+        """
         domain_id = args.get("--domain-id", [""])[0]
         self.method = "GET"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_domain"].format(domainId=domain_id)
@@ -37,7 +180,117 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def create_governance_domain(self, args):
-        """Create a new governance domain."""
+        """
+        Create a new governance domain in the Unified Catalog.
+        
+        Creates a governance domain to organize business terms, policies, and data assets
+        into logical business units. Domains can be hierarchical (parent/child) to represent
+        organizational structure.
+        
+        Args:
+            args: Dictionary containing either:
+                  Option 1 - Via payload file:
+                  - '--payloadFile' (str): Path to JSON file with domain definition
+                  
+                  Option 2 - Via CLI arguments:
+                  - '--name' (str): Required. Domain name (e.g., "Sales", "Marketing")
+                  - '--description' (str): Optional. Domain purpose and scope
+                  - '--type' (str): Optional. Domain type. Valid values:
+                                   - "BusinessUnit" (default) - Department or division
+                                   - "FunctionalUnit" - Cross-cutting function (IT, Legal)
+                                   - "DataProduct" - Data product domain
+                  - '--status' (str): Optional. Initial status. Valid values:
+                                     - "Draft" (default) - Under development
+                                     - "Active" - Published and in use
+                  - '--parent-domain-id' (str): Optional. Parent domain GUID for hierarchy
+                  
+                  Domain payload structure (JSON):
+                  {
+                      "name": str,            # Required: Unique domain name
+                      "description": str,     # Recommended: Purpose description
+                      "type": str,            # Optional: See types above (default: "BusinessUnit")
+                      "status": str,          # Optional: "Draft" or "Active" (default: "Draft")
+                      "parentId": str,        # Optional: Parent domain GUID for sub-domains
+                      "owners": [             # Optional: Domain stewards/owners
+                          {
+                              "id": str       # Entra Object ID (GUID) - not email!
+                          }
+                      ]
+                  }
+        
+        Returns:
+            Dictionary containing created domain:
+                {
+                    'id': str,               # New domain unique identifier (GUID)
+                    'name': str,             # Domain name
+                    'description': str,      # Domain description
+                    'type': str,             # Domain type
+                    'status': str,           # Domain status
+                    'parentId': str,         # Parent ID if hierarchical
+                    'createdBy': str,        # Creator user ID
+                    'createdAt': str         # Creation timestamp (ISO 8601)
+                }
+        
+        Raises:
+            ValueError: When required fields are missing:
+                - name is empty or None
+                - invalid type or status value
+                - parentId format invalid
+                
+            AuthenticationError: When Azure credentials invalid
+            
+            HTTPError: When Purview API returns error:
+                - 400: Invalid domain structure (missing name, invalid type)
+                - 401: Unauthorized
+                - 403: Forbidden (requires Data Curator role)
+                - 404: Parent domain not found
+                - 409: Domain name already exists
+                - 429: Rate limit exceeded
+                - 500: Internal server error
+        
+        Example:
+            # Create root domain via CLI args
+            client = UnifiedCatalogClient()
+            args = {
+                '--name': ['Sales'],
+                '--description': ['Sales department data assets'],
+                '--type': ['BusinessUnit'],
+                '--status': ['Active']
+            }
+            domain = client.create_governance_domain(args)
+            print(f"Created domain: {domain['id']}")
+            
+            # Create child domain via JSON file
+            subdomain_data = {
+                "name": "North America Sales",
+                "description": "Sales data for North American region",
+                "type": "BusinessUnit",
+                "status": "Draft",
+                "parentId": domain['id'],  # Use parent domain ID
+                "owners": [
+                    {"id": "0360aff3-add5-4b7c-b172-52add69b0199"}  # Entra Object ID
+                ]
+            }
+            
+            with open('subdomain.json', 'w') as f:
+                json.dump(subdomain_data, f)
+            
+            args = {'--payloadFile': ['subdomain.json']}
+            subdomain = client.create_governance_domain(args)
+            print(f"Created subdomain: {subdomain['name']} under {domain['name']}")
+        
+        Use Cases:
+            - Organizational Structure: Model company departments as domains
+            - Data Product Setup: Create domain for new data product
+            - Regional Hierarchy: Create geographic sub-domains (EMEA, APAC, Americas)
+            - Functional Groups: Create cross-cutting domains (Data Quality, Privacy)
+            - Migration: Programmatically create domains from existing systems
+        
+        See Also:
+            - update_governance_domain: Modify existing domain
+            - delete_governance_domain: Remove domain
+            - get_governance_domains: List all domains
+        """
         self.method = "POST"
         self.endpoint = ENDPOINTS["unified_catalog"]["list_domains"]
         # Allow payload file to fully control creation; otherwise build payload from flags
@@ -59,7 +312,100 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def update_governance_domain(self, args):
-        """Update a governance domain."""
+        """
+        Update an existing governance domain.
+        
+        Modifies properties of a governance domain such as name, description, status,
+        or type. Commonly used to activate draft domains, update descriptions, or
+        change ownership.
+        
+        Args:
+            args: Dictionary containing:
+                  Required:
+                  - '--domain-id' (str): Domain unique identifier (GUID)
+                  
+                  Update options (provide via --payloadFile or CLI args):
+                  - '--payloadFile' (str): Path to JSON with updates
+                  - '--name' (str): New domain name
+                  - '--description' (str): New description
+                  - '--type' (str): New type ("BusinessUnit", "FunctionalUnit", "DataProduct")
+                  - '--status' (str): New status ("Draft", "Active", "Deprecated")
+                  
+                  Update payload structure:
+                  {
+                      "name": str,            # Optional: Update name
+                      "description": str,     # Optional: Update description
+                      "type": str,            # Optional: Change type
+                      "status": str,          # Optional: Change status
+                      "owners": [...]         # Optional: Update owners
+                  }
+                  
+                  Note: Only include fields you want to update. Omitted fields unchanged.
+        
+        Returns:
+            Dictionary containing updated domain:
+                {
+                    'id': str,               # Domain ID (unchanged)
+                    'name': str,             # Updated or existing name
+                    'description': str,      # Updated or existing description
+                    'type': str,             # Updated or existing type
+                    'status': str,           # Updated or existing status
+                    'updatedBy': str,        # User who made update
+                    'updatedAt': str         # Update timestamp (ISO 8601)
+                }
+        
+        Raises:
+            ValueError: When domain-id is missing or fields are invalid
+            
+            AuthenticationError: When Azure credentials invalid
+            
+            HTTPError: When Purview API returns error:
+                - 400: Invalid update data
+                - 401: Unauthorized
+                - 403: Forbidden (not domain owner or Data Curator)
+                - 404: Domain not found
+                - 409: Name conflicts with existing domain
+                - 429: Rate limit exceeded
+                - 500: Internal server error
+        
+        Example:
+            # Activate a draft domain
+            client = UnifiedCatalogClient()
+            args = {
+                '--domain-id': ['abcd1234-...'],
+                '--status': ['Active']
+            }
+            domain = client.update_governance_domain(args)
+            print(f"Domain {domain['name']} is now {domain['status']}")
+            
+            # Update name and description via JSON
+            updates = {
+                "name": "Sales & Marketing",
+                "description": "Combined sales and marketing data domain"
+            }
+            
+            with open('updates.json', 'w') as f:
+                json.dump(updates, f)
+            
+            args = {
+                '--domain-id': ['abcd1234-...'],
+                '--payloadFile': ['updates.json']
+            }
+            updated = client.update_governance_domain(args)
+            print(f"Updated: {updated['name']}")
+        
+        Use Cases:
+            - Domain Activation: Promote draft domain to active status
+            - Reorganization: Rename domains during business restructuring
+            - Deprecation: Mark obsolete domains as deprecated
+            - Ownership Transfer: Update domain owners/stewards
+            - Description Updates: Keep domain documentation current
+        
+        See Also:
+            - create_governance_domain: Create new domain
+            - delete_governance_domain: Remove domain
+            - get_governance_domain_by_id: View current domain details
+        """
         domain_id = args.get("--domain-id", [""])[0]
         self.method = "PUT"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_domain"].format(domainId=domain_id)
@@ -72,7 +418,87 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def delete_governance_domain(self, args):
-        """Delete a governance domain."""
+        """
+        Delete a governance domain from the Unified Catalog.
+        
+        Permanently removes a governance domain. This operation will fail if the domain:
+        - Contains active terms (must delete/move terms first)
+        - Has child domains (must delete children first)
+        - Is referenced by policies or workflows
+        
+        Use with caution - this operation cannot be undone.
+        
+        Args:
+            args: Dictionary containing:
+                  - '--domain-id' (str): Required. Domain unique identifier (GUID) to delete.
+        
+        Returns:
+            Dictionary with deletion confirmation:
+                {
+                    'id': str,               # Deleted domain ID
+                    'status': str,           # 'Deleted'
+                    'message': str,          # Confirmation message
+                    'deletedAt': str,        # Deletion timestamp (ISO 8601)
+                    'deletedBy': str         # User who deleted domain
+                }
+        
+        Raises:
+            ValueError: When domain-id is missing or invalid
+            
+            AuthenticationError: When Azure credentials invalid
+            
+            HTTPError: When Purview API returns error:
+                - 400: Cannot delete domain (has dependencies)
+                - 401: Unauthorized
+                - 403: Forbidden (not domain owner or Data Curator)
+                - 404: Domain not found (already deleted)
+                - 409: Conflict (domain has active terms or child domains)
+                - 429: Rate limit exceeded
+                - 500: Internal server error
+        
+        Example:
+            # Delete empty domain
+            client = UnifiedCatalogClient()
+            args = {'--domain-id': ['abcd1234-5678-90ab-cdef-1234567890ab']}
+            
+            # Check domain is empty first
+            domain = client.get_governance_domain_by_id(args)
+            if domain['termCount'] > 0:
+                print(f"Cannot delete: Domain has {domain['termCount']} terms")
+            elif domain.get('childDomains'):
+                print(f"Cannot delete: Domain has {len(domain['childDomains'])} children")
+            else:
+                result = client.delete_governance_domain(args)
+                print(f"Deleted domain: {result['id']}")
+            
+            # Cascade delete: Remove children first, then parent
+            def delete_domain_cascade(client, domain_id):
+                domain = client.get_governance_domain_by_id({'--domain-id': [domain_id]})
+                
+                # Delete children first
+                for child in domain.get('childDomains', []):
+                    delete_domain_cascade(client, child['id'])
+                
+                # Then delete this domain
+                client.delete_governance_domain({'--domain-id': [domain_id]})
+                print(f"Deleted: {domain['name']}")
+        
+        Use Cases:
+            - Cleanup: Remove test or obsolete domains
+            - Reorganization: Delete old domains after restructuring
+            - Decommissioning: Remove domains for discontinued business units
+            - Error Correction: Delete mistakenly created domains
+        
+        Important Notes:
+            - Cannot be undone - consider setting status to "Deprecated" instead
+            - Must delete or move all terms first
+            - Must delete all child domains first
+            - Deletion is immediate and permanent
+        
+        See Also:
+            - update_governance_domain: Set status to "Deprecated" instead of deleting
+            - get_governance_domain_by_id: Check domain has no dependencies
+        """
         domain_id = args.get("--domain-id", [""])[0]
         self.method = "DELETE"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_domain"].format(domainId=domain_id)
@@ -83,7 +509,60 @@ class UnifiedCatalogClient(Endpoint):
     # ========================================
     @decorator
     def get_data_products(self, args):
-        """Get all data products."""
+        """
+Retrieve data product information.
+    
+    Retrieves detailed information about the specified data product.
+    Returns complete data product metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing data product information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.get_data_products(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["unified_catalog"]["list_data_products"]
         
@@ -96,7 +575,60 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def get_data_product_by_id(self, args):
-        """Get a data product by ID."""
+        """
+Retrieve data product information.
+    
+    Retrieves detailed information about the specified data product.
+    Returns complete data product metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing data product information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.get_data_product_by_id(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         product_id = args.get("--product-id", [""])[0]
         self.method = "GET"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_data_product"].format(productId=product_id)
@@ -104,7 +636,74 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def create_data_product(self, args):
-        """Create a new data product."""
+        """
+Create a new data product.
+    
+    Creates a new data product in Microsoft Purview.
+    Requires appropriate permissions and valid data product definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created data product:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.create_data_product(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.create_data_product(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         self.method = "POST"
         self.endpoint = ENDPOINTS["unified_catalog"]["list_data_products"]
         
@@ -153,7 +752,71 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def update_data_product(self, args):
-        """Update a data product - fetches current state first, then applies updates."""
+        """
+Update an existing data product.
+    
+    Updates an existing data product with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated data product:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.update_data_product(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.update_data_product(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         product_id = args.get("--product-id", [""])[0]
         
         # First, get the current data product
@@ -199,7 +862,58 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def delete_data_product(self, args):
-        """Delete a data product."""
+        """
+Delete a data product.
+    
+    Permanently deletes the specified data product.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.delete_data_product(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
         product_id = args.get("--product-id", [""])[0]
         self.method = "DELETE"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_data_product"].format(productId=product_id)
@@ -207,14 +921,74 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def create_data_product_relationship(self, args):
-        """Create a relationship for a data product.
-        
-        Creates a relationship between a data product and another entity
-        (e.g., critical data column, term, asset).
-        
-        API: POST /datagovernance/catalog/dataproducts/{productId}/relationships
-        API Version: 2025-09-15-preview
         """
+Create a new resource.
+    
+    Creates a new resource in Microsoft Purview Unified Catalog.
+    Requires appropriate permissions and valid resource definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created resource:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.create_data_product_relationship(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.create_data_product_relationship(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         product_id = args.get("--product-id", [""])[0]
         entity_type = args.get("--entity-type", [""])[0]  # e.g., "CRITICALDATACOLUMN"
         entity_id = args.get("--entity-id", [""])[0]
@@ -241,13 +1015,60 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def get_data_product_relationships(self, args):
-        """List relationships for a data product.
-        
-        Lists all relationships for a data product, optionally filtered by entity type.
-        
-        API: GET /datagovernance/catalog/dataproducts/{productId}/relationships
-        API Version: 2025-09-15-preview
         """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource from Unified Catalog.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.get_data_product_relationships(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         product_id = args.get("--product-id", [""])[0]
         entity_type = args.get("--entity-type", [""])[0] if args.get("--entity-type") else None
         
@@ -264,13 +1085,58 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def delete_data_product_relationship(self, args):
-        """Delete a relationship between a data product and an entity.
-        
-        Deletes a specific relationship identified by entity type and entity ID.
-        
-        API: DELETE /datagovernance/catalog/dataproducts/{productId}/relationships
-        API Version: 2025-09-15-preview
         """
+Delete a resource.
+    
+    Permanently deletes the specified resource from Unified Catalog.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.delete_data_product_relationship(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
         product_id = args.get("--product-id", [""])[0]
         entity_type = args.get("--entity-type", [""])[0]
         entity_id = args.get("--entity-id", [""])[0]
@@ -286,14 +1152,58 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def query_data_products(self, args):
-        """Query data products with advanced filters.
-        
-        Supports filtering by domain, owner, status, name keyword, type, and more.
-        Includes pagination (skip/top) and sorting (orderBy).
-        
-        API: POST /datagovernance/catalog/dataproducts/query
-        API Version: 2025-09-15-preview
         """
+Search for resources.
+    
+    Searches for resources matching the specified criteria.
+    Supports filtering, pagination, and sorting.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing search results:
+            {
+                'value': [...]     # List of matching resources
+                'count': int,      # Total results count
+                'nextLink': str    # Pagination link (if applicable)
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.query_data_products(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Locate datasets by name or properties
+        - Impact Analysis: Find all assets related to a term
+        - Compliance: Identify sensitive data across catalog
+    """
         # Build query payload from args
         payload = {}
         
@@ -347,12 +1257,60 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def get_terms(self, args):
-        """Get all Unified Catalog terms in a governance domain.
-        
-        Uses the Unified Catalog /terms endpoint which is separate from
-        Data Map glossary terms. These are business terms managed through
-        the Governance Domains interface.
         """
+Retrieve Unified Catalog term information.
+    
+    Retrieves detailed information about the specified Unified Catalog term.
+    Returns complete Unified Catalog term metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing Unified Catalog term information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.get_terms(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         domain_id = args.get("--governance-domain-id", [""])[0]
         
         self.method = "GET"
@@ -368,11 +1326,60 @@ class UnifiedCatalogClient(Endpoint):
 
     # Keeping old Data Map glossary-based implementation for reference/fallback
     def get_terms_from_glossary(self, args):
-        """Get glossary terms from Data Map API (Classic Types view).
-        
-        This is the OLD implementation that queries Data Map glossaries.
-        Use get_terms() for Unified Catalog (Governance Domain) terms.
         """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource from Unified Catalog.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = GlossaryUnifiedCatalogClient()
+        
+        result = client.get_terms_from_glossary(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         domain_id = args.get("--governance-domain-id", [""])[0]
 
         # If no domain provided, list all glossaries via the Glossary client
@@ -502,7 +1509,60 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def get_term_by_id(self, args):
-        """Get a Unified Catalog term by ID."""
+        """
+Retrieve Unified Catalog term information.
+    
+    Retrieves detailed information about the specified Unified Catalog term.
+    Returns complete Unified Catalog term metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing Unified Catalog term information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.get_term_by_id(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         term_id = args.get("--term-id", [""])[0]
         self.method = "GET"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_term"].format(termId=term_id)
@@ -510,7 +1570,74 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def create_term(self, args):
-        """Create a new Unified Catalog term (Governance Domain term)."""
+        """
+Create a new Unified Catalog term.
+    
+    Creates a new Unified Catalog term in Microsoft Purview.
+    Requires appropriate permissions and valid Unified Catalog term definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created Unified Catalog term:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.create_term(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.create_term(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         self.method = "POST"
         self.endpoint = ENDPOINTS["unified_catalog"]["list_terms"]
 
@@ -564,7 +1691,71 @@ class UnifiedCatalogClient(Endpoint):
         self.payload = payload
 
     def update_term(self, args):
-        """Update an existing Unified Catalog term (supports partial updates)."""
+        """
+Update an existing Unified Catalog term.
+    
+    Updates an existing Unified Catalog term with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated Unified Catalog term:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.update_term(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.update_term(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         from purviewcli.client.endpoint import get_data
         
         term_id = args.get("--term-id", [""])[0]
@@ -664,7 +1855,58 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def delete_term(self, args):
-        """Delete a Unified Catalog term."""
+        """
+Delete a Unified Catalog term.
+    
+    Permanently deletes the specified Unified Catalog term.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.delete_term(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
         term_id = args.get("--term-id", [""])[0]
         self.method = "DELETE"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_term"].format(termId=term_id)
@@ -672,14 +1914,58 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def query_terms(self, args):
-        """Query terms with advanced filters.
-        
-        Supports filtering by domain, owner, status, name keyword, acronyms, and more.
-        Includes pagination (skip/top) and sorting (orderBy).
-        
-        API: POST /datagovernance/catalog/terms/query
-        API Version: 2025-09-15-preview
         """
+Search for Unified Catalog terms.
+    
+    Searches for resources matching the specified criteria.
+    Supports filtering, pagination, and sorting.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing search results:
+            {
+                'value': [...]     # List of matching resources
+                'count': int,      # Total results count
+                'nextLink': str    # Pagination link (if applicable)
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.query_terms(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Locate datasets by name or properties
+        - Impact Analysis: Find all assets related to a term
+        - Compliance: Identify sensitive data across catalog
+    """
         # Build query payload from args
         payload = {}
         
@@ -801,7 +2087,60 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def get_objectives(self, args):
-        """Get all objectives in a governance domain."""
+        """
+Retrieve objective information.
+    
+    Retrieves detailed information about the specified objective.
+    Returns complete objective metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing objective information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.get_objectives(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         domain_id = args.get("--governance-domain-id", [""])[0]
         self.method = "GET"
         self.endpoint = ENDPOINTS["unified_catalog"]["list_objectives"]
@@ -809,7 +2148,60 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def get_objective_by_id(self, args):
-        """Get an objective by ID."""
+        """
+Retrieve objective information.
+    
+    Retrieves detailed information about the specified objective.
+    Returns complete objective metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing objective information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.get_objective_by_id(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         objective_id = args.get("--objective-id", [""])[0]
         self.method = "GET"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_objective"].format(objectiveId=objective_id)
@@ -817,7 +2209,74 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def create_objective(self, args):
-        """Create a new objective."""
+        """
+Create a new objective.
+    
+    Creates a new objective in Microsoft Purview.
+    Requires appropriate permissions and valid objective definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created objective:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.create_objective(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.create_objective(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         self.method = "POST"
         self.endpoint = ENDPOINTS["unified_catalog"]["list_objectives"]
 
@@ -847,7 +2306,71 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def update_objective(self, args):
-        """Update an existing objective."""
+        """
+Update an existing objective.
+    
+    Updates an existing objective with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated objective:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.update_objective(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.update_objective(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         objective_id = args.get("--objective-id", [""])[0]
         self.method = "PUT"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_objective"].format(objectiveId=objective_id)
@@ -879,7 +2402,58 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def delete_objective(self, args):
-        """Delete an objective."""
+        """
+Delete a objective.
+    
+    Permanently deletes the specified objective.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.delete_objective(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
         objective_id = args.get("--objective-id", [""])[0]
         self.method = "DELETE"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_objective"].format(objectiveId=objective_id)
@@ -887,14 +2461,58 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def query_objectives(self, args):
-        """Query objectives with advanced filters.
-        
-        Supports filtering by domain, owner, status, definition keyword, and more.
-        Includes pagination (skip/top) and sorting (orderBy).
-        
-        API: POST /datagovernance/catalog/objectives/query
-        API Version: 2025-09-15-preview
         """
+Search for objectives.
+    
+    Searches for resources matching the specified criteria.
+    Supports filtering, pagination, and sorting.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing search results:
+            {
+                'value': [...]     # List of matching resources
+                'count': int,      # Total results count
+                'nextLink': str    # Pagination link (if applicable)
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.query_objectives(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Locate datasets by name or properties
+        - Impact Analysis: Find all assets related to a term
+        - Compliance: Identify sensitive data across catalog
+    """
         # Build query payload from args
         payload = {}
         
@@ -942,7 +2560,60 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def get_key_results(self, args):
-        """Get all key results for an objective."""
+        """
+Retrieve key result information.
+    
+    Retrieves detailed information about the specified key result.
+    Returns complete key result metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing key result information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.get_key_results(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         objective_id = args.get("--objective-id", [""])[0]
         self.method = "GET"
         self.endpoint = ENDPOINTS["unified_catalog"]["list_key_results"].format(objectiveId=objective_id)
@@ -950,7 +2621,60 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def get_key_result_by_id(self, args):
-        """Get a key result by ID."""
+        """
+Retrieve key result information.
+    
+    Retrieves detailed information about the specified key result.
+    Returns complete key result metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing key result information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.get_key_result_by_id(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         objective_id = args.get("--objective-id", [""])[0]
         key_result_id = args.get("--key-result-id", [""])[0]
         self.method = "GET"
@@ -959,7 +2683,74 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def create_key_result(self, args):
-        """Create a new key result."""
+        """
+Create a new key result.
+    
+    Creates a new key result in Microsoft Purview.
+    Requires appropriate permissions and valid key result definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created key result:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.create_key_result(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.create_key_result(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         objective_id = args.get("--objective-id", [""])[0]
         self.method = "POST"
         self.endpoint = ENDPOINTS["unified_catalog"]["list_key_results"].format(objectiveId=objective_id)
@@ -984,7 +2775,71 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def update_key_result(self, args):
-        """Update an existing key result."""
+        """
+Update an existing key result.
+    
+    Updates an existing key result with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated key result:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.update_key_result(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.update_key_result(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         objective_id = args.get("--objective-id", [""])[0]
         key_result_id = args.get("--key-result-id", [""])[0]
         self.method = "PUT"
@@ -1011,7 +2866,58 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def delete_key_result(self, args):
-        """Delete a key result."""
+        """
+Delete a key result.
+    
+    Permanently deletes the specified key result.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.delete_key_result(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
         objective_id = args.get("--objective-id", [""])[0]
         key_result_id = args.get("--key-result-id", [""])[0]
         self.method = "DELETE"
@@ -1024,7 +2930,60 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def get_critical_data_elements(self, args):
-        """Get all critical data elements in a governance domain."""
+        """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource from Unified Catalog.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.get_critical_data_elements(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         domain_id = args.get("--governance-domain-id", [""])[0]
         self.method = "GET"
         self.endpoint = ENDPOINTS["unified_catalog"]["list_cdes"]
@@ -1032,7 +2991,60 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def get_critical_data_element_by_id(self, args):
-        """Get a critical data element by ID."""
+        """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource from Unified Catalog.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.get_critical_data_element_by_id(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         cde_id = args.get("--cde-id", [""])[0]
         self.method = "GET"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_cde"].format(cdeId=cde_id)
@@ -1040,7 +3052,74 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def create_critical_data_element(self, args):
-        """Create a new critical data element."""
+        """
+Create a new resource.
+    
+    Creates a new resource in Microsoft Purview Unified Catalog.
+    Requires appropriate permissions and valid resource definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created resource:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.create_critical_data_element(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.create_critical_data_element(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         self.method = "POST"
         self.endpoint = ENDPOINTS["unified_catalog"]["list_cdes"]
 
@@ -1072,7 +3151,71 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def update_critical_data_element(self, args):
-        """Update an existing critical data element."""
+        """
+Update an existing resource.
+    
+    Updates an existing resource in Unified Catalog with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated resource:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.update_critical_data_element(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.update_critical_data_element(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         cde_id = args.get("--cde-id", [""])[0]
         self.method = "PUT"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_cde"].format(cdeId=cde_id)
@@ -1106,7 +3249,58 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def delete_critical_data_element(self, args):
-        """Delete a critical data element."""
+        """
+Delete a resource.
+    
+    Permanently deletes the specified resource from Unified Catalog.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.delete_critical_data_element(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
         cde_id = args.get("--cde-id", [""])[0]
         self.method = "DELETE"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_cde"].format(cdeId=cde_id)
@@ -1114,14 +3308,58 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def query_critical_data_elements(self, args):
-        """Query critical data elements with advanced filters.
-        
-        Supports filtering by domain, owner, status, name keyword, and more.
-        Includes pagination (skip/top) and sorting (orderBy).
-        
-        API: POST /datagovernance/catalog/criticalDataElements/query
-        API Version: 2025-09-15-preview
         """
+Search for resources.
+    
+    Searches for resources matching the specified criteria.
+    Supports filtering, pagination, and sorting.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing search results:
+            {
+                'value': [...]     # List of matching resources
+                'count': int,      # Total results count
+                'nextLink': str    # Pagination link (if applicable)
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.query_critical_data_elements(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Locate datasets by name or properties
+        - Impact Analysis: Find all assets related to a term
+        - Compliance: Identify sensitive data across catalog
+    """
         # Build query payload from args
         payload = {}
         
@@ -1165,14 +3403,74 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def create_cde_relationship(self, args):
-        """Create a relationship for a critical data element.
-        
-        Creates a relationship between a CDE and another entity
-        (e.g., critical data column, term, asset).
-        
-        API: POST /datagovernance/catalog/criticalDataElements/{cdeId}/relationships
-        API Version: 2025-09-15-preview
         """
+Create a new resource.
+    
+    Creates a new resource in Microsoft Purview Unified Catalog.
+    Requires appropriate permissions and valid resource definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created resource:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.create_cde_relationship(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.create_cde_relationship(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         cde_id = args.get("--cde-id", [""])[0]
         entity_type = args.get("--entity-type", [""])[0]  # e.g., "CRITICALDATACOLUMN"
         entity_id = args.get("--entity-id", [""])[0]
@@ -1197,13 +3495,60 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def get_cde_relationships(self, args):
-        """List relationships for a critical data element.
-        
-        Lists all relationships for a CDE, optionally filtered by entity type.
-        
-        API: GET /datagovernance/catalog/criticalDataElements/{cdeId}/relationships
-        API Version: 2025-09-15-preview
         """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource from Unified Catalog.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.get_cde_relationships(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         cde_id = args.get("--cde-id", [""])[0]
         entity_type = args.get("--entity-type", [""])[0] if args.get("--entity-type") else None
         
@@ -1218,13 +3563,58 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def delete_cde_relationship(self, args):
-        """Delete a relationship between a CDE and an entity.
-        
-        Deletes a specific relationship identified by entity type and entity ID.
-        
-        API: DELETE /datagovernance/catalog/criticalDataElements/{cdeId}/relationships
-        API Version: 2025-09-15-preview
         """
+Delete a resource.
+    
+    Permanently deletes the specified resource from Unified Catalog.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.delete_cde_relationship(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
         cde_id = args.get("--cde-id", [""])[0]
         entity_type = args.get("--entity-type", [""])[0]
         entity_id = args.get("--entity-id", [""])[0]
@@ -1242,16 +3632,60 @@ class UnifiedCatalogClient(Endpoint):
     
     @decorator
     def get_relationships(self, args):
-        """Get all relationships for an entity (term, data product, or CDE).
-        
-        Supported entity types for filtering:
-        - CustomMetadata: Custom attributes attached to the entity
-        - DataAsset: Data assets (tables, columns) linked to the entity
-        - DataProduct: Data products related to the entity
-        - CriticalDataColumn: Critical data columns related to the entity
-        - CriticalDataElement: Critical data elements related to the entity
-        - Term: Other terms related to this entity
         """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource from Unified Catalog.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.get_relationships(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         entity_type = args.get("--entity-type", [""])[0]  # Term, DataProduct, CriticalDataElement
         entity_id = args.get("--entity-id", [""])[0]
         filter_type = args.get("--filter-type", [""])[0]  # Optional: CustomMetadata, DataAsset, DataProduct, etc.
@@ -1281,7 +3715,74 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def create_relationship(self, args):
-        """Create a relationship between entities (terms, data products, CDEs)."""
+        """
+Create a new resource.
+    
+    Creates a new resource in Microsoft Purview Unified Catalog.
+    Requires appropriate permissions and valid resource definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created resource:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.create_relationship(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.create_relationship(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         entity_type = args.get("--entity-type", [""])[0]  # Term, DataProduct, CriticalDataElement
         entity_id = args.get("--entity-id", [""])[0]
         target_entity_id = args.get("--target-entity-id", [""])[0]
@@ -1311,7 +3812,58 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def delete_relationship(self, args):
-        """Delete a relationship between entities."""
+        """
+Delete a resource.
+    
+    Permanently deletes the specified resource from Unified Catalog.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.delete_relationship(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
         entity_type = args.get("--entity-type", [""])[0]
         entity_id = args.get("--entity-id", [""])[0]
         target_entity_id = args.get("--target-entity-id", [""])[0]
@@ -1343,14 +3895,119 @@ class UnifiedCatalogClient(Endpoint):
     @decorator
     @decorator
     def list_policies(self, args):
-        """List all data policies."""
+        """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource from Unified Catalog.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        List of resource dictionaries, each containing:
+            - guid (str): Unique identifier
+            - name (str): Resource name
+            - attributes (dict): Resource attributes
+            - status (str): Resource status
+        
+        Returns empty list if no resources found.
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.list_policies(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["unified_catalog"]["list_policies"]
         self.params = {}
 
     @decorator
     def get_policy(self, args):
-        """Get a specific data policy by ID."""
+        """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource from Unified Catalog.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.get_policy(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         policy_id = args.get("--policy-id", [""])[0]
         self.method = "GET"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_policy"].format(policyId=policy_id)
@@ -1358,7 +4015,74 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def create_policy(self, args):
-        """Create a new data policy."""
+        """
+Create a new resource.
+    
+    Creates a new resource in Microsoft Purview Unified Catalog.
+    Requires appropriate permissions and valid resource definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created resource:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.create_policy(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.create_policy(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         self.method = "POST"
         self.endpoint = ENDPOINTS["unified_catalog"]["list_policies"]
         
@@ -1378,7 +4102,71 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def update_policy(self, args):
-        """Update an existing data policy."""
+        """
+Update an existing resource.
+    
+    Updates an existing resource in Unified Catalog with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated resource:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.update_policy(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.update_policy(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         policy_id = args.get("--policy-id", [""])[0]
         self.method = "PUT"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_policy"].format(policyId=policy_id)
@@ -1399,7 +4187,58 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def delete_policy(self, args):
-        """Delete a data policy."""
+        """
+Delete a resource.
+    
+    Permanently deletes the specified resource from Unified Catalog.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.delete_policy(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
         policy_id = args.get("--policy-id", [""])[0]
         self.method = "DELETE"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_policy"].format(policyId=policy_id)
@@ -1411,11 +4250,59 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def list_custom_metadata(self, args):
-        """List all custom metadata definitions with UC term template filter.
-        
-        Uses Atlas API with includeTermTemplate=true to get UC Custom Metadata.
-        This is the same API used by Purview UI for UC metadata.
         """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource from Unified Catalog.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        List of resource dictionaries, each containing:
+            - guid (str): Unique identifier
+            - name (str): Resource name
+            - attributes (dict): Resource attributes
+            - status (str): Resource status
+        
+        Returns empty list if no resources found.
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.list_custom_metadata(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["unified_catalog"]["list_custom_metadata"]
         self.params = {
@@ -1426,11 +4313,60 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def get_custom_metadata(self, args):
-        """Get custom metadata (business metadata) for a specific asset.
-        
-        Uses Entity API to get business metadata attached to a GUID.
-        This returns all business metadata groups attached to the entity.
         """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource from Unified Catalog.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.get_custom_metadata(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         asset_id = args.get("--asset-id", [""])[0]
         self.method = "GET"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_custom_metadata"].format(guid=asset_id)
@@ -1442,10 +4378,103 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def add_custom_metadata(self, args):
-        """Add custom metadata (business metadata) to an asset.
+        """
+        Add custom metadata (business metadata) to an asset in Unified Catalog.
         
-        Uses Entity API to add business metadata to a GUID.
-        Format: { "GroupName": { "attribute1": "value1", "attribute2": "value2" } }
+        Attaches custom business metadata attributes to a data asset using the Entity API.
+        Business metadata allows you to add domain-specific attributes beyond the standard
+        technical metadata, such as data quality scores, compliance classifications, or
+        business ownership information.
+        
+        Args:
+            args: Dictionary containing:
+                  Required:
+                  - '--asset-id' (str): Asset unique identifier (GUID)
+                  - '--key' (str): Metadata attribute name (e.g., "DataClassification", "Owner")
+                  - '--value' (str): Attribute value (e.g., "Confidential", "Sales Team")
+                  
+                  Optional:
+                  - '--group' (str): Metadata group name (default: "Custom")
+                                    Groups organize related attributes together
+        
+        Returns:
+            Dictionary with operation result:
+                {
+                    'mutatedEntities': {
+                        'UPDATE': [
+                            {
+                                'guid': str,         # Updated asset GUID
+                                'typeName': str,     # Asset type
+                                'businessAttributes': {
+                                    'GroupName': {   # Your metadata group
+                                        'key': str   # Added attribute
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+        
+        Raises:
+            ValueError: When asset-id, key, or value is missing
+            
+            AuthenticationError: When Azure credentials invalid
+            
+            HTTPError: When Purview API returns error:
+                - 400: Invalid metadata format or attribute name
+                - 401: Unauthorized
+                - 403: Forbidden (requires Data Curator role)
+                - 404: Asset not found
+                - 429: Rate limit exceeded
+                - 500: Internal server error
+        
+        Example:
+            # Add data classification metadata
+            client = UnifiedCatalogClient()
+            args = {
+                '--asset-id': ['abcd1234-5678-90ab-cdef-1234567890ab'],
+                '--key': ['DataClassification'],
+                '--value': ['Confidential'],
+                '--group': ['Compliance']
+            }
+            result = client.add_custom_metadata(args)
+            print(f"Added metadata to: {result['mutatedEntities']['UPDATE'][0]['guid']}")
+            
+            # Add data quality score
+            args = {
+                '--asset-id': ['abcd1234-...'],
+                '--key': ['QualityScore'],
+                '--value': ['95'],
+                '--group': ['DataQuality']
+            }
+            result = client.add_custom_metadata(args)
+            
+            # Add business owner
+            args = {
+                '--asset-id': ['abcd1234-...'],
+                '--key': ['BusinessOwner'],
+                '--value': ['Jane Smith'],
+                '--group': ['Ownership']
+            }
+            result = client.add_custom_metadata(args)
+        
+        Use Cases:
+            - Data Classification: Tag assets with sensitivity levels (Public, Internal, Confidential)
+            - Compliance Tracking: Mark assets with regulatory requirements (GDPR, HIPAA, SOX)
+            - Data Quality: Attach quality scores or validation status
+            - Business Ownership: Associate business owners or stewards with assets
+            - Custom Taxonomies: Apply organization-specific categorization schemes
+        
+        Notes:
+            - Metadata is organized into groups for better organization
+            - Multiple attributes can be added to the same group
+            - POST operation adds new attributes without removing existing ones
+            - Use update_custom_metadata() to modify existing attribute values
+        
+        See Also:
+            - update_custom_metadata: Modify existing metadata values
+            - delete_custom_metadata: Remove metadata from asset
+            - get_custom_metadata: Retrieve asset's custom metadata
         """
         asset_id = args.get("--asset-id", [""])[0]
         self.method = "POST"
@@ -1468,11 +4497,101 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def update_custom_metadata(self, args):
-        """Update custom metadata (business metadata) for an asset.
+        """
+        Update custom metadata (business metadata) for an asset in Unified Catalog.
         
-        Uses Entity API to update business metadata on a GUID.
-        POST method overwrites existing values for the specified attributes.
-        Format: { "GroupName": { "attribute1": "newValue" } }
+        Modifies existing business metadata attribute values on a data asset. This operation
+        overwrites the specified attributes while preserving other attributes in the same
+        group and other groups.
+        
+        Args:
+            args: Dictionary containing:
+                  Required:
+                  - '--asset-id' (str): Asset unique identifier (GUID)
+                  - '--key' (str): Metadata attribute name to update
+                  - '--value' (str): New attribute value
+                  
+                  Optional:
+                  - '--group' (str): Metadata group name (default: "Custom")
+        
+        Returns:
+            Dictionary with update result:
+                {
+                    'mutatedEntities': {
+                        'UPDATE': [
+                            {
+                                'guid': str,         # Updated asset GUID
+                                'typeName': str,     # Asset type
+                                'businessAttributes': {
+                                    'GroupName': {   # Updated metadata group
+                                        'key': str   # New attribute value
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+        
+        Raises:
+            ValueError: When asset-id, key, or value is missing
+            
+            AuthenticationError: When Azure credentials invalid
+            
+            HTTPError: When Purview API returns error:
+                - 400: Invalid metadata format or attribute name
+                - 401: Unauthorized
+                - 403: Forbidden (requires Data Curator role)
+                - 404: Asset not found or attribute doesn't exist
+                - 429: Rate limit exceeded
+                - 500: Internal server error
+        
+        Example:
+            # Update data classification level
+            client = UnifiedCatalogClient()
+            args = {
+                '--asset-id': ['abcd1234-5678-90ab-cdef-1234567890ab'],
+                '--key': ['DataClassification'],
+                '--value': ['Public'],  # Changed from Confidential
+                '--group': ['Compliance']
+            }
+            result = client.update_custom_metadata(args)
+            print(f"Updated metadata on: {result['mutatedEntities']['UPDATE'][0]['guid']}")
+            
+            # Update quality score after validation
+            args = {
+                '--asset-id': ['abcd1234-...'],
+                '--key': ['QualityScore'],
+                '--value': ['98'],  # Improved from 95
+                '--group': ['DataQuality']
+            }
+            result = client.update_custom_metadata(args)
+            
+            # Update business owner after transfer
+            args = {
+                '--asset-id': ['abcd1234-...'],
+                '--key': ['BusinessOwner'],
+                '--value': ['John Doe'],  # New owner
+                '--group': ['Ownership']
+            }
+            result = client.update_custom_metadata(args)
+        
+        Use Cases:
+            - Classification Updates: Change sensitivity level as data usage changes
+            - Quality Score Refresh: Update quality metrics after validation runs
+            - Ownership Transfer: Reassign business owners during reorganization
+            - Compliance Status: Update certification or approval status
+            - Lifecycle Management: Mark assets as certified, deprecated, or archived
+        
+        Notes:
+            - Only updates the specified attribute; other attributes unchanged
+            - Creates the attribute if it doesn't exist (behaves like add)
+            - POST method is used, not PUT, to preserve other metadata
+            - Changes are immediate and reflected in search/browse
+        
+        See Also:
+            - add_custom_metadata: Add new metadata attributes
+            - delete_custom_metadata: Remove metadata from asset
+            - get_custom_metadata: Retrieve current metadata values
         """
         asset_id = args.get("--asset-id", [""])[0]
         self.method = "POST"
@@ -1493,11 +4612,58 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def delete_custom_metadata(self, args):
-        """Delete custom metadata (business metadata) from an asset.
-        
-        Uses Entity API to remove business metadata from a GUID.
-        Removes entire business metadata group by passing it in params + empty payload.
         """
+Delete a resource.
+    
+    Permanently deletes the specified resource from Unified Catalog.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.delete_custom_metadata(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
         asset_id = args.get("--asset-id", [""])[0]
         group = args.get("--group", [""])[0]
         
@@ -1520,14 +4686,119 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def list_custom_attributes(self, args):
-        """List all custom attribute definitions."""
+        """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource from Unified Catalog.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        List of resource dictionaries, each containing:
+            - guid (str): Unique identifier
+            - name (str): Resource name
+            - attributes (dict): Resource attributes
+            - status (str): Resource status
+        
+        Returns empty list if no resources found.
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.list_custom_attributes(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["unified_catalog"]["list_custom_attributes"]
         self.params = {}
 
     @decorator
     def get_custom_attribute(self, args):
-        """Get a specific custom attribute definition."""
+        """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource from Unified Catalog.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.get_custom_attribute(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         attribute_id = args.get("--attribute-id", [""])[0]
         self.method = "GET"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_custom_attribute"].format(attributeId=attribute_id)
@@ -1535,7 +4806,74 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def create_custom_attribute(self, args):
-        """Create a new custom attribute definition."""
+        """
+Create a new resource.
+    
+    Creates a new resource in Microsoft Purview Unified Catalog.
+    Requires appropriate permissions and valid resource definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created resource:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.create_custom_attribute(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.create_custom_attribute(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         self.method = "POST"
         self.endpoint = ENDPOINTS["unified_catalog"]["list_custom_attributes"]
         
@@ -1555,7 +4893,71 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def update_custom_attribute(self, args):
-        """Update a custom attribute definition."""
+        """
+Update an existing resource.
+    
+    Updates an existing resource in Unified Catalog with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated resource:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.update_custom_attribute(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.update_custom_attribute(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         attribute_id = args.get("--attribute-id", [""])[0]
         self.method = "PUT"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_custom_attribute"].format(attributeId=attribute_id)
@@ -1576,7 +4978,58 @@ class UnifiedCatalogClient(Endpoint):
 
     @decorator
     def delete_custom_attribute(self, args):
-        """Delete a custom attribute definition."""
+        """
+Delete a resource.
+    
+    Permanently deletes the specified resource from Unified Catalog.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.delete_custom_attribute(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
         attribute_id = args.get("--attribute-id", [""])[0]
         self.method = "DELETE"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_custom_attribute"].format(attributeId=attribute_id)
@@ -1588,7 +5041,53 @@ class UnifiedCatalogClient(Endpoint):
 
     @no_api_call_decorator
     def help(self, args):
-        """Display help information for Unified Catalog operations."""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = UnifiedCatalogClient()
+        
+        result = client.help(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         help_text = """
 Microsoft Purview Unified Catalog Client
 
