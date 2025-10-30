@@ -14,6 +14,7 @@ try:
     from mcp.server import Server
     from mcp.server.stdio import stdio_server
     from mcp.types import Tool, TextContent
+
     MCP_INSTALLED = True
 except ImportError as e:
     # Store the error but don't exit yet - allow module inspection for tests
@@ -33,8 +34,8 @@ from purviewcli.client.api_client import PurviewClient, PurviewConfig
 # Setup logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[logging.StreamHandler(sys.stderr)]
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[logging.StreamHandler(sys.stderr)],
 )
 logger = logging.getLogger(__name__)
 
@@ -65,7 +66,7 @@ class PurviewMCPServer:
             azure_region=os.getenv("AZURE_REGION"),
             max_retries=int(os.getenv("PURVIEW_MAX_RETRIES", "3")),
             timeout=int(os.getenv("PURVIEW_TIMEOUT", "30")),
-            batch_size=int(os.getenv("PURVIEW_BATCH_SIZE", "100"))
+            batch_size=int(os.getenv("PURVIEW_BATCH_SIZE", "100")),
         )
 
     async def _ensure_client(self):
@@ -92,11 +93,11 @@ class PurviewMCPServer:
                         "properties": {
                             "guid": {
                                 "type": "string",
-                                "description": "The unique GUID of the entity"
+                                "description": "The unique GUID of the entity",
                             }
                         },
-                        "required": ["guid"]
-                    }
+                        "required": ["guid"],
+                    },
                 ),
                 Tool(
                     name="create_entity",
@@ -106,11 +107,11 @@ class PurviewMCPServer:
                         "properties": {
                             "entity_data": {
                                 "type": "object",
-                                "description": "Entity data with typeName and attributes"
+                                "description": "Entity data with typeName and attributes",
                             }
                         },
-                        "required": ["entity_data"]
-                    }
+                        "required": ["entity_data"],
+                    },
                 ),
                 Tool(
                     name="update_entity",
@@ -120,11 +121,11 @@ class PurviewMCPServer:
                         "properties": {
                             "entity_data": {
                                 "type": "object",
-                                "description": "Entity data with guid and updated attributes"
+                                "description": "Entity data with guid and updated attributes",
                             }
                         },
-                        "required": ["entity_data"]
-                    }
+                        "required": ["entity_data"],
+                    },
                 ),
                 Tool(
                     name="delete_entity",
@@ -134,11 +135,11 @@ class PurviewMCPServer:
                         "properties": {
                             "guid": {
                                 "type": "string",
-                                "description": "The unique GUID of the entity to delete"
+                                "description": "The unique GUID of the entity to delete",
                             }
                         },
-                        "required": ["guid"]
-                    }
+                        "required": ["guid"],
+                    },
                 ),
                 Tool(
                     name="search_entities",
@@ -148,25 +149,22 @@ class PurviewMCPServer:
                         "properties": {
                             "query": {
                                 "type": "string",
-                                "description": "Search query string (keywords)"
+                                "description": "Search query string (keywords)",
                             },
-                            "filter": {
-                                "type": "object",
-                                "description": "Optional filter criteria"
-                            },
+                            "filter": {"type": "object", "description": "Optional filter criteria"},
                             "limit": {
                                 "type": "integer",
                                 "description": "Maximum number of results (default: 50)",
-                                "default": 50
+                                "default": 50,
                             },
                             "offset": {
                                 "type": "integer",
                                 "description": "Offset for pagination (default: 0)",
-                                "default": 0
-                            }
+                                "default": 0,
+                            },
                         },
-                        "required": ["query"]
-                    }
+                        "required": ["query"],
+                    },
                 ),
                 Tool(
                     name="batch_create_entities",
@@ -177,11 +175,11 @@ class PurviewMCPServer:
                             "entities": {
                                 "type": "array",
                                 "description": "Array of entity data objects",
-                                "items": {"type": "object"}
+                                "items": {"type": "object"},
                             }
                         },
-                        "required": ["entities"]
-                    }
+                        "required": ["entities"],
+                    },
                 ),
                 Tool(
                     name="batch_update_entities",
@@ -192,11 +190,11 @@ class PurviewMCPServer:
                             "entities": {
                                 "type": "array",
                                 "description": "Array of entity data objects with guids",
-                                "items": {"type": "object"}
+                                "items": {"type": "object"},
                             }
                         },
-                        "required": ["entities"]
-                    }
+                        "required": ["entities"],
+                    },
                 ),
                 # Lineage Operations
                 Tool(
@@ -207,22 +205,22 @@ class PurviewMCPServer:
                         "properties": {
                             "guid": {
                                 "type": "string",
-                                "description": "Entity GUID to get lineage for"
+                                "description": "Entity GUID to get lineage for",
                             },
                             "direction": {
                                 "type": "string",
                                 "description": "Lineage direction: INPUT, OUTPUT, or BOTH",
                                 "enum": ["INPUT", "OUTPUT", "BOTH"],
-                                "default": "BOTH"
+                                "default": "BOTH",
                             },
                             "depth": {
                                 "type": "integer",
                                 "description": "Lineage depth (default: 3)",
-                                "default": 3
-                            }
+                                "default": 3,
+                            },
                         },
-                        "required": ["guid"]
-                    }
+                        "required": ["guid"],
+                    },
                 ),
                 Tool(
                     name="create_lineage",
@@ -232,20 +230,17 @@ class PurviewMCPServer:
                         "properties": {
                             "lineage_data": {
                                 "type": "object",
-                                "description": "Lineage relationship data"
+                                "description": "Lineage relationship data",
                             }
                         },
-                        "required": ["lineage_data"]
-                    }
+                        "required": ["lineage_data"],
+                    },
                 ),
                 # Collection Operations
                 Tool(
                     name="list_collections",
                     description="List all collections in the Purview account.",
-                    inputSchema={
-                        "type": "object",
-                        "properties": {}
-                    }
+                    inputSchema={"type": "object", "properties": {}},
                 ),
                 Tool(
                     name="get_collection",
@@ -255,11 +250,11 @@ class PurviewMCPServer:
                         "properties": {
                             "collection_name": {
                                 "type": "string",
-                                "description": "Name of the collection"
+                                "description": "Name of the collection",
                             }
                         },
-                        "required": ["collection_name"]
-                    }
+                        "required": ["collection_name"],
+                    },
                 ),
                 Tool(
                     name="create_collection",
@@ -269,15 +264,15 @@ class PurviewMCPServer:
                         "properties": {
                             "collection_name": {
                                 "type": "string",
-                                "description": "Name for the new collection"
+                                "description": "Name for the new collection",
                             },
                             "collection_data": {
                                 "type": "object",
-                                "description": "Collection data with friendlyName, description, parentCollection"
-                            }
+                                "description": "Collection data with friendlyName, description, parentCollection",
+                            },
                         },
-                        "required": ["collection_name", "collection_data"]
-                    }
+                        "required": ["collection_name", "collection_data"],
+                    },
                 ),
                 Tool(
                     name="delete_collection",
@@ -287,11 +282,11 @@ class PurviewMCPServer:
                         "properties": {
                             "collection_name": {
                                 "type": "string",
-                                "description": "Name of the collection to delete"
+                                "description": "Name of the collection to delete",
                             }
                         },
-                        "required": ["collection_name"]
-                    }
+                        "required": ["collection_name"],
+                    },
                 ),
                 Tool(
                     name="get_collection_path",
@@ -301,11 +296,11 @@ class PurviewMCPServer:
                         "properties": {
                             "collection_name": {
                                 "type": "string",
-                                "description": "Name of the collection"
+                                "description": "Name of the collection",
                             }
                         },
-                        "required": ["collection_name"]
-                    }
+                        "required": ["collection_name"],
+                    },
                 ),
                 # Glossary Operations
                 Tool(
@@ -316,10 +311,10 @@ class PurviewMCPServer:
                         "properties": {
                             "glossary_guid": {
                                 "type": "string",
-                                "description": "Optional GUID of a specific glossary"
+                                "description": "Optional GUID of a specific glossary",
                             }
-                        }
-                    }
+                        },
+                    },
                 ),
                 Tool(
                     name="create_glossary_term",
@@ -329,11 +324,11 @@ class PurviewMCPServer:
                         "properties": {
                             "term_data": {
                                 "type": "object",
-                                "description": "Glossary term data with name, description, etc."
+                                "description": "Glossary term data with name, description, etc.",
                             }
                         },
-                        "required": ["term_data"]
-                    }
+                        "required": ["term_data"],
+                    },
                 ),
                 Tool(
                     name="assign_term_to_entities",
@@ -343,16 +338,16 @@ class PurviewMCPServer:
                         "properties": {
                             "term_guid": {
                                 "type": "string",
-                                "description": "GUID of the glossary term"
+                                "description": "GUID of the glossary term",
                             },
                             "entity_guids": {
                                 "type": "array",
                                 "description": "Array of entity GUIDs to assign the term to",
-                                "items": {"type": "string"}
-                            }
+                                "items": {"type": "string"},
+                            },
                         },
-                        "required": ["term_guid", "entity_guids"]
-                    }
+                        "required": ["term_guid", "entity_guids"],
+                    },
                 ),
                 # CSV Operations
                 Tool(
@@ -363,15 +358,15 @@ class PurviewMCPServer:
                         "properties": {
                             "csv_file_path": {
                                 "type": "string",
-                                "description": "Path to the CSV file"
+                                "description": "Path to the CSV file",
                             },
                             "mapping_config": {
                                 "type": "object",
-                                "description": "Mapping configuration for CSV columns to entity attributes"
-                            }
+                                "description": "Mapping configuration for CSV columns to entity attributes",
+                            },
                         },
-                        "required": ["csv_file_path", "mapping_config"]
-                    }
+                        "required": ["csv_file_path", "mapping_config"],
+                    },
                 ),
                 Tool(
                     name="export_entities_to_csv",
@@ -381,29 +376,26 @@ class PurviewMCPServer:
                         "properties": {
                             "query": {
                                 "type": "string",
-                                "description": "Search query to find entities to export"
+                                "description": "Search query to find entities to export",
                             },
                             "csv_file_path": {
                                 "type": "string",
-                                "description": "Path for the output CSV file"
+                                "description": "Path for the output CSV file",
                             },
                             "columns": {
                                 "type": "array",
                                 "description": "Optional list of columns to include",
-                                "items": {"type": "string"}
-                            }
+                                "items": {"type": "string"},
+                            },
                         },
-                        "required": ["query", "csv_file_path"]
-                    }
+                        "required": ["query", "csv_file_path"],
+                    },
                 ),
                 # Account Operations
                 Tool(
                     name="get_account_properties",
                     description="Get properties of the Purview account.",
-                    inputSchema={
-                        "type": "object",
-                        "properties": {}
-                    }
+                    inputSchema={"type": "object", "properties": {}},
                 ),
             ]
 
@@ -416,11 +408,7 @@ class PurviewMCPServer:
                 return [TextContent(type="text", text=json.dumps(result, indent=2))]
             except Exception as e:
                 logger.error(f"Tool {name} failed: {e}", exc_info=True)
-                error_result = {
-                    "error": str(e),
-                    "tool": name,
-                    "arguments": arguments
-                }
+                error_result = {"error": str(e), "tool": name, "arguments": arguments}
                 return [TextContent(type="text", text=json.dumps(error_result, indent=2))]
 
     async def _execute_tool(self, name: str, arguments: Dict[str, Any]) -> Any:
@@ -445,7 +433,7 @@ class PurviewMCPServer:
                 query=arguments["query"],
                 filter=arguments.get("filter"),
                 limit=arguments.get("limit", 50),
-                offset=arguments.get("offset", 0)
+                offset=arguments.get("offset", 0),
             )
 
         elif name == "batch_create_entities":
@@ -459,7 +447,7 @@ class PurviewMCPServer:
             return await self.client.get_lineage(
                 guid=arguments["guid"],
                 direction=arguments.get("direction", "BOTH"),
-                depth=arguments.get("depth", 3)
+                depth=arguments.get("depth", 3),
             )
 
         elif name == "create_lineage":
@@ -475,7 +463,7 @@ class PurviewMCPServer:
         elif name == "create_collection":
             return await self.client.create_collection(
                 collection_name=arguments["collection_name"],
-                collection_data=arguments["collection_data"]
+                collection_data=arguments["collection_data"],
             )
 
         elif name == "delete_collection":
@@ -495,22 +483,20 @@ class PurviewMCPServer:
 
         elif name == "assign_term_to_entities":
             return await self.client.assign_term_to_entities(
-                term_guid=arguments["term_guid"],
-                entity_guids=arguments["entity_guids"]
+                term_guid=arguments["term_guid"], entity_guids=arguments["entity_guids"]
             )
 
         # CSV Operations
         elif name == "import_entities_from_csv":
             return await self.client.import_entities_from_csv(
-                csv_file_path=arguments["csv_file_path"],
-                mapping_config=arguments["mapping_config"]
+                csv_file_path=arguments["csv_file_path"], mapping_config=arguments["mapping_config"]
             )
 
         elif name == "export_entities_to_csv":
             return await self.client.export_entities_to_csv(
                 query=arguments["query"],
                 csv_file_path=arguments["csv_file_path"],
-                columns=arguments.get("columns")
+                columns=arguments.get("columns"),
             )
 
         # Account Operations
@@ -526,9 +512,7 @@ class PurviewMCPServer:
             async with stdio_server() as (read_stream, write_stream):
                 logger.info("Starting Purview MCP Server...")
                 await self.server.run(
-                    read_stream,
-                    write_stream,
-                    self.server.create_initialization_options()
+                    read_stream, write_stream, self.server.create_initialization_options()
                 )
         except Exception as e:
             logger.error(f"Server error: {e}", exc_info=True)
@@ -542,9 +526,12 @@ class PurviewMCPServer:
 async def main():
     """Main entry point"""
     if not MCP_INSTALLED:
-        print("ERROR: mcp package not installed. Install with: pip install mcp>=1.0.0", file=sys.stderr)
+        print(
+            "ERROR: mcp package not installed. Install with: pip install mcp>=1.0.0",
+            file=sys.stderr,
+        )
         sys.exit(1)
-    
+
     try:
         server = PurviewMCPServer()
         await server.run()

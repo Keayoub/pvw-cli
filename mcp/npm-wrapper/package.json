@@ -1,0 +1,25 @@
+{
+  "name": "@mcp/purview-mcp-cli",
+  "version": "0.1.0",
+  "description": "Launcher CLI for Purview MCP server (runs Docker image interactively)",
+  "bin": {
+    "purview-mcp": "./bin/index.js"
+  },
+  "engines": {
+    "node": ">=14"
+  },
+  "dependencies": {
+    "execa": "^6.0.0",
+    "minimist": "^1.2.8"
+  },
+  "keywords": ["mcp", "purview", "ai", "cli"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Keayoub/pvw-cli.git",
+    "directory": "mcp/npm-wrapper"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT"
+}

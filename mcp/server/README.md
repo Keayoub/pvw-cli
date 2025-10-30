@@ -4,12 +4,14 @@ A Model Context Protocol (MCP) server that integrates Microsoft Purview with Lar
 
 ## Overview
 
-The Purview MCP Server wraps the `purviewcli` Python library to provide a standardized interface for AI assistants like Claude Desktop, Cline, and other MCP-compatible tools. It exposes 20+ Purview operations as tools that LLMs can discover and use to automate data governance workflows.
+The Purview MCP Server wraps the `purviewcli` Python library to provide a standardized interface for AI assistants like Claude Desktop, Cline, cursor, and other MCP-compatible tools. It exposes 20+ Purview operations as tools that LLMs can discover and use to automate data governance workflows.
 
 ### Key Features
 
-- **18+ Purview Tools** - Entity, lineage, collection, glossary, CSV, and account operations
+- **40+ Purview Tools** - Entity, lineage, collection, glossary, CSV, account, types, relationships, scan, insights, and policy operations
+- **GitHub Copilot Integration** - Auto-discovered by VS Code and Copilot through official MCP extension
 - **Natural Language Interface** - Ask questions like "Search for SQL entities" or "Create a new collection"
+- **VS Code Extension** - One-click setup with diagnostics, auto-start, and configuration management
 - **Azure Authentication** - Seamless authentication using Azure DefaultAzureCredential
 - **Async/Await** - Efficient async operations for better performance
 - **Error Handling** - Graceful error handling with detailed logging
@@ -130,6 +132,128 @@ Add to Cline's MCP settings (`.cline/mcp_settings.json` in your workspace):
 ```
 
 Restart VS Code and Cline will discover the Purview tools.
+
+## GitHub Copilot & VS Code Integration
+
+### VS Code Extension (Recommended)
+
+The easiest way to use the Purview MCP Server with GitHub Copilot and VS Code is through the **Purview MCP Server extension**.
+
+#### Installation
+
+**From VSIX:**
+```bash
+code --install-extension purview-mcp-1.0.0.vsix
+```
+
+**From VS Code Marketplace** (when published):
+1. Open VS Code Extensions (Ctrl+Shift+X)
+2. Search for "Purview MCP Server"
+3. Click Install
+
+#### Quick Setup
+
+1. **Install the extension** and reload VS Code
+2. **Configure your Purview account** (Settings → Search "purview-mcp"):
+   - `purview-mcp.accountName`: Your Purview account name (required)
+   - `purview-mcp.accountId`: Purview account ID for Unified Catalog (optional)
+   - `purview-mcp.tenantId`: Azure tenant ID (optional)
+3. **Authenticate with Azure**: Run `az login` in a terminal
+4. **Start the server**: Run `Purview MCP: Start Server` from Command Palette (Ctrl+Shift+P)
+
+#### Key Features
+
+- **Auto-discovery**: VS Code and GitHub Copilot automatically detect the MCP server
+- **Auto-start**: Optionally start the server when VS Code launches (`purview-mcp.autoStart`)
+- **Diagnostics**: Built-in validation for Python, packages, authentication, and files
+- **Commands**:
+  - `Purview MCP: Start Server` - Start the MCP server with diagnostics
+  - `Purview MCP: Stop Server` - Stop the running server
+  - `Purview MCP: Diagnose Setup` - Validate your configuration
+
+#### MCP Server Declaration
+
+The extension automatically declares the MCP server in `package.json`:
+
+```json
+"mcp": {
+  "servers": {
+    "purview": {
+      "command": "python",
+      "args": ["${workspaceFolder}/mcp/server.py"],
+      "env": {
+        "PURVIEW_ACCOUNT_NAME": "${config:purview-mcp.accountName}",
+        "PURVIEW_ACCOUNT_ID": "${config:purview-mcp.accountId}",
+        "AZURE_TENANT_ID": "${config:purview-mcp.tenantId}"
+      }
+    }
+  }
+}
+```
+
+This tells VS Code and Copilot:
+- **How to start** the server (`python` command)
+- **Where to find** the server script (`mcp/server.py`)
+- **What environment variables** are needed (from VS Code settings)
+
+#### Auto-start Support
+
+VS Code 1.103+ supports auto-starting MCP servers. To enable:
+
+1. Open VS Code Settings
+2. Search for `chat.mcp.autostart`
+3. Set to `newAndOutdated`
+
+Alternatively, enable via extension settings:
+- `purview-mcp.autoStart`: Set to `true` to start the server when VS Code launches
+
+### Using with GitHub Copilot
+
+Once configured, use Purview tools directly in Copilot chats:
+
+**Example 1: Search the Data Catalog**
+```
+@copilot search the Purview catalog for entities containing "customer"
+```
+
+**Example 2: Get Entity Details**
+```
+@copilot get details for the entity with GUID abc-123-def
+```
+
+**Example 3: List Glossary Terms**
+```
+@copilot show me all glossary terms in Purview
+```
+
+**Example 4: Query Lineage**
+```
+@copilot show the lineage for entity xyz-456
+```
+
+### Troubleshooting Copilot Integration
+
+#### Server Not Appearing in MCP List
+
+1. Make sure the extension is installed and enabled
+2. Reload VS Code window (Developer: Reload Window)
+3. Run `MCP: List Servers` to verify the server is registered
+4. Check that `mcp/server.py` exists in your workspace
+
+#### Server Fails to Start
+
+1. Run `Purview MCP: Diagnose Setup` to check your configuration
+2. Verify Python is installed: `python --version` (need 3.8+)
+3. Check you're authenticated: `az login`
+4. Verify your Purview account name is correct in settings
+5. Check the terminal output for error messages
+
+#### Copilot Not Using the Tools
+
+1. Make sure the server is running (check the terminal)
+2. Try explicitly mentioning "Purview" in your chat message
+3. Restart the server: `Purview MCP: Stop Server` then `Purview MCP: Start Server`
+4. Check VS Code version (need 1.103+ for MCP support)
 
 ## Available Tools
 
@@ -434,12 +558,16 @@ MIT License - see the parent repository for full license text.
 ### Version 1.0.0 (October 2025)
 
 - Initial release
-- 20+ Purview operations exposed as MCP tools
+- 40+ Purview operations exposed as MCP tools
 - Support for entity, lineage, collection, glossary, CSV, and account operations
 - Azure authentication via DefaultAzureCredential
 - Async/await pattern for efficient operations
 - Comprehensive error handling and logging
 - Compatible with Claude Desktop, Cline, and other MCP clients
+- **VS Code Extension**: Auto-discovery by GitHub Copilot and VS Code Chat
+- **Diagnostics**: Built-in validation for Python, packages, authentication, and files
+- **Auto-start**: Optionally start server on VS Code launch
+- **Environment Variables**: Support for PURVIEW_ACCOUNT_NAME, PURVIEW_ACCOUNT_ID, and AZURE_TENANT_ID
 
 ## Acknowledgments
 

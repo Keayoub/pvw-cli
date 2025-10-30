@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  purview-mcp:
+    build:
+      context: ..
+      dockerfile: mcp/Dockerfile
+    image: purview-mcp:latest
+    stdin_open: true # keep STDIN open so stdio MCP works
+    tty: true
+    environment:
+      - PURVIEW_ACCOUNT_NAME=${PURVIEW_ACCOUNT_NAME}
+      - AZURE_TENANT_ID=${AZURE_TENANT_ID}
+      - AZURE_CLIENT_ID=${AZURE_CLIENT_ID}
+      - AZURE_CLIENT_SECRET=${AZURE_CLIENT_SECRET}
+      - AZURE_REGION=${AZURE_REGION}
+    volumes:
+      - ..:/app:rw
+    # In development you'll typically run an LLM client locally which spawns
+    # process for stdio. For container-based stdio testing, attach stdin (-i)
+    # and use host networking if needed for Azure CLI or other tools.
+    network_mode: "bridge"
