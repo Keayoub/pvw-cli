@@ -1,0 +1,71 @@
+flowchart TB
+    subgraph Purview["Microsoft Purview"]
+        direction TB
+        
+        subgraph BM["Business Metadata Groups"]
+            direction TB
+            BMDef["Business Metadata Definition<br/>(e.g., Global, DataQuality)"]
+            
+            BMDef --> Scope{"applicableConstructs<br/>Scope"}
+        end
+        
+        subgraph Scopes["3 Types of Scopes"]
+            direction TB
+            
+            BC["Business Concept Attributes<br/>domain:*, businessConcept:*"]
+            DS["Data Set Attributes<br/>dataset:*"]
+            UN["Universal Attributes<br/>All scopes combined"]
+        end
+        
+        Scope --> BC
+        Scope --> DS
+        Scope --> UN
+        
+        subgraph BCTargets["Business Concepts"]
+            direction LR
+            BCT1["Glossary Terms"]
+            BCT2["Domains"]
+            BCT3["Business Rules"]
+        end
+        
+        subgraph DSTargets["Data Assets"]
+            direction LR
+            DST1["Tables"]
+            DST2["Databases"]
+            DST3["Files"]
+            DST4["Containers"]
+        end
+        
+        BC --> BCTargets
+        DS --> DSTargets
+        UN --> BCTargets
+        UN --> DSTargets
+        
+        subgraph UITabs["Purview UI Tabs"]
+            direction LR
+            Tab1["Business concept<br/>attributes tab"]
+            Tab2["Data set<br/>attributes tab"]
+        end
+        
+        BCTargets --> Tab1
+        DSTargets --> Tab2
+        
+        subgraph YourSetup["Your Current Setup"]
+            direction TB
+            YG["Group: Global<br/>Custom001 (Enum)<br/>Sample (string)"]
+            YS["Scope: domain, businessConcept<br/>Type: Business Concept"]
+            YL["Location: Business concept attributes tab"]
+            
+            YG --> YS
+            YS --> YL
+        end
+        
+        BC -.->|"Your Global<br/>group is here"| YourSetup
+    end
+    
+    style BC fill:#90EE90,stroke:#333,stroke-width:2px
+    style DS fill:#87CEEB,stroke:#333,stroke-width:2px
+    style UN fill:#DDA0DD,stroke:#333,stroke-width:2px
+    style YourSetup fill:#FFE4B5,stroke:#FF8C00,stroke-width:3px
+    style Tab1 fill:#90EE90,stroke:#333,stroke-width:2px
+    style Tab2 fill:#87CEEB,stroke:#333,stroke-width:2px

@@ -1,0 +1,44 @@
+{
+  "businessMetadataDefs": [
+    {
+      "category": "BUSINESS_METADATA",
+      "name": "Governance",
+      "description": "Governance and compliance metadata for business concepts (Glossary Terms only)",
+      "attributeDefs": [
+        {
+          "name": "DataOwner",
+          "typeName": "string",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "options": {
+            "maxStrLength": "200",
+            "applicableEntityTypes": "[\"AtlasGlossaryTerm\"]"
+          }
+        },
+        {
+          "name": "ComplianceStatus",
+          "typeName": "string",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "options": {
+            "maxStrLength": "50",
+            "applicableEntityTypes": "[\"AtlasGlossaryTerm\"]"
+          }
+        },
+        {
+          "name": "ReviewDate",
+          "typeName": "date",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "options": {
+            "applicableEntityTypes": "[\"AtlasGlossaryTerm\"]"
+          }
+        }
+      ],
+      "options": {
+        "dataGovernanceOptions": "{\"applicableConstructs\":[\"businessConcept:AtlasGlossaryTerm\"]}",
+        "applicableEntityTypes": "[\"AtlasGlossaryTerm\"]"
+      }
+    }
+  ]
+}

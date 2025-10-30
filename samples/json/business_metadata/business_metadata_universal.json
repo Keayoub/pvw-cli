@@ -1,0 +1,38 @@
+{
+  "businessMetadataDefs": [
+    {
+      "category": "BUSINESS_METADATA",
+      "name": "Documentation",
+      "description": "Documentation metadata applicable to all assets and concepts",
+      "attributeDefs": [
+        {
+          "name": "DocumentationLink",
+          "typeName": "string",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "options": {
+            "maxStrLength": "500"
+          }
+        },
+        {
+          "name": "LastUpdated",
+          "typeName": "date",
+          "isOptional": true,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "UpdatedBy",
+          "typeName": "string",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "options": {
+            "maxStrLength": "200"
+          }
+        }
+      ],
+      "options": {
+        "dataGovernanceOptions": "{\"applicableConstructs\":[\"domain:*\",\"businessConcept:*\",\"dataset:*\"]}"
+      }
+    }
+  ]
+}

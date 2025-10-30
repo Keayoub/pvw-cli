@@ -1,0 +1,43 @@
+{
+  "name": "purview-mcp-server",
+  "version": "1.0.0",
+  "description": "Model Context Protocol server for Microsoft Purview CLI - enables LLM-powered data governance workflows",
+  "type": "module",
+  "bin": {
+    "purview-mcp-server": "./server.py"
+  },
+  "scripts": {
+    "start": "python server.py"
+  },
+  "mcp": {
+    "command": "python",
+    "args": ["server.py"],
+    "env": {
+      "PURVIEW_ACCOUNT_NAME": "${PURVIEW_ACCOUNT_NAME}",
+      "AZURE_TENANT_ID": "${AZURE_TENANT_ID}",
+      "AZURE_REGION": "${AZURE_REGION}",
+      "PURVIEW_MAX_RETRIES": "${PURVIEW_MAX_RETRIES:-3}",
+      "PURVIEW_TIMEOUT": "${PURVIEW_TIMEOUT:-30}",
+      "PURVIEW_BATCH_SIZE": "${PURVIEW_BATCH_SIZE:-100}"
+    }
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "purview",
+    "microsoft-purview",
+    "data-governance",
+    "llm",
+    "ai-assistant",
+    "claude",
+    "cline"
+  ],
+  "author": "AYOUB KEBAILI",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Keayoub/pvw-cli.git",
+    "directory": "mcp"
+  },
+  "homepage": "https://github.com/Keayoub/pvw-cli/tree/main/mcp"
+}

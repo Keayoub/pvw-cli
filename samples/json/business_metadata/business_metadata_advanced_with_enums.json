@@ -1,0 +1,104 @@
+{
+  "enumDefs": [
+    {
+      "category": "ENUM",
+      "name": "StatusEnum",
+      "description": "Status values for governance workflows",
+      "elementDefs": [
+        {
+          "ordinal": 0,
+          "value": "Draft"
+        },
+        {
+          "ordinal": 1,
+          "value": "InReview"
+        },
+        {
+          "ordinal": 2,
+          "value": "Approved"
+        },
+        {
+          "ordinal": 3,
+          "value": "Rejected"
+        },
+        {
+          "ordinal": 4,
+          "value": "Archived"
+        }
+      ]
+    },
+    {
+      "category": "ENUM",
+      "name": "ConfidentialityEnum",
+      "description": "Confidentiality levels for data classification",
+      "elementDefs": [
+        {
+          "ordinal": 0,
+          "value": "Public"
+        },
+        {
+          "ordinal": 1,
+          "value": "Internal"
+        },
+        {
+          "ordinal": 2,
+          "value": "Confidential"
+        },
+        {
+          "ordinal": 3,
+          "value": "HighlyConfidential"
+        }
+      ]
+    }
+  ],
+  "businessMetadataDefs": [
+    {
+      "category": "BUSINESS_METADATA",
+      "name": "AdvancedGovernance",
+      "description": "Advanced governance metadata with enum types (Glossary Terms only)",
+      "attributeDefs": [
+        {
+          "name": "Status",
+          "typeName": "StatusEnum",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "options": {
+            "applicableEntityTypes": "[\"AtlasGlossaryTerm\"]"
+          }
+        },
+        {
+          "name": "Confidentiality",
+          "typeName": "ConfidentialityEnum",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "options": {
+            "applicableEntityTypes": "[\"AtlasGlossaryTerm\"]"
+          }
+        },
+        {
+          "name": "ApprovedBy",
+          "typeName": "string",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "options": {
+            "maxStrLength": "200",
+            "applicableEntityTypes": "[\"AtlasGlossaryTerm\"]"
+          }
+        },
+        {
+          "name": "ApprovalDate",
+          "typeName": "date",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "options": {
+            "applicableEntityTypes": "[\"AtlasGlossaryTerm\"]"
+          }
+        }
+      ],
+      "options": {
+        "dataGovernanceOptions": "{\"applicableConstructs\":[\"businessConcept:AtlasGlossaryTerm\"]}",
+        "applicableEntityTypes": "[\"AtlasGlossaryTerm\"]"
+      }
+    }
+  ]
+}

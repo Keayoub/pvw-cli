@@ -1,6 +1,6 @@
-﻿# PURVIEW CLI v1.2.4 - Microsoft Purview Automation & Data Governance
+# PURVIEW CLI v1.2.5 - Microsoft Purview Automation & Data Governance
 
-> **LATEST UPDATE v1.2.4 (October 2025):**
+> **LATEST UPDATE v1.2.5 (October 2025):**
 >
 > - **[NEW]** Lineage CSV Import - Bulk import lineage relationships from CSV files with validation and sample generation
 > - **[FIXED]** Search API Integration - Fixed `suggest` and `autocomplete` API payload format (HTTP 400 errors resolved)
@@ -19,7 +19,7 @@
 
 ## What is PVW CLI?
 
-**PVW CLI v1.2.4** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* including:
+**PVW CLI v1.2.5** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* including:
 
 - **Unified Catalog (UC) Management** - Complete governance domains, glossary terms, data products, OKRs, CDEs
 - **Bulk Operations** - Import/export terms from CSV/JSON, bulk delete scripts with progress tracking
@@ -33,6 +33,15 @@
 - Classification, label, and status management
 
 The CLI is designed for data engineers, stewards, architects, and platform teams to automate, scale, and enhance their Microsoft Purview experience.
+
+### NEW: MCP Server for AI Assistants
+
+**[NEW]** Model Context Protocol (MCP) server enables LLM-powered data governance workflows! 
+
+- Natural language interface to Purview catalog
+- 20+ tools for AI assistants (Claude, Cline, etc.)
+- Automate complex multi-step operations
+- See `mcp/README.md` for setup instructions
 
 ---
 
@@ -111,8 +120,9 @@ For more advanced usage, see the documentation in `doc/` or the project docs: <h
 
 ## Overview
 
-**PVW CLI v1.2.4** is a modern command-line interface and Python library for Microsoft Purview, enabling:
+**PVW CLI v1.2.5** is a modern command-line interface and Python library for Microsoft Purview, enabling:
 
+- **MCP Server** - Natural language interface for AI assistants (Claude, Cline)
 - Advanced data catalog search and discovery
 - Bulk import/export of entities, glossary terms, and lineage
 - Real-time monitoring and analytics
@@ -475,7 +485,7 @@ The PVW CLI provides advanced search using the latest Microsoft Purview Discover
 - Use autocomplete and suggestion endpoints
 - Perform faceted, time-based, and entity-type-specific queries
 
-**v1.2.4 Improvements:**
+**v1.2.5 Improvements:**
 
 - Fixed `suggest` and `autocomplete` API payload format (removed empty filter causing HTTP 400 errors)
 - Enhanced collection display with robust type checking and fallback logic
@@ -1239,7 +1249,7 @@ PVW CLI includes comprehensive sample files and scripts for bulk operations:
 - Success/failure tracking per term
 - Rate limiting (200ms delay)
 
-### Critical Fixes (v1.2.4)
+### Critical Fixes (v1.2.5)
 
 - **Search API Suggest/Autocomplete:** Fixed HTTP 400 errors by removing empty filter objects from payload
 - **Collection Display:** Enhanced collection name detection with proper fallback logic (isinstance checks)
@@ -1302,9 +1312,9 @@ See [LICENSE](LICENSE) file for details.
 
 ---
 
-**PVW CLI v1.2.4 empowers data engineers, stewards, and architects to automate, scale, and enhance their Microsoft Purview experience with powerful command-line and programmatic capabilities.**
+**PVW CLI v1.2.5 empowers data engineers, stewards, and architects to automate, scale, and enhance their Microsoft Purview experience with powerful command-line and programmatic capabilities.**
 
-**Latest in v1.2.4:**
+**Latest in v1.2.5:**
 
 - Fixed Search API suggest/autocomplete (HTTP 400 errors resolved)
 - Enhanced collection display with robust fallback logic

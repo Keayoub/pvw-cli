@@ -1,0 +1,44 @@
+{
+  "businessMetadataDefs": [
+    {
+      "category": "BUSINESS_METADATA",
+      "name": "Privacy",
+      "description": "Privacy classification for sensitive terms (Glossary Terms only)",
+      "attributeDefs": [
+        {
+          "name": "PrivacyLevel",
+          "typeName": "string",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "options": {
+            "maxStrLength": "50",
+            "applicableEntityTypes": "[\"AtlasGlossaryTerm\"]"
+          }
+        },
+        {
+          "name": "PIIContained",
+          "typeName": "boolean",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "options": {
+            "applicableEntityTypes": "[\"AtlasGlossaryTerm\"]"
+          }
+        },
+        {
+          "name": "DataClassification",
+          "typeName": "string",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "options": {
+            "maxStrLength": "100",
+            "applicableEntityTypes": "[\"AtlasGlossaryTerm\"]"
+          }
+        }
+      ],
+      "options": {
+        "dataGovernanceOptions": "{\"applicableConstructs\":[\"businessConcept:AtlasGlossaryTerm\"]}",
+        "applicableEntityTypes": "[\"AtlasGlossaryTerm\"]"
+      }
+    }
+  ]
+}

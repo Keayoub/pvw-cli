@@ -1,0 +1,59 @@
+{
+  "businessMetadataDefs": [
+    {
+      "category": "BUSINESS_METADATA",
+      "name": "DataProductGovernance",
+      "description": "Governance metadata for Data Products",
+      "attributeDefs": [
+        {
+          "name": "ProductOwner",
+          "typeName": "string",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "options": {
+            "maxStrLength": "200",
+            "isPurviewDataGovernanceDefinition": "true",
+            "dataGovernanceOptions": "{\"inheritApplicableConstructsFromGroup\":true,\"applicableConstructs\":[]}"
+          }
+        },
+        {
+          "name": "BusinessDomain",
+          "typeName": "string",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "options": {
+            "maxStrLength": "100",
+            "isPurviewDataGovernanceDefinition": "true",
+            "dataGovernanceOptions": "{\"inheritApplicableConstructsFromGroup\":true,\"applicableConstructs\":[]}"
+          }
+        },
+        {
+          "name": "DataClassification",
+          "typeName": "string",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "options": {
+            "maxStrLength": "50",
+            "isPurviewDataGovernanceDefinition": "true",
+            "dataGovernanceOptions": "{\"inheritApplicableConstructsFromGroup\":true,\"applicableConstructs\":[]}"
+          }
+        },
+        {
+          "name": "ComplianceStatus",
+          "typeName": "string",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "options": {
+            "maxStrLength": "50",
+            "isPurviewDataGovernanceDefinition": "true",
+            "dataGovernanceOptions": "{\"inheritApplicableConstructsFromGroup\":true,\"applicableConstructs\":[]}"
+          }
+        }
+      ],
+      "options": {
+        "isPurviewDataGovernanceDefinition": "true",
+        "dataGovernanceOptions": "{\"applicableConstructs\":[\"domainScope:all\",\"businessConcept:dataProduct\",\"dataProductType:all\"]}"
+      }
+    }
+  ]
+}

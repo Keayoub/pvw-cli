@@ -1,0 +1,39 @@
+{
+  "businessMetadataDefs": [
+    {
+      "category": "BUSINESS_METADATA",
+      "name": "DataQuality",
+      "description": "Data quality metrics for data assets",
+      "attributeDefs": [
+        {
+          "name": "QualityScore",
+          "typeName": "int",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "options": {
+            "minValue": "0",
+            "maxValue": "100"
+          }
+        },
+        {
+          "name": "LastValidated",
+          "typeName": "date",
+          "isOptional": true,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "ValidationNotes",
+          "typeName": "string",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "options": {
+            "maxStrLength": "1000"
+          }
+        }
+      ],
+      "options": {
+        "dataGovernanceOptions": "{\"applicableConstructs\":[\"dataset:*\"]}"
+      }
+    }
+  ]
+}
