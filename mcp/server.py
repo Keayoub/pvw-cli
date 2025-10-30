@@ -14,9 +14,16 @@ try:
     from mcp.server import Server
     from mcp.server.stdio import stdio_server
     from mcp.types import Tool, TextContent
-except ImportError:
-    print("ERROR: mcp package not installed. Install with: pip install mcp>=1.0.0", file=sys.stderr)
-    sys.exit(1)
+    MCP_INSTALLED = True
+except ImportError as e:
+    # Store the error but don't exit yet - allow module inspection for tests
+    MCP_INSTALLED = False
+    _MCP_IMPORT_ERROR = str(e)
+    # Create placeholder types so the code can be parsed
+    Server = None
+    stdio_server = None
+    Tool = None
+    TextContent = None
 
 # Add parent directory to path to import purviewcli
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -36,6 +43,12 @@ class PurviewMCPServer:
     """MCP Server wrapping PurviewClient for LLM integration"""
 
     def __init__(self):
+        if not MCP_INSTALLED:
+            raise ImportError(
+                f"MCP package is required but not installed. "
+                f"Install with: pip install mcp>=1.0.0\n"
+                f"Original error: {_MCP_IMPORT_ERROR}"
+            )
         self.server = Server("purview-mcp-server")
         self.client: Optional[PurviewClient] = None
         self._setup_handlers()
@@ -528,6 +541,10 @@ class PurviewMCPServer:
 
 async def main():
     """Main entry point"""
+    if not MCP_INSTALLED:
+        print("ERROR: mcp package not installed. Install with: pip install mcp>=1.0.0", file=sys.stderr)
+        sys.exit(1)
+    
     try:
         server = PurviewMCPServer()
         await server.run()

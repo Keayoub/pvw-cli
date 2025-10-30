@@ -3,12 +3,15 @@ Tests for MCP Server
 """
 
 import pytest
-import sys
 import os
 from unittest.mock import Mock, patch, AsyncMock
 
-# Add parent directory to path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Always import the server module - it's designed to allow inspection even without MCP
+from mcp import server as mcp_server_module
+from mcp.server import PurviewMCPServer
+
+# Check if MCP package is actually available
+MCP_AVAILABLE = hasattr(mcp_server_module, 'MCP_INSTALLED') and mcp_server_module.MCP_INSTALLED
 
 
 class TestMCPServerStructure:
@@ -53,14 +56,10 @@ class TestMCPServerStructure:
 class TestMCPServerConfiguration:
     """Test MCP server configuration"""
 
+    @pytest.mark.skipif(not MCP_AVAILABLE, reason="MCP package not installed")
     @patch.dict(os.environ, {"PURVIEW_ACCOUNT_NAME": "test-account"})
     def test_get_config_with_env_vars(self):
         """Test configuration from environment variables"""
-        # Skip if MCP not installed
-        pytest.importorskip("mcp")
-        
-        from mcp.server import PurviewMCPServer
-        
         server = PurviewMCPServer()
         config = server._get_config()
         
@@ -69,19 +68,16 @@ class TestMCPServerConfiguration:
         assert config.timeout == 30
         assert config.batch_size == 100
 
+    @pytest.mark.skipif(not MCP_AVAILABLE, reason="MCP package not installed")
     def test_get_config_missing_account_name(self):
         """Test configuration fails without PURVIEW_ACCOUNT_NAME"""
-        # Skip if MCP not installed
-        pytest.importorskip("mcp")
-        
-        from mcp.server import PurviewMCPServer
-        
         # Clear the environment variable
         with patch.dict(os.environ, {}, clear=True):
             server = PurviewMCPServer()
             with pytest.raises(ValueError, match="PURVIEW_ACCOUNT_NAME"):
                 server._get_config()
 
+    @pytest.mark.skipif(not MCP_AVAILABLE, reason="MCP package not installed")
     @patch.dict(
         os.environ,
         {
@@ -93,11 +89,6 @@ class TestMCPServerConfiguration:
     )
     def test_get_config_with_custom_values(self):
         """Test configuration with custom values"""
-        # Skip if MCP not installed
-        pytest.importorskip("mcp")
-        
-        from mcp.server import PurviewMCPServer
-        
         server = PurviewMCPServer()
         config = server._get_config()
         
@@ -110,14 +101,10 @@ class TestMCPServerConfiguration:
 class TestMCPServerTools:
     """Test MCP server tool definitions"""
 
+    @pytest.mark.skipif(not MCP_AVAILABLE, reason="MCP package not installed")
     @pytest.mark.asyncio
     async def test_list_tools(self):
         """Test that tools are properly defined"""
-        # Skip if MCP not installed
-        pytest.importorskip("mcp")
-        
-        from mcp.server import PurviewMCPServer
-        
         with patch.dict(os.environ, {"PURVIEW_ACCOUNT_NAME": "test-account"}):
             server = PurviewMCPServer()
             
@@ -139,7 +126,7 @@ class TestMCPServerTools:
             os.path.dirname(os.path.dirname(__file__)), "mcp", "README.md"
         )
         
-        with open(readme_path, "r") as f:
+        with open(readme_path, "r", encoding="utf-8") as f:
             readme_content = f.read()
         
         # Check for key tool names in README
@@ -162,14 +149,10 @@ class TestMCPServerTools:
 class TestMCPServerExecution:
     """Test MCP server tool execution"""
 
+    @pytest.mark.skipif(not MCP_AVAILABLE, reason="MCP package not installed")
     @pytest.mark.asyncio
     async def test_execute_tool_get_entity(self):
         """Test execute_tool for get_entity"""
-        # Skip if MCP not installed
-        pytest.importorskip("mcp")
-        
-        from mcp.server import PurviewMCPServer
-        
         with patch.dict(os.environ, {"PURVIEW_ACCOUNT_NAME": "test-account"}):
             server = PurviewMCPServer()
             
@@ -182,14 +165,10 @@ class TestMCPServerExecution:
             assert result == {"guid": "test-guid"}
             server.client.get_entity.assert_called_once_with("test-guid")
 
+    @pytest.mark.skipif(not MCP_AVAILABLE, reason="MCP package not installed")
     @pytest.mark.asyncio
     async def test_execute_tool_search_entities(self):
         """Test execute_tool for search_entities"""
-        # Skip if MCP not installed
-        pytest.importorskip("mcp")
-        
-        from mcp.server import PurviewMCPServer
-        
         with patch.dict(os.environ, {"PURVIEW_ACCOUNT_NAME": "test-account"}):
             server = PurviewMCPServer()
             
@@ -205,14 +184,10 @@ class TestMCPServerExecution:
             assert result == {"value": []}
             server.client.search_entities.assert_called_once()
 
+    @pytest.mark.skipif(not MCP_AVAILABLE, reason="MCP package not installed")
     @pytest.mark.asyncio
     async def test_execute_tool_unknown_tool(self):
         """Test execute_tool with unknown tool name"""
-        # Skip if MCP not installed
-        pytest.importorskip("mcp")
-        
-        from mcp.server import PurviewMCPServer
-        
         with patch.dict(os.environ, {"PURVIEW_ACCOUNT_NAME": "test-account"}):
             server = PurviewMCPServer()
             server.client = AsyncMock()
