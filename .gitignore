@@ -43,3 +43,4 @@ node_modules/
 /mcp/vscode-extension/bundled/
 
 mcp/vscode-extension/src/extension.ts.backup
+doc/boilerplate/BOILERPLATE_SYSTEM.md
