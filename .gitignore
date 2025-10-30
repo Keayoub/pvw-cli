@@ -42,3 +42,4 @@ purviewcli/__init__.py.bak.20251022093657
 node_modules/
 /mcp/vscode-extension/bundled/
 
+mcp/vscode-extension/src/extension.ts.backup

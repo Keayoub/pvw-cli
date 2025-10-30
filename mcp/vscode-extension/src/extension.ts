@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { execSync } from 'child_process';
+import { execSync, exec } from 'child_process';
 import * as fs from 'fs';
 
 let mcpTerminal: vscode.Terminal | undefined;
@@ -130,17 +130,10 @@ export function activate(context: vscode.ExtensionContext) {
     
     const outputChannel = vscode.window.createOutputChannel('Purview MCP Server');
     context.subscriptions.push(outputChannel);
-
-    // Check auto-start configuration
-    const config = vscode.workspace.getConfiguration('purview-mcp');
-    const autoStart = config.get<boolean>('autoStart', false);
     
-    if (autoStart) {
-        // Start server automatically after a short delay
-        setTimeout(() => {
-            vscode.commands.executeCommand('chat.mcp.purview.startServer');
-        }, 2000);
-    }
+    outputChannel.appendLine('Purview MCP Server extension activated');
+    outputChannel.appendLine('GitHub Copilot will automatically start the MCP server when needed');
+    outputChannel.appendLine('Use "Purview MCP: Diagnose Setup" to verify configuration');
 
     const startCmd = vscode.commands.registerCommand('chat.mcp.purview.startServer', async () => {
         // Use bundled server.py from extension
@@ -320,27 +313,79 @@ export function activate(context: vscode.ExtensionContext) {
             }
         }
 
-        mcpTerminal = vscode.window.createTerminal({
-            name: 'Purview MCP Server',
-            env: env,
-            iconPath: new vscode.ThemeIcon('server-process')
-        });
+        // Start the server using the PowerShell helper script in the workspace (background mode)
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        const repoRoot = workspaceFolders && workspaceFolders.length > 0 ? workspaceFolders[0].uri.fsPath : undefined;
 
-        mcpTerminal.show(false);
-        
-        // Install pvw-cli if development mode is enabled
-        if (developmentMode) {
-            const workspaceFolders = vscode.workspace.workspaceFolders;
-            if (workspaceFolders && workspaceFolders.length > 0) {
-                const repoRoot = workspaceFolders[0].uri.fsPath;
-                mcpTerminal.sendText(`Write-Host "Development mode: Installing pvw-cli in editable mode..." -ForegroundColor Yellow`);
-                mcpTerminal.sendText(`cd "${repoRoot}"`);
-                mcpTerminal.sendText(`python -m pip install -e . --quiet`);
-                mcpTerminal.sendText(`Write-Host "Starting MCP server..." -ForegroundColor Cyan`);
+        // Decide whether to use bundled scripts or workspace scripts
+        const useBundled = config.get<boolean>('useBundledScripts', true);
+        let startScriptPath = '';
+        if (useBundled) {
+            startScriptPath = path.join(context.extensionPath, 'bundled', 'start-mcp.ps1');
+        }
+
+        if (!startScriptPath || !fs.existsSync(startScriptPath)) {
+            if (repoRoot) {
+                const workspaceScript = path.join(repoRoot, 'mcp', 'server', 'start-mcp.ps1');
+                if (fs.existsSync(workspaceScript)) {
+                    startScriptPath = workspaceScript;
+                }
             }
         }
-        
-        mcpTerminal.sendText(`python "${serverPath}"`);
+
+        if (!startScriptPath || !fs.existsSync(startScriptPath)) {
+            vscode.window.showErrorMessage('No start-mcp.ps1 script found (neither bundled nor workspace). Please run build-extension.ps1 to bundle scripts or create mcp/server/start-mcp.ps1 in your workspace.');
+            return;
+        }
+
+        // Build PowerShell command
+        const args: string[] = ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', `"${startScriptPath}"`, '-AccountName', `"${accountName}"`, '-Background'];
+        if (accountId && accountId.trim() !== '') { args.push('-AccountId', `"${accountId}"`); }
+        if (tenantId && tenantId.trim() !== '') { args.push('-TenantId', `"${tenantId}"`); }
+        if (developmentMode) { args.push('-Dev'); }
+
+        const psCmd = `powershell.exe ${args.join(' ')}`;
+
+        outputChannel.show(true);
+        outputChannel.appendLine(`Starting MCP server in background using: ${psCmd}`);
+
+        exec(psCmd, { timeout: 120000 }, (error, stdout, stderr) => {
+            if (error) {
+                outputChannel.appendLine('Failed to start MCP server: ' + (error.message || String(error)));
+                if (stderr && stderr.length) outputChannel.appendLine(stderr);
+                vscode.window.showErrorMessage('Failed to start MCP server. See Purview MCP Server output for details.');
+                return;
+            }
+
+            if (stdout && stdout.length) outputChannel.appendLine(stdout);
+            if (stderr && stderr.length) outputChannel.appendLine(stderr);
+
+            vscode.window.showInformationMessage(`Purview MCP Server started successfully${developmentMode ? ' (Development Mode)' : ''}`);
+
+            // Start tailing the workspace mcp/server.log (or bundled log if using bundled scripts)
+            const workspaceLog = repoRoot ? path.join(repoRoot, 'mcp', 'server.log') : '';
+            // If log doesn't exist yet, wait briefly then start tailing when created (existing logic below will handle bundled too)
+            const possibleLogPaths = [
+                path.join(context.extensionPath, 'bundled', 'server.log'),
+                workspaceLog
+            ];
+
+            let selectedLog = possibleLogPaths.find(p => p && fs.existsSync(p));
+            if (selectedLog) {
+                startTailing(selectedLog);
+            } else {
+                const waitStart = Date.now();
+                const waitTimer = setInterval(() => {
+                    selectedLog = possibleLogPaths.find(p => p && fs.existsSync(p));
+                    if (selectedLog) {
+                        clearInterval(waitTimer);
+                        startTailing(selectedLog);
+                    } else if (Date.now() - waitStart > 5000) {
+                        clearInterval(waitTimer);
+                    }
+                }, 500);
+            }
+        });
 
         // Start tailing server.log (if created) to the extension output channel
         const possibleLogPaths = [
@@ -406,17 +451,60 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     const stopCmd = vscode.commands.registerCommand('chat.mcp.purview.stopServer', () => {
-        if (mcpTerminal && mcpTerminal.exitStatus === undefined) {
-            mcpTerminal.dispose();
-            mcpTerminal = undefined;
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        const repoRoot = workspaceFolders && workspaceFolders.length > 0 ? workspaceFolders[0].uri.fsPath : undefined;
+        
+        const config = vscode.workspace.getConfiguration('purview-mcp');
+        const useBundled = config.get<boolean>('useBundledScripts', true);
+        let stopScriptPath = '';
+        if (useBundled) {
+            // Prefer a dedicated stop script if it's bundled
+            const bundledStop = path.join(context.extensionPath, 'bundled', 'stop-mcp.ps1');
+            const bundledStart = path.join(context.extensionPath, 'bundled', 'start-mcp.ps1');
+            if (fs.existsSync(bundledStop)) {
+                stopScriptPath = bundledStop;
+            } else if (fs.existsSync(bundledStart)) {
+                stopScriptPath = bundledStart;
+            }
+        }
+
+        if (!stopScriptPath || !fs.existsSync(stopScriptPath)) {
+            if (repoRoot) {
+                const workspaceStop = path.join(repoRoot, 'mcp', 'server', 'stop-mcp.ps1');
+                const workspaceStart = path.join(repoRoot, 'mcp', 'server', 'start-mcp.ps1');
+                if (fs.existsSync(workspaceStop)) stopScriptPath = workspaceStop;
+                else if (fs.existsSync(workspaceStart)) stopScriptPath = workspaceStart;
+            }
+        }
+
+        if (!stopScriptPath || !fs.existsSync(stopScriptPath)) {
+            vscode.window.showErrorMessage('No stop script found (neither bundled nor workspace).');
+            return;
+        }
+
+        // If using a dedicated stop script, call it; otherwise call start-mcp.ps1 -StopBackground
+        const isDedicatedStop = path.basename(stopScriptPath).toLowerCase() === 'stop-mcp.ps1';
+        const psCmd = isDedicatedStop
+            ? `powershell.exe -NoProfile -ExecutionPolicy Bypass -File "${stopScriptPath}"`
+            : `powershell.exe -NoProfile -ExecutionPolicy Bypass -File "${stopScriptPath}" -StopBackground`;
+        outputChannel.show(true);
+        outputChannel.appendLine(`Stopping MCP server using: ${psCmd}`);
+        exec(psCmd, { timeout: 60000 }, (error, stdout, stderr) => {
+            if (error) {
+                outputChannel.appendLine('Failed to stop MCP server: ' + (error.message || String(error)));
+                if (stderr && stderr.length) outputChannel.appendLine(stderr);
+                vscode.window.showErrorMessage('Failed to stop MCP server. See Purview MCP Server output for details.');
+                return;
+            }
+            if (stdout && stdout.length) outputChannel.appendLine(stdout);
+            if (stderr && stderr.length) outputChannel.appendLine(stderr);
+
             if (logTailTimer) {
                 clearInterval(logTailTimer);
                 logTailTimer = undefined;
             }
             vscode.window.showInformationMessage('Purview MCP Server stopped');
-        } else {
-            vscode.window.showWarningMessage('Purview MCP Server is not running');
-        }
+        });
     });
 
     const viewLogsCmd = vscode.commands.registerCommand('chat.mcp.purview.viewLogs', () => {

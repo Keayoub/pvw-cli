@@ -1,9 +1,9 @@
 {
-    "name": "purview-mcp",
+    "name": "purview-mcp-server",
     "displayName": "Purview MCP Server",
     "description": "Provides Model Context Protocol (MCP) integration and tooling for Microsoft Purview in Visual Studio Code.",
     "publisher": "keayoub",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "icon": "icon.png",
     "engines": {
         "vscode": "^1.60.0"
@@ -21,24 +21,13 @@
     "contributes": {
         "commands": [
             {
-                "command": "chat.mcp.purview.startServer",
-                "title": "Start Server",
-                "category": "Purview MCP"
-            },
-            {
-                "command": "chat.mcp.purview.stopServer",
-                "title": "Stop Server",
-                "category": "Purview MCP"
-            },
-            {
                 "command": "chat.mcp.purview.diagnose",
                 "title": "Diagnose Setup",
                 "category": "Purview MCP"
-            }
-            ,
+            },
             {
-                "command": "chat.mcp.purview.viewLogs",
-                "title": "View Server Logs",
+                "command": "chat.mcp.purview.checkStatus",
+                "title": "Check Server Status",
                 "category": "Purview MCP"
             }
         ],
@@ -64,6 +53,11 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Enable development mode (installs pvw-cli in editable mode from local source)"
+                },
+                "purview-mcp.useBundledScripts": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Use the bundled start/stop scripts provided by the extension when available (standalone mode)"
                 },
                 "purview-mcp.autoStart": {
                     "type": "boolean",

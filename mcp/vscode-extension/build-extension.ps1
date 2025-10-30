@@ -72,10 +72,12 @@ Write-Step "Copying server files from mcp/server/ to bundled/"
 $serverSource = Join-Path $scriptDir "..\server\server.py"
 $requirementsSource = Join-Path $scriptDir "..\server\requirements.txt"
 $startScriptSource = Join-Path $scriptDir "..\server\start-mcp.ps1"
+$stopScriptSource = Join-Path $scriptDir "..\server\stop-mcp.ps1"
 $bundledDir = Join-Path $scriptDir "bundled"
 $serverDest = Join-Path $bundledDir "server.py"
 $requirementsDest = Join-Path $bundledDir "requirements.txt"
 $startScriptDest = Join-Path $bundledDir "start-mcp.ps1"
+$stopScriptDest = Join-Path $bundledDir "stop-mcp.ps1"
 
 # Create bundled directory if it doesn't exist
 if (-not (Test-Path $bundledDir)) {
@@ -112,6 +114,20 @@ try {
     Copy-Item $startScriptSource $startScriptDest -Force
     $startSize = (Get-Item $startScriptDest).Length / 1KB
     Write-Success "Copied start-mcp.ps1 ($([math]::Round($startSize, 2)) KB)"
+    
+    # Copy stop script if present
+    try {
+        if (Test-Path $stopScriptSource) {
+            Copy-Item $stopScriptSource $stopScriptDest -Force
+            $stopSize = (Get-Item $stopScriptDest).Length / 1KB
+            Write-Success "Copied stop-mcp.ps1 ($([math]::Round($stopSize, 2)) KB)"
+        } else {
+            Write-Info "No stop-mcp.ps1 found in server/ — skipping copy"
+        }
+    } catch {
+        Write-Error "Failed to copy stop-mcp.ps1: $_"
+        exit 1
+    }
 }
 catch {
     Write-Error "Failed to copy files: $_"

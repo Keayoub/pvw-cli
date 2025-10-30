@@ -128,29 +128,141 @@ class PurviewClient:
 
     # Data Map API Methods
     async def get_entity(self, guid: str, **kwargs) -> Dict:
-        """Get entity by GUID"""
+        """
+        Get a Purview entity by its unique GUID.
+        
+        Args:
+            guid: The unique GUID identifier of the entity
+            **kwargs: Additional query parameters (e.g., minExtInfo, ignoreRelationships)
+            
+        Returns:
+            Dict containing entity details including:
+                - guid: Entity unique identifier
+                - typeName: Entity type (e.g., "azure_sql_table")
+                - attributes: Entity attributes (name, qualifiedName, etc.)
+                - classifications: Applied classifications/tags
+                - relationshipAttributes: Related entities
+                
+        Raises:
+            ClientAuthenticationError: If authentication fails
+            ValueError: If guid is invalid or entity not found
+            
+        Example:
+            entity = await client.get_entity("a1b2c3d4-e5f6-7890-abcd-ef1234567890")
+            print(entity["attributes"]["name"])
+        """
         endpoint = format_endpoint(ENDPOINTS["entity"]["get"], guid=guid)
         return await self._make_request("GET", endpoint, params=kwargs)
 
     async def create_entity(self, entity_data: Dict) -> Dict:
-        """Create new entity"""
+        """
+        Create a new entity in the Purview catalog.
+        
+        Args:
+            entity_data: Dictionary containing entity information with required fields:
+                - typeName (str): Entity type (e.g., "azure_sql_table", "DataSet")
+                - attributes (dict): Entity attributes including:
+                    - name (str): Display name
+                    - qualifiedName (str): Unique qualified name
+                    - Additional type-specific attributes
+                - Optional: classifications, relationshipAttributes
+                
+        Returns:
+            Dict containing created entity details with assigned GUID
+            
+        Raises:
+            ValueError: If required fields are missing or invalid
+            
+        Example:
+            entity = await client.create_entity({
+                "typeName": "DataSet",
+                "attributes": {
+                    "name": "Sales Data",
+                    "qualifiedName": "sales_data@tenant",
+                    "description": "Monthly sales records"
+                }
+            })
+        """
         return await self._make_request(
             "POST", ENDPOINTS["entity"]["create_or_update"], json=entity_data
         )
 
     async def update_entity(self, entity_data: Dict) -> Dict:
-        """Update existing entity"""
+        """
+        Update an existing entity in the Purview catalog.
+        
+        Args:
+            entity_data: Dictionary containing entity update with:
+                - guid (str): Entity GUID to update (required)
+                - typeName (str): Entity type
+                - attributes (dict): Updated attributes
+                
+        Returns:
+            Dict containing updated entity details
+            
+        Raises:
+            ValueError: If entity not found or update fails
+            
+        Example:
+            updated = await client.update_entity({
+                "guid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                "typeName": "DataSet",
+                "attributes": {"description": "Updated description"}
+            })
+        """
         return await self._make_request(
             "PUT", ENDPOINTS["entity"]["create_or_update"], json=entity_data
         )
 
     async def delete_entity(self, guid: str) -> Dict:
-        """Delete entity by GUID"""
+        """
+        Delete an entity from the Purview catalog.
+        
+        Args:
+            guid: The unique GUID of the entity to delete
+            
+        Returns:
+            Dict containing deletion status
+            
+        Raises:
+            ValueError: If entity not found
+            
+        Warning:
+            This operation is irreversible. All relationships and lineage will be affected.
+            
+        Example:
+            result = await client.delete_entity("a1b2c3d4-e5f6-7890-abcd-ef1234567890")
+        """
         endpoint = format_endpoint(ENDPOINTS["entity"]["delete"], guid=guid)
         return await self._make_request("DELETE", endpoint)
 
     async def search_entities(self, query: str, **kwargs) -> Dict:
-        """Search entities with advanced filters"""
+        """
+        Search for entities in the Purview catalog with advanced filtering.
+        
+        Args:
+            query: Search keywords or query string
+            **kwargs: Optional search parameters:
+                - filter (dict): Filter criteria (e.g., {"typeName": "DataSet"})
+                - facets (list): Facets for aggregation
+                - limit (int): Maximum results to return (default: 50, max: 1000)
+                - offset (int): Pagination offset (default: 0)
+                
+        Returns:
+            Dict containing:
+                - value: List of matching entities
+                - @search.count: Total number of matches
+                - @search.facets: Facet aggregations if requested
+                
+        Example:
+            results = await client.search_entities(
+                "sales",
+                filter={"typeName": "azure_sql_table"},
+                limit=100
+            )
+            for entity in results["value"]:
+                print(entity["name"])
+        """
         search_request = {
             "keywords": query,
             "filter": kwargs.get("filter"),
@@ -295,7 +407,36 @@ class PurviewClient:
         return flat  # Glossary Operations
 
     async def get_glossary_terms(self, glossary_guid: str = None) -> List[Dict]:
-        """Get all glossary terms"""
+        """
+        Get all glossary terms or terms from a specific glossary.
+        
+        Args:
+            glossary_guid: Optional GUID of a specific glossary to filter terms.
+                          If None, returns all terms from all glossaries.
+                          
+        Returns:
+            List of dictionaries, each containing term information:
+                - guid: Term unique identifier
+                - name: Term display name
+                - qualifiedName: Fully qualified term name
+                - glossaryGuid: Parent glossary GUID
+                - status: Term status (Draft, Approved, etc.)
+                - definition: Term definition/description
+                - abbreviation: Optional abbreviation
+                - examples: Optional usage examples
+                - attributes: Custom attributes
+                - assignedEntities: Entities tagged with this term
+                
+        Example:
+            # Get all terms
+            all_terms = await client.get_glossary_terms()
+            
+            # Get terms from specific glossary
+            glossary_terms = await client.get_glossary_terms("glossary-guid-123")
+            
+            for term in all_terms:
+                print(f"{term['name']}: {term.get('definition', 'No definition')}")
+        """
         if glossary_guid:
             endpoint = f"{ENDPOINTS['glossary']['terms']}/{glossary_guid}"
         else:
@@ -303,11 +444,73 @@ class PurviewClient:
         return await self._make_request("GET", endpoint)
 
     async def create_glossary_term(self, term_data: Dict) -> Dict:
-        """Create glossary term"""
+        """
+        Create a new glossary term in Purview.
+        
+        Args:
+            term_data: Dictionary containing term information with required fields:
+                - name (str): Term display name (required)
+                - glossaryGuid (str): Parent glossary GUID (required)
+                - Optional fields:
+                    - qualifiedName (str): Auto-generated if not provided
+                    - definition (str): Term definition/description
+                    - abbreviation (str): Short form
+                    - status (str): "Draft", "Approved", "Alert", "Expired"
+                    - nickName (str): Alternative name
+                    - examples (list): Usage examples
+                    - resources (list): Related resources/links
+                    - contacts (dict): Experts, owners, stewards
+                    - attributes (dict): Custom attributes
+                    
+        Returns:
+            Dict containing created term with assigned GUID
+            
+        Raises:
+            ValueError: If required fields are missing or glossary not found
+            
+        Example:
+            term = await client.create_glossary_term({
+                "name": "Customer",
+                "glossaryGuid": "glossary-guid-123",
+                "definition": "An individual or organization that purchases goods or services",
+                "status": "Approved",
+                "abbreviation": "CUST",
+                "examples": ["Enterprise customer", "Retail customer"]
+            })
+            print(f"Created term: {term['guid']}")
+        """
         return await self._make_request("POST", ENDPOINTS["glossary"]["term"], json=term_data)
 
     async def assign_term_to_entities(self, term_guid: str, entity_guids: List[str]) -> Dict:
-        """Assign glossary term to multiple entities"""
+        """
+        Assign a glossary term to multiple entities for business context tagging.
+        
+        Args:
+            term_guid: The unique GUID of the glossary term to assign
+            entity_guids: List of entity GUIDs to tag with this term
+            
+        Returns:
+            Dict containing assignment results with success/failure details
+            
+        Raises:
+            ValueError: If term or entities not found
+            
+        Use Case:
+            Tag data assets with business glossary terms to provide business context
+            and enable business users to discover data using familiar terminology.
+            
+        Example:
+            # Tag multiple tables with "Customer" term
+            result = await client.assign_term_to_entities(
+                term_guid="term-guid-abc",
+                entity_guids=[
+                    "table-guid-1",
+                    "table-guid-2",
+                    "table-guid-3"
+                ]
+            )
+            print(f"Tagged {len(entity_guids)} entities")
+        """
         assignment_data = {"termGuid": term_guid, "entityGuids": entity_guids}
         endpoint = f"{ENDPOINTS['glossary']['term_assigned_entities']}/{term_guid}"
         return await self._make_request("POST", endpoint, json=assignment_data)
@@ -344,12 +547,49 @@ class PurviewClient:
         # === COLLECTIONS MANAGEMENT (Official API Operations) ===
 
     async def list_collections(self) -> List[Dict]:
-        """List Collections - Official API Operation"""
+        """
+        List all collections in the Purview account.
+        
+        Collections organize data assets into logical hierarchies for access control
+        and governance. They form a tree structure with parent-child relationships.
+        
+        Returns:
+            List of dictionaries, each containing collection information:
+                - name: Collection unique name/identifier
+                - friendlyName: Human-readable display name
+                - description: Collection description
+                - collectionProvisioningState: State (e.g., "Succeeded")
+                - parentCollection: Parent collection reference
+                - systemData: Creation/modification metadata
+                
+        Example:
+            collections = await client.list_collections()
+            for col in collections:
+                print(f"{col['friendlyName']} ({col['name']})")
+                print(f"  Parent: {col.get('parentCollection', {}).get('referenceName', 'Root')}")
+        """
         params = get_api_version_params("collections")
         return await self._make_request("GET", ENDPOINTS["collections"]["list"], params=params)
 
     async def get_collection(self, collection_name: str) -> Dict:
-        """Get Collection - Official API Operation"""
+        """
+        Get detailed information about a specific collection.
+        
+        Args:
+            collection_name: The unique name (not friendlyName) of the collection
+            
+        Returns:
+            Dict containing collection details including name, friendlyName, description,
+            parent relationships, and provisioning state
+            
+        Raises:
+            ValueError: If collection not found
+            
+        Example:
+            collection = await client.get_collection("myorg-finance")
+            print(f"Collection: {collection['friendlyName']}")
+            print(f"Description: {collection.get('description', 'N/A')}")
+        """
         endpoint = format_endpoint(ENDPOINTS["collections"]["get"], collectionName=collection_name)
         params = get_api_version_params("collections")
         return await self._make_request("GET", endpoint, params=params)
@@ -406,13 +646,88 @@ class PurviewClient:
 
     # Lineage Operations
     async def get_lineage(self, guid: str, direction: str = "BOTH", depth: int = 3) -> Dict:
-        """Get entity lineage"""
+        """
+        Get data lineage for an entity showing upstream sources and downstream consumers.
+        
+        Data lineage tracks how data flows between systems, showing transformation paths
+        and dependencies critical for impact analysis and compliance.
+        
+        Args:
+            guid: The unique GUID of the entity to get lineage for
+            direction: Lineage direction to retrieve:
+                - "INPUT": Upstream sources (where data comes from)
+                - "OUTPUT": Downstream consumers (where data goes to)
+                - "BOTH": Both upstream and downstream (default)
+            depth: How many levels deep to traverse (default: 3, max: 10)
+                  Higher depths may return large result sets
+                  
+        Returns:
+            Dict containing:
+                - baseEntityGuid: Starting entity GUID
+                - guidEntityMap: Map of all entities in the lineage graph
+                - relations: List of lineage relationships showing data flow
+                - widthCounts: Entity counts at each lineage level
+                - lineageDirection: Requested direction
+                - lineageDepth: Requested depth
+                
+        Use Cases:
+            - Impact analysis: "What will break if I change this table?"
+            - Data tracing: "Where does this report's data come from?"
+            - Compliance: "Show the complete data flow for audit"
+            
+        Example:
+            # Get full lineage for a table
+            lineage = await client.get_lineage(
+                guid="table-guid-abc",
+                direction="BOTH",
+                depth=5
+            )
+            
+            # Analyze upstream sources
+            for rel in lineage["relations"]:
+                if rel["relationshipType"] == "UPSTREAM":
+                    source = lineage["guidEntityMap"][rel["fromEntityId"]]
+                    print(f"Source: {source['displayName']}")
+        """
         params = {"direction": direction, "depth": depth}
         endpoint = f"{ENDPOINTS['lineage']['lineage']}/{guid}"
         return await self._make_request("GET", endpoint, params=params)
 
     async def create_lineage(self, lineage_data: Dict) -> Dict:
-        """Create lineage relationship"""
+        """
+        Create a data lineage relationship between entities.
+        
+        Use this to document custom data flows, ETL processes, or transformations
+        not automatically discovered by Purview scanners.
+        
+        Args:
+            lineage_data: Dictionary containing lineage relationship with:
+                - typeName (str): Process type (e.g., "Process", "spark_process")
+                - attributes (dict):
+                    - name (str): Process name
+                    - qualifiedName (str): Unique identifier
+                    - inputs (list): List of input entity references
+                    - outputs (list): List of output entity references
+                    
+        Returns:
+            Dict containing created lineage process entity
+            
+        Example:
+            # Document an ETL process
+            lineage = await client.create_lineage({
+                "typeName": "Process",
+                "attributes": {
+                    "name": "Daily Sales ETL",
+                    "qualifiedName": "etl_sales_daily@tenant",
+                    "inputs": [
+                        {"guid": "source-table-guid"}
+                    ],
+                    "outputs": [
+                        {"guid": "target-table-guid"}
+                    ]
+                }
+            })
+        """
         return await self._make_request("POST", ENDPOINTS["lineage"]["lineage"], json=lineage_data)
 
     # === CSV IMPORT/EXPORT OPERATIONS ===

@@ -10,7 +10,7 @@ COPY .. /app
 RUN python -m pip install --upgrade pip setuptools wheel
 
 # Ensure the mcp requirements file path exists and install dependencies
-RUN pip install -r /app/mcp/requirements.txt
+RUN pip install -r /app/mcp/server/requirements.txt
 
 # Install the parent package (pvw-cli) in editable mode so the server
 # can import the library from the repo copy inside the image.
@@ -22,4 +22,4 @@ WORKDIR /app
 
 # By default run the MCP server. The server communicates over stdio, so
 # containers should be started with stdin attached (docker run -i).
-ENTRYPOINT ["python", "mcp/server.py"]
+ENTRYPOINT ["python", "mcp/server/server.py"]
