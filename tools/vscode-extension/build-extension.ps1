@@ -67,17 +67,15 @@ Write-Host "   Purview MCP Extension Builder" -ForegroundColor Magenta
 Write-Host "═══════════════════════════════════════════════════`n" -ForegroundColor Magenta
 
 # Step 1: Copy server files to bundled/
-Write-Step "Copying server files from mcp/server/ to bundled/"
+Write-Step "Copying server files from tools/PurviewMCPServer/ to bundled/"
 
-$serverSource = Join-Path $scriptDir "..\server\server.py"
-$requirementsSource = Join-Path $scriptDir "..\server\requirements.txt"
-$startScriptSource = Join-Path $scriptDir "..\server\start-mcp.ps1"
-$stopScriptSource = Join-Path $scriptDir "..\server\stop-mcp.ps1"
+$serverSource = Join-Path $scriptDir "..\PurviewMCPServer\server.py"
+$requirementsSource = Join-Path $scriptDir "..\PurviewMCPServer\requirements.txt"
+$diagnoseScriptSource = Join-Path $scriptDir "..\PurviewMCPServer\diagnose.ps1"
 $bundledDir = Join-Path $scriptDir "bundled"
 $serverDest = Join-Path $bundledDir "server.py"
 $requirementsDest = Join-Path $bundledDir "requirements.txt"
-$startScriptDest = Join-Path $bundledDir "start-mcp.ps1"
-$stopScriptDest = Join-Path $bundledDir "stop-mcp.ps1"
+$diagnoseScriptDest = Join-Path $bundledDir "diagnose.ps1"
 
 # Create bundled directory if it doesn't exist
 if (-not (Test-Path $bundledDir)) {
@@ -96,8 +94,8 @@ if (-not (Test-Path $requirementsSource)) {
     exit 1
 }
 
-if (-not (Test-Path $startScriptSource)) {
-    Write-Error "start-mcp.ps1 not found at: $startScriptSource"
+if (-not (Test-Path $diagnoseScriptSource)) {
+    Write-Error "diagnose.ps1 not found at: $diagnoseScriptSource"
     exit 1
 }
 
@@ -111,23 +109,9 @@ try {
     $reqSize = (Get-Item $requirementsDest).Length / 1KB
     Write-Success "Copied requirements.txt ($([math]::Round($reqSize, 2)) KB)"
     
-    Copy-Item $startScriptSource $startScriptDest -Force
-    $startSize = (Get-Item $startScriptDest).Length / 1KB
-    Write-Success "Copied start-mcp.ps1 ($([math]::Round($startSize, 2)) KB)"
-    
-    # Copy stop script if present
-    try {
-        if (Test-Path $stopScriptSource) {
-            Copy-Item $stopScriptSource $stopScriptDest -Force
-            $stopSize = (Get-Item $stopScriptDest).Length / 1KB
-            Write-Success "Copied stop-mcp.ps1 ($([math]::Round($stopSize, 2)) KB)"
-        } else {
-            Write-Info "No stop-mcp.ps1 found in server/ — skipping copy"
-        }
-    } catch {
-        Write-Error "Failed to copy stop-mcp.ps1: $_"
-        exit 1
-    }
+    Copy-Item $diagnoseScriptSource $diagnoseScriptDest -Force
+    $diagnoseSize = (Get-Item $diagnoseScriptDest).Length / 1KB
+    Write-Success "Copied diagnose.ps1 ($([math]::Round($diagnoseSize, 2)) KB)"
 }
 catch {
     Write-Error "Failed to copy files: $_"
@@ -136,11 +120,34 @@ catch {
 
 # Step 2: Clean (optional)
 if ($Clean) {
-    Write-Step "Cleaning dist/ directory"
+    Write-Step "Cleaning build artifacts"
+    
+    # Clean dist/ directory
     $distDir = Join-Path $scriptDir "dist"
     if (Test-Path $distDir) {
         Remove-Item $distDir -Recurse -Force
         Write-Success "Cleaned dist/"
+    }
+    
+    # Clean package-lock.json
+    $packageLock = Join-Path $scriptDir "package-lock.json"
+    if (Test-Path $packageLock) {
+        Remove-Item $packageLock -Force
+        Write-Success "Removed package-lock.json"
+    }
+    
+    # Clean node_modules/.cache if it exists
+    $nodeCache = Join-Path $scriptDir "node_modules\.cache"
+    if (Test-Path $nodeCache) {
+        Remove-Item $nodeCache -Recurse -Force
+        Write-Success "Cleaned node_modules/.cache"
+    }
+    
+    # Clean .vsix files
+    $vsixFiles = Get-ChildItem -Path $scriptDir -Filter "*.vsix"
+    if ($vsixFiles.Count -gt 0) {
+        $vsixFiles | Remove-Item -Force
+        Write-Success "Removed old .vsix files ($($vsixFiles.Count) files)"
     }
 }
 
@@ -218,7 +225,7 @@ Write-Host "══════════════════════�
 # Show next steps
 Write-Host "Next steps:" -ForegroundColor Yellow
 Write-Host "  1. Install: " -NoNewline
-Write-Host "code --install-extension .\purview-mcp-1.0.0.vsix --force" -ForegroundColor White
+Write-Host "code --install-extension .\$vsixFile --force" -ForegroundColor White
 Write-Host "  2. Reload:  " -NoNewline
 Write-Host "Ctrl+Shift+P → 'Developer: Reload Window'" -ForegroundColor White
 Write-Host "  3. Test:    " -NoNewline

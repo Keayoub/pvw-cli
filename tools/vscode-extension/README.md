@@ -1,8 +1,10 @@
 # Purview MCP Server Extension for Visual Studio Code
 
+**Version 2.0 - Now powered by FastMCP! 🚀**
+
 Provides [Model Context Protocol (MCP)](https://modelcontextprotocol.io) integration and tooling for **Microsoft Purview** in Visual Studio Code.
 
-All Purview MCP tools in a single server. The Purview MCP Server implements the [MCP specification](https://modelcontextprotocol.io/introduction) to create a seamless connection between AI agents and Purview services. Purview MCP Server can be used alone or with the [GitHub Copilot for Azure extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-github-copilot) in VS Code.
+All Purview MCP tools in a single server. The Purview MCP Server implements the [MCP specification](https://modelcontextprotocol.io/introduction) to create a seamless connection between AI agents and Purview services. **Version 2.0** uses **FastMCP** for cleaner code, automatic validation, and improved performance. Purview MCP Server can be used alone or with the [GitHub Copilot for Azure extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-github-copilot) in VS Code.
 
 ## Table of Contents
 
@@ -33,7 +35,14 @@ Purview MCP Server supercharges your agents with Purview context across **40+ di
 
 The extension bundles the MCP server and all required Python files - **no need to clone the repository!**
 
-> **Note:** Python dependencies (mcp, azure-identity, aiohttp, etc.) will be automatically installed when you first start the server.
+> **Note:** Python dependencies (mcp, fastmcp, azure-identity, aiohttp, etc.) will be automatically installed when you first start the server.
+>
+> **What's New in v2.0:**
+> - 🚀 Migrated to **FastMCP** for better performance and cleaner code
+> - ✅ Automatic parameter validation with Pydantic
+> - 📖 Auto-generated tool documentation
+> - 🔧 Simplified server architecture (30% less code)
+> - 🔄 Backward compatible with legacy MCP server (available as fallback)
 
 ### Enable Autostart
 
@@ -92,7 +101,17 @@ When you start the server for the first time, the extension will:
 
 1. Check if Python dependencies are installed
 2. Prompt you to install them automatically if missing
-3. Install `mcp`, `azure-identity`, `aiohttp`, `pandas`, and `purviewcli` from the bundled requirements.txt
+3. Install `mcp`, `fastmcp`, `azure-identity`, `aiohttp`, `pandas`, and `purviewcli` from the bundled requirements.txt
+
+### FastMCP vs Legacy Server
+
+Version 2.0 uses **FastMCP** by default for better performance and developer experience. You can switch to the legacy MCP server if needed:
+
+1. Open **Settings** in VS Code
+2. Search for `purview-mcp.useFastMCP`
+3. Uncheck to use the legacy server (`server_legacy.py`)
+
+Both servers provide the same 33 tools and full functionality.
 
 ## Support and Reference
 

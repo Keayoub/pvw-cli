@@ -12,11 +12,6 @@ This server provides comprehensive access to Microsoft Purview operations:
 - Relationship management
 - Account configuration
 
-All operations leverage comprehensively documented client modules with
-detailed docstrings including examples and use cases.
-
-Version: 2.0 (Enhanced with comprehensive documentation)
-Coverage: 90.5% of 624 methods documented
 """
 
 import asyncio

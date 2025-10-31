@@ -1,9 +1,9 @@
 {
     "name": "purview-mcp-server",
     "displayName": "Purview MCP Server",
-    "description": "Provides Model Context Protocol (MCP) integration and tooling for Microsoft Purview in Visual Studio Code.",
+    "description": "Provides Model Context Protocol (MCP) integration and tooling for Microsoft Purview in Visual Studio Code. Now powered by FastMCP!",
     "publisher": "keayoub",
-    "version": "1.0.1",
+    "version": "0.1.0",
     "icon": "icon.png",
     "engines": {
         "vscode": "^1.60.0"
@@ -15,19 +15,27 @@
         "Extension Packs"
     ],
     "activationEvents": [
-        "onStartupFinished"
+        "onStartupFinished",
+        "onCommand:purview-mcp.startServer",
+        "onCommand:purview-mcp.stopServer",
+        "onCommand:purview-mcp.diagnose"
     ],
     "main": "./dist/extension.js",
     "contributes": {
         "commands": [
             {
-                "command": "chat.mcp.purview.diagnose",
-                "title": "Diagnose Setup",
+                "command": "purview-mcp.startServer",
+                "title": "Start Server",
                 "category": "Purview MCP"
             },
             {
-                "command": "chat.mcp.purview.checkStatus",
-                "title": "Check Server Status",
+                "command": "purview-mcp.stopServer",
+                "title": "Stop Server",
+                "category": "Purview MCP"
+            },
+            {
+                "command": "purview-mcp.diagnose",
+                "title": "Diagnose Setup",
                 "category": "Purview MCP"
             }
         ],
@@ -63,6 +71,11 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Automatically start the Purview MCP server when VS Code starts"
+                },
+                "purview-mcp.useFastMCP": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Use FastMCP server (server.py) instead of legacy MCP server (server_legacy.py)"
                 }
             }
         }
