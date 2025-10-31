@@ -71,11 +71,11 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Automatically start the Purview MCP server when VS Code starts"
-                },
-                "purview-mcp.useFastMCP": {
+                },        
+                "purview-mcp.autoInstallDependencies": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Use FastMCP server (server.py) instead of legacy MCP server (server_legacy.py)"
+                    "description": "When true, the extension will attempt to install Python dependencies from the bundled requirements.txt on activation (requires Python and network access)."
                 }
             }
         }
@@ -120,9 +120,11 @@
     "mcp": {
         "servers": {
             "chat.mcp.purview": {
+                "displayName": "Purview MCP (FastMCP)",
                 "command": "python",
                 "args": [
-                    "${extensionPath}/bundled/server.py"
+                    "${extensionPath}/bundled/server.py",
+                    "--no-banner"
                 ],
                 "env": {
                     "PURVIEW_ACCOUNT_NAME": "${config:purview-mcp.accountName}",

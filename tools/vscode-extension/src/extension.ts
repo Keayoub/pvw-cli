@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { execSync, exec } from 'child_process';
+import { execSync, exec, spawn } from 'child_process';
 import * as fs from 'fs';
 
 let mcpTerminal: vscode.Terminal | undefined;
@@ -82,8 +82,11 @@ async function runDiagnostics(repoRoot: string, pythonPath: string, requirements
         execSync('python -c "import fastmcp"', { encoding: 'utf8', timeout: 5000, stdio: 'pipe' });
         result.passed.push('✓ fastmcp package installed (v2.0 FastMCP server)');
     } catch (e) {
-        result.warnings.push('fastmcp package not installed (using legacy MCP server)');
-        result.recommendations.push(`Optional: Install FastMCP with: pip install fastmcp>=0.2.0`);
+        // fastmcp is required now (no legacy support)
+        result.errors.push('fastmcp package not installed (FastMCP is required)');
+        result.recommendations.push(`Run: pip install fastmcp>=0.2.0`);
+        result.success = false;
+        return result;
     }
 
     // Check 4: Verify azure-identity package
@@ -143,6 +146,40 @@ export function activate(context: vscode.ExtensionContext) {
     outputChannel.appendLine('Purview MCP Server extension activated');
     outputChannel.appendLine('GitHub Copilot will automatically start the MCP server when needed');
     outputChannel.appendLine('Use "Purview MCP: Diagnose Setup" to verify configuration');
+
+    // Optionally auto-install Python dependencies if user enabled it
+    try {
+        const config = vscode.workspace.getConfiguration('purview-mcp');
+        const autoInstall = config.get<boolean>('autoInstallDependencies', false);
+        if (autoInstall) {
+            (async () => {
+                // If developmentMode is enabled, perform the install without prompting (developer convenience)
+                const devMode = config.get<boolean>('developmentMode', false);
+                if (devMode) {
+                    outputChannel.show();
+                    const installed = await installPythonDependencies(context.extensionPath, outputChannel);
+                    if (!installed) {
+                        vscode.window.showErrorMessage('Auto-install failed (development mode). Check Purview MCP Server output for details.');
+                    } else {
+                        vscode.window.showInformationMessage('Python dependencies installed successfully (development mode)');
+                    }
+                    return;
+                }
+
+                // Otherwise ask for confirmation before installing
+                    outputChannel.appendLine('Auto-install enabled: installing Python dependencies from bundled/requirements.txt');
+                    outputChannel.show();
+                    const installed = await installPythonDependencies(context.extensionPath, outputChannel);
+                    if (!installed) {
+                        vscode.window.showErrorMessage('Auto-install failed. Check Purview MCP Server output for details.');
+                    } else {
+                        vscode.window.showInformationMessage('Python dependencies installed successfully');
+                    }
+            })();
+        }
+    } catch (e) {
+        // ignore errors during optional auto-install
+    }
 
     const startCmd = vscode.commands.registerCommand('purview-mcp.startServer', async () => {
         // Use bundled server.py from extension
@@ -323,17 +360,43 @@ export function activate(context: vscode.ExtensionContext) {
         }
 
         // Start the server directly with python
-        mcpTerminal = vscode.window.createTerminal({
-            name: 'Purview MCP Server',
-            env: env,
-            iconPath: new vscode.ThemeIcon('server-process')
-        });
+        // Offer choices: let Copilot/VS Code manage the MCP server, or start a
+        // detached background process (no visible terminal). Recommended: let
+        // Copilot start the server so it can manage lifecycle and stdio.
+        const pick = await vscode.window.showQuickPick([
+            'Let Copilot/VS Code manage the MCP server (recommended)',
+            'Start background server process (detached, no terminal)'
+        ], { placeHolder: 'How would you like to start the Purview MCP server?' });
 
-        mcpTerminal.show(false);
-        mcpTerminal.sendText(`python "${serverPath}"`);
-        
-        const modeMessage = developmentMode ? ' (Development Mode)' : '';
-        vscode.window.showInformationMessage(`Purview MCP Server started successfully${modeMessage}`);
+        if (!pick) {
+            return; // user cancelled
+        }
+
+    // determine repo root (if available)
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    const repoRoot = workspaceFolders && workspaceFolders.length > 0 ? workspaceFolders[0].uri.fsPath : undefined;
+
+    if (pick.startsWith('Start background')) {
+            try {
+                // spawn a detached python process so it runs in background without a terminal
+                const child = spawn('python', [serverPath, '--no-banner'], {
+                    detached: true,
+                    stdio: 'ignore',
+                    env: Object.assign({}, process.env, env),
+                    cwd: repoRoot || undefined
+                });
+                child.unref();
+                outputChannel.show(true);
+                outputChannel.appendLine(`Started Purview MCP Server as detached process (PID ${child.pid})`);
+                const modeMessage = developmentMode ? ' (Development Mode)' : '';
+                vscode.window.showInformationMessage(`Purview MCP Server started in background${modeMessage}`);
+            } catch (err: any) {
+                outputChannel.appendLine('Failed to start background MCP server: ' + (err.message || String(err)));
+                vscode.window.showErrorMessage('Failed to start MCP server in background. See output for details.');
+            }
+        } else {
+            vscode.window.showInformationMessage('To let Copilot/VS Code manage the MCP server, open the MCP servers list in the Extensions/Model Context Protocol area and start the server from there.');
+        }
     });
 
     const stopCmd = vscode.commands.registerCommand('purview-mcp.stopServer', () => {

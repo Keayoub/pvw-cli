@@ -6,12 +6,15 @@ but with cleaner code, automatic validation, and better developer experience.
 
 """
 
+import logging
 import os
 import sys
 from typing import Optional, List, Dict, Any
 
 from fastmcp import FastMCP
 from pydantic import BaseModel, Field
+
+from tools.microsoft_learn_tools import register_microsoft_learn_tools
 
 # Add parent directory to path to import purviewcli
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -779,5 +782,9 @@ async def get_account_properties() -> Dict[str, Any]:
 
 
 if __name__ == "__main__":
+
+    register_microsoft_learn_tools(mcp)
+    
     # Run the FastMCP server
+    logging.info("Starting Purview MCP Server")
     mcp.run()
