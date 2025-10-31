@@ -10,6 +10,7 @@ import logging
 import os
 import sys
 from typing import Optional, List, Dict, Any
+from pathlib import Path
 
 from fastmcp import FastMCP
 from pydantic import BaseModel, Field
@@ -347,6 +348,28 @@ def get_config() -> PurviewConfig:
         timeout=int(os.getenv("PURVIEW_TIMEOUT", "30")),
         batch_size=int(os.getenv("PURVIEW_BATCH_SIZE", "100")),
     )
+
+
+@mcp.tool()
+def get_prompt_instructions() -> str:
+    """
+    Return the curated prompt instructions to guide LLMs when calling the Purview MCP Server.
+
+    This reads `prompt_instructions.md` distributed with the server tools and returns its
+    contents as a string so remote agents can fetch guidance programmatically.
+    """
+    try:
+        root = Path(__file__).parent
+        prompt_file = root / "prompt_instructions.md"
+        if prompt_file.exists():
+            return prompt_file.read_text(encoding="utf-8")
+        return """
+        Prompt instructions file not found. Please ensure `prompt_instructions.md` is present
+        in the PurviewMCPServer tools directory.
+        """
+    except Exception as e:
+        logging.exception("Failed to read prompt instructions")
+        return f"Error reading prompt instructions: {e}"
 
 
 async def get_client() -> PurviewClient:

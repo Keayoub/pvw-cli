@@ -1,12 +1,53 @@
+# Purview MCP Server (tools)
+
+This folder contains the FastMCP server implementation for the Purview CLI and a set of resources to help LLMs interact with the server.
+
+Prompt instructions
+- `prompt_instructions.md` — Curated prompt templates and best practices for prompting the MCP server.
+- The server exposes an mcp tool `get_prompt_instructions()` which returns the file contents so agents can fetch guidance programmatically.
+
+Fetching prompts (example)
+ - Call the tool `get_prompt_instructions()` via the MCP server API to retrieve the latest prompt guidance.
+
+Notes
+ - Ensure environment variables (e.g., `PURVIEW_ACCOUNT_NAME`) are set before running the server.
+ - See `server.py` for available mcp tools and their usage.
 # Purview MCP Server - Enhanced Version 2.0
 
 ## Overview
 
-The Purview MCP Server now provides comprehensive access to Microsoft Purview operations through the Model Context Protocol, enabling LLM-powered data governance workflows.
+The Purview MCP Server now provides comprehensive access to Microsoft Purview operations through the Model Context Protocol, enabling LLM-powered data governance workflows with **built-in prompt instructions** for AI assistants.
 
 **Version:** 2.0 (Enhanced)  
 **Documentation Coverage:** 90.5% (565/624 methods)  
-**Total Tools:** 33 operations across 8 categories
+**Total Tools:** 33 operations across 8 categories  
+**🆕 Feature:** Comprehensive prompt instructions embedded in MCP server
+
+## 🎯 New: Built-in Prompt Instructions
+
+The MCP server now includes **comprehensive prompt instructions** automatically provided to AI assistants through the FastMCP `instructions` parameter. This ensures optimal usage of the Purview CLI client.
+
+**What's Included:**
+- ✅ Core capabilities overview for all 6 operation categories
+- ✅ Best practices for entity operations, glossary, lineage, search
+- ✅ Common workflows with step-by-step guidance
+- ✅ CSV bulk operation patterns and templates
+- ✅ QualifiedName format patterns for different entity types
+- ✅ Error handling strategies and recovery patterns
+- ✅ API coverage summary (86% Unified Catalog)
+- ✅ Tips for LLM usage and chaining operations
+
+**Benefits:**
+- 🚀 AI assistants automatically understand Purview client capabilities
+- 📚 No need to manually explain CLI features to AI
+- 🎯 Best practices enforced from first interaction
+- ⚡ Faster workflow creation with built-in patterns
+- 🔧 Error handling guidance reduces troubleshooting time
+
+**Documentation:**
+- Embedded instructions: In FastMCP server initialization
+- Standalone reference: `PROMPT_INSTRUCTIONS.md` (comprehensive guide)
+- Quick reference: This README
 
 ## Available Tools
 
@@ -350,12 +391,52 @@ Use any MCP client (Claude Desktop, VS Code extension, custom client):
 }
 ```
 
+## Prompt Instructions Quick Reference
+
+The MCP server automatically provides these instructions to AI assistants:
+
+### Core Capabilities Covered
+1. **Entity Operations** - CRUD, bulk operations, CSV import/export
+2. **Glossary Management** - Terms, categories, assignments
+3. **Unified Catalog** - Domains, business metadata, policies, relationships
+4. **Data Lineage** - Trace data flow, create lineage relationships
+5. **Search & Discovery** - Keyword, faceted, browse operations
+6. **Collections & Account** - Hierarchy, permissions, configuration
+
+### Common Workflows Included
+- Catalog New Data Source (5 steps)
+- Build Business Glossary (5 steps)
+- Implement Data Governance (6 steps)
+- Data Discovery (5 steps)
+- Bulk Data Onboarding (5 steps)
+
+### Best Practices Embedded
+- ✅ Always use qualifiedName for updates
+- ✅ Preview CSV imports with dry-run
+- ✅ Appropriate batch sizes based on volume
+- ✅ Error handling with error CSV files
+- ✅ Validate entities before operations
+- ✅ Start with domains for UC operations
+- ✅ Use Process entities for lineage
+
+### QualifiedName Patterns
+- **Azure SQL**: `mssql://server/database/schema/table`
+- **ADLS Gen2**: `https://account.dfs.core.windows.net/container/path`
+- **Generic**: `//source/path/asset@account`
+
+### For More Details
+- **Full Instructions**: See `PROMPT_INSTRUCTIONS.md` (comprehensive 650+ lines)
+- **Embedded**: Automatically provided to AI assistants via FastMCP
+- **Examples**: Real-world workflow patterns with tool calls
+
 ## Documentation References
 
+- **Prompt Instructions:** `PROMPT_INSTRUCTIONS.md` (NEW - comprehensive guide)
 - **API Documentation Status:** `doc/api-documentation-status.md`
 - **Completion Summary:** `doc/documentation-completion-summary.md`
 - **Client Modules:** `purviewcli/client/`
 - **Test Suite:** `tests/test_mcp_server.py`
+- **Purview CLI Docs:** `doc/` (full CLI documentation)
 
 ## Roadmap
 
@@ -369,6 +450,7 @@ Use any MCP client (Claude Desktop, VS Code extension, custom client):
 - Streaming responses for large datasets
 - Webhook support for events
 - Advanced filtering and faceting
+- Enhanced prompt engineering with usage examples
 - Custom tool registration
 
 ## Changelog
