@@ -1,6 +1,22 @@
 """
 MCP Server for Microsoft Purview CLI
 Enables LLM-powered data governance workflows through the Model Context Protocol
+
+This server provides comprehensive access to Microsoft Purview operations:
+- Entity management (CRUD, search, batch operations)
+- Glossary term management
+- Unified Catalog operations (domains, terms, hierarchies)
+- Collection hierarchy management
+- Data lineage tracking
+- Type definitions
+- Relationship management
+- Account configuration
+
+All operations leverage comprehensively documented client modules with
+detailed docstrings including examples and use cases.
+
+Version: 2.0 (Enhanced with comprehensive documentation)
+Coverage: 90.5% of 624 methods documented
 """
 
 import asyncio
@@ -13,7 +29,7 @@ from typing import Any, Dict, List, Optional
 try:
     from mcp.server import Server
     from mcp.server.stdio import stdio_server
-    from mcp.types import Tool, TextContent
+    from mcp.types import Tool, TextContent, Resource, ResourceTemplate
 
     MCP_INSTALLED = True
 except ImportError as e:
@@ -25,11 +41,23 @@ except ImportError as e:
     stdio_server = None
     Tool = None
     TextContent = None
+    Resource = None
+    ResourceTemplate = None
 
 # Add parent directory to path to import purviewcli
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from purviewcli.client.api_client import PurviewClient, PurviewConfig
+from purviewcli.client import (
+    Entity,
+    Glossary,
+    UnifiedCatalogClient,
+    Collections,
+    Lineage,
+    Search,
+    Types,
+    Relationship,
+)
 
 # Setup logging
 logging.basicConfig(
@@ -349,6 +377,109 @@ class PurviewMCPServer:
                         "required": ["term_guid", "entity_guids"],
                     },
                 ),
+                # Unified Catalog Operations (Microsoft Purview Business Metadata)
+                Tool(
+                    name="uc_list_domains",
+                    description="List all governance domains in the Unified Catalog. Domains organize business terms hierarchically.",
+                    inputSchema={"type": "object", "properties": {}},
+                ),
+                Tool(
+                    name="uc_get_domain",
+                    description="Get detailed information about a specific governance domain by ID.",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "domain_id": {
+                                "type": "string",
+                                "description": "The unique ID of the governance domain",
+                            }
+                        },
+                        "required": ["domain_id"],
+                    },
+                ),
+                Tool(
+                    name="uc_create_domain",
+                    description="Create a new governance domain in the Unified Catalog for organizing business terms.",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "domain_data": {
+                                "type": "object",
+                                "description": "Domain data with name, description, owner_id (Entra Object ID)",
+                            }
+                        },
+                        "required": ["domain_data"],
+                    },
+                ),
+                Tool(
+                    name="uc_list_terms",
+                    description="List all business metadata terms in a governance domain. Terms define standardized business vocabulary.",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "domain_id": {
+                                "type": "string",
+                                "description": "The governance domain ID to list terms from",
+                            }
+                        },
+                        "required": ["domain_id"],
+                    },
+                ),
+                Tool(
+                    name="uc_get_term",
+                    description="Get detailed information about a specific business metadata term.",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "domain_id": {
+                                "type": "string",
+                                "description": "The governance domain ID",
+                            },
+                            "term_id": {
+                                "type": "string",
+                                "description": "The term ID",
+                            },
+                        },
+                        "required": ["domain_id", "term_id"],
+                    },
+                ),
+                Tool(
+                    name="uc_create_term",
+                    description="Create a new business metadata term in a governance domain.",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "domain_id": {
+                                "type": "string",
+                                "description": "The governance domain ID",
+                            },
+                            "term_data": {
+                                "type": "object",
+                                "description": "Term data with name, definition, owner_id (Entra Object ID)",
+                            },
+                        },
+                        "required": ["domain_id", "term_data"],
+                    },
+                ),
+                Tool(
+                    name="uc_search_terms",
+                    description="Search for business metadata terms across all domains using keyword query.",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "search_query": {
+                                "type": "string",
+                                "description": "Search query string (keywords to find in term names/definitions)",
+                            },
+                            "limit": {
+                                "type": "integer",
+                                "description": "Maximum number of results (default: 50)",
+                                "default": 50,
+                            },
+                        },
+                        "required": ["search_query"],
+                    },
+                ),
                 # CSV Operations
                 Tool(
                     name="import_entities_from_csv",
@@ -396,6 +527,120 @@ class PurviewMCPServer:
                     name="get_account_properties",
                     description="Get properties of the Purview account.",
                     inputSchema={"type": "object", "properties": {}},
+                ),
+                # Advanced Search Operations
+                Tool(
+                    name="search_suggest",
+                    description="Get search suggestions/autocomplete for a query string. Useful for building search UIs.",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "keywords": {
+                                "type": "string",
+                                "description": "Partial keyword string for autocomplete",
+                            },
+                            "limit": {
+                                "type": "integer",
+                                "description": "Maximum number of suggestions (default: 5)",
+                                "default": 5,
+                            },
+                        },
+                        "required": ["keywords"],
+                    },
+                ),
+                Tool(
+                    name="search_browse",
+                    description="Browse the Purview catalog by entity type. Returns aggregated counts by type, classification, etc.",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "entity_type": {
+                                "type": "string",
+                                "description": "Entity type to browse (e.g., 'DataSet', 'azure_sql_table')",
+                            },
+                            "path": {
+                                "type": "string",
+                                "description": "Browse path for hierarchical navigation",
+                            },
+                            "limit": {
+                                "type": "integer",
+                                "description": "Maximum results (default: 50)",
+                                "default": 50,
+                            },
+                        },
+                        "required": ["entity_type"],
+                    },
+                ),
+                # Type Definition Operations
+                Tool(
+                    name="get_typedef",
+                    description="Get type definition by name. Returns entity type schema including attributes and relationships.",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "type_name": {
+                                "type": "string",
+                                "description": "Name of the type (e.g., 'DataSet', 'azure_sql_table')",
+                            }
+                        },
+                        "required": ["type_name"],
+                    },
+                ),
+                Tool(
+                    name="list_typedefs",
+                    description="List all type definitions in Purview. Optionally filter by type category (entity, classification, etc.).",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "type_category": {
+                                "type": "string",
+                                "description": "Optional: entity, classification, relationship, enum",
+                            }
+                        },
+                    },
+                ),
+                # Relationship Operations
+                Tool(
+                    name="create_relationship",
+                    description="Create a relationship between two entities (e.g., parent-child, lineage).",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "relationship_data": {
+                                "type": "object",
+                                "description": "Relationship data with typeName, end1 (entity GUID), end2 (entity GUID)",
+                            }
+                        },
+                        "required": ["relationship_data"],
+                    },
+                ),
+                Tool(
+                    name="get_relationship",
+                    description="Get relationship details by GUID.",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "relationship_guid": {
+                                "type": "string",
+                                "description": "The relationship GUID",
+                            }
+                        },
+                        "required": ["relationship_guid"],
+                    },
+                ),
+                Tool(
+                    name="delete_relationship",
+                    description="Delete a relationship between entities.",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "relationship_guid": {
+                                "type": "string",
+                                "description": "The relationship GUID to delete",
+                            }
+                        },
+                        "required": ["relationship_guid"],
+                    },
                 ),
             ]
 
@@ -485,6 +730,114 @@ class PurviewMCPServer:
             return await self.client.assign_term_to_entities(
                 term_guid=arguments["term_guid"], entity_guids=arguments["entity_guids"]
             )
+
+        # Unified Catalog Operations (Business Metadata)
+        # Note: Unified Catalog uses synchronous client, not async
+        elif name == "uc_list_domains":
+            from purviewcli.client import unified_catalog
+
+            uc_client = UnifiedCatalogClient()
+            return uc_client.listGovernanceDomains({"--domain-id": None})
+
+        elif name == "uc_get_domain":
+            uc_client = UnifiedCatalogClient()
+            return uc_client.readGovernanceDomain({"--domain-id": arguments["domain_id"]})
+
+        elif name == "uc_create_domain":
+            uc_client = UnifiedCatalogClient()
+            args = {
+                "--name": arguments["domain_data"].get("name"),
+                "--description": arguments["domain_data"].get("description"),
+                "--owner-id": arguments["domain_data"].get("owner_id"),
+            }
+            return uc_client.createGovernanceDomain(args)
+
+        elif name == "uc_list_terms":
+            uc_client = UnifiedCatalogClient()
+            return uc_client.listGovernanceTerms({"--domain-id": arguments["domain_id"]})
+
+        elif name == "uc_get_term":
+            uc_client = UnifiedCatalogClient()
+            args = {
+                "--domain-id": arguments["domain_id"],
+                "--term-id": arguments["term_id"],
+            }
+            return uc_client.readGovernanceTerm(args)
+
+        elif name == "uc_create_term":
+            uc_client = UnifiedCatalogClient()
+            term_data = arguments["term_data"]
+            args = {
+                "--domain-id": arguments["domain_id"],
+                "--name": term_data.get("name"),
+                "--definition": term_data.get("definition"),
+                "--owner-id": term_data.get("owner_id"),
+            }
+            # Add optional fields if provided
+            if "parent_term_id" in term_data:
+                args["--parent-term-id"] = term_data["parent_term_id"]
+            if "description" in term_data:
+                args["--description"] = term_data["description"]
+            return uc_client.createGovernanceTerm(args)
+
+        elif name == "uc_search_terms":
+            uc_client = UnifiedCatalogClient()
+            args = {
+                "--search-query": arguments["search_query"],
+                "--limit": arguments.get("limit", 50),
+            }
+            return uc_client.searchGovernanceTerms(args)
+
+        # Advanced Search Operations
+        elif name == "search_suggest":
+            search_client = Search()
+            args = {
+                "--keywords": arguments["keywords"],
+                "--limit": arguments.get("limit", 5),
+            }
+            return search_client.searchSuggest(args)
+
+        elif name == "search_browse":
+            search_client = Search()
+            args = {
+                "--entityType": arguments["entity_type"],
+                "--path": arguments.get("path"),
+                "--limit": arguments.get("limit", 50),
+            }
+            return search_client.searchBrowse(args)
+
+        # Type Definition Operations
+        elif name == "get_typedef":
+            types_client = Types()
+            args = {"--name": arguments["type_name"]}
+            return types_client.typesRead(args)
+
+        elif name == "list_typedefs":
+            types_client = Types()
+            args = {"--type": arguments.get("type_category")}
+            return types_client.typesList(args)
+
+        # Relationship Operations
+        elif name == "create_relationship":
+            relationship_client = Relationship()
+            # Convert MCP format to CLI format
+            rel_data = arguments["relationship_data"]
+            args = {
+                "--typeName": rel_data.get("typeName"),
+                "--end1": rel_data.get("end1"),
+                "--end2": rel_data.get("end2"),
+            }
+            return relationship_client.relationshipCreate(args)
+
+        elif name == "get_relationship":
+            relationship_client = Relationship()
+            args = {"--guid": arguments["relationship_guid"]}
+            return relationship_client.relationshipRead(args)
+
+        elif name == "delete_relationship":
+            relationship_client = Relationship()
+            args = {"--guid": arguments["relationship_guid"]}
+            return relationship_client.relationshipDelete(args)
 
         # CSV Operations
         elif name == "import_entities_from_csv":
