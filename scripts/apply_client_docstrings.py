@@ -26,12 +26,12 @@ def apply_docstrings_to_module(module_name):
     
     # Validate files exist
     if not source_file.exists():
-        print(f"✗ Source file not found: {source_file}")
+        print(f"[X] Source file not found: {source_file}")
         return 0
     
     if not template_file.exists():
-        print(f"✗ Template file not found: {template_file}")
-        print(f"  Generate it first: python scripts/generate_docstrings.py {module_name}")
+        print(f"[X] Template file not found: {template_file}")
+        print(f"    Generate it first: python scripts/generate_docstrings.py {module_name}")
         return 0
     
     print(f"\nProcessing: {module_name}")
@@ -82,27 +82,36 @@ def apply_docstrings_to_module(module_name):
         
         # Try multiple patterns to find the method
         patterns = [
-            # Pattern 1: Standard decorator pattern
-            rf'(@decorator\s+def {method_name}\(self, args\):\s+)"""[^"]*"""',
-            # Pattern 2: Regular method
+            # Pattern 1: Standard decorator pattern with docstring
+            rf'(@decorator\s+def {method_name}\(self, args\):\s+)""".*?"""',
+            # Pattern 2: Decorator with multi-line docstring (non-greedy)
+            rf'(@decorator\s+def {method_name}\(self, args\):\s+""")(.*?)(""")',
+            # Pattern 3: Regular method
             rf'(def {method_name}\(self, args\):\s+)"""[^"]*"""',
-            # Pattern 3: Method with short docstring
+            # Pattern 4: Method with short docstring
             rf'(def {method_name}\(self, args\):\s+)"""[^\n]+"""',
         ]
         
         updated = False
-        for pattern in patterns:
-            if re.search(pattern, content, re.DOTALL):
-                replacement = rf'\1"""{docstring}"""'
+        for i, pattern in enumerate(patterns):
+            match = re.search(pattern, content, re.DOTALL)
+            if match:
+                # For pattern 2 (multi-line capture), we need special handling
+                if i == 1:
+                    # Replace the middle group (docstring content)
+                    replacement = match.group(1) + docstring + match.group(3)
+                else:
+                    replacement = rf'\1"""{docstring}"""'
+                
                 content = re.sub(pattern, replacement, content, count=1, flags=re.DOTALL)
                 methods_updated += 1
-                print(f"✓ Updated {method_name}")
+                print(f"[OK] Updated {method_name}")
                 updated = True
                 break
         
         if not updated:
             methods_not_found += 1
-            print(f"✗ Could not find pattern for {method_name}")
+            print(f"[X] Could not find pattern for {method_name}")
     
     # Write back to file
     with open(source_file, 'w', encoding='utf-8') as f:
@@ -110,9 +119,9 @@ def apply_docstrings_to_module(module_name):
     
     print("\n" + "=" * 60)
     print(f"Results for {module_name}:")
-    print(f"  ✓ Updated:   {methods_updated}")
-    print(f"  ⊘ Skipped:   {methods_skipped}")
-    print(f"  ✗ Not found: {methods_not_found}")
+    print(f"  [OK] Updated:   {methods_updated}")
+    print(f"  [SKIP] Skipped: {methods_skipped}")
+    print(f"  [X] Not found:  {methods_not_found}")
     
     return methods_updated
 
@@ -414,15 +423,15 @@ def process_all_modules():
     templates_dir = Path("doc/boilerplate/generated_docstrings")
     
     if not templates_dir.exists():
-        print(f"✗ Templates directory not found: {templates_dir}")
-        print("  Generate templates first: python scripts/generate_docstrings.py")
+        print(f"[X] Templates directory not found: {templates_dir}")
+        print("    Generate templates first: python scripts/generate_docstrings.py")
         return
     
     # Find all template files
     template_files = list(templates_dir.glob("*.docstrings.txt"))
     
     if not template_files:
-        print("✗ No template files found in doc/boilerplate/generated_docstrings/")
+        print("[X] No template files found in doc/boilerplate/generated_docstrings/")
         return
     
     print(f"\nFound {len(template_files)} template files")

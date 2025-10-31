@@ -110,7 +110,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityCreateOrUpdate(args=...)
         print(f"Result: {result}")
@@ -185,7 +185,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityCreate(args=...)
         print(f"Result: {result}")
@@ -256,7 +256,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityRead(args=...)
         print(f"Result: {result}")
@@ -318,7 +318,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityUpdate(args=...)
         print(f"Result: {result}")
@@ -387,7 +387,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityDelete(args=...)
         print(f"Result: {result}")
@@ -445,7 +445,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityUpdateAttribute(args=...)
         print(f"Result: {result}")
@@ -524,7 +524,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityReadHeader(args=...)
         print(f"Result: {result}")
@@ -595,7 +595,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityBulkCreateOrUpdate(args=...)
         print(f"Result: {result}")
@@ -671,7 +671,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityCreateBulk(args=...)
         print(f"Result: {result}")
@@ -740,7 +740,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityDeleteBulk(args=...)
         print(f"Result: {result}")
@@ -800,7 +800,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityReadBulk(args=...)
         print(f"Result: {result}")
@@ -867,7 +867,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityReadUniqueAttribute(args=...)
         print(f"Result: {result}")
@@ -934,7 +934,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityReadBulkUniqueAttribute(args=...)
         print(f"Result: {result}")
@@ -1004,7 +1004,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityUpdateUniqueAttribute(args=...)
         print(f"Result: {result}")
@@ -1081,7 +1081,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityDeleteUniqueAttribute(args=...)
         print(f"Result: {result}")
@@ -1148,7 +1148,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityReadClassification(args=...)
         print(f"Result: {result}")
@@ -1208,7 +1208,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityDeleteClassification(args=...)
         print(f"Result: {result}")
@@ -1270,7 +1270,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityReadClassifications(args=...)
         print(f"Result: {result}")
@@ -1331,7 +1331,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityCreateClassifications(args=...)
         print(f"Result: {result}")
@@ -1403,7 +1403,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityUpdateClassifications(args=...)
         print(f"Result: {result}")
@@ -1475,7 +1475,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityBulkSetClassifications(args=...)
         print(f"Result: {result}")
@@ -1548,7 +1548,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityBulkClassification(args=...)
         print(f"Result: {result}")
@@ -1608,7 +1608,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityDeleteClassificationByUniqueAttribute(args=...)
         print(f"Result: {result}")
@@ -1671,7 +1671,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityUpdateClassificationsByUniqueAttribute(args=...)
         print(f"Result: {result}")
@@ -1751,7 +1751,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityCreateClassificationsByUniqueAttribute(args=...)
         print(f"Result: {result}")
@@ -1833,7 +1833,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityCreateBusinessMetadata(args=...)
         print(f"Result: {result}")
@@ -1905,7 +1905,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityDeleteBusinessMetadata(args=...)
         print(f"Result: {result}")
@@ -1983,7 +1983,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityCreateBusinessMetadataAttributes(args=...)
         print(f"Result: {result}")
@@ -2057,7 +2057,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityDeleteBusinessMetadataAttributes(args=...)
         print(f"Result: {result}")
@@ -2121,7 +2121,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityImportBusinessMetadata(args=...)
         print(f"Result: {result}")
@@ -2182,7 +2182,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityReadBusinessMetadataTemplate(args=...)
         print(f"Result: {result}")
@@ -2243,7 +2243,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityAddOrUpdateBusinessMetadata(args=...)
         print(f"Result: {result}")
@@ -2314,7 +2314,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityAddOrUpdateBusinessMetadataAttributes(args=...)
         print(f"Result: {result}")
@@ -2382,7 +2382,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityRemoveBusinessMetadata(args=...)
         print(f"Result: {result}")
@@ -2437,7 +2437,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityRemoveBusinessMetadataAttributes(args=...)
         print(f"Result: {result}")
@@ -2498,7 +2498,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityCreateLabels(args=...)
         print(f"Result: {result}")
@@ -2570,7 +2570,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityUpdateLabels(args=...)
         print(f"Result: {result}")
@@ -2642,7 +2642,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityDeleteLabels(args=...)
         print(f"Result: {result}")
@@ -2706,7 +2706,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityCreateLabelsByUniqueAttribute(args=...)
         print(f"Result: {result}")
@@ -2783,7 +2783,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityUpdateLabelsByUniqueAttribute(args=...)
         print(f"Result: {result}")
@@ -2860,7 +2860,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityDeleteLabelsByUniqueAttribute(args=...)
         print(f"Result: {result}")
@@ -2921,7 +2921,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityMoveToCollection(args=...)
         print(f"Result: {result}")
@@ -2984,7 +2984,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityReadHistory(args=...)
         print(f"Result: {result}")
@@ -3048,7 +3048,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityReadAudit(args=...)
         print(f"Result: {result}")
@@ -3106,7 +3106,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityValidate(args=...)
         print(f"Result: {result}")
@@ -3168,7 +3168,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityReadDependencies(args=...)
         print(f"Result: {result}")
@@ -3247,7 +3247,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityReadUsage(args=...)
         print(f"Result: {result}")
@@ -3312,7 +3312,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityPut(args=...)
         print(f"Result: {result}")
@@ -3381,7 +3381,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityPutClassifications(args=...)
         print(f"Result: {result}")
@@ -3450,7 +3450,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityPartialUpdateByUniqueAttribute(args=...)
         print(f"Result: {result}")
@@ -3519,7 +3519,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityEntity()
+        client = Entity()
         
         result = client.entityPartialUpdateAttribute(args=...)
         print(f"Result: {result}")

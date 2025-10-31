@@ -83,9 +83,9 @@ class ClientAPIAnalyzer:
                 try:
                     module_info = self.analyze_module(str(file_path), file_name)
                     self.modules[file_name] = module_info
-                    print(f"✓ Analyzed {file_name}: {len(module_info.methods)} methods")
+                    print(f"[OK] Analyzed {file_name}: {len(module_info.methods)} methods")
                 except Exception as e:
-                    print(f"✗ Error analyzing {file_name}: {e}")
+                    print(f"[ERROR] Error analyzing {file_name}: {e}")
         
         return self.modules
     
@@ -246,7 +246,7 @@ class ClientAPIAnalyzer:
                 "",
                 f"- **Progress:** {documented}/{total} methods ({pct:.0f}%)",
                 f"- **Classes:** {', '.join(module_info.classes)}",
-                f"- **Module Docstring:** {'✓' if module_info.has_module_docstring else '✗'}",
+                f"- **Module Docstring:** {'[YES]' if module_info.has_module_docstring else '[NO]'}",
                 ""
             ])
             
@@ -347,8 +347,8 @@ class ClientAPIAnalyzer:
         with open(output_path, 'w', encoding='utf-8') as f:
             f.write('\n'.join(report_lines))
         
-        print(f"\n✓ Report generated: {output_path}")
-        print(f"  Coverage: {coverage_pct:.1f}% ({documented_methods}/{total_methods} methods)")
+        print(f"\n[OK] Report generated: {output_path}")
+        print(f"     Coverage: {coverage_pct:.1f}% ({documented_methods}/{total_methods} methods)")
         
         return str(output_path)
     
@@ -388,7 +388,7 @@ class ClientAPIAnalyzer:
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2)
         
-        print(f"✓ JSON report generated: {output_file}")
+        print(f"[OK] JSON report generated: {output_file}")
 
 
 def main():

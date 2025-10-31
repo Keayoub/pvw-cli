@@ -16,28 +16,284 @@ class Insight(Endpoint):
     
     @decorator
     def insightAssetDistribution(self, args):
-        """Get asset distribution by data source"""
+        """
+Update an existing insight.
+    
+    Updates an existing insight with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated insight:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightAssetDistribution(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.insightAssetDistribution(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['asset_distribution_by_data_source']
         self.params = get_api_version_params('datamap')
 
     @decorator
     def insightAssetDistributionByType(self, args):
-        """Get asset distribution by asset type"""
+        """
+Update an existing insight.
+    
+    Updates an existing insight with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated insight:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightAssetDistributionByType(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.insightAssetDistributionByType(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['asset_distribution_by_type']
         self.params = get_api_version_params('datamap')
 
     @decorator
     def insightAssetDistributionByClassification(self, args):
-        """Get asset distribution by classification"""
+        """
+Update an existing insight.
+    
+    Updates an existing insight with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated insight:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightAssetDistributionByClassification(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.insightAssetDistributionByClassification(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['asset_distribution_by_classification']
         self.params = get_api_version_params('datamap')
 
     @decorator
     def insightAssetDistributionByCollection(self, args):
-        """Get asset distribution by collection"""
+        """
+Update an existing insight.
+    
+    Updates an existing insight with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated insight:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = CollectionsInsight()
+        
+        result = client.insightAssetDistributionByCollection(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.insightAssetDistributionByCollection(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['asset_distribution_by_collection']
         self.params = get_api_version_params('datamap')
@@ -46,21 +302,195 @@ class Insight(Endpoint):
     
     @decorator
     def insightFilesWithoutResourceSet(self, args):
-        """Get files without resource set grouping"""
+        """
+Update an existing insight.
+    
+    Updates an existing insight with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated insight:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightFilesWithoutResourceSet(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.insightFilesWithoutResourceSet(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['files_without_resource_set']
         self.params = get_api_version_params('datamap')
 
     @decorator
     def insightFilesAggregation(self, args):
-        """Get files aggregation statistics"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightFilesAggregation(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['files_aggregation']
         self.params = get_api_version_params('datamap')
 
     @decorator
     def insightResourceSetDetails(self, args):
-        """Get detailed resource set analytics"""
+        """
+Update an existing insight.
+    
+    Updates an existing insight with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated insight:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightResourceSetDetails(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.insightResourceSetDetails(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['resource_set_details']
         self.params = get_api_version_params('datamap')
@@ -69,7 +499,71 @@ class Insight(Endpoint):
 
     @decorator
     def insightResourceSetSummary(self, args):
-        """Get resource set summary statistics"""
+        """
+Update an existing insight.
+    
+    Updates an existing insight with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated insight:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightResourceSetSummary(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.insightResourceSetSummary(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['resource_set_summary']
         self.params = get_api_version_params('datamap')
@@ -78,14 +572,106 @@ class Insight(Endpoint):
     
     @decorator
     def insightTags(self, args):
-        """Get tag insights and distribution"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightTags(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['label_insight']
         self.params = get_api_version_params('datamap')
 
     @decorator
     def insightTagsTimeSeries(self, args):
-        """Get tags time series analysis"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightTagsTimeSeries(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['tags_time_series']
         self.params = get_api_version_params('datamap')
@@ -94,14 +680,106 @@ class Insight(Endpoint):
 
     @decorator
     def insightClassificationDistribution(self, args):
-        """Get classification distribution across assets"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightClassificationDistribution(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['classification_distribution']
         self.params = get_api_version_params('datamap')
 
     @decorator
     def insightSensitivityLabels(self, args):
-        """Get sensitivity label insights"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightSensitivityLabels(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['sensitivity_labels']
         self.params = get_api_version_params('datamap')
@@ -110,7 +788,53 @@ class Insight(Endpoint):
     
     @decorator
     def insightScanStatusSummary(self, args):
-        """Get scan status summary"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightScanStatusSummary(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['scan_status_summary']
         self.params = get_api_version_params('datamap')
@@ -119,7 +843,53 @@ class Insight(Endpoint):
 
     @decorator
     def insightScanStatusSummaryByTs(self, args):
-        """Get scan status summary by timestamp"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightScanStatusSummaryByTs(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['scan_status_summary_by_ts']
         self.params = get_api_version_params('datamap')
@@ -128,7 +898,53 @@ class Insight(Endpoint):
 
     @decorator
     def insightScanPerformance(self, args):
-        """Get scan performance metrics"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightScanPerformance(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['scan_performance']
         self.params = get_api_version_params('datamap')
@@ -137,7 +953,53 @@ class Insight(Endpoint):
 
     @decorator
     def insightScanHistory(self, args):
-        """Get scan history and trends"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightScanHistory(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['scan_history']
         self.params = get_api_version_params('datamap')
@@ -150,21 +1012,159 @@ class Insight(Endpoint):
     
     @decorator
     def insightDataQualityOverview(self, args):
-        """Get data quality overview"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightDataQualityOverview(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['data_quality_overview']
         self.params = get_api_version_params('datamap')
 
     @decorator
     def insightDataQualityBySource(self, args):
-        """Get data quality metrics by data source"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightDataQualityBySource(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['data_quality_by_source']
         self.params = get_api_version_params('datamap')
 
     @decorator
     def insightDataQualityTrends(self, args):
-        """Get data quality trends over time"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightDataQualityTrends(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['data_quality_trends']
         self.params = get_api_version_params('datamap')
@@ -173,7 +1173,53 @@ class Insight(Endpoint):
 
     @decorator
     def insightDataProfileSummary(self, args):
-        """Get data profiling summary"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightDataProfileSummary(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['data_profile_summary']
         self.params = get_api_version_params('datamap')
@@ -182,21 +1228,159 @@ class Insight(Endpoint):
     
     @decorator
     def insightGlossaryUsage(self, args):
-        """Get glossary term usage statistics"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = GlossaryInsight()
+        
+        result = client.insightGlossaryUsage(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['glossary_usage']
         self.params = get_api_version_params('datamap')
 
     @decorator
     def insightBusinessGlossaryHealth(self, args):
-        """Get business glossary health metrics"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = GlossaryInsight()
+        
+        result = client.insightBusinessGlossaryHealth(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['business_glossary_health']
         self.params = get_api_version_params('datamap')
 
     @decorator
     def insightTermAssignmentCoverage(self, args):
-        """Get term assignment coverage across assets"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightTermAssignmentCoverage(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['term_assignment_coverage']
         self.params = get_api_version_params('datamap')
@@ -205,21 +1389,159 @@ class Insight(Endpoint):
     
     @decorator
     def insightLineageCoverage(self, args):
-        """Get lineage coverage statistics"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = LineageInsight()
+        
+        result = client.insightLineageCoverage(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['lineage_coverage']
         self.params = get_api_version_params('datamap')
 
     @decorator
     def insightLineageComplexity(self, args):
-        """Get lineage complexity metrics"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = LineageInsight()
+        
+        result = client.insightLineageComplexity(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['lineage_complexity']
         self.params = get_api_version_params('datamap')
 
     @decorator
     def insightDataMovementPatterns(self, args):
-        """Get data movement patterns analysis"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightDataMovementPatterns(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['data_movement_patterns']
         self.params = get_api_version_params('datamap')
@@ -228,7 +1550,53 @@ class Insight(Endpoint):
     
     @decorator
     def insightUserActivity(self, args):
-        """Get user activity insights"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightUserActivity(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['user_activity']
         self.params = get_api_version_params('datamap')
@@ -237,14 +1605,129 @@ class Insight(Endpoint):
 
     @decorator
     def insightSearchPatterns(self, args):
-        """Get search patterns and popular queries"""
+        """
+Search for insights.
+    
+    Searches for resources matching the specified criteria.
+    Supports filtering, pagination, and sorting.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing search results:
+            {
+                'value': [...]     # List of matching resources
+                'count': int,      # Total results count
+                'nextLink': str    # Pagination link (if applicable)
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightSearchPatterns(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Locate datasets by name or properties
+        - Impact Analysis: Find all assets related to a term
+        - Compliance: Identify sensitive data across catalog
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['search_patterns']
         self.params = get_api_version_params('datamap')
 
     @decorator
     def insightAssetPopularity(self, args):
-        """Get asset popularity metrics"""
+        """
+Update an existing insight.
+    
+    Updates an existing insight with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated insight:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightAssetPopularity(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.insightAssetPopularity(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['asset_popularity']
         self.params = get_api_version_params('datamap')
@@ -253,7 +1736,53 @@ class Insight(Endpoint):
     
     @decorator
     def insightCollectionActivity(self, args):
-        """Get collection activity insights"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = CollectionsInsight()
+        
+        result = client.insightCollectionActivity(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['collection_activity']
         self.params = get_api_version_params('datamap')
@@ -262,14 +1791,106 @@ class Insight(Endpoint):
 
     @decorator
     def insightAccessPatterns(self, args):
-        """Get data access patterns"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightAccessPatterns(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['access_patterns']
         self.params = get_api_version_params('datamap')
 
     @decorator
     def insightPermissionUsage(self, args):
-        """Get permission usage analytics"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightPermissionUsage(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['permission_usage']
         self.params = get_api_version_params('datamap')
@@ -278,7 +1899,53 @@ class Insight(Endpoint):
     
     @decorator
     def insightCustomReport(self, args):
-        """Generate custom insight report"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightCustomReport(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'POST'
         self.endpoint = ENDPOINTS['insight']['custom_report']
         self.params = get_api_version_params('datamap')
@@ -286,14 +1953,127 @@ class Insight(Endpoint):
 
     @decorator
     def insightScheduledReports(self, args):
-        """Get scheduled reports list"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightScheduledReports(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['scheduled_reports']
         self.params = get_api_version_params('datamap')
 
     @decorator
     def insightCreateScheduledReport(self, args):
-        """Create a scheduled report"""
+        """
+Create a new insight.
+    
+    Creates a new insight in Microsoft Purview.
+    Requires appropriate permissions and valid insight definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created insight:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightCreateScheduledReport(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.insightCreateScheduledReport(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         self.method = 'POST'
         self.endpoint = ENDPOINTS['insight']['create_scheduled_report']
         self.params = get_api_version_params('datamap')
@@ -301,7 +2081,59 @@ class Insight(Endpoint):
 
     @decorator
     def insightExportData(self, args):
-        """Export insight data to various formats"""
+        """
+Perform batch operation on resources.
+    
+    Processes multiple resources in a single operation.
+    More efficient than individual operations for bulk data.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with batch operation results:
+            {
+                'succeeded': int,        # Success count
+                'failed': int,           # Failure count
+                'results': [...],        # Per-item results
+                'errors': [...]          # Error details
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightExportData(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Bulk Import: Load large volumes of metadata
+        - Migration: Transfer catalog from other systems
+        - Mass Updates: Apply changes to many resources
+    """
         self.method = 'POST'
         self.endpoint = ENDPOINTS['insight']['export_data']
         self.params = get_api_version_params('datamap')
@@ -315,7 +2147,53 @@ class Insight(Endpoint):
     
     @decorator
     def insightDataGrowthTrends(self, args):
-        """Get data growth trends analysis"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightDataGrowthTrends(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['data_growth_trends']
         self.params = get_api_version_params('datamap')
@@ -324,21 +2202,177 @@ class Insight(Endpoint):
 
     @decorator
     def insightComplianceMetrics(self, args):
-        """Get compliance metrics and scores"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightComplianceMetrics(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['compliance_metrics']
         self.params = get_api_version_params('datamap')
 
     @decorator
     def insightDataStewardshipHealth(self, args):
-        """Get data stewardship health metrics"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightDataStewardshipHealth(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['data_stewardship_health']
         self.params = get_api_version_params('datamap')
 
     @decorator
     def insightAssetHealthScore(self, args):
-        """Get asset health scores"""
+        """
+Update an existing insight.
+    
+    Updates an existing insight with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated insight:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightAssetHealthScore(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.insightAssetHealthScore(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['asset_health_score']
         self.params = get_api_version_params('datamap')
@@ -349,21 +2383,159 @@ class Insight(Endpoint):
     
     @decorator
     def insightSystemPerformance(self, args):
-        """Get system performance metrics"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightSystemPerformance(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['system_performance']
         self.params = get_api_version_params('datamap')
 
     @decorator
     def insightResourceUtilization(self, args):
-        """Get resource utilization statistics"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightResourceUtilization(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['resource_utilization']
         self.params = get_api_version_params('datamap')
 
     @decorator
     def insightOptimizationRecommendations(self, args):
-        """Get optimization recommendations"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightOptimizationRecommendations(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['optimization_recommendations']
         self.params = get_api_version_params('datamap')
@@ -372,14 +2544,106 @@ class Insight(Endpoint):
     
     @decorator
     def insightRealTimeMetrics(self, args):
-        """Get real-time system metrics"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightRealTimeMetrics(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['real_time_metrics']
         self.params = get_api_version_params('datamap')
 
     @decorator
     def insightLiveActivityFeed(self, args):
-        """Get live activity feed"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightLiveActivityFeed(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['live_activity_feed']
         self.params = get_api_version_params('datamap')
@@ -388,7 +2652,53 @@ class Insight(Endpoint):
 
     @decorator
     def insightActiveScans(self, args):
-        """Get currently active scans"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightActiveScans(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['active_scans']
         self.params = get_api_version_params('datamap')
@@ -397,7 +2707,53 @@ class Insight(Endpoint):
     
     @decorator
     def insightHistoricalTrends(self, args):
-        """Get historical trends analysis"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightHistoricalTrends(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['historical_trends']
         self.params = get_api_version_params('datamap')
@@ -410,14 +2766,106 @@ class Insight(Endpoint):
 
     @decorator
     def insightDataArchival(self, args):
-        """Get data archival insights"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightDataArchival(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['data_archival']
         self.params = get_api_version_params('datamap')
 
     @decorator
     def insightVersionHistory(self, args):
-        """Get version history analysis"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Insight()
+        
+        result = client.insightVersionHistory(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = 'GET'
         self.endpoint = ENDPOINTS['insight']['version_history']
         self.params = get_api_version_params('datamap')

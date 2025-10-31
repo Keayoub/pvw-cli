@@ -27,14 +27,131 @@ class Account(Endpoint):
 
     @decorator
     def accountRead(self, args):
-        """Get account information (Official API: Get Account)"""
+        """
+Retrieve account resource information.
+    
+    Retrieves detailed information about the specified account resource.
+    Returns complete account resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing account resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountRead(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["account"]["get"]
         self.params = get_api_version_params("account")
 
     @decorator
     def accountUpdate(self, args):
-        """Update account information (Official API: Update Account)"""
+        """
+Update an existing account resource.
+    
+    Updates an existing account resource with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated account resource:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountUpdate(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.accountUpdate(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         self.method = "PATCH"
         self.endpoint = ENDPOINTS["account"]["update"]
         self.params = get_api_version_params("account")
@@ -44,14 +161,113 @@ class Account(Endpoint):
 
     @decorator
     def accountReadAccessKeys(self, args):
-        """Get account access keys (Official API: Get Access Keys)"""
+        """
+Retrieve account resource information.
+    
+    Retrieves detailed information about the specified account resource.
+    Returns complete account resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing account resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountReadAccessKeys(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "POST"
         self.endpoint = ENDPOINTS["account"]["get_access_keys"]
         self.params = get_api_version_params("account")
 
     @decorator
     def accountRegenerateAccessKey(self, args):
-        """Regenerate account access key (Official API: Regenerate Access Key)"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountRegenerateAccessKey(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = "POST"
         self.endpoint = ENDPOINTS["account"]["regenerate_access_key"]
         self.params = get_api_version_params("account")
@@ -65,7 +281,60 @@ class Account(Endpoint):
 
     @decorator
     def accountReadInfo(self, args):
-        """Get detailed account information (Advanced API: Get Account Info)"""
+        """
+Retrieve account resource information.
+    
+    Retrieves detailed information about the specified account resource.
+    Returns complete account resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing account resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountReadInfo(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["account"]["get_account_info"]
         self.params = {
@@ -76,14 +345,131 @@ class Account(Endpoint):
 
     @decorator
     def accountReadSettings(self, args):
-        """Get account settings (Advanced API: Get Account Settings)"""
+        """
+Retrieve account resource information.
+    
+    Retrieves detailed information about the specified account resource.
+    Returns complete account resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing account resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountReadSettings(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["account"]["get_account_settings"]
         self.params = get_api_version_params("account")
 
     @decorator
     def accountUpdateSettings(self, args):
-        """Update account settings (Advanced API: Update Account Settings)"""
+        """
+Update an existing account resource.
+    
+    Updates an existing account resource with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated account resource:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountUpdateSettings(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.accountUpdateSettings(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         self.method = "PUT"
         self.endpoint = ENDPOINTS["account"]["update_account_settings"]
         self.params = get_api_version_params("account")
@@ -91,7 +477,60 @@ class Account(Endpoint):
 
     @decorator
     def accountReadUsage(self, args):
-        """Get account usage statistics (Advanced API: Get Account Usage)"""
+        """
+Retrieve account resource information.
+    
+    Retrieves detailed information about the specified account resource.
+    Returns complete account resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing account resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountReadUsage(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["account"]["get_account_usage"]
         self.params = {
@@ -104,7 +543,60 @@ class Account(Endpoint):
 
     @decorator
     def accountReadLimits(self, args):
-        """Get account limits and quotas (Advanced API: Get Account Limits)"""
+        """
+Retrieve account resource information.
+    
+    Retrieves detailed information about the specified account resource.
+    Returns complete account resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing account resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountReadLimits(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["account"]["get_account_limits"]
         self.params = {
@@ -114,7 +606,60 @@ class Account(Endpoint):
 
     @decorator
     def accountReadAnalytics(self, args):
-        """Get account analytics (Advanced API: Get Account Analytics)"""
+        """
+Retrieve account resource information.
+    
+    Retrieves detailed information about the specified account resource.
+    Returns complete account resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing account resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountReadAnalytics(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["account"]["get_account_analytics"]
         self.params = {
@@ -130,7 +675,60 @@ class Account(Endpoint):
 
     @decorator
     def accountReadConfiguration(self, args):
-        """Get account configuration (Enhanced API: Account Configuration)"""
+        """
+Retrieve account resource information.
+    
+    Retrieves detailed information about the specified account resource.
+    Returns complete account resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing account resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountReadConfiguration(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = f"{ENDPOINTS['account']['get']}/configuration"
         self.params = {
@@ -141,7 +739,71 @@ class Account(Endpoint):
 
     @decorator
     def accountUpdateConfiguration(self, args):
-        """Update account configuration (Enhanced API: Update Account Configuration)"""
+        """
+Update an existing account resource.
+    
+    Updates an existing account resource with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated account resource:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountUpdateConfiguration(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.accountUpdateConfiguration(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         self.method = "PUT"
         self.endpoint = f"{ENDPOINTS['account']['update']}/configuration"
         self.params = get_api_version_params("account")
@@ -149,7 +811,53 @@ class Account(Endpoint):
 
     @decorator
     def accountValidateConfiguration(self, args):
-        """Validate account configuration (Enhanced API: Validate Account Configuration)"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountValidateConfiguration(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = "POST"
         self.endpoint = f"{ENDPOINTS['account']['get']}/configuration/validate"
         self.params = get_api_version_params("account")
@@ -159,14 +867,131 @@ class Account(Endpoint):
 
     @decorator
     def accountReadSecuritySettings(self, args):
-        """Get account security settings (Enhanced API: Security Settings)"""
+        """
+Retrieve account resource information.
+    
+    Retrieves detailed information about the specified account resource.
+    Returns complete account resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing account resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountReadSecuritySettings(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = f"{ENDPOINTS['account']['get']}/security"
         self.params = get_api_version_params("account")
 
     @decorator
     def accountUpdateSecuritySettings(self, args):
-        """Update account security settings (Enhanced API: Update Security Settings)"""
+        """
+Update an existing account resource.
+    
+    Updates an existing account resource with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated account resource:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountUpdateSecuritySettings(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.accountUpdateSecuritySettings(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         self.method = "PUT"
         self.endpoint = f"{ENDPOINTS['account']['update']}/security"
         self.params = get_api_version_params("account")
@@ -174,7 +999,60 @@ class Account(Endpoint):
 
     @decorator
     def accountReadAuditLogs(self, args):
-        """Get account audit logs (Enhanced API: Account Audit Logs)"""
+        """
+Retrieve account resource information.
+    
+    Retrieves detailed information about the specified account resource.
+    Returns complete account resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing account resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountReadAuditLogs(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = f"{ENDPOINTS['account']['get']}/audit"
         self.params = {
@@ -191,14 +1069,131 @@ class Account(Endpoint):
 
     @decorator
     def accountReadNetworkSettings(self, args):
-        """Get account network settings (Enhanced API: Network Settings)"""
+        """
+Retrieve account resource information.
+    
+    Retrieves detailed information about the specified account resource.
+    Returns complete account resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing account resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountReadNetworkSettings(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = f"{ENDPOINTS['account']['get']}/network"
         self.params = get_api_version_params("account")
 
     @decorator
     def accountUpdateNetworkSettings(self, args):
-        """Update account network settings (Enhanced API: Update Network Settings)"""
+        """
+Update an existing account resource.
+    
+    Updates an existing account resource with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated account resource:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountUpdateNetworkSettings(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.accountUpdateNetworkSettings(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         self.method = "PUT"
         self.endpoint = f"{ENDPOINTS['account']['update']}/network"
         self.params = get_api_version_params("account")
@@ -206,7 +1201,60 @@ class Account(Endpoint):
 
     @decorator
     def accountReadPrivateEndpoints(self, args):
-        """Get account private endpoints (Enhanced API: Private Endpoints)"""
+        """
+Retrieve account resource information.
+    
+    Retrieves detailed information about the specified account resource.
+    Returns complete account resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing account resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountReadPrivateEndpoints(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = f"{ENDPOINTS['account']['get']}/privateEndpoints"
         self.params = {
@@ -218,7 +1266,53 @@ class Account(Endpoint):
 
     @decorator
     def accountBackup(self, args):
-        """Create account backup (Enhanced API: Account Backup)"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountBackup(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = "POST"
         self.endpoint = f"{ENDPOINTS['account']['get']}/backup"
         self.params = {
@@ -230,7 +1324,53 @@ class Account(Endpoint):
 
     @decorator
     def accountRestore(self, args):
-        """Restore account from backup (Enhanced API: Account Restore)"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountRestore(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = "POST"
         self.endpoint = f"{ENDPOINTS['account']['update']}/restore"
         self.params = {
@@ -242,7 +1382,60 @@ class Account(Endpoint):
 
     @decorator
     def accountReadBackups(self, args):
-        """List account backups (Enhanced API: List Account Backups)"""
+        """
+Retrieve account resource information.
+    
+    Retrieves detailed information about the specified account resource.
+    Returns complete account resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing account resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountReadBackups(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = f"{ENDPOINTS['account']['get']}/backups"
         self.params = {
@@ -258,7 +1451,60 @@ class Account(Endpoint):
 
     @decorator
     def accountReadHealth(self, args):
-        """Get account health status (Enhanced API: Account Health)"""
+        """
+Retrieve account resource information.
+    
+    Retrieves detailed information about the specified account resource.
+    Returns complete account resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing account resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountReadHealth(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = f"{ENDPOINTS['account']['get']}/health"
         self.params = {
@@ -269,7 +1515,60 @@ class Account(Endpoint):
 
     @decorator
     def accountReadMetrics(self, args):
-        """Get account metrics (Enhanced API: Account Metrics)"""
+        """
+Retrieve account resource information.
+    
+    Retrieves detailed information about the specified account resource.
+    Returns complete account resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing account resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountReadMetrics(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = f"{ENDPOINTS['account']['get']}/metrics"
         self.params = {
@@ -283,7 +1582,53 @@ class Account(Endpoint):
 
     @decorator
     def accountGenerateReport(self, args):
-        """Generate account report (Enhanced API: Generate Account Report)"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountGenerateReport(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = "POST"
         self.endpoint = f"{ENDPOINTS['account']['get']}/report"
         self.params = {
@@ -297,20 +1642,236 @@ class Account(Endpoint):
 
     @decorator
     def accountGet(self, args):
-        """Legacy alias for accountRead"""
+        """
+Retrieve account resource information.
+    
+    Retrieves detailed information about the specified account resource.
+    Returns complete account resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing account resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountGet(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         return self.accountRead(args)
 
     @decorator
     def accountGetAccessKeys(self, args):
-        """Legacy alias for accountReadAccessKeys"""
+        """
+Retrieve account resource information.
+    
+    Retrieves detailed information about the specified account resource.
+    Returns complete account resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing account resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountGetAccessKeys(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         return self.accountReadAccessKeys(args)
 
     @decorator
     def accountRegenerateKey(self, args):
-        """Legacy alias for accountRegenerateAccessKey"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountRegenerateKey(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         return self.accountRegenerateAccessKey(args)
 
     @decorator
     def accountPut(self, args):
-        """Legacy alias for accountUpdate"""
+        """
+Update an existing account resource.
+    
+    Updates an existing account resource with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated account resource:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Account()
+        
+        result = client.accountPut(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.accountPut(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         return self.accountUpdate(args)

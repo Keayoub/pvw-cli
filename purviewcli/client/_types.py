@@ -31,7 +31,60 @@ class Types(Endpoint):
 
     @decorator
     def typesRead(self, args):
-        """Get all type definitions (Official API: List Type Definitions)"""
+        """
+Retrieve type definition information.
+    
+    Retrieves detailed information about the specified type definition.
+    Returns complete type definition metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing type definition information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesRead(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["types"]["list"]
         self.params = {
@@ -42,14 +95,134 @@ class Types(Endpoint):
 
     @decorator
     def typesReadHeaders(self, args):
-        """Get type definition headers (Official API: List Headers)"""
+        """
+Retrieve type definition information.
+    
+    Retrieves detailed information about the specified type definition.
+    Returns complete type definition metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing type definition information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesReadHeaders(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["types"]["list_headers"]
         self.params = get_api_version_params("datamap")
 
     @decorator
     def typesCreateBulk(self, args):
-        """Create type definitions in bulk (Official API: Bulk Create)"""
+        """
+Create a new type definition.
+    
+    Creates a new type definition in Microsoft Purview Type System. Define custom entity and relationship types.
+    Requires appropriate permissions and valid type definition definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created type definition:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesCreateBulk(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.typesCreateBulk(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         self.method = "POST"
         self.endpoint = ENDPOINTS["types"]["bulk_create"]
         self.params = get_api_version_params("datamap")
@@ -57,7 +230,71 @@ class Types(Endpoint):
 
     @decorator
     def typesUpdateBulk(self, args):
-        """Update type definitions in bulk (Official API: Bulk Update)"""
+        """
+Update an existing type definition.
+    
+    Updates an existing type definition with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated type definition:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesUpdateBulk(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.typesUpdateBulk(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         self.method = "PUT"
         self.endpoint = ENDPOINTS["types"]["bulk_update"]
         self.params = get_api_version_params("datamap")
@@ -65,7 +302,58 @@ class Types(Endpoint):
 
     @decorator
     def typesDeleteBulk(self, args):
-        """Delete type definitions in bulk (Official API: Bulk Delete)"""
+        """
+Delete a type definition.
+    
+    Permanently deletes the specified type definition.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesDeleteBulk(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
         self.method = "DELETE"
         self.endpoint = ENDPOINTS["types"]["bulk_delete"]
         self.params = get_api_version_params("datamap")
@@ -75,21 +363,178 @@ class Types(Endpoint):
 
     @decorator
     def typesReadByGuid(self, args):
-        """Get type definition by GUID (Official API: Get By GUID)"""
+        """
+Retrieve type definition information.
+    
+    Retrieves detailed information about the specified type definition.
+    Returns complete type definition metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing type definition information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesReadByGuid(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["types"]["get_by_guid"].format(guid=args["--guid"])
         self.params = get_api_version_params("datamap")
 
     @decorator
     def typesReadByName(self, args):
-        """Get type definition by name (Official API: Get By Name)"""
+        """
+Retrieve type definition information.
+    
+    Retrieves detailed information about the specified type definition.
+    Returns complete type definition metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing type definition information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesReadByName(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["types"]["get_by_name"].format(name=args["--name"])
         self.params = get_api_version_params("datamap")
 
     @decorator
     def typesDelete(self, args):
-        """Delete type definition by name (Official API: Delete)"""
+        """
+Delete a type definition.
+    
+    Permanently deletes the specified type definition.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesDelete(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
         self.method = "DELETE"
         self.endpoint = ENDPOINTS["types"]["delete"].format(name=args["--name"])
         self.params = get_api_version_params("datamap")
@@ -98,7 +543,60 @@ class Types(Endpoint):
 
     @decorator
     def typesReadBusinessMetadataDef(self, args):
-        """Get business metadata definition by GUID or name (Official API: Get Business Metadata Definition)"""
+        """
+Retrieve type definition information.
+    
+    Retrieves detailed information about the specified type definition.
+    Returns complete type definition metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing type definition information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesReadBusinessMetadataDef(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         if args.get("--guid"):
             self.endpoint = ENDPOINTS["types"]["get_business_metadata_def_by_guid"].format(guid=args["--guid"])
@@ -108,21 +606,194 @@ class Types(Endpoint):
 
     @decorator
     def typesReadBusinessMetadataDefByGuid(self, args):
-        """Get business metadata definition by GUID (Official API: Get Business Metadata Definition By GUID)"""
+        """
+Retrieve type definition information.
+    
+    Retrieves detailed information about the specified type definition.
+    Returns complete type definition metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing type definition information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesReadBusinessMetadataDefByGuid(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["types"]["get_business_metadata_def_by_guid"].format(guid=args["--guid"])
         self.params = get_api_version_params("datamap")
 
     @decorator
     def typesReadBusinessMetadataDefByName(self, args):
-        """Get business metadata definition by name (Official API: Get Business Metadata Definition By Name)"""
+        """
+Retrieve type definition information.
+    
+    Retrieves detailed information about the specified type definition.
+    Returns complete type definition metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing type definition information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesReadBusinessMetadataDefByName(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["types"]["get_business_metadata_def_by_name"].format(name=args["--name"])
         self.params = get_api_version_params("datamap")
 
     @decorator
     def createBusinessMetadataDef(self, args):
-        """Create business metadata definition (Official API: Create Business Metadata Definition)"""
+        """
+Create a new type definition.
+    
+    Creates a new type definition in Microsoft Purview Type System. Define custom entity and relationship types.
+    Requires appropriate permissions and valid type definition definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created type definition:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.createBusinessMetadataDef(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.createBusinessMetadataDef(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         self.method = "POST"
         self.endpoint = ENDPOINTS["types"]["bulk_create"]
         self.params = get_api_version_params("datamap")
@@ -130,7 +801,71 @@ class Types(Endpoint):
 
     @decorator
     def updateBusinessMetadataDef(self, args):
-        """Update business metadata definition (Official API: Update Business Metadata Definition)"""
+        """
+Update an existing type definition.
+    
+    Updates an existing type definition with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated type definition:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.updateBusinessMetadataDef(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.updateBusinessMetadataDef(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         self.method = "PUT"
         self.endpoint = ENDPOINTS["types"]["bulk_update"]
         self.params = get_api_version_params("datamap")
@@ -138,7 +873,58 @@ class Types(Endpoint):
 
     @decorator
     def deleteBusinessMetadataDef(self, args):
-        """Delete business metadata definition by name (Official API: Delete Business Metadata Definition)"""
+        """
+Delete a type definition.
+    
+    Permanently deletes the specified type definition.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.deleteBusinessMetadataDef(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
         self.method = "DELETE"
         self.endpoint = ENDPOINTS["types"]["bulk_delete"]
         self.params = get_api_version_params("datamap")
@@ -155,7 +941,60 @@ class Types(Endpoint):
 
     @decorator
     def typesReadClassificationDef(self, args):
-        """Get classification definition by GUID or name (Official API: Get Classification Definition)"""
+        """
+Retrieve type definition information.
+    
+    Retrieves detailed information about the specified type definition.
+    Returns complete type definition metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing type definition information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesReadClassificationDef(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         if args.get("--guid"):
             self.endpoint = ENDPOINTS["types"]["get_classification_def_by_guid"].format(guid=args["--guid"])
@@ -165,14 +1004,120 @@ class Types(Endpoint):
 
     @decorator
     def typesReadClassificationDefByGuid(self, args):
-        """Get classification definition by GUID (Official API: Get Classification Definition By GUID)"""
+        """
+Retrieve type definition information.
+    
+    Retrieves detailed information about the specified type definition.
+    Returns complete type definition metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing type definition information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesReadClassificationDefByGuid(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["types"]["get_classification_def_by_guid"].format(guid=args["--guid"])
         self.params = get_api_version_params("datamap")
 
     @decorator
     def typesReadClassificationDefByName(self, args):
-        """Get classification definition by name (Official API: Get Classification Definition By Name)"""
+        """
+Retrieve type definition information.
+    
+    Retrieves detailed information about the specified type definition.
+    Returns complete type definition metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing type definition information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesReadClassificationDefByName(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["types"]["get_classification_def_by_name"].format(name=args["--name"])
         self.params = get_api_version_params("datamap")
@@ -181,7 +1126,60 @@ class Types(Endpoint):
 
     @decorator
     def typesReadEntityDef(self, args):
-        """Get entity definition by GUID or name (Official API: Get Entity Definition)"""
+        """
+Retrieve type definition information.
+    
+    Retrieves detailed information about the specified type definition.
+    Returns complete type definition metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing type definition information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityTypes()
+        
+        result = client.typesReadEntityDef(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         if args.get("--guid"):
             self.endpoint = ENDPOINTS["types"]["get_entity_def_by_guid"].format(guid=args["--guid"])
@@ -191,14 +1189,120 @@ class Types(Endpoint):
 
     @decorator
     def typesReadEntityDefByGuid(self, args):
-        """Get entity definition by GUID (Official API: Get Entity Definition By GUID)"""
+        """
+Retrieve type definition information.
+    
+    Retrieves detailed information about the specified type definition.
+    Returns complete type definition metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing type definition information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityTypes()
+        
+        result = client.typesReadEntityDefByGuid(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["types"]["get_entity_def_by_guid"].format(guid=args["--guid"])
         self.params = get_api_version_params("datamap")
 
     @decorator
     def typesReadEntityDefByName(self, args):
-        """Get entity definition by name (Official API: Get Entity Definition By Name)"""
+        """
+Retrieve type definition information.
+    
+    Retrieves detailed information about the specified type definition.
+    Returns complete type definition metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing type definition information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityTypes()
+        
+        result = client.typesReadEntityDefByName(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["types"]["get_entity_def_by_name"].format(name=args["--name"])
         self.params = get_api_version_params("datamap")
@@ -207,7 +1311,60 @@ class Types(Endpoint):
 
     @decorator
     def typesReadEnumDef(self, args):
-        """Get enum definition by GUID or name (Official API: Get Enum Definition)"""
+        """
+Retrieve type definition information.
+    
+    Retrieves detailed information about the specified type definition.
+    Returns complete type definition metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing type definition information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesReadEnumDef(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         if args.get("--guid"):
             self.endpoint = ENDPOINTS["types"]["get_enum_def_by_guid"].format(guid=args["--guid"])
@@ -217,14 +1374,120 @@ class Types(Endpoint):
 
     @decorator
     def typesReadEnumDefByGuid(self, args):
-        """Get enum definition by GUID (Official API: Get Enum Definition By GUID)"""
+        """
+Retrieve type definition information.
+    
+    Retrieves detailed information about the specified type definition.
+    Returns complete type definition metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing type definition information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesReadEnumDefByGuid(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["types"]["get_enum_def_by_guid"].format(guid=args["--guid"])
         self.params = get_api_version_params("datamap")
 
     @decorator
     def typesReadEnumDefByName(self, args):
-        """Get enum definition by name (Official API: Get Enum Definition By Name)"""
+        """
+Retrieve type definition information.
+    
+    Retrieves detailed information about the specified type definition.
+    Returns complete type definition metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing type definition information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesReadEnumDefByName(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["types"]["get_enum_def_by_name"].format(name=args["--name"])
         self.params = get_api_version_params("datamap")
@@ -233,7 +1496,60 @@ class Types(Endpoint):
 
     @decorator
     def typesReadRelationshipDef(self, args):
-        """Get relationship definition by GUID or name (Official API: Get Relationship Definition)"""
+        """
+Retrieve type definition information.
+    
+    Retrieves detailed information about the specified type definition.
+    Returns complete type definition metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing type definition information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesReadRelationshipDef(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         if args.get("--guid"):
             self.endpoint = ENDPOINTS["types"]["get_relationship_def_by_guid"].format(guid=args["--guid"])
@@ -243,14 +1559,120 @@ class Types(Endpoint):
 
     @decorator
     def typesReadRelationshipDefByGuid(self, args):
-        """Get relationship definition by GUID (Official API: Get Relationship Definition By GUID)"""
+        """
+Retrieve type definition information.
+    
+    Retrieves detailed information about the specified type definition.
+    Returns complete type definition metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing type definition information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesReadRelationshipDefByGuid(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["types"]["get_relationship_def_by_guid"].format(guid=args["--guid"])
         self.params = get_api_version_params("datamap")
 
     @decorator
     def typesReadRelationshipDefByName(self, args):
-        """Get relationship definition by name (Official API: Get Relationship Definition By Name)"""
+        """
+Retrieve type definition information.
+    
+    Retrieves detailed information about the specified type definition.
+    Returns complete type definition metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing type definition information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesReadRelationshipDefByName(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["types"]["get_relationship_def_by_name"].format(name=args["--name"])
         self.params = get_api_version_params("datamap")
@@ -259,7 +1681,60 @@ class Types(Endpoint):
 
     @decorator
     def typesReadStructDef(self, args):
-        """Get struct definition by GUID or name (Official API: Get Struct Definition)"""
+        """
+Retrieve type definition information.
+    
+    Retrieves detailed information about the specified type definition.
+    Returns complete type definition metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing type definition information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesReadStructDef(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         if args.get("--guid"):
             self.endpoint = ENDPOINTS["types"]["get_struct_def_by_guid"].format(guid=args["--guid"])
@@ -269,14 +1744,120 @@ class Types(Endpoint):
 
     @decorator
     def typesReadStructDefByGuid(self, args):
-        """Get struct definition by GUID (Official API: Get Struct Definition By GUID)"""
+        """
+Retrieve type definition information.
+    
+    Retrieves detailed information about the specified type definition.
+    Returns complete type definition metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing type definition information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesReadStructDefByGuid(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["types"]["get_struct_def_by_guid"].format(guid=args["--guid"])
         self.params = get_api_version_params("datamap")
 
     @decorator
     def typesReadStructDefByName(self, args):
-        """Get struct definition by name (Official API: Get Struct Definition By Name)"""
+        """
+Retrieve type definition information.
+    
+    Retrieves detailed information about the specified type definition.
+    Returns complete type definition metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing type definition information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesReadStructDefByName(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["types"]["get_struct_def_by_name"].format(name=args["--name"])
         self.params = get_api_version_params("datamap")
@@ -285,7 +1866,60 @@ class Types(Endpoint):
 
     @decorator
     def typesReadTermTemplateDef(self, args):
-        """Get term template definition by GUID or name (Official API: Get Term Template Definition)"""
+        """
+Retrieve type definition information.
+    
+    Retrieves detailed information about the specified type definition.
+    Returns complete type definition metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing type definition information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesReadTermTemplateDef(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         if args.get("--guid"):
             self.endpoint = ENDPOINTS["types"]["get_term_template_def_by_guid"].format(guid=args["--guid"])
@@ -295,14 +1929,120 @@ class Types(Endpoint):
 
     @decorator
     def typesReadTermTemplateDefByGuid(self, args):
-        """Get term template definition by GUID (Official API: Get Term Template Definition By GUID)"""
+        """
+Retrieve type definition information.
+    
+    Retrieves detailed information about the specified type definition.
+    Returns complete type definition metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing type definition information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesReadTermTemplateDefByGuid(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["types"]["get_term_template_def_by_guid"].format(guid=args["--guid"])
         self.params = get_api_version_params("datamap")
 
     @decorator
     def typesReadTermTemplateDefByName(self, args):
-        """Get term template definition by name (Official API: Get Term Template Definition By Name)"""
+        """
+Retrieve type definition information.
+    
+    Retrieves detailed information about the specified type definition.
+    Returns complete type definition metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing type definition information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesReadTermTemplateDefByName(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["types"]["get_term_template_def_by_name"].format(name=args["--name"])
         self.params = get_api_version_params("datamap")
@@ -311,7 +2051,53 @@ class Types(Endpoint):
 
     @decorator
     def typesValidate(self, args):
-        """Validate type definition (Advanced API: Validate Type Definition)"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesValidate(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = "POST"
         self.endpoint = ENDPOINTS["types"]["validate_typedef"]
         self.params = get_api_version_params("datamap")
@@ -319,7 +2105,74 @@ class Types(Endpoint):
 
     @decorator
     def typesReadDependencies(self, args):
-        """Get type dependencies (Advanced API: Get Type Dependencies)"""
+        """
+Create a new type definition.
+    
+    Creates a new type definition in Microsoft Purview Type System. Define custom entity and relationship types.
+    Requires appropriate permissions and valid type definition definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created type definition:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesReadDependencies(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.typesReadDependencies(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["types"]["get_type_dependencies"].format(name=args["--name"])
         self.params = {
@@ -330,7 +2183,53 @@ class Types(Endpoint):
 
     @decorator
     def typesMigrateVersion(self, args):
-        """Migrate type to new version (Advanced API: Migrate Type Version)"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesMigrateVersion(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = "POST"
         self.endpoint = ENDPOINTS["types"]["migrate_type_version"].format(name=args["--name"])
         self.params = {
@@ -342,7 +2241,59 @@ class Types(Endpoint):
 
     @decorator
     def typesExport(self, args):
-        """Export type definitions (Advanced API: Export Types)"""
+        """
+Perform batch operation on resources.
+    
+    Processes multiple resources in a single operation.
+    More efficient than individual operations for bulk data.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with batch operation results:
+            {
+                'succeeded': int,        # Success count
+                'failed': int,           # Failure count
+                'results': [...],        # Per-item results
+                'errors': [...]          # Error details
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesExport(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Bulk Import: Load large volumes of metadata
+        - Migration: Transfer catalog from other systems
+        - Mass Updates: Apply changes to many resources
+    """
         self.method = "POST"
         self.endpoint = ENDPOINTS["types"]["export_types"]
         self.params = {
@@ -354,7 +2305,59 @@ class Types(Endpoint):
 
     @decorator
     def typesImport(self, args):
-        """Import type definitions (Advanced API: Import Types)"""
+        """
+Perform batch operation on resources.
+    
+    Processes multiple resources in a single operation.
+    More efficient than individual operations for bulk data.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with batch operation results:
+            {
+                'succeeded': int,        # Success count
+                'failed': int,           # Failure count
+                'results': [...],        # Per-item results
+                'errors': [...]          # Error details
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesImport(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Bulk Import: Load large volumes of metadata
+        - Migration: Transfer catalog from other systems
+        - Mass Updates: Apply changes to many resources
+    """
         self.method = "POST"
         self.endpoint = ENDPOINTS["types"]["import_types"]
         self.params = {
@@ -368,25 +2371,338 @@ class Types(Endpoint):
 
     @decorator
     def typesCreate(self, args):
-        """Legacy alias for typesCreateBulk"""
+        """
+Create a new type definition.
+    
+    Creates a new type definition in Microsoft Purview Type System. Define custom entity and relationship types.
+    Requires appropriate permissions and valid type definition definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created type definition:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesCreate(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.typesCreate(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         return self.typesCreateBulk(args)
 
     @decorator
     def typesUpdate(self, args):
-        """Legacy alias for typesUpdateBulk"""
+        """
+Update an existing type definition.
+    
+    Updates an existing type definition with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated type definition:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesUpdate(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.typesUpdate(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         return self.typesUpdateBulk(args)
 
     @decorator
     def typesDeleteDef(self, args):
-        """Legacy alias for typesDelete"""
+        """
+Delete a type definition.
+    
+    Permanently deletes the specified type definition.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesDeleteDef(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
         return self.typesDelete(args)
 
     @decorator
     def typesCreateDef(self, args):
-        """Legacy alias for typesCreateBulk"""
+        """
+Create a new type definition.
+    
+    Creates a new type definition in Microsoft Purview Type System. Define custom entity and relationship types.
+    Requires appropriate permissions and valid type definition definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created type definition:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesCreateDef(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.typesCreateDef(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         return self.typesCreateBulk(args)
 
     @decorator
     def typesUpdateDef(self, args):
-        """Legacy alias for typesUpdateBulk"""
+        """
+Update an existing type definition.
+    
+    Updates an existing type definition with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated type definition:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Types()
+        
+        result = client.typesUpdateDef(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.typesUpdateDef(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         return self.typesUpdateBulk(args)

@@ -1,37 +1,12 @@
-"""
-Scanning Management Client for Microsoft Purview Scanning API
-Based on official API: https://learn.microsoft.com/en-us/rest/api/purview/scanningdataplane/
-API Version: 2023-09-01 / 2022-07-01-preview
+# Generated Docstrings for _scan.py
+# Copy these to your Python source file
 
-Complete implementation of ALL Scanning operations from the official specification with 100% coverage:
-- Data Source Management (Create, Read, Update, Delete)
-- Scan Configuration and Execution
-- Scan Rules and Filters
-- Classification Rules Management
-- Scan Scheduling and Analytics
-- Scan Results and History
-"""
-
-from .endpoint import Endpoint, decorator, get_json, no_api_call_decorator
-from .endpoints import ENDPOINTS, get_api_version_params
-
-
-class Scan(Endpoint):
-    """Scanning Management Operations - Complete Official API Implementation with 100% Coverage"""
-
-    def __init__(self):
-        Endpoint.__init__(self)
-        self.app = "scanning"
-
-    # === DATA SOURCE MANAGEMENT ===
-
-    @decorator
-    def scanDataSourcesRead(self, args):
-        """
-Retrieve scan information.
+## Scan.scanDataSourcesRead
+    """
+Retrieve resource information.
     
-    Retrieves detailed information about the specified scan.
-    Returns complete scan metadata and properties.
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -39,7 +14,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing scan information:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -71,7 +46,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanDataSourcesRead(args=...)
         print(f"Result: {result}")
@@ -81,21 +56,15 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
-        self.method = "GET"
-        self.endpoint = ENDPOINTS["scanning"]["list_data_sources"]
-        self.params = {
-            **get_api_version_params("scanning"),
-            "collectionName": args.get("--collectionName"),
-            "dataSourceType": args.get("--dataSourceType"),
-        }
 
-    @decorator
-    def scanDataSourceCreate(self, args):
-        """
-Create a new scan.
+================================================================================
+
+## Scan.scanDataSourceCreate
+    """
+Create a new resource.
     
-    Creates a new scan in Microsoft Purview.
-    Requires appropriate permissions and valid scan definition.
+    Creates a new resource in Microsoft Purview.
+    Requires appropriate permissions and valid resource definition.
     
 Args:
         args: Dictionary of operation arguments.
@@ -103,7 +72,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing created scan:
+        Dictionary containing created resource:
             {
                 'guid': str,         # Unique identifier
                 'name': str,         # Resource name
@@ -136,7 +105,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanDataSourceCreate(args=...)
         print(f"Result: {result}")
@@ -159,18 +128,15 @@ Use Cases:
         - Metadata Management: Add descriptive metadata to assets
         - Automation: Programmatically populate catalog
     """
-        self.method = "PUT"
-        self.endpoint = ENDPOINTS["scanning"]["create_data_source"].format(dataSourceName=args["--dataSourceName"])
-        self.params = get_api_version_params("scanning")
-        self.payload = get_json(args, "--payloadFile")
 
-    @decorator
-    def scanDataSourceRead(self, args):
-        """
-Retrieve scan information.
+================================================================================
+
+## Scan.scanDataSourceRead
+    """
+Retrieve resource information.
     
-    Retrieves detailed information about the specified scan.
-    Returns complete scan metadata and properties.
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -178,7 +144,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing scan information:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -210,7 +176,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanDataSourceRead(args=...)
         print(f"Result: {result}")
@@ -220,16 +186,14 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
-        self.method = "GET"
-        self.endpoint = ENDPOINTS["scanning"]["get_data_source"].format(dataSourceName=args["--dataSourceName"])
-        self.params = get_api_version_params("scanning")
 
-    @decorator
-    def scanDataSourceUpdate(self, args):
-        """
-Update an existing scan.
+================================================================================
+
+## Scan.scanDataSourceUpdate
+    """
+Update an existing resource.
     
-    Updates an existing scan with new values.
+    Updates an existing resource with new values.
     Only specified fields are modified; others remain unchanged.
     
 Args:
@@ -238,7 +202,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing updated scan:
+        Dictionary containing updated resource:
             {
                 'guid': str,          # Unique identifier
                 'attributes': dict,   # Updated attributes
@@ -268,7 +232,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanDataSourceUpdate(args=...)
         print(f"Result: {result}")
@@ -291,14 +255,14 @@ Use Cases:
         - Ownership Changes: Reassign data ownership
         - Classification: Apply or modify data classifications
     """
-        return self.scanDataSourceCreate(args)
 
-    @decorator
-    def scanDataSourceDelete(self, args):
-        """
-Delete a scan.
+================================================================================
+
+## Scan.scanDataSourceDelete
+    """
+Delete a resource.
     
-    Permanently deletes the specified scan.
+    Permanently deletes the specified resource.
     This operation cannot be undone. Use with caution.
     
 Args:
@@ -337,7 +301,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanDataSourceDelete(args=...)
         print(f"Result: {result}")
@@ -347,19 +311,15 @@ Use Cases:
         - Decommissioning: Delete resources no longer in use
         - Testing: Clean up test environments
     """
-        self.method = "DELETE"
-        self.endpoint = ENDPOINTS["scanning"]["delete_data_source"].format(dataSourceName=args["--dataSourceName"])
-        self.params = get_api_version_params("scanning")
 
-    # === SCAN CONFIGURATION ===
+================================================================================
 
-    @decorator
-    def scanRead(self, args):
-        """
-Retrieve scan information.
+## Scan.scanRead
+    """
+Retrieve resource information.
     
-    Retrieves detailed information about the specified scan.
-    Returns complete scan metadata and properties.
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -367,7 +327,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing scan information:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -399,7 +359,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanRead(args=...)
         print(f"Result: {result}")
@@ -409,22 +369,15 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
-        self.method = "GET"
-        if args.get("--scanName"):
-            self.endpoint = ENDPOINTS["scanning"]["get_scan"].format(
-                dataSourceName=args["--dataSourceName"], scanName=args["--scanName"]
-            )
-        else:
-            self.endpoint = ENDPOINTS["scanning"]["list_scans"].format(dataSourceName=args["--dataSourceName"])
-        self.params = get_api_version_params("scanning")
 
-    @decorator
-    def scanCreate(self, args):
-        """
-Create a new scan.
+================================================================================
+
+## Scan.scanCreate
+    """
+Create a new resource.
     
-    Creates a new scan in Microsoft Purview.
-    Requires appropriate permissions and valid scan definition.
+    Creates a new resource in Microsoft Purview.
+    Requires appropriate permissions and valid resource definition.
     
 Args:
         args: Dictionary of operation arguments.
@@ -432,7 +385,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing created scan:
+        Dictionary containing created resource:
             {
                 'guid': str,         # Unique identifier
                 'name': str,         # Resource name
@@ -465,7 +418,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanCreate(args=...)
         print(f"Result: {result}")
@@ -488,19 +441,14 @@ Use Cases:
         - Metadata Management: Add descriptive metadata to assets
         - Automation: Programmatically populate catalog
     """
-        self.method = "PUT"
-        self.endpoint = ENDPOINTS["scanning"]["create_scan"].format(
-            dataSourceName=args["--dataSourceName"], scanName=args["--scanName"]
-        )
-        self.params = get_api_version_params("scanning")
-        self.payload = get_json(args, "--payloadFile")
 
-    @decorator
-    def scanUpdate(self, args):
-        """
-Update an existing scan.
+================================================================================
+
+## Scan.scanUpdate
+    """
+Update an existing resource.
     
-    Updates an existing scan with new values.
+    Updates an existing resource with new values.
     Only specified fields are modified; others remain unchanged.
     
 Args:
@@ -509,7 +457,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing updated scan:
+        Dictionary containing updated resource:
             {
                 'guid': str,          # Unique identifier
                 'attributes': dict,   # Updated attributes
@@ -539,7 +487,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanUpdate(args=...)
         print(f"Result: {result}")
@@ -562,14 +510,14 @@ Use Cases:
         - Ownership Changes: Reassign data ownership
         - Classification: Apply or modify data classifications
     """
-        return self.scanCreate(args)
 
-    @decorator
-    def scanDelete(self, args):
-        """
-Delete a scan.
+================================================================================
+
+## Scan.scanDelete
+    """
+Delete a resource.
     
-    Permanently deletes the specified scan.
+    Permanently deletes the specified resource.
     This operation cannot be undone. Use with caution.
     
 Args:
@@ -608,7 +556,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanDelete(args=...)
         print(f"Result: {result}")
@@ -618,17 +566,11 @@ Use Cases:
         - Decommissioning: Delete resources no longer in use
         - Testing: Clean up test environments
     """
-        self.method = "DELETE"
-        self.endpoint = ENDPOINTS["scanning"]["delete_scan"].format(
-            dataSourceName=args["--dataSourceName"], scanName=args["--scanName"]
-        )
-        self.params = get_api_version_params("scanning")
 
-    # === SCAN EXECUTION ===
+================================================================================
 
-    @decorator
-    def scanRun(self, args):
-        """
+## Scan.scanRun
+    """
 Perform operation on resource.
     
     
@@ -665,7 +607,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanRun(args=...)
         print(f"Result: {result}")
@@ -675,27 +617,15 @@ Use Cases:
         - [TODO: Include business context]
         - [TODO: Explain when to use this method]
     """
-        self.method = "PUT"
-        self.endpoint = ENDPOINTS["scanning"]["run_scan"].format(
-            dataSourceName=args["--dataSourceName"], scanName=args["--scanName"]
-        )
-        self.params = {
-            **get_api_version_params("scanning"),
-            "runId": args.get("--runId"),
-        }
-        
-        # Optional scan level parameter
-        scan_level = args.get("--scanLevel")
-        if scan_level:
-            self.params["scanLevel"] = scan_level
 
-    @decorator
-    def scanReadResult(self, args):
-        """
-Retrieve scan information.
+================================================================================
+
+## Scan.scanReadResult
+    """
+Retrieve resource information.
     
-    Retrieves detailed information about the specified scan.
-    Returns complete scan metadata and properties.
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -703,7 +633,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing scan information:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -735,7 +665,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanReadResult(args=...)
         print(f"Result: {result}")
@@ -745,20 +675,11 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
-        self.method = "GET"
-        if args.get("--runId"):
-            self.endpoint = ENDPOINTS["scanning"]["get_scan_result"].format(
-                dataSourceName=args["--dataSourceName"], scanName=args["--scanName"], runId=args["--runId"]
-            )
-        else:
-            self.endpoint = ENDPOINTS["scanning"]["list_scan_results"].format(
-                dataSourceName=args["--dataSourceName"], scanName=args["--scanName"]
-            )
-        self.params = get_api_version_params("scanning")
 
-    @decorator
-    def scanCancel(self, args):
-        """
+================================================================================
+
+## Scan.scanCancel
+    """
 Perform operation on resource.
     
     
@@ -795,7 +716,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanCancel(args=...)
         print(f"Result: {result}")
@@ -805,21 +726,15 @@ Use Cases:
         - [TODO: Include business context]
         - [TODO: Explain when to use this method]
     """
-        self.method = "POST"
-        self.endpoint = ENDPOINTS["scanning"]["cancel_scan"].format(
-            dataSourceName=args["--dataSourceName"], scanName=args["--scanName"], runId=args["--runId"]
-        )
-        self.params = get_api_version_params("scanning")
 
-    # === SCAN RULE SETS ===
+================================================================================
 
-    @decorator
-    def scanRuleSetRead(self, args):
-        """
-Retrieve scan information.
+## Scan.scanRuleSetRead
+    """
+Retrieve resource information.
     
-    Retrieves detailed information about the specified scan.
-    Returns complete scan metadata and properties.
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -827,7 +742,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing scan information:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -859,7 +774,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanRuleSetRead(args=...)
         print(f"Result: {result}")
@@ -869,20 +784,15 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
-        self.method = "GET"
-        if args.get("--scanRulesetName"):
-            self.endpoint = ENDPOINTS["scanning"]["get_scan_rule_set"].format(scanRulesetName=args["--scanRulesetName"])
-        else:
-            self.endpoint = ENDPOINTS["scanning"]["list_scan_rule_sets"]
-        self.params = get_api_version_params("scanning")
 
-    @decorator
-    def scanRuleSetCreate(self, args):
-        """
-Create a new scan.
+================================================================================
+
+## Scan.scanRuleSetCreate
+    """
+Create a new resource.
     
-    Creates a new scan in Microsoft Purview.
-    Requires appropriate permissions and valid scan definition.
+    Creates a new resource in Microsoft Purview.
+    Requires appropriate permissions and valid resource definition.
     
 Args:
         args: Dictionary of operation arguments.
@@ -890,7 +800,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing created scan:
+        Dictionary containing created resource:
             {
                 'guid': str,         # Unique identifier
                 'name': str,         # Resource name
@@ -923,7 +833,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanRuleSetCreate(args=...)
         print(f"Result: {result}")
@@ -946,17 +856,14 @@ Use Cases:
         - Metadata Management: Add descriptive metadata to assets
         - Automation: Programmatically populate catalog
     """
-        self.method = "PUT"
-        self.endpoint = ENDPOINTS["scanning"]["create_scan_rule_set"].format(scanRulesetName=args["--scanRulesetName"])
-        self.params = get_api_version_params("scanning")
-        self.payload = get_json(args, "--payloadFile")
 
-    @decorator
-    def scanRuleSetUpdate(self, args):
-        """
-Update an existing scan.
+================================================================================
+
+## Scan.scanRuleSetUpdate
+    """
+Update an existing resource.
     
-    Updates an existing scan with new values.
+    Updates an existing resource with new values.
     Only specified fields are modified; others remain unchanged.
     
 Args:
@@ -965,7 +872,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing updated scan:
+        Dictionary containing updated resource:
             {
                 'guid': str,          # Unique identifier
                 'attributes': dict,   # Updated attributes
@@ -995,7 +902,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanRuleSetUpdate(args=...)
         print(f"Result: {result}")
@@ -1018,14 +925,14 @@ Use Cases:
         - Ownership Changes: Reassign data ownership
         - Classification: Apply or modify data classifications
     """
-        return self.scanRuleSetCreate(args)
 
-    @decorator
-    def scanRuleSetDelete(self, args):
-        """
-Update an existing scan.
+================================================================================
+
+## Scan.scanRuleSetDelete
+    """
+Update an existing resource.
     
-    Updates an existing scan with new values.
+    Updates an existing resource with new values.
     Only specified fields are modified; others remain unchanged.
     
 Args:
@@ -1034,7 +941,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing updated scan:
+        Dictionary containing updated resource:
             {
                 'guid': str,          # Unique identifier
                 'attributes': dict,   # Updated attributes
@@ -1064,7 +971,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanRuleSetDelete(args=...)
         print(f"Result: {result}")
@@ -1087,19 +994,15 @@ Use Cases:
         - Ownership Changes: Reassign data ownership
         - Classification: Apply or modify data classifications
     """
-        self.method = "DELETE"
-        self.endpoint = ENDPOINTS["scanning"]["delete_scan_rule_set"].format(scanRulesetName=args["--scanRulesetName"])
-        self.params = get_api_version_params("scanning")
 
-    # === CLASSIFICATION RULES ===
+================================================================================
 
-    @decorator
-    def scanClassificationRuleRead(self, args):
-        """
-Retrieve scan information.
+## Scan.scanClassificationRuleRead
+    """
+Retrieve resource information.
     
-    Retrieves detailed information about the specified scan.
-    Returns complete scan metadata and properties.
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -1107,7 +1010,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing scan information:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -1139,7 +1042,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanClassificationRuleRead(args=...)
         print(f"Result: {result}")
@@ -1149,22 +1052,15 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
-        self.method = "GET"
-        if args.get("--classificationRuleName"):
-            self.endpoint = ENDPOINTS["scanning"]["get_classification_rule"].format(
-                classificationRuleName=args["--classificationRuleName"]
-            )
-        else:
-            self.endpoint = ENDPOINTS["scanning"]["list_classification_rules"]
-        self.params = get_api_version_params("scanning")
 
-    @decorator
-    def scanClassificationRuleCreate(self, args):
-        """
-Create a new scan.
+================================================================================
+
+## Scan.scanClassificationRuleCreate
+    """
+Create a new resource.
     
-    Creates a new scan in Microsoft Purview.
-    Requires appropriate permissions and valid scan definition.
+    Creates a new resource in Microsoft Purview.
+    Requires appropriate permissions and valid resource definition.
     
 Args:
         args: Dictionary of operation arguments.
@@ -1172,7 +1068,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing created scan:
+        Dictionary containing created resource:
             {
                 'guid': str,         # Unique identifier
                 'name': str,         # Resource name
@@ -1205,7 +1101,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanClassificationRuleCreate(args=...)
         print(f"Result: {result}")
@@ -1228,19 +1124,14 @@ Use Cases:
         - Metadata Management: Add descriptive metadata to assets
         - Automation: Programmatically populate catalog
     """
-        self.method = "PUT"
-        self.endpoint = ENDPOINTS["scanning"]["create_classification_rule"].format(
-            classificationRuleName=args["--classificationRuleName"]
-        )
-        self.params = get_api_version_params("scanning")
-        self.payload = get_json(args, "--payloadFile")
 
-    @decorator
-    def scanClassificationRuleUpdate(self, args):
-        """
-Update an existing scan.
+================================================================================
+
+## Scan.scanClassificationRuleUpdate
+    """
+Update an existing resource.
     
-    Updates an existing scan with new values.
+    Updates an existing resource with new values.
     Only specified fields are modified; others remain unchanged.
     
 Args:
@@ -1249,7 +1140,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing updated scan:
+        Dictionary containing updated resource:
             {
                 'guid': str,          # Unique identifier
                 'attributes': dict,   # Updated attributes
@@ -1279,7 +1170,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanClassificationRuleUpdate(args=...)
         print(f"Result: {result}")
@@ -1302,14 +1193,14 @@ Use Cases:
         - Ownership Changes: Reassign data ownership
         - Classification: Apply or modify data classifications
     """
-        return self.scanClassificationRuleCreate(args)
 
-    @decorator
-    def scanClassificationRuleDelete(self, args):
-        """
-Delete a scan.
+================================================================================
+
+## Scan.scanClassificationRuleDelete
+    """
+Delete a resource.
     
-    Permanently deletes the specified scan.
+    Permanently deletes the specified resource.
     This operation cannot be undone. Use with caution.
     
 Args:
@@ -1348,7 +1239,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanClassificationRuleDelete(args=...)
         print(f"Result: {result}")
@@ -1358,19 +1249,15 @@ Use Cases:
         - Decommissioning: Delete resources no longer in use
         - Testing: Clean up test environments
     """
-        self.method = "DELETE"
-        self.endpoint = ENDPOINTS["scanning"]["delete_classification_rule"].format(
-            classificationRuleName=args["--classificationRuleName"]
-        )
-        self.params = get_api_version_params("scanning")
 
-    @decorator
-    def scanClassificationRuleReadVersions(self, args):
-        """
-Retrieve scan information.
+================================================================================
+
+## Scan.scanClassificationRuleReadVersions
+    """
+Retrieve resource information.
     
-    Retrieves detailed information about the specified scan.
-    Returns complete scan metadata and properties.
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -1378,7 +1265,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing scan information:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -1410,7 +1297,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanClassificationRuleReadVersions(args=...)
         print(f"Result: {result}")
@@ -1420,15 +1307,11 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
-        self.method = "GET"
-        self.endpoint = ENDPOINTS["scanning"]["list_classification_rule_versions"].format(
-            classificationRuleName=args["--classificationRuleName"]
-        )
-        self.params = get_api_version_params("scanning")
 
-    @decorator
-    def scanClassificationRuleTagVersion(self, args):
-        """
+================================================================================
+
+## Scan.scanClassificationRuleTagVersion
+    """
 Perform operation on resource.
     
     
@@ -1465,7 +1348,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanClassificationRuleTagVersion(args=...)
         print(f"Result: {result}")
@@ -1475,27 +1358,15 @@ Use Cases:
         - [TODO: Include business context]
         - [TODO: Explain when to use this method]
     """
-        self.method = "POST"
-        self.endpoint = ENDPOINTS["scanning"]["tag_classification_version"].format(
-            classificationRuleName=args["--classificationRuleName"], 
-            classificationRuleVersion=args["--classificationRuleVersion"]
-        )
-        self.params = get_api_version_params("scanning")
-        tag_request = {
-            "action": args.get("--action", "Keep"),
-            "tag": args.get("--tag"),
-        }
-        self.payload = tag_request
 
-    # === ADVANCED SCANNING OPERATIONS (NEW FOR 100% COVERAGE) ===
+================================================================================
 
-    @decorator
-    def scanReadAnalytics(self, args):
-        """
-Retrieve scan information.
+## Scan.scanReadAnalytics
+    """
+Retrieve resource information.
     
-    Retrieves detailed information about the specified scan.
-    Returns complete scan metadata and properties.
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -1503,7 +1374,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing scan information:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -1535,7 +1406,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanReadAnalytics(args=...)
         print(f"Result: {result}")
@@ -1545,24 +1416,15 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
-        self.method = "GET"
-        self.endpoint = ENDPOINTS["scanning"]["get_scan_analytics"].format(
-            dataSourceName=args["--dataSourceName"], scanName=args["--scanName"]
-        )
-        self.params = {
-            **get_api_version_params("scanning"),
-            "startTime": args.get("--startTime"),
-            "endTime": args.get("--endTime"),
-            "metrics": args.get("--metrics", "all"),
-        }
 
-    @decorator
-    def scanReadHistory(self, args):
-        """
-Retrieve scan information.
+================================================================================
+
+## Scan.scanReadHistory
+    """
+Retrieve resource information.
     
-    Retrieves detailed information about the specified scan.
-    Returns complete scan metadata and properties.
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -1570,7 +1432,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing scan information:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -1602,7 +1464,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanReadHistory(args=...)
         print(f"Result: {result}")
@@ -1612,26 +1474,15 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
-        self.method = "GET"
-        self.endpoint = ENDPOINTS["scanning"]["get_scan_history"].format(
-            dataSourceName=args["--dataSourceName"], scanName=args["--scanName"]
-        )
-        self.params = {
-            **get_api_version_params("scanning"),
-            "limit": args.get("--limit", 50),
-            "offset": args.get("--offset", 0),
-            "orderBy": args.get("--orderBy", "startTime desc"),
-        }
 
-    # === SCAN SCHEDULING ===
+================================================================================
 
-    @decorator
-    def scanScheduleCreate(self, args):
-        """
-Create a new scan.
+## Scan.scanScheduleCreate
+    """
+Create a new resource.
     
-    Creates a new scan in Microsoft Purview.
-    Requires appropriate permissions and valid scan definition.
+    Creates a new resource in Microsoft Purview.
+    Requires appropriate permissions and valid resource definition.
     
 Args:
         args: Dictionary of operation arguments.
@@ -1639,7 +1490,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing created scan:
+        Dictionary containing created resource:
             {
                 'guid': str,         # Unique identifier
                 'name': str,         # Resource name
@@ -1672,7 +1523,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanScheduleCreate(args=...)
         print(f"Result: {result}")
@@ -1695,20 +1546,15 @@ Use Cases:
         - Metadata Management: Add descriptive metadata to assets
         - Automation: Programmatically populate catalog
     """
-        self.method = "PUT"
-        self.endpoint = ENDPOINTS["scanning"]["schedule_scan"].format(
-            dataSourceName=args["--dataSourceName"], scanName=args["--scanName"]
-        )
-        self.params = get_api_version_params("scanning")
-        self.payload = get_json(args, "--payloadFile")
 
-    @decorator
-    def scanScheduleRead(self, args):
-        """
-Retrieve scan information.
+================================================================================
+
+## Scan.scanScheduleRead
+    """
+Retrieve resource information.
     
-    Retrieves detailed information about the specified scan.
-    Returns complete scan metadata and properties.
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -1716,7 +1562,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing scan information:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -1748,7 +1594,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanScheduleRead(args=...)
         print(f"Result: {result}")
@@ -1758,18 +1604,14 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
-        self.method = "GET"
-        self.endpoint = ENDPOINTS["scanning"]["get_scan_schedule"].format(
-            dataSourceName=args["--dataSourceName"], scanName=args["--scanName"]
-        )
-        self.params = get_api_version_params("scanning")
 
-    @decorator
-    def scanScheduleUpdate(self, args):
-        """
-Update an existing scan.
+================================================================================
+
+## Scan.scanScheduleUpdate
+    """
+Update an existing resource.
     
-    Updates an existing scan with new values.
+    Updates an existing resource with new values.
     Only specified fields are modified; others remain unchanged.
     
 Args:
@@ -1778,7 +1620,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing updated scan:
+        Dictionary containing updated resource:
             {
                 'guid': str,          # Unique identifier
                 'attributes': dict,   # Updated attributes
@@ -1808,7 +1650,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanScheduleUpdate(args=...)
         print(f"Result: {result}")
@@ -1831,19 +1673,14 @@ Use Cases:
         - Ownership Changes: Reassign data ownership
         - Classification: Apply or modify data classifications
     """
-        self.method = "PUT"
-        self.endpoint = ENDPOINTS["scanning"]["update_scan_schedule"].format(
-            dataSourceName=args["--dataSourceName"], scanName=args["--scanName"]
-        )
-        self.params = get_api_version_params("scanning")
-        self.payload = get_json(args, "--payloadFile")
 
-    @decorator
-    def scanScheduleDelete(self, args):
-        """
-Delete a scan.
+================================================================================
+
+## Scan.scanScheduleDelete
+    """
+Delete a resource.
     
-    Permanently deletes the specified scan.
+    Permanently deletes the specified resource.
     This operation cannot be undone. Use with caution.
     
 Args:
@@ -1882,7 +1719,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanScheduleDelete(args=...)
         print(f"Result: {result}")
@@ -1892,21 +1729,15 @@ Use Cases:
         - Decommissioning: Delete resources no longer in use
         - Testing: Clean up test environments
     """
-        self.method = "DELETE"
-        self.endpoint = ENDPOINTS["scanning"]["delete_scan_schedule"].format(
-            dataSourceName=args["--dataSourceName"], scanName=args["--scanName"]
-        )
-        self.params = get_api_version_params("scanning")
 
-    # === SCAN MONITORING AND REPORTING ===
+================================================================================
 
-    @decorator
-    def scanReadStatus(self, args):
-        """
-Retrieve scan information.
+## Scan.scanReadStatus
+    """
+Retrieve resource information.
     
-    Retrieves detailed information about the specified scan.
-    Returns complete scan metadata and properties.
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -1914,7 +1745,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing scan information:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -1946,7 +1777,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanReadStatus(args=...)
         print(f"Result: {result}")
@@ -1956,16 +1787,11 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
-        self.method = "GET"
-        self.endpoint = f"{ENDPOINTS['scanning']['get_scan'].format(dataSourceName=args['--dataSourceName'], scanName=args['--scanName'])}/status"
-        self.params = {
-            **get_api_version_params("scanning"),
-            "includeDetails": str(args.get("--includeDetails", True)).lower(),
-        }
 
-    @decorator
-    def scanGenerateReport(self, args):
-        """
+================================================================================
+
+## Scan.scanGenerateReport
+    """
 Perform operation on resource.
     
     
@@ -2002,7 +1828,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanGenerateReport(args=...)
         print(f"Result: {result}")
@@ -2012,17 +1838,11 @@ Use Cases:
         - [TODO: Include business context]
         - [TODO: Explain when to use this method]
     """
-        self.method = "POST"
-        self.endpoint = f"{ENDPOINTS['scanning']['get_scan'].format(dataSourceName=args['--dataSourceName'], scanName=args['--scanName'])}/report"
-        self.params = {
-            **get_api_version_params("scanning"),
-            "reportType": args.get("--reportType", "summary"),
-            "format": args.get("--format", "json"),
-        }
 
-    @decorator
-    def scanExportResults(self, args):
-        """
+================================================================================
+
+## Scan.scanExportResults
+    """
 Perform batch operation on resources.
     
     Processes multiple resources in a single operation.
@@ -2065,7 +1885,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanExportResults(args=...)
         print(f"Result: {result}")
@@ -2075,23 +1895,15 @@ Use Cases:
         - Migration: Transfer catalog from other systems
         - Mass Updates: Apply changes to many resources
     """
-        self.method = "POST"
-        self.endpoint = f"{ENDPOINTS['scanning']['list_scan_results'].format(dataSourceName=args['--dataSourceName'], scanName=args['--scanName'])}/export"
-        self.params = {
-            **get_api_version_params("scanning"),
-            "format": args.get("--format", "csv"),
-            "runId": args.get("--runId"),
-        }
 
-    # === LEGACY COMPATIBILITY METHODS ===
+================================================================================
 
-    @decorator
-    def scanCreateOrUpdateDataSource(self, args):
-        """
-Create a new scan.
+## Scan.scanCreateOrUpdateDataSource
+    """
+Create a new resource.
     
-    Creates a new scan in Microsoft Purview.
-    Requires appropriate permissions and valid scan definition.
+    Creates a new resource in Microsoft Purview.
+    Requires appropriate permissions and valid resource definition.
     
 Args:
         args: Dictionary of operation arguments.
@@ -2099,7 +1911,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing created scan:
+        Dictionary containing created resource:
             {
                 'guid': str,         # Unique identifier
                 'name': str,         # Resource name
@@ -2132,7 +1944,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanCreateOrUpdateDataSource(args=...)
         print(f"Result: {result}")
@@ -2155,14 +1967,14 @@ Use Cases:
         - Metadata Management: Add descriptive metadata to assets
         - Automation: Programmatically populate catalog
     """
-        return self.scanDataSourceCreate(args)
 
-    @decorator
-    def scanPutDataSource(self, args):
-        """
-Update an existing scan.
+================================================================================
+
+## Scan.scanPutDataSource
+    """
+Update an existing resource.
     
-    Updates an existing scan with new values.
+    Updates an existing resource with new values.
     Only specified fields are modified; others remain unchanged.
     
 Args:
@@ -2171,7 +1983,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing updated scan:
+        Dictionary containing updated resource:
             {
                 'guid': str,          # Unique identifier
                 'attributes': dict,   # Updated attributes
@@ -2201,7 +2013,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanPutDataSource(args=...)
         print(f"Result: {result}")
@@ -2224,11 +2036,11 @@ Use Cases:
         - Ownership Changes: Reassign data ownership
         - Classification: Apply or modify data classifications
     """
-        return self.scanDataSourceCreate(args)
 
-    @decorator
-    def scanTrigger(self, args):
-        """
+================================================================================
+
+## Scan.scanTrigger
+    """
 Perform operation on resource.
     
     
@@ -2265,7 +2077,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanTrigger(args=...)
         print(f"Result: {result}")
@@ -2275,15 +2087,15 @@ Use Cases:
         - [TODO: Include business context]
         - [TODO: Explain when to use this method]
     """
-        return self.scanRun(args)
 
-    @decorator
-    def scanReadResults(self, args):
-        """
-Retrieve scan information.
+================================================================================
+
+## Scan.scanReadResults
+    """
+Retrieve resource information.
     
-    Retrieves detailed information about the specified scan.
-    Returns complete scan metadata and properties.
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -2291,7 +2103,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing scan information:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -2323,7 +2135,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanReadResults(args=...)
         print(f"Result: {result}")
@@ -2333,15 +2145,15 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
-        return self.scanReadResult(args)
 
-    @decorator
-    def scanCreateOrUpdate(self, args):
-        """
-Create a new scan.
+================================================================================
+
+## Scan.scanCreateOrUpdate
+    """
+Create a new resource.
     
-    Creates a new scan in Microsoft Purview.
-    Requires appropriate permissions and valid scan definition.
+    Creates a new resource in Microsoft Purview.
+    Requires appropriate permissions and valid resource definition.
     
 Args:
         args: Dictionary of operation arguments.
@@ -2349,7 +2161,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing created scan:
+        Dictionary containing created resource:
             {
                 'guid': str,         # Unique identifier
                 'name': str,         # Resource name
@@ -2382,7 +2194,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanCreateOrUpdate(args=...)
         print(f"Result: {result}")
@@ -2405,14 +2217,14 @@ Use Cases:
         - Metadata Management: Add descriptive metadata to assets
         - Automation: Programmatically populate catalog
     """
-        return self.scanCreate(args)
 
-    @decorator
-    def scanPut(self, args):
-        """
-Update an existing scan.
+================================================================================
+
+## Scan.scanPut
+    """
+Update an existing resource.
     
-    Updates an existing scan with new values.
+    Updates an existing resource with new values.
     Only specified fields are modified; others remain unchanged.
     
 Args:
@@ -2421,7 +2233,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing updated scan:
+        Dictionary containing updated resource:
             {
                 'guid': str,          # Unique identifier
                 'attributes': dict,   # Updated attributes
@@ -2451,7 +2263,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanPut(args=...)
         print(f"Result: {result}")
@@ -2474,15 +2286,15 @@ Use Cases:
         - Ownership Changes: Reassign data ownership
         - Classification: Apply or modify data classifications
     """
-        return self.scanCreate(args)
 
-    @decorator
-    def scanReadRuleset(self, args):
-        """
-Retrieve scan information.
+================================================================================
+
+## Scan.scanReadRuleset
+    """
+Retrieve resource information.
     
-    Retrieves detailed information about the specified scan.
-    Returns complete scan metadata and properties.
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -2490,7 +2302,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing scan information:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -2522,7 +2334,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanReadRuleset(args=...)
         print(f"Result: {result}")
@@ -2532,15 +2344,15 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
-        return self.scanRuleSetRead(args)
 
-    @decorator
-    def scanCreateRuleset(self, args):
-        """
-Create a new scan.
+================================================================================
+
+## Scan.scanCreateRuleset
+    """
+Create a new resource.
     
-    Creates a new scan in Microsoft Purview.
-    Requires appropriate permissions and valid scan definition.
+    Creates a new resource in Microsoft Purview.
+    Requires appropriate permissions and valid resource definition.
     
 Args:
         args: Dictionary of operation arguments.
@@ -2548,7 +2360,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing created scan:
+        Dictionary containing created resource:
             {
                 'guid': str,         # Unique identifier
                 'name': str,         # Resource name
@@ -2581,7 +2393,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
         result = client.scanCreateRuleset(args=...)
         print(f"Result: {result}")
@@ -2604,4 +2416,6 @@ Use Cases:
         - Metadata Management: Add descriptive metadata to assets
         - Automation: Programmatically populate catalog
     """
-        return self.scanRuleSetCreate(args)
+
+================================================================================
+

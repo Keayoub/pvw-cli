@@ -553,7 +553,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.get_data_products(args=...)
         print(f"Result: {result}")
@@ -619,7 +619,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.get_data_product_by_id(args=...)
         print(f"Result: {result}")
@@ -681,7 +681,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.create_data_product(args=...)
         print(f"Result: {result}")
@@ -794,7 +794,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.update_data_product(args=...)
         print(f"Result: {result}")
@@ -904,7 +904,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.delete_data_product(args=...)
         print(f"Result: {result}")
@@ -966,7 +966,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.create_data_product_relationship(args=...)
         print(f"Result: {result}")
@@ -1059,7 +1059,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.get_data_product_relationships(args=...)
         print(f"Result: {result}")
@@ -1127,7 +1127,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.delete_data_product_relationship(args=...)
         print(f"Result: {result}")
@@ -1194,7 +1194,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.query_data_products(args=...)
         print(f"Result: {result}")
@@ -1301,7 +1301,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.get_terms(args=...)
         print(f"Result: {result}")
@@ -1553,7 +1553,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.get_term_by_id(args=...)
         print(f"Result: {result}")
@@ -1615,7 +1615,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.create_term(args=...)
         print(f"Result: {result}")
@@ -1897,7 +1897,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.delete_term(args=...)
         print(f"Result: {result}")
@@ -1956,7 +1956,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.query_terms(args=...)
         print(f"Result: {result}")
@@ -2131,7 +2131,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.get_objectives(args=...)
         print(f"Result: {result}")
@@ -2192,7 +2192,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.get_objective_by_id(args=...)
         print(f"Result: {result}")
@@ -2254,7 +2254,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.create_objective(args=...)
         print(f"Result: {result}")
@@ -2348,7 +2348,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.update_objective(args=...)
         print(f"Result: {result}")
@@ -2444,7 +2444,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.delete_objective(args=...)
         print(f"Result: {result}")
@@ -2503,7 +2503,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.query_objectives(args=...)
         print(f"Result: {result}")
@@ -2561,10 +2561,10 @@ Use Cases:
     @decorator
     def get_key_results(self, args):
         """
-Retrieve key result information.
+Retrieve resource information.
     
-    Retrieves detailed information about the specified key result.
-    Returns complete key result metadata and properties.
+    Retrieves detailed information about the specified resource from Unified Catalog.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -2572,7 +2572,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing key result information:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -2604,7 +2604,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.get_key_results(args=...)
         print(f"Result: {result}")
@@ -2622,10 +2622,10 @@ Use Cases:
     @decorator
     def get_key_result_by_id(self, args):
         """
-Retrieve key result information.
+Retrieve resource information.
     
-    Retrieves detailed information about the specified key result.
-    Returns complete key result metadata and properties.
+    Retrieves detailed information about the specified resource from Unified Catalog.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -2633,7 +2633,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing key result information:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -2665,7 +2665,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.get_key_result_by_id(args=...)
         print(f"Result: {result}")
@@ -2684,10 +2684,10 @@ Use Cases:
     @decorator
     def create_key_result(self, args):
         """
-Create a new key result.
+Create a new resource.
     
-    Creates a new key result in Microsoft Purview.
-    Requires appropriate permissions and valid key result definition.
+    Creates a new resource in Microsoft Purview Unified Catalog.
+    Requires appropriate permissions and valid resource definition.
     
 Args:
         args: Dictionary of operation arguments.
@@ -2695,7 +2695,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing created key result:
+        Dictionary containing created resource:
             {
                 'guid': str,         # Unique identifier
                 'name': str,         # Resource name
@@ -2728,7 +2728,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.create_key_result(args=...)
         print(f"Result: {result}")
@@ -2776,9 +2776,9 @@ Use Cases:
     @decorator
     def update_key_result(self, args):
         """
-Update an existing key result.
+Update an existing resource.
     
-    Updates an existing key result with new values.
+    Updates an existing resource in Unified Catalog with new values.
     Only specified fields are modified; others remain unchanged.
     
 Args:
@@ -2787,7 +2787,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing updated key result:
+        Dictionary containing updated resource:
             {
                 'guid': str,          # Unique identifier
                 'attributes': dict,   # Updated attributes
@@ -2817,7 +2817,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.update_key_result(args=...)
         print(f"Result: {result}")
@@ -2867,9 +2867,9 @@ Use Cases:
     @decorator
     def delete_key_result(self, args):
         """
-Delete a key result.
+Delete a resource.
     
-    Permanently deletes the specified key result.
+    Permanently deletes the specified resource from Unified Catalog.
     This operation cannot be undone. Use with caution.
     
 Args:
@@ -2908,7 +2908,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.delete_key_result(args=...)
         print(f"Result: {result}")
@@ -2974,7 +2974,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.get_critical_data_elements(args=...)
         print(f"Result: {result}")
@@ -3035,7 +3035,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.get_critical_data_element_by_id(args=...)
         print(f"Result: {result}")
@@ -3097,7 +3097,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.create_critical_data_element(args=...)
         print(f"Result: {result}")
@@ -3193,7 +3193,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.update_critical_data_element(args=...)
         print(f"Result: {result}")
@@ -3291,7 +3291,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.delete_critical_data_element(args=...)
         print(f"Result: {result}")
@@ -3350,7 +3350,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.query_critical_data_elements(args=...)
         print(f"Result: {result}")
@@ -3448,7 +3448,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.create_cde_relationship(args=...)
         print(f"Result: {result}")
@@ -3539,7 +3539,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.get_cde_relationships(args=...)
         print(f"Result: {result}")
@@ -3605,7 +3605,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.delete_cde_relationship(args=...)
         print(f"Result: {result}")
@@ -3676,7 +3676,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.get_relationships(args=...)
         print(f"Result: {result}")
@@ -3760,7 +3760,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.create_relationship(args=...)
         print(f"Result: {result}")
@@ -3854,7 +3854,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.delete_relationship(args=...)
         print(f"Result: {result}")
@@ -3938,7 +3938,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.list_policies(args=...)
         print(f"Result: {result}")
@@ -3998,7 +3998,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.get_policy(args=...)
         print(f"Result: {result}")
@@ -4060,7 +4060,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.create_policy(args=...)
         print(f"Result: {result}")
@@ -4144,7 +4144,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.update_policy(args=...)
         print(f"Result: {result}")
@@ -4229,7 +4229,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.delete_policy(args=...)
         print(f"Result: {result}")
@@ -4293,7 +4293,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.list_custom_metadata(args=...)
         print(f"Result: {result}")
@@ -4357,7 +4357,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.get_custom_metadata(args=...)
         print(f"Result: {result}")
@@ -4654,7 +4654,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.delete_custom_metadata(args=...)
         print(f"Result: {result}")
@@ -4729,7 +4729,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.list_custom_attributes(args=...)
         print(f"Result: {result}")
@@ -4789,7 +4789,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.get_custom_attribute(args=...)
         print(f"Result: {result}")
@@ -4851,7 +4851,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.create_custom_attribute(args=...)
         print(f"Result: {result}")
@@ -4935,7 +4935,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.update_custom_attribute(args=...)
         print(f"Result: {result}")
@@ -5020,7 +5020,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = UnifiedCatalogClient()
+        client = UnifiedCatalogUnifiedCatalogClient()
         
         result = client.delete_custom_attribute(args=...)
         print(f"Result: {result}")

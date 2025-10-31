@@ -32,7 +32,60 @@ class Lineage(Endpoint):
 
     @decorator
     def lineageRead(self, args):
-        """Get lineage for a given entity GUID (Official API: Get Lineage)"""
+        """
+Retrieve lineage information information.
+    
+    Retrieves detailed information about the specified lineage information.
+    Returns complete lineage information metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing lineage information information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Lineage()
+        
+        result = client.lineageRead(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["lineage"]["get"].format(guid=args["--guid"])
         self.params = {
@@ -46,7 +99,60 @@ class Lineage(Endpoint):
 
     @decorator
     def lineageReadUniqueAttribute(self, args):
-        """Get lineage by unique attribute (Official API: Get By Unique Attribute)"""
+        """
+Retrieve lineage information information.
+    
+    Retrieves detailed information about the specified lineage information.
+    Returns complete lineage information metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing lineage information information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Lineage()
+        
+        result = client.lineageReadUniqueAttribute(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["lineage"]["get_by_unique_attribute"].format(typeName=args["--typeName"])
         self.params = {
@@ -61,7 +167,60 @@ class Lineage(Endpoint):
 
     @decorator
     def lineageReadNextPage(self, args):
-        """Get next page of lineage (Official API: Get Next Page)"""
+        """
+Retrieve lineage information information.
+    
+    Retrieves detailed information about the specified lineage information.
+    Returns complete lineage information metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing lineage information information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Lineage()
+        
+        result = client.lineageReadNextPage(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["lineage"]["get_next_page"].format(guid=args["--guid"])
         self.params = {
@@ -76,7 +235,60 @@ class Lineage(Endpoint):
 
     @decorator
     def lineageReadUpstream(self, args):
-        """Get upstream lineage for a given entity GUID (Advanced API: Get Upstream Lineage)"""
+        """
+Retrieve lineage information information.
+    
+    Retrieves detailed information about the specified lineage information.
+    Returns complete lineage information metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing lineage information information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Lineage()
+        
+        result = client.lineageReadUpstream(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["lineage"]["get_upstream_lineage"].format(guid=args["--guid"])
         self.params = {
@@ -88,7 +300,74 @@ class Lineage(Endpoint):
 
     @decorator
     def lineageReadDownstream(self, args):
-        """Get downstream lineage for a given entity GUID (Advanced API: Get Downstream Lineage)"""
+        """
+Create a new lineage information.
+    
+    Creates a new lineage information in Microsoft Purview Data Lineage. Tracks data flow and transformations.
+    Requires appropriate permissions and valid lineage information definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created lineage information:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Lineage()
+        
+        result = client.lineageReadDownstream(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.lineageReadDownstream(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["lineage"]["get_downstream_lineage"].format(guid=args["--guid"])
         self.params = {
@@ -100,7 +379,60 @@ class Lineage(Endpoint):
 
     @decorator
     def lineageReadGraph(self, args):
-        """Get lineage graph for a given entity GUID (Advanced API: Get Lineage Graph)"""
+        """
+Retrieve lineage information information.
+    
+    Retrieves detailed information about the specified lineage information.
+    Returns complete lineage information metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing lineage information information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Lineage()
+        
+        result = client.lineageReadGraph(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["lineage"]["get_lineage_graph"].format(guid=args["--guid"])
         self.params = {
@@ -113,7 +445,74 @@ class Lineage(Endpoint):
 
     @decorator
     def lineageCreate(self, args):
-        """Create lineage (Advanced API: Create Lineage)"""
+        """
+Create a new lineage information.
+    
+    Creates a new lineage information in Microsoft Purview Data Lineage. Tracks data flow and transformations.
+    Requires appropriate permissions and valid lineage information definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created lineage information:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Lineage()
+        
+        result = client.lineageCreate(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.lineageCreate(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         self.method = "POST"
         self.endpoint = ENDPOINTS["lineage"]["create_lineage"]
         self.params = get_api_version_params("datamap")
@@ -121,7 +520,71 @@ class Lineage(Endpoint):
 
     @decorator
     def lineageUpdate(self, args):
-        """Update lineage (Advanced API: Update Lineage)"""
+        """
+Update an existing lineage information.
+    
+    Updates an existing lineage information with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated lineage information:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Lineage()
+        
+        result = client.lineageUpdate(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.lineageUpdate(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
         self.method = "PUT"
         self.endpoint = ENDPOINTS["lineage"]["update_lineage"].format(guid=args["--guid"])
         self.params = get_api_version_params("datamap")
@@ -129,14 +592,111 @@ class Lineage(Endpoint):
 
     @decorator
     def lineageDelete(self, args):
-        """Delete lineage (Advanced API: Delete Lineage)"""
+        """
+Delete a lineage information.
+    
+    Permanently deletes the specified lineage information.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Lineage()
+        
+        result = client.lineageDelete(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
         self.method = "DELETE"
         self.endpoint = ENDPOINTS["lineage"]["delete_lineage"].format(guid=args["--guid"])
         self.params = get_api_version_params("datamap")
 
     @decorator
     def lineageValidate(self, args):
-        """Validate lineage definition (Advanced API: Validate Lineage)"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Lineage()
+        
+        result = client.lineageValidate(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = "POST"
         self.endpoint = ENDPOINTS["lineage"]["validate_lineage"]
         self.params = get_api_version_params("datamap")
@@ -144,7 +704,60 @@ class Lineage(Endpoint):
 
     @decorator
     def lineageReadImpactAnalysis(self, args):
-        """Get impact analysis for a given entity GUID (Advanced API: Get Impact Analysis)"""
+        """
+Retrieve lineage information information.
+    
+    Retrieves detailed information about the specified lineage information.
+    Returns complete lineage information metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing lineage information information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Lineage()
+        
+        result = client.lineageReadImpactAnalysis(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["lineage"]["get_impact_analysis"].format(guid=args["--guid"])
         self.params = {
@@ -157,7 +770,60 @@ class Lineage(Endpoint):
 
     @decorator
     def lineageReadTemporal(self, args):
-        """Get temporal lineage for a given entity GUID (Advanced API: Get Temporal Lineage)"""
+        """
+Retrieve lineage information information.
+    
+    Retrieves detailed information about the specified lineage information.
+    Returns complete lineage information metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing lineage information information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Lineage()
+        
+        result = client.lineageReadTemporal(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = ENDPOINTS["lineage"]["get_temporal_lineage"].format(guid=args["--guid"])
         self.params = {
@@ -173,7 +839,74 @@ class Lineage(Endpoint):
 
     @decorator
     def lineageCreateBulk(self, args):
-        """Create lineage relationships in bulk from CSV or JSON (Enhanced API: Bulk Create Lineage)"""
+        """
+Create a new lineage information.
+    
+    Creates a new lineage information in Microsoft Purview Data Lineage. Tracks data flow and transformations.
+    Requires appropriate permissions and valid lineage information definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created lineage information:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Lineage()
+        
+        result = client.lineageCreateBulk(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.lineageCreateBulk(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
         self.method = "POST"
         self.endpoint = ENDPOINTS["lineage"]["create_lineage"]
         self.params = get_api_version_params("datamap")
@@ -344,7 +1077,53 @@ class Lineage(Endpoint):
 
     @decorator
     def lineageCSVProcess(self, args):
-        """Process CSV file and create lineage relationships"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Lineage()
+        
+        result = client.lineageCSVProcess(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         csv_file = args.get("csv_file") or args.get("--csv-file")
         if not csv_file:
             raise ValueError("CSV file path is required")
@@ -362,7 +1141,53 @@ class Lineage(Endpoint):
         return lineage_data
 
     def lineageCSVValidate(self, args):
-        """Validate CSV lineage file format (no API call)"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Lineage()
+        
+        result = client.lineageCSVValidate(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         import pandas as pd
         
         csv_file = args.get("csv_file") or args.get("--csv-file")
@@ -419,7 +1244,53 @@ class Lineage(Endpoint):
             return {"success": False, "error": str(e)}
 
     def lineageCSVSample(self, args):
-        """Generate sample CSV lineage file (no API call)"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Lineage()
+        
+        result = client.lineageCSVSample(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         sample_data = """source_entity_guid,target_entity_guid,relationship_type,process_name,description,confidence_score,owner,metadata
 ea3412c3-7387-4bc1-9923-11f6f6f60000,2d21eba5-b08b-4571-b31d-7bf6f6f60000,Process,ETL_Customer_Transform,Transform customer data,0.95,data-engineering,"{""tool"": ""Azure Data Factory""}"
 2d21eba5-b08b-4571-b31d-7bf6f6f60000,4fae348b-e960-42f7-834c-38f6f6f60000,Process,Customer_Address_Join,Join customer with address,0.90,data-engineering,"{""tool"": ""Databricks""}"
@@ -439,7 +1310,53 @@ ea3412c3-7387-4bc1-9923-11f6f6f60000,2d21eba5-b08b-4571-b31d-7bf6f6f60000,Proces
             return {"success": False, "error": str(e)}
 
     def lineageCSVTemplates(self, args):
-        """Get available CSV lineage templates (no API call)"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Lineage()
+        
+        result = client.lineageCSVTemplates(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         templates = {
             "basic": {
                 "columns": ["source_entity_guid", "target_entity_guid", "relationship_type", "process_name"],
@@ -464,7 +1381,60 @@ ea3412c3-7387-4bc1-9923-11f6f6f60000,2d21eba5-b08b-4571-b31d-7bf6f6f60000,Proces
 
     @decorator
     def lineageReadAnalytics(self, args):
-        """Get lineage analytics for entities (Enhanced API: Lineage Analytics)"""
+        """
+Retrieve lineage information information.
+    
+    Retrieves detailed information about the specified lineage information.
+    Returns complete lineage information metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing lineage information information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Lineage()
+        
+        result = client.lineageReadAnalytics(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         self.method = "GET"
         self.endpoint = f"{ENDPOINTS['lineage']['get'].format(guid=args['--guid'])}/analytics"
         self.params = {
@@ -477,7 +1447,53 @@ ea3412c3-7387-4bc1-9923-11f6f6f60000,2d21eba5-b08b-4571-b31d-7bf6f6f60000,Proces
 
     @decorator
     def lineageGenerateReport(self, args):
-        """Generate lineage report (Enhanced API: Generate Lineage Report)"""
+        """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Lineage()
+        
+        result = client.lineageGenerateReport(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
         self.method = "POST"
         self.endpoint = f"{ENDPOINTS['lineage']['get'].format(guid=args['--guid'])}/report"
         self.params = {
@@ -491,7 +1507,58 @@ ea3412c3-7387-4bc1-9923-11f6f6f60000,2d21eba5-b08b-4571-b31d-7bf6f6f60000,Proces
 
     @decorator
     def lineageSearch(self, args):
-        """Search lineage by criteria (Enhanced API: Search Lineage)"""
+        """
+Search for lineage informations.
+    
+    Searches for resources matching the specified criteria.
+    Supports filtering, pagination, and sorting.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing search results:
+            {
+                'value': [...]     # List of matching resources
+                'count': int,      # Total results count
+                'nextLink': str    # Pagination link (if applicable)
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Lineage()
+        
+        result = client.lineageSearch(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Locate datasets by name or properties
+        - Impact Analysis: Find all assets related to a term
+        - Compliance: Identify sensitive data across catalog
+    """
         self.method = "GET"
         self.endpoint = f"{ENDPOINTS['lineage']['get'].replace('/{guid}', '/search')}"
         self.params = {
@@ -507,15 +1574,174 @@ ea3412c3-7387-4bc1-9923-11f6f6f60000,2d21eba5-b08b-4571-b31d-7bf6f6f60000,Proces
 
     @decorator
     def lineageReadByGuid(self, args):
-        """Legacy alias for lineageRead"""
+        """
+Retrieve lineage information information.
+    
+    Retrieves detailed information about the specified lineage information.
+    Returns complete lineage information metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing lineage information information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Lineage()
+        
+        result = client.lineageReadByGuid(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         return self.lineageRead(args)
 
     @decorator
     def lineageReadByUniqueAttribute(self, args):
-        """Legacy alias for lineageReadUniqueAttribute"""
+        """
+Retrieve lineage information information.
+    
+    Retrieves detailed information about the specified lineage information.
+    Returns complete lineage information metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing lineage information information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Lineage()
+        
+        result = client.lineageReadByUniqueAttribute(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         return self.lineageReadUniqueAttribute(args)
 
     @decorator
     def lineageReadNext(self, args):
-        """Legacy alias for lineageReadNextPage"""
+        """
+Retrieve lineage information information.
+    
+    Retrieves detailed information about the specified lineage information.
+    Returns complete lineage information metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing lineage information information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Lineage()
+        
+        result = client.lineageReadNext(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
         return self.lineageReadNextPage(args)

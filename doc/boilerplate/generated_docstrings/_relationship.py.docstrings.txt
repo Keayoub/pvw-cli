@@ -1,36 +1,12 @@
-"""
-Relationship Management Client for Microsoft Purview Data Map API
-Based on official API: https://learn.microsoft.com/en-us/rest/api/purview/datamapdataplane/relationship
-API Version: 2023-09-01 / 2024-03-01-preview
+# Generated Docstrings for _relationship.py
+# Copy these to your Python source file
 
-Complete implementation of ALL Relationship operations from the official specification with 100% coverage:
-- Relationship CRUD Operations (Create, Read, Update, Delete)
-- Bulk Relationship Operations
-- Entity-based Relationship Queries
-- Relationship Validation
-- Advanced Relationship Analytics
-"""
-
-from .endpoint import Endpoint, decorator, get_json, no_api_call_decorator
-from .endpoints import ENDPOINTS, get_api_version_params
-
-
-class Relationship(Endpoint):
-    """Relationship Management Operations - Complete Official API Implementation with 100% Coverage"""
-
-    def __init__(self):
-        Endpoint.__init__(self)
-        self.app = "catalog"
-
-    # === CORE RELATIONSHIP OPERATIONS ===
-
-    @decorator
-    def relationshipCreate(self, args):
-        """
-Create a new relationship.
+## Relationship.relationshipCreate
+    """
+Create a new resource.
     
-    Creates a new relationship in Microsoft Purview Relationships. Define connections between entities.
-    Requires appropriate permissions and valid relationship definition.
+    Creates a new resource in Microsoft Purview.
+    Requires appropriate permissions and valid resource definition.
     
 Args:
         args: Dictionary of operation arguments.
@@ -38,7 +14,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing created relationship:
+        Dictionary containing created resource:
             {
                 'guid': str,         # Unique identifier
                 'name': str,         # Resource name
@@ -71,7 +47,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Relationship()
+        client = Client()
         
         result = client.relationshipCreate(args=...)
         print(f"Result: {result}")
@@ -94,18 +70,15 @@ Use Cases:
         - Metadata Management: Add descriptive metadata to assets
         - Automation: Programmatically populate catalog
     """
-        self.method = "POST"
-        self.endpoint = ENDPOINTS["relationship"]["create"]
-        self.params = get_api_version_params("datamap")
-        self.payload = get_json(args, "--payloadFile")
 
-    @decorator
-    def relationshipRead(self, args):
-        """
-Retrieve relationship information.
+================================================================================
+
+## Relationship.relationshipRead
+    """
+Retrieve resource information.
     
-    Retrieves detailed information about the specified relationship.
-    Returns complete relationship metadata and properties.
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -113,7 +86,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing relationship information:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -145,7 +118,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Relationship()
+        client = Client()
         
         result = client.relationshipRead(args=...)
         print(f"Result: {result}")
@@ -155,19 +128,14 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
-        self.method = "GET"
-        self.endpoint = ENDPOINTS["relationship"]["get"].format(guid=args["--guid"])
-        self.params = {
-            **get_api_version_params("datamap"),
-            "extendedInfo": str(args.get("--extendedInfo", False)).lower(),
-        }
 
-    @decorator
-    def relationshipUpdate(self, args):
-        """
-Update an existing relationship.
+================================================================================
+
+## Relationship.relationshipUpdate
+    """
+Update an existing resource.
     
-    Updates an existing relationship with new values.
+    Updates an existing resource with new values.
     Only specified fields are modified; others remain unchanged.
     
 Args:
@@ -176,7 +144,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing updated relationship:
+        Dictionary containing updated resource:
             {
                 'guid': str,          # Unique identifier
                 'attributes': dict,   # Updated attributes
@@ -206,7 +174,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Relationship()
+        client = Client()
         
         result = client.relationshipUpdate(args=...)
         print(f"Result: {result}")
@@ -229,17 +197,14 @@ Use Cases:
         - Ownership Changes: Reassign data ownership
         - Classification: Apply or modify data classifications
     """
-        self.method = "PUT"
-        self.endpoint = ENDPOINTS["relationship"]["update"]
-        self.params = get_api_version_params("datamap")
-        self.payload = get_json(args, "--payloadFile")
 
-    @decorator
-    def relationshipDelete(self, args):
-        """
-Delete a relationship.
+================================================================================
+
+## Relationship.relationshipDelete
+    """
+Delete a resource.
     
-    Permanently deletes the specified relationship.
+    Permanently deletes the specified resource.
     This operation cannot be undone. Use with caution.
     
 Args:
@@ -278,7 +243,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Relationship()
+        client = Client()
         
         result = client.relationshipDelete(args=...)
         print(f"Result: {result}")
@@ -288,19 +253,15 @@ Use Cases:
         - Decommissioning: Delete resources no longer in use
         - Testing: Clean up test environments
     """
-        self.method = "DELETE"
-        self.endpoint = ENDPOINTS["relationship"]["delete"].format(guid=args["--guid"])
-        self.params = get_api_version_params("datamap")
 
-    # === ADVANCED RELATIONSHIP OPERATIONS (NEW FOR 100% COVERAGE) ===
+================================================================================
 
-    @decorator
-    def relationshipReadAll(self, args):
-        """
-Retrieve relationship information.
+## Relationship.relationshipReadAll
+    """
+Retrieve resource information.
     
-    Retrieves detailed information about the specified relationship.
-    Returns complete relationship metadata and properties.
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -308,7 +269,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing relationship information:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -340,7 +301,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Relationship()
+        client = Client()
         
         result = client.relationshipReadAll(args=...)
         print(f"Result: {result}")
@@ -350,24 +311,15 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
-        self.method = "GET"
-        self.endpoint = ENDPOINTS["relationship"]["list_relationships"]
-        self.params = {
-            **get_api_version_params("datamap"),
-            "relationshipType": args.get("--relationshipType"),
-            "status": args.get("--status", "ACTIVE"),
-            "limit": args.get("--limit", 100),
-            "offset": args.get("--offset", 0),
-            "sort": args.get("--sort"),
-        }
 
-    @decorator
-    def relationshipCreateBulk(self, args):
-        """
-Create a new relationship.
+================================================================================
+
+## Relationship.relationshipCreateBulk
+    """
+Create a new resource.
     
-    Creates a new relationship in Microsoft Purview Relationships. Define connections between entities.
-    Requires appropriate permissions and valid relationship definition.
+    Creates a new resource in Microsoft Purview.
+    Requires appropriate permissions and valid resource definition.
     
 Args:
         args: Dictionary of operation arguments.
@@ -375,7 +327,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing created relationship:
+        Dictionary containing created resource:
             {
                 'guid': str,         # Unique identifier
                 'name': str,         # Resource name
@@ -408,7 +360,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Relationship()
+        client = Client()
         
         result = client.relationshipCreateBulk(args=...)
         print(f"Result: {result}")
@@ -431,17 +383,14 @@ Use Cases:
         - Metadata Management: Add descriptive metadata to assets
         - Automation: Programmatically populate catalog
     """
-        self.method = "POST"
-        self.endpoint = ENDPOINTS["relationship"]["bulk_create_relationships"]
-        self.params = get_api_version_params("datamap")
-        self.payload = get_json(args, "--payloadFile")
 
-    @decorator
-    def relationshipDeleteBulk(self, args):
-        """
-Delete a relationship.
+================================================================================
+
+## Relationship.relationshipDeleteBulk
+    """
+Delete a resource.
     
-    Permanently deletes the specified relationship.
+    Permanently deletes the specified resource.
     This operation cannot be undone. Use with caution.
     
 Args:
@@ -480,7 +429,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Relationship()
+        client = Client()
         
         result = client.relationshipDeleteBulk(args=...)
         print(f"Result: {result}")
@@ -490,18 +439,15 @@ Use Cases:
         - Decommissioning: Delete resources no longer in use
         - Testing: Clean up test environments
     """
-        self.method = "DELETE"
-        self.endpoint = ENDPOINTS["relationship"]["bulk_delete_relationships"]
-        self.params = get_api_version_params("datamap")
-        self.payload = get_json(args, "--payloadFile")
 
-    @decorator
-    def relationshipReadByEntity(self, args):
-        """
-Retrieve relationship information.
+================================================================================
+
+## Relationship.relationshipReadByEntity
+    """
+Retrieve resource information.
     
-    Retrieves detailed information about the specified relationship.
-    Returns complete relationship metadata and properties.
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -509,7 +455,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing relationship information:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -541,7 +487,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = EntityRelationship()
+        client = EntityClient()
         
         result = client.relationshipReadByEntity(args=...)
         print(f"Result: {result}")
@@ -551,20 +497,11 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
-        self.method = "GET"
-        self.endpoint = ENDPOINTS["relationship"]["get_relationships_by_entity"].format(guid=args["--entityGuid"])
-        self.params = {
-            **get_api_version_params("datamap"),
-            "relationshipType": args.get("--relationshipType"),
-            "direction": args.get("--direction", "BOTH"),
-            "status": args.get("--status", "ACTIVE"),
-            "limit": args.get("--limit", 100),
-            "offset": args.get("--offset", 0),
-        }
 
-    @decorator
-    def relationshipValidate(self, args):
-        """
+================================================================================
+
+## Relationship.relationshipValidate
+    """
 Perform operation on resource.
     
     
@@ -601,7 +538,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Relationship()
+        client = Client()
         
         result = client.relationshipValidate(args=...)
         print(f"Result: {result}")
@@ -611,20 +548,15 @@ Use Cases:
         - [TODO: Include business context]
         - [TODO: Explain when to use this method]
     """
-        self.method = "POST"
-        self.endpoint = ENDPOINTS["relationship"]["validate_relationship"]
-        self.params = get_api_version_params("datamap")
-        self.payload = get_json(args, "--payloadFile")
 
-    # === RELATIONSHIP ANALYTICS AND REPORTING ===
+================================================================================
 
-    @decorator
-    def relationshipReadAnalytics(self, args):
-        """
-Retrieve relationship information.
+## Relationship.relationshipReadAnalytics
+    """
+Retrieve resource information.
     
-    Retrieves detailed information about the specified relationship.
-    Returns complete relationship metadata and properties.
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -632,7 +564,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing relationship information:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -664,7 +596,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Relationship()
+        client = Client()
         
         result = client.relationshipReadAnalytics(args=...)
         print(f"Result: {result}")
@@ -674,22 +606,15 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
-        self.method = "GET"
-        self.endpoint = f"{ENDPOINTS['relationship']['get'].format(guid=args['--guid'])}/analytics"
-        self.params = {
-            **get_api_version_params("datamap"),
-            "startTime": args.get("--startTime"),
-            "endTime": args.get("--endTime"),
-            "metrics": args.get("--metrics", "all"),
-        }
 
-    @decorator
-    def relationshipReadStatistics(self, args):
-        """
-Retrieve relationship information.
+================================================================================
+
+## Relationship.relationshipReadStatistics
+    """
+Retrieve resource information.
     
-    Retrieves detailed information about the specified relationship.
-    Returns complete relationship metadata and properties.
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -697,7 +622,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing relationship information:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -729,7 +654,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Relationship()
+        client = Client()
         
         result = client.relationshipReadStatistics(args=...)
         print(f"Result: {result}")
@@ -739,21 +664,12 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
-        self.method = "GET"
-        self.endpoint = f"{ENDPOINTS['relationship']['list_relationships']}/statistics"
-        self.params = {
-            **get_api_version_params("datamap"),
-            "relationshipType": args.get("--relationshipType"),
-            "groupBy": args.get("--groupBy", "type"),
-            "includeInactive": str(args.get("--includeInactive", False)).lower(),
-        }
 
-    # === RELATIONSHIP DISCOVERY AND SEARCH ===
+================================================================================
 
-    @decorator
-    def relationshipSearch(self, args):
-        """
-Search for relationships.
+## Relationship.relationshipSearch
+    """
+Search for resources.
     
     Searches for resources matching the specified criteria.
     Supports filtering, pagination, and sorting.
@@ -794,7 +710,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Relationship()
+        client = Client()
         
         result = client.relationshipSearch(args=...)
         print(f"Result: {result}")
@@ -804,25 +720,15 @@ Use Cases:
         - Impact Analysis: Find all assets related to a term
         - Compliance: Identify sensitive data across catalog
     """
-        self.method = "GET"
-        self.endpoint = f"{ENDPOINTS['relationship']['list_relationships']}/search"
-        self.params = {
-            **get_api_version_params("datamap"),
-            "query": args.get("--query"),
-            "relationshipType": args.get("--relationshipType"),
-            "entityType": args.get("--entityType"),
-            "status": args.get("--status"),
-            "limit": args.get("--limit", 50),
-            "offset": args.get("--offset", 0),
-        }
 
-    @decorator
-    def relationshipReadByType(self, args):
-        """
-Retrieve relationship information.
+================================================================================
+
+## Relationship.relationshipReadByType
+    """
+Retrieve resource information.
     
-    Retrieves detailed information about the specified relationship.
-    Returns complete relationship metadata and properties.
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -830,7 +736,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing relationship information:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -862,7 +768,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Relationship()
+        client = Client()
         
         result = client.relationshipReadByType(args=...)
         print(f"Result: {result}")
@@ -872,21 +778,11 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
-        self.method = "GET"
-        self.endpoint = f"{ENDPOINTS['relationship']['list_relationships']}/type/{args['--relationshipType']}"
-        self.params = {
-            **get_api_version_params("datamap"),
-            "status": args.get("--status", "ACTIVE"),
-            "includeMetadata": str(args.get("--includeMetadata", True)).lower(),
-            "limit": args.get("--limit", 100),
-            "offset": args.get("--offset", 0),
-        }
 
-    # === RELATIONSHIP IMPORT/EXPORT ===
+================================================================================
 
-    @decorator
-    def relationshipExport(self, args):
-        """
+## Relationship.relationshipExport
+    """
 Perform batch operation on resources.
     
     Processes multiple resources in a single operation.
@@ -929,7 +825,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Relationship()
+        client = Client()
         
         result = client.relationshipExport(args=...)
         print(f"Result: {result}")
@@ -939,19 +835,11 @@ Use Cases:
         - Migration: Transfer catalog from other systems
         - Mass Updates: Apply changes to many resources
     """
-        self.method = "POST"
-        self.endpoint = f"{ENDPOINTS['relationship']['list_relationships']}/export"
-        self.params = {
-            **get_api_version_params("datamap"),
-            "relationshipType": args.get("--relationshipType"),
-            "entityGuids": args.get("--entityGuids"),
-            "format": args.get("--format", "json"),
-            "includeInactive": str(args.get("--includeInactive", False)).lower(),
-        }
 
-    @decorator
-    def relationshipImport(self, args):
-        """
+================================================================================
+
+## Relationship.relationshipImport
+    """
 Perform batch operation on resources.
     
     Processes multiple resources in a single operation.
@@ -994,7 +882,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Relationship()
+        client = Client()
         
         result = client.relationshipImport(args=...)
         print(f"Result: {result}")
@@ -1004,24 +892,15 @@ Use Cases:
         - Migration: Transfer catalog from other systems
         - Mass Updates: Apply changes to many resources
     """
-        self.method = "POST"
-        self.endpoint = f"{ENDPOINTS['relationship']['list_relationships']}/import"
-        self.params = {
-            **get_api_version_params("datamap"),
-            "validateOnly": str(args.get("--validateOnly", False)).lower(),
-            "overwriteExisting": str(args.get("--overwriteExisting", False)).lower(),
-        }
-        self.payload = get_json(args, "--payloadFile")
 
-    # === RELATIONSHIP LINEAGE OPERATIONS ===
+================================================================================
 
-    @decorator
-    def relationshipReadLineage(self, args):
-        """
-Retrieve relationship information.
+## Relationship.relationshipReadLineage
+    """
+Retrieve resource information.
     
-    Retrieves detailed information about the specified relationship.
-    Returns complete relationship metadata and properties.
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -1029,7 +908,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing relationship information:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -1061,7 +940,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = LineageRelationship()
+        client = LineageClient()
         
         result = client.relationshipReadLineage(args=...)
         print(f"Result: {result}")
@@ -1071,22 +950,15 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
-        self.method = "GET"
-        self.endpoint = f"{ENDPOINTS['relationship']['get'].format(guid=args['--guid'])}/lineage"
-        self.params = {
-            **get_api_version_params("datamap"),
-            "direction": args.get("--direction", "BOTH"),
-            "depth": args.get("--depth", 3),
-            "includeParent": str(args.get("--includeParent", False)).lower(),
-        }
 
-    @decorator
-    def relationshipReadImpact(self, args):
-        """
-Retrieve relationship information.
+================================================================================
+
+## Relationship.relationshipReadImpact
+    """
+Retrieve resource information.
     
-    Retrieves detailed information about the specified relationship.
-    Returns complete relationship metadata and properties.
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -1094,7 +966,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing relationship information:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -1126,7 +998,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Relationship()
+        client = Client()
         
         result = client.relationshipReadImpact(args=...)
         print(f"Result: {result}")
@@ -1136,24 +1008,15 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
-        self.method = "GET"
-        self.endpoint = f"{ENDPOINTS['relationship']['get'].format(guid=args['--guid'])}/impact"
-        self.params = {
-            **get_api_version_params("datamap"),
-            "direction": args.get("--direction", "DOWNSTREAM"),
-            "depth": args.get("--depth", 5),
-            "analysisType": args.get("--analysisType", "IMPACT"),
-        }
 
-    # === LEGACY COMPATIBILITY METHODS ===
+================================================================================
 
-    @decorator
-    def relationshipReadByGuid(self, args):
-        """
-Retrieve relationship information.
+## Relationship.relationshipReadByGuid
+    """
+Retrieve resource information.
     
-    Retrieves detailed information about the specified relationship.
-    Returns complete relationship metadata and properties.
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -1161,7 +1024,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing relationship information:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -1193,7 +1056,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Relationship()
+        client = Client()
         
         result = client.relationshipReadByGuid(args=...)
         print(f"Result: {result}")
@@ -1203,15 +1066,15 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
-        return self.relationshipRead(args)
 
-    @decorator
-    def relationshipCreateOrUpdate(self, args):
-        """
-Create a new relationship.
+================================================================================
+
+## Relationship.relationshipCreateOrUpdate
+    """
+Create a new resource.
     
-    Creates a new relationship in Microsoft Purview Relationships. Define connections between entities.
-    Requires appropriate permissions and valid relationship definition.
+    Creates a new resource in Microsoft Purview.
+    Requires appropriate permissions and valid resource definition.
     
 Args:
         args: Dictionary of operation arguments.
@@ -1219,7 +1082,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing created relationship:
+        Dictionary containing created resource:
             {
                 'guid': str,         # Unique identifier
                 'name': str,         # Resource name
@@ -1252,7 +1115,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Relationship()
+        client = Client()
         
         result = client.relationshipCreateOrUpdate(args=...)
         print(f"Result: {result}")
@@ -1275,18 +1138,14 @@ Use Cases:
         - Metadata Management: Add descriptive metadata to assets
         - Automation: Programmatically populate catalog
     """
-        payload = get_json(args, "--payloadFile")
-        if payload.get("guid"):
-            return self.relationshipUpdate(args)
-        else:
-            return self.relationshipCreate(args)
 
-    @decorator
-    def relationshipPut(self, args):
-        """
-Update an existing relationship.
+================================================================================
+
+## Relationship.relationshipPut
+    """
+Update an existing resource.
     
-    Updates an existing relationship with new values.
+    Updates an existing resource with new values.
     Only specified fields are modified; others remain unchanged.
     
 Args:
@@ -1295,7 +1154,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing updated relationship:
+        Dictionary containing updated resource:
             {
                 'guid': str,          # Unique identifier
                 'attributes': dict,   # Updated attributes
@@ -1325,7 +1184,7 @@ Raises:
     
 Example:
         # Basic usage
-        client = Relationship()
+        client = Client()
         
         result = client.relationshipPut(args=...)
         print(f"Result: {result}")
@@ -1348,4 +1207,6 @@ Use Cases:
         - Ownership Changes: Reassign data ownership
         - Classification: Apply or modify data classifications
     """
-        return self.relationshipUpdate(args)
+
+================================================================================
+

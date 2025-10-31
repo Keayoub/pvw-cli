@@ -1,37 +1,12 @@
-"""
-Scanning Management Client for Microsoft Purview Scanning API
-Based on official API: https://learn.microsoft.com/en-us/rest/api/purview/scanningdataplane/
-API Version: 2023-09-01 / 2022-07-01-preview
+# Generated Docstrings for _policystore.py
+# Copy these to your Python source file
 
-Complete implementation of ALL Scanning operations from the official specification with 100% coverage:
-- Data Source Management (Create, Read, Update, Delete)
-- Scan Configuration and Execution
-- Scan Rules and Filters
-- Classification Rules Management
-- Scan Scheduling and Analytics
-- Scan Results and History
-"""
-
-from .endpoint import Endpoint, decorator, get_json, no_api_call_decorator
-from .endpoints import ENDPOINTS, get_api_version_params
-
-
-class Scan(Endpoint):
-    """Scanning Management Operations - Complete Official API Implementation with 100% Coverage"""
-
-    def __init__(self):
-        Endpoint.__init__(self)
-        self.app = "scanning"
-
-    # === DATA SOURCE MANAGEMENT ===
-
-    @decorator
-    def scanDataSourcesRead(self, args):
-        """
-Retrieve scan information.
+## Policystore.policystoreReadMetadataRoles
+    """
+Retrieve resource information.
     
-    Retrieves detailed information about the specified scan.
-    Returns complete scan metadata and properties.
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -39,7 +14,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing scan information:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -71,9 +46,9 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
-        result = client.scanDataSourcesRead(args=...)
+        result = client.policystoreReadMetadataRoles(args=...)
         print(f"Result: {result}")
     
 Use Cases:
@@ -81,96 +56,15 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
-        self.method = "GET"
-        self.endpoint = ENDPOINTS["scanning"]["list_data_sources"]
-        self.params = {
-            **get_api_version_params("scanning"),
-            "collectionName": args.get("--collectionName"),
-            "dataSourceType": args.get("--dataSourceType"),
-        }
 
-    @decorator
-    def scanDataSourceCreate(self, args):
-        """
-Create a new scan.
-    
-    Creates a new scan in Microsoft Purview.
-    Requires appropriate permissions and valid scan definition.
-    
-Args:
-        args: Dictionary of operation arguments.
-               Contains operation-specific parameters.
-               See method implementation for details.
-    
-Returns:
-        Dictionary containing created scan:
-            {
-                'guid': str,         # Unique identifier
-                'name': str,         # Resource name
-                'status': str,       # Creation status
-                'attributes': dict,  # Resource attributes
-                'createTime': int    # Creation timestamp
-            }
-    
-Raises:
-        ValueError: When required parameters are missing or invalid:
-            - Empty or None values for required fields
-            - Invalid GUID format
-            - Out-of-range values
-        
-        AuthenticationError: When Azure credentials are invalid:
-            - DefaultAzureCredential not configured
-            - Insufficient permissions
-            - Expired authentication token
-        
-        HTTPError: When Purview API returns error:
-            - 400: Bad request (invalid parameters)
-            - 401: Unauthorized (authentication failed)
-            - 403: Forbidden (insufficient permissions)
-            - 404: Resource not found
-            - 409: Conflict (resource already exists)
-            - 429: Rate limit exceeded
-            - 500: Internal server error
-        
-        NetworkError: When network connectivity fails
-    
-Example:
-        # Basic usage
-        client = Scan()
-        
-        result = client.scanDataSourceCreate(args=...)
-        print(f"Result: {result}")
-        
-        # With detailed data
-        data = {
-            'name': 'My Resource',
-            'description': 'Resource description',
-            'attributes': {
-                'key1': 'value1',
-                'key2': 'value2'
-            }
-        }
-        
-        result = client.scanDataSourceCreate(data)
-        print(f"Created/Updated: {result['guid']}")
-    
-Use Cases:
-        - Data Onboarding: Register new data sources in catalog
-        - Metadata Management: Add descriptive metadata to assets
-        - Automation: Programmatically populate catalog
+================================================================================
+
+## Policystore.policystoreReadMetadataPolicy
     """
-        self.method = "PUT"
-        self.endpoint = ENDPOINTS["scanning"]["create_data_source"].format(dataSourceName=args["--dataSourceName"])
-        self.params = get_api_version_params("scanning")
-        self.payload = get_json(args, "--payloadFile")
-
-    @decorator
-    def scanDataSourceRead(self, args):
-        """
-Retrieve scan information.
+Retrieve resource information.
     
-    Retrieves detailed information about the specified scan.
-    Returns complete scan metadata and properties.
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -178,7 +72,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing scan information:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -210,9 +104,9 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
-        result = client.scanDataSourceRead(args=...)
+        result = client.policystoreReadMetadataPolicy(args=...)
         print(f"Result: {result}")
     
 Use Cases:
@@ -220,16 +114,72 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
-        self.method = "GET"
-        self.endpoint = ENDPOINTS["scanning"]["get_data_source"].format(dataSourceName=args["--dataSourceName"])
-        self.params = get_api_version_params("scanning")
 
-    @decorator
-    def scanDataSourceUpdate(self, args):
-        """
-Update an existing scan.
+================================================================================
+
+## Policystore.policystoreReadMetadataPolicies
+    """
+Retrieve resource information.
     
-    Updates an existing scan with new values.
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.policystoreReadMetadataPolicies(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
+
+================================================================================
+
+## Policystore.policystorePutMetadataPolicy
+    """
+Update an existing resource.
+    
+    Updates an existing resource with new values.
     Only specified fields are modified; others remain unchanged.
     
 Args:
@@ -238,7 +188,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing updated scan:
+        Dictionary containing updated resource:
             {
                 'guid': str,          # Unique identifier
                 'attributes': dict,   # Updated attributes
@@ -268,9 +218,9 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
-        result = client.scanDataSourceUpdate(args=...)
+        result = client.policystorePutMetadataPolicy(args=...)
         print(f"Result: {result}")
         
         # With detailed data
@@ -283,7 +233,7 @@ Example:
             }
         }
         
-        result = client.scanDataSourceUpdate(data)
+        result = client.policystorePutMetadataPolicy(data)
         print(f"Created/Updated: {result['guid']}")
     
 Use Cases:
@@ -291,14 +241,14 @@ Use Cases:
         - Ownership Changes: Reassign data ownership
         - Classification: Apply or modify data classifications
     """
-        return self.scanDataSourceCreate(args)
 
-    @decorator
-    def scanDataSourceDelete(self, args):
-        """
-Delete a scan.
+================================================================================
+
+## Policystore.policystoreDeleteMetadataPolicy
+    """
+Delete a resource.
     
-    Permanently deletes the specified scan.
+    Permanently deletes the specified resource.
     This operation cannot be undone. Use with caution.
     
 Args:
@@ -337,9 +287,9 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
-        result = client.scanDataSourceDelete(args=...)
+        result = client.policystoreDeleteMetadataPolicy(args=...)
         print(f"Result: {result}")
     
 Use Cases:
@@ -347,84 +297,15 @@ Use Cases:
         - Decommissioning: Delete resources no longer in use
         - Testing: Clean up test environments
     """
-        self.method = "DELETE"
-        self.endpoint = ENDPOINTS["scanning"]["delete_data_source"].format(dataSourceName=args["--dataSourceName"])
-        self.params = get_api_version_params("scanning")
 
-    # === SCAN CONFIGURATION ===
+================================================================================
 
-    @decorator
-    def scanRead(self, args):
-        """
-Retrieve scan information.
-    
-    Retrieves detailed information about the specified scan.
-    Returns complete scan metadata and properties.
-    
-Args:
-        args: Dictionary of operation arguments.
-               Contains operation-specific parameters.
-               See method implementation for details.
-    
-Returns:
-        Dictionary containing scan information:
-            {
-                'guid': str,          # Unique identifier
-                'name': str,          # Resource name
-                'attributes': dict,   # Resource attributes
-                'status': str,        # Resource status
-                'updateTime': int     # Last update timestamp
-            }
-    
-Raises:
-        ValueError: When required parameters are missing or invalid:
-            - Empty or None values for required fields
-            - Invalid GUID format
-            - Out-of-range values
-        
-        AuthenticationError: When Azure credentials are invalid:
-            - DefaultAzureCredential not configured
-            - Insufficient permissions
-            - Expired authentication token
-        
-        HTTPError: When Purview API returns error:
-            - 400: Bad request (invalid parameters)
-            - 401: Unauthorized (authentication failed)
-            - 403: Forbidden (insufficient permissions)
-            - 404: Resource not found
-            - 429: Rate limit exceeded
-            - 500: Internal server error
-        
-        NetworkError: When network connectivity fails
-    
-Example:
-        # Basic usage
-        client = Scan()
-        
-        result = client.scanRead(args=...)
-        print(f"Result: {result}")
-    
-Use Cases:
-        - Data Discovery: Find and explore data assets
-        - Compliance Auditing: Review metadata and classifications
-        - Reporting: Generate catalog reports
+## Policystore.policystoreReadDataPolicies
     """
-        self.method = "GET"
-        if args.get("--scanName"):
-            self.endpoint = ENDPOINTS["scanning"]["get_scan"].format(
-                dataSourceName=args["--dataSourceName"], scanName=args["--scanName"]
-            )
-        else:
-            self.endpoint = ENDPOINTS["scanning"]["list_scans"].format(dataSourceName=args["--dataSourceName"])
-        self.params = get_api_version_params("scanning")
-
-    @decorator
-    def scanCreate(self, args):
-        """
-Create a new scan.
+Create a new resource.
     
-    Creates a new scan in Microsoft Purview.
-    Requires appropriate permissions and valid scan definition.
+    Creates a new resource in Microsoft Purview.
+    Requires appropriate permissions and valid resource definition.
     
 Args:
         args: Dictionary of operation arguments.
@@ -432,7 +313,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing created scan:
+        Dictionary containing created resource:
             {
                 'guid': str,         # Unique identifier
                 'name': str,         # Resource name
@@ -465,9 +346,9 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
-        result = client.scanCreate(args=...)
+        result = client.policystoreReadDataPolicies(args=...)
         print(f"Result: {result}")
         
         # With detailed data
@@ -480,7 +361,7 @@ Example:
             }
         }
         
-        result = client.scanCreate(data)
+        result = client.policystoreReadDataPolicies(data)
         print(f"Created/Updated: {result['guid']}")
     
 Use Cases:
@@ -488,19 +369,86 @@ Use Cases:
         - Metadata Management: Add descriptive metadata to assets
         - Automation: Programmatically populate catalog
     """
-        self.method = "PUT"
-        self.endpoint = ENDPOINTS["scanning"]["create_scan"].format(
-            dataSourceName=args["--dataSourceName"], scanName=args["--scanName"]
-        )
-        self.params = get_api_version_params("scanning")
-        self.payload = get_json(args, "--payloadFile")
 
-    @decorator
-    def scanUpdate(self, args):
-        """
-Update an existing scan.
+================================================================================
+
+## Policystore.policystoreCreateDataPolicy
+    """
+Create a new resource.
     
-    Updates an existing scan with new values.
+    Creates a new resource in Microsoft Purview.
+    Requires appropriate permissions and valid resource definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created resource:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.policystoreCreateDataPolicy(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.policystoreCreateDataPolicy(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
+
+================================================================================
+
+## Policystore.policystoreUpdateDataPolicy
+    """
+Update an existing resource.
+    
+    Updates an existing resource with new values.
     Only specified fields are modified; others remain unchanged.
     
 Args:
@@ -509,7 +457,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing updated scan:
+        Dictionary containing updated resource:
             {
                 'guid': str,          # Unique identifier
                 'attributes': dict,   # Updated attributes
@@ -539,9 +487,9 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
-        result = client.scanUpdate(args=...)
+        result = client.policystoreUpdateDataPolicy(args=...)
         print(f"Result: {result}")
         
         # With detailed data
@@ -554,7 +502,7 @@ Example:
             }
         }
         
-        result = client.scanUpdate(data)
+        result = client.policystoreUpdateDataPolicy(data)
         print(f"Created/Updated: {result['guid']}")
     
 Use Cases:
@@ -562,14 +510,14 @@ Use Cases:
         - Ownership Changes: Reassign data ownership
         - Classification: Apply or modify data classifications
     """
-        return self.scanCreate(args)
 
-    @decorator
-    def scanDelete(self, args):
-        """
-Delete a scan.
+================================================================================
+
+## Policystore.policystoreDeleteDataPolicy
+    """
+Delete a resource.
     
-    Permanently deletes the specified scan.
+    Permanently deletes the specified resource.
     This operation cannot be undone. Use with caution.
     
 Args:
@@ -608,9 +556,9 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
-        result = client.scanDelete(args=...)
+        result = client.policystoreDeleteDataPolicy(args=...)
         print(f"Result: {result}")
     
 Use Cases:
@@ -618,20 +566,15 @@ Use Cases:
         - Decommissioning: Delete resources no longer in use
         - Testing: Clean up test environments
     """
-        self.method = "DELETE"
-        self.endpoint = ENDPOINTS["scanning"]["delete_scan"].format(
-            dataSourceName=args["--dataSourceName"], scanName=args["--scanName"]
-        )
-        self.params = get_api_version_params("scanning")
 
-    # === SCAN EXECUTION ===
+================================================================================
 
-    @decorator
-    def scanRun(self, args):
-        """
-Perform operation on resource.
+## Policystore.policystoreListDevOpsPolicies
+    """
+Retrieve resource information.
     
-    
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -639,8 +582,13 @@ Args:
                See method implementation for details.
     
 Returns:
-        [TODO: Specify return type and structure]
-        [TODO: Document nested fields]
+        List of resource dictionaries, each containing:
+            - guid (str): Unique identifier
+            - name (str): Resource name
+            - attributes (dict): Resource attributes
+            - status (str): Resource status
+        
+        Returns empty list if no resources found.
     
 Raises:
         ValueError: When required parameters are missing or invalid:
@@ -665,37 +613,25 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
-        result = client.scanRun(args=...)
+        result = client.policystoreListDevOpsPolicies(args=...)
         print(f"Result: {result}")
     
 Use Cases:
-        - [TODO: Add specific use cases for this operation]
-        - [TODO: Include business context]
-        - [TODO: Explain when to use this method]
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
     """
-        self.method = "PUT"
-        self.endpoint = ENDPOINTS["scanning"]["run_scan"].format(
-            dataSourceName=args["--dataSourceName"], scanName=args["--scanName"]
-        )
-        self.params = {
-            **get_api_version_params("scanning"),
-            "runId": args.get("--runId"),
-        }
-        
-        # Optional scan level parameter
-        scan_level = args.get("--scanLevel")
-        if scan_level:
-            self.params["scanLevel"] = scan_level
 
-    @decorator
-    def scanReadResult(self, args):
-        """
-Retrieve scan information.
+================================================================================
+
+## Policystore.policystoreGetDevOpsPolicy
+    """
+Retrieve resource information.
     
-    Retrieves detailed information about the specified scan.
-    Returns complete scan metadata and properties.
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -703,7 +639,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing scan information:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -735,9 +671,9 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
-        result = client.scanReadResult(args=...)
+        result = client.policystoreGetDevOpsPolicy(args=...)
         print(f"Result: {result}")
     
 Use Cases:
@@ -745,81 +681,15 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
-        self.method = "GET"
-        if args.get("--runId"):
-            self.endpoint = ENDPOINTS["scanning"]["get_scan_result"].format(
-                dataSourceName=args["--dataSourceName"], scanName=args["--scanName"], runId=args["--runId"]
-            )
-        else:
-            self.endpoint = ENDPOINTS["scanning"]["list_scan_results"].format(
-                dataSourceName=args["--dataSourceName"], scanName=args["--scanName"]
-            )
-        self.params = get_api_version_params("scanning")
 
-    @decorator
-    def scanCancel(self, args):
-        """
-Perform operation on resource.
-    
-    
-    
-Args:
-        args: Dictionary of operation arguments.
-               Contains operation-specific parameters.
-               See method implementation for details.
-    
-Returns:
-        [TODO: Specify return type and structure]
-        [TODO: Document nested fields]
-    
-Raises:
-        ValueError: When required parameters are missing or invalid:
-            - Empty or None values for required fields
-            - Invalid GUID format
-            - Out-of-range values
-        
-        AuthenticationError: When Azure credentials are invalid:
-            - DefaultAzureCredential not configured
-            - Insufficient permissions
-            - Expired authentication token
-        
-        HTTPError: When Purview API returns error:
-            - 400: Bad request (invalid parameters)
-            - 401: Unauthorized (authentication failed)
-            - 403: Forbidden (insufficient permissions)
-            - 404: Resource not found
-            - 429: Rate limit exceeded
-            - 500: Internal server error
-        
-        NetworkError: When network connectivity fails
-    
-Example:
-        # Basic usage
-        client = Scan()
-        
-        result = client.scanCancel(args=...)
-        print(f"Result: {result}")
-    
-Use Cases:
-        - [TODO: Add specific use cases for this operation]
-        - [TODO: Include business context]
-        - [TODO: Explain when to use this method]
+================================================================================
+
+## Policystore.policystoreCreateDevOpsPolicy
     """
-        self.method = "POST"
-        self.endpoint = ENDPOINTS["scanning"]["cancel_scan"].format(
-            dataSourceName=args["--dataSourceName"], scanName=args["--scanName"], runId=args["--runId"]
-        )
-        self.params = get_api_version_params("scanning")
-
-    # === SCAN RULE SETS ===
-
-    @decorator
-    def scanRuleSetRead(self, args):
-        """
-Retrieve scan information.
+Create a new resource.
     
-    Retrieves detailed information about the specified scan.
-    Returns complete scan metadata and properties.
+    Creates a new resource in Microsoft Purview.
+    Requires appropriate permissions and valid resource definition.
     
 Args:
         args: Dictionary of operation arguments.
@@ -827,70 +697,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing scan information:
-            {
-                'guid': str,          # Unique identifier
-                'name': str,          # Resource name
-                'attributes': dict,   # Resource attributes
-                'status': str,        # Resource status
-                'updateTime': int     # Last update timestamp
-            }
-    
-Raises:
-        ValueError: When required parameters are missing or invalid:
-            - Empty or None values for required fields
-            - Invalid GUID format
-            - Out-of-range values
-        
-        AuthenticationError: When Azure credentials are invalid:
-            - DefaultAzureCredential not configured
-            - Insufficient permissions
-            - Expired authentication token
-        
-        HTTPError: When Purview API returns error:
-            - 400: Bad request (invalid parameters)
-            - 401: Unauthorized (authentication failed)
-            - 403: Forbidden (insufficient permissions)
-            - 404: Resource not found
-            - 429: Rate limit exceeded
-            - 500: Internal server error
-        
-        NetworkError: When network connectivity fails
-    
-Example:
-        # Basic usage
-        client = Scan()
-        
-        result = client.scanRuleSetRead(args=...)
-        print(f"Result: {result}")
-    
-Use Cases:
-        - Data Discovery: Find and explore data assets
-        - Compliance Auditing: Review metadata and classifications
-        - Reporting: Generate catalog reports
-    """
-        self.method = "GET"
-        if args.get("--scanRulesetName"):
-            self.endpoint = ENDPOINTS["scanning"]["get_scan_rule_set"].format(scanRulesetName=args["--scanRulesetName"])
-        else:
-            self.endpoint = ENDPOINTS["scanning"]["list_scan_rule_sets"]
-        self.params = get_api_version_params("scanning")
-
-    @decorator
-    def scanRuleSetCreate(self, args):
-        """
-Create a new scan.
-    
-    Creates a new scan in Microsoft Purview.
-    Requires appropriate permissions and valid scan definition.
-    
-Args:
-        args: Dictionary of operation arguments.
-               Contains operation-specific parameters.
-               See method implementation for details.
-    
-Returns:
-        Dictionary containing created scan:
+        Dictionary containing created resource:
             {
                 'guid': str,         # Unique identifier
                 'name': str,         # Resource name
@@ -923,9 +730,9 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
-        result = client.scanRuleSetCreate(args=...)
+        result = client.policystoreCreateDevOpsPolicy(args=...)
         print(f"Result: {result}")
         
         # With detailed data
@@ -938,7 +745,7 @@ Example:
             }
         }
         
-        result = client.scanRuleSetCreate(data)
+        result = client.policystoreCreateDevOpsPolicy(data)
         print(f"Created/Updated: {result['guid']}")
     
 Use Cases:
@@ -946,17 +753,14 @@ Use Cases:
         - Metadata Management: Add descriptive metadata to assets
         - Automation: Programmatically populate catalog
     """
-        self.method = "PUT"
-        self.endpoint = ENDPOINTS["scanning"]["create_scan_rule_set"].format(scanRulesetName=args["--scanRulesetName"])
-        self.params = get_api_version_params("scanning")
-        self.payload = get_json(args, "--payloadFile")
 
-    @decorator
-    def scanRuleSetUpdate(self, args):
-        """
-Update an existing scan.
+================================================================================
+
+## Policystore.policystoreUpdateDevOpsPolicy
+    """
+Update an existing resource.
     
-    Updates an existing scan with new values.
+    Updates an existing resource with new values.
     Only specified fields are modified; others remain unchanged.
     
 Args:
@@ -965,7 +769,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing updated scan:
+        Dictionary containing updated resource:
             {
                 'guid': str,          # Unique identifier
                 'attributes': dict,   # Updated attributes
@@ -995,9 +799,9 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
-        result = client.scanRuleSetUpdate(args=...)
+        result = client.policystoreUpdateDevOpsPolicy(args=...)
         print(f"Result: {result}")
         
         # With detailed data
@@ -1010,7 +814,7 @@ Example:
             }
         }
         
-        result = client.scanRuleSetUpdate(data)
+        result = client.policystoreUpdateDevOpsPolicy(data)
         print(f"Created/Updated: {result['guid']}")
     
 Use Cases:
@@ -1018,298 +822,14 @@ Use Cases:
         - Ownership Changes: Reassign data ownership
         - Classification: Apply or modify data classifications
     """
-        return self.scanRuleSetCreate(args)
 
-    @decorator
-    def scanRuleSetDelete(self, args):
-        """
-Update an existing scan.
-    
-    Updates an existing scan with new values.
-    Only specified fields are modified; others remain unchanged.
-    
-Args:
-        args: Dictionary of operation arguments.
-               Contains operation-specific parameters.
-               See method implementation for details.
-    
-Returns:
-        Dictionary containing updated scan:
-            {
-                'guid': str,          # Unique identifier
-                'attributes': dict,   # Updated attributes
-                'updateTime': int     # Update timestamp
-            }
-    
-Raises:
-        ValueError: When required parameters are missing or invalid:
-            - Empty or None values for required fields
-            - Invalid GUID format
-            - Out-of-range values
-        
-        AuthenticationError: When Azure credentials are invalid:
-            - DefaultAzureCredential not configured
-            - Insufficient permissions
-            - Expired authentication token
-        
-        HTTPError: When Purview API returns error:
-            - 400: Bad request (invalid parameters)
-            - 401: Unauthorized (authentication failed)
-            - 403: Forbidden (insufficient permissions)
-            - 404: Resource not found
-            - 429: Rate limit exceeded
-            - 500: Internal server error
-        
-        NetworkError: When network connectivity fails
-    
-Example:
-        # Basic usage
-        client = Scan()
-        
-        result = client.scanRuleSetDelete(args=...)
-        print(f"Result: {result}")
-        
-        # With detailed data
-        data = {
-            'name': 'My Resource',
-            'description': 'Resource description',
-            'attributes': {
-                'key1': 'value1',
-                'key2': 'value2'
-            }
-        }
-        
-        result = client.scanRuleSetDelete(data)
-        print(f"Created/Updated: {result['guid']}")
-    
-Use Cases:
-        - Metadata Enrichment: Update descriptions and tags
-        - Ownership Changes: Reassign data ownership
-        - Classification: Apply or modify data classifications
+================================================================================
+
+## Policystore.policystoreDeleteDevOpsPolicy
     """
-        self.method = "DELETE"
-        self.endpoint = ENDPOINTS["scanning"]["delete_scan_rule_set"].format(scanRulesetName=args["--scanRulesetName"])
-        self.params = get_api_version_params("scanning")
-
-    # === CLASSIFICATION RULES ===
-
-    @decorator
-    def scanClassificationRuleRead(self, args):
-        """
-Retrieve scan information.
+Delete a resource.
     
-    Retrieves detailed information about the specified scan.
-    Returns complete scan metadata and properties.
-    
-Args:
-        args: Dictionary of operation arguments.
-               Contains operation-specific parameters.
-               See method implementation for details.
-    
-Returns:
-        Dictionary containing scan information:
-            {
-                'guid': str,          # Unique identifier
-                'name': str,          # Resource name
-                'attributes': dict,   # Resource attributes
-                'status': str,        # Resource status
-                'updateTime': int     # Last update timestamp
-            }
-    
-Raises:
-        ValueError: When required parameters are missing or invalid:
-            - Empty or None values for required fields
-            - Invalid GUID format
-            - Out-of-range values
-        
-        AuthenticationError: When Azure credentials are invalid:
-            - DefaultAzureCredential not configured
-            - Insufficient permissions
-            - Expired authentication token
-        
-        HTTPError: When Purview API returns error:
-            - 400: Bad request (invalid parameters)
-            - 401: Unauthorized (authentication failed)
-            - 403: Forbidden (insufficient permissions)
-            - 404: Resource not found
-            - 429: Rate limit exceeded
-            - 500: Internal server error
-        
-        NetworkError: When network connectivity fails
-    
-Example:
-        # Basic usage
-        client = Scan()
-        
-        result = client.scanClassificationRuleRead(args=...)
-        print(f"Result: {result}")
-    
-Use Cases:
-        - Data Discovery: Find and explore data assets
-        - Compliance Auditing: Review metadata and classifications
-        - Reporting: Generate catalog reports
-    """
-        self.method = "GET"
-        if args.get("--classificationRuleName"):
-            self.endpoint = ENDPOINTS["scanning"]["get_classification_rule"].format(
-                classificationRuleName=args["--classificationRuleName"]
-            )
-        else:
-            self.endpoint = ENDPOINTS["scanning"]["list_classification_rules"]
-        self.params = get_api_version_params("scanning")
-
-    @decorator
-    def scanClassificationRuleCreate(self, args):
-        """
-Create a new scan.
-    
-    Creates a new scan in Microsoft Purview.
-    Requires appropriate permissions and valid scan definition.
-    
-Args:
-        args: Dictionary of operation arguments.
-               Contains operation-specific parameters.
-               See method implementation for details.
-    
-Returns:
-        Dictionary containing created scan:
-            {
-                'guid': str,         # Unique identifier
-                'name': str,         # Resource name
-                'status': str,       # Creation status
-                'attributes': dict,  # Resource attributes
-                'createTime': int    # Creation timestamp
-            }
-    
-Raises:
-        ValueError: When required parameters are missing or invalid:
-            - Empty or None values for required fields
-            - Invalid GUID format
-            - Out-of-range values
-        
-        AuthenticationError: When Azure credentials are invalid:
-            - DefaultAzureCredential not configured
-            - Insufficient permissions
-            - Expired authentication token
-        
-        HTTPError: When Purview API returns error:
-            - 400: Bad request (invalid parameters)
-            - 401: Unauthorized (authentication failed)
-            - 403: Forbidden (insufficient permissions)
-            - 404: Resource not found
-            - 409: Conflict (resource already exists)
-            - 429: Rate limit exceeded
-            - 500: Internal server error
-        
-        NetworkError: When network connectivity fails
-    
-Example:
-        # Basic usage
-        client = Scan()
-        
-        result = client.scanClassificationRuleCreate(args=...)
-        print(f"Result: {result}")
-        
-        # With detailed data
-        data = {
-            'name': 'My Resource',
-            'description': 'Resource description',
-            'attributes': {
-                'key1': 'value1',
-                'key2': 'value2'
-            }
-        }
-        
-        result = client.scanClassificationRuleCreate(data)
-        print(f"Created/Updated: {result['guid']}")
-    
-Use Cases:
-        - Data Onboarding: Register new data sources in catalog
-        - Metadata Management: Add descriptive metadata to assets
-        - Automation: Programmatically populate catalog
-    """
-        self.method = "PUT"
-        self.endpoint = ENDPOINTS["scanning"]["create_classification_rule"].format(
-            classificationRuleName=args["--classificationRuleName"]
-        )
-        self.params = get_api_version_params("scanning")
-        self.payload = get_json(args, "--payloadFile")
-
-    @decorator
-    def scanClassificationRuleUpdate(self, args):
-        """
-Update an existing scan.
-    
-    Updates an existing scan with new values.
-    Only specified fields are modified; others remain unchanged.
-    
-Args:
-        args: Dictionary of operation arguments.
-               Contains operation-specific parameters.
-               See method implementation for details.
-    
-Returns:
-        Dictionary containing updated scan:
-            {
-                'guid': str,          # Unique identifier
-                'attributes': dict,   # Updated attributes
-                'updateTime': int     # Update timestamp
-            }
-    
-Raises:
-        ValueError: When required parameters are missing or invalid:
-            - Empty or None values for required fields
-            - Invalid GUID format
-            - Out-of-range values
-        
-        AuthenticationError: When Azure credentials are invalid:
-            - DefaultAzureCredential not configured
-            - Insufficient permissions
-            - Expired authentication token
-        
-        HTTPError: When Purview API returns error:
-            - 400: Bad request (invalid parameters)
-            - 401: Unauthorized (authentication failed)
-            - 403: Forbidden (insufficient permissions)
-            - 404: Resource not found
-            - 429: Rate limit exceeded
-            - 500: Internal server error
-        
-        NetworkError: When network connectivity fails
-    
-Example:
-        # Basic usage
-        client = Scan()
-        
-        result = client.scanClassificationRuleUpdate(args=...)
-        print(f"Result: {result}")
-        
-        # With detailed data
-        data = {
-            'name': 'My Resource',
-            'description': 'Resource description',
-            'attributes': {
-                'key1': 'value1',
-                'key2': 'value2'
-            }
-        }
-        
-        result = client.scanClassificationRuleUpdate(data)
-        print(f"Created/Updated: {result['guid']}")
-    
-Use Cases:
-        - Metadata Enrichment: Update descriptions and tags
-        - Ownership Changes: Reassign data ownership
-        - Classification: Apply or modify data classifications
-    """
-        return self.scanClassificationRuleCreate(args)
-
-    @decorator
-    def scanClassificationRuleDelete(self, args):
-        """
-Delete a scan.
-    
-    Permanently deletes the specified scan.
+    Permanently deletes the specified resource.
     This operation cannot be undone. Use with caution.
     
 Args:
@@ -1348,9 +868,9 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
-        result = client.scanClassificationRuleDelete(args=...)
+        result = client.policystoreDeleteDevOpsPolicy(args=...)
         print(f"Result: {result}")
     
 Use Cases:
@@ -1358,19 +878,15 @@ Use Cases:
         - Decommissioning: Delete resources no longer in use
         - Testing: Clean up test environments
     """
-        self.method = "DELETE"
-        self.endpoint = ENDPOINTS["scanning"]["delete_classification_rule"].format(
-            classificationRuleName=args["--classificationRuleName"]
-        )
-        self.params = get_api_version_params("scanning")
 
-    @decorator
-    def scanClassificationRuleReadVersions(self, args):
-        """
-Retrieve scan information.
+================================================================================
+
+## Policystore.policystoreListSelfServicePolicies
+    """
+Retrieve resource information.
     
-    Retrieves detailed information about the specified scan.
-    Returns complete scan metadata and properties.
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -1378,7 +894,64 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing scan information:
+        List of resource dictionaries, each containing:
+            - guid (str): Unique identifier
+            - name (str): Resource name
+            - attributes (dict): Resource attributes
+            - status (str): Resource status
+        
+        Returns empty list if no resources found.
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.policystoreListSelfServicePolicies(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
+
+================================================================================
+
+## Policystore.policystoreGetSelfServicePolicy
+    """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -1410,9 +983,9 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
-        result = client.scanClassificationRuleReadVersions(args=...)
+        result = client.policystoreGetSelfServicePolicy(args=...)
         print(f"Result: {result}")
     
 Use Cases:
@@ -1420,82 +993,15 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
-        self.method = "GET"
-        self.endpoint = ENDPOINTS["scanning"]["list_classification_rule_versions"].format(
-            classificationRuleName=args["--classificationRuleName"]
-        )
-        self.params = get_api_version_params("scanning")
 
-    @decorator
-    def scanClassificationRuleTagVersion(self, args):
-        """
-Perform operation on resource.
-    
-    
-    
-Args:
-        args: Dictionary of operation arguments.
-               Contains operation-specific parameters.
-               See method implementation for details.
-    
-Returns:
-        [TODO: Specify return type and structure]
-        [TODO: Document nested fields]
-    
-Raises:
-        ValueError: When required parameters are missing or invalid:
-            - Empty or None values for required fields
-            - Invalid GUID format
-            - Out-of-range values
-        
-        AuthenticationError: When Azure credentials are invalid:
-            - DefaultAzureCredential not configured
-            - Insufficient permissions
-            - Expired authentication token
-        
-        HTTPError: When Purview API returns error:
-            - 400: Bad request (invalid parameters)
-            - 401: Unauthorized (authentication failed)
-            - 403: Forbidden (insufficient permissions)
-            - 404: Resource not found
-            - 429: Rate limit exceeded
-            - 500: Internal server error
-        
-        NetworkError: When network connectivity fails
-    
-Example:
-        # Basic usage
-        client = Scan()
-        
-        result = client.scanClassificationRuleTagVersion(args=...)
-        print(f"Result: {result}")
-    
-Use Cases:
-        - [TODO: Add specific use cases for this operation]
-        - [TODO: Include business context]
-        - [TODO: Explain when to use this method]
+================================================================================
+
+## Policystore.policystoreCreateSelfServicePolicy
     """
-        self.method = "POST"
-        self.endpoint = ENDPOINTS["scanning"]["tag_classification_version"].format(
-            classificationRuleName=args["--classificationRuleName"], 
-            classificationRuleVersion=args["--classificationRuleVersion"]
-        )
-        self.params = get_api_version_params("scanning")
-        tag_request = {
-            "action": args.get("--action", "Keep"),
-            "tag": args.get("--tag"),
-        }
-        self.payload = tag_request
-
-    # === ADVANCED SCANNING OPERATIONS (NEW FOR 100% COVERAGE) ===
-
-    @decorator
-    def scanReadAnalytics(self, args):
-        """
-Retrieve scan information.
+Create a new resource.
     
-    Retrieves detailed information about the specified scan.
-    Returns complete scan metadata and properties.
+    Creates a new resource in Microsoft Purview.
+    Requires appropriate permissions and valid resource definition.
     
 Args:
         args: Dictionary of operation arguments.
@@ -1503,143 +1009,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing scan information:
-            {
-                'guid': str,          # Unique identifier
-                'name': str,          # Resource name
-                'attributes': dict,   # Resource attributes
-                'status': str,        # Resource status
-                'updateTime': int     # Last update timestamp
-            }
-    
-Raises:
-        ValueError: When required parameters are missing or invalid:
-            - Empty or None values for required fields
-            - Invalid GUID format
-            - Out-of-range values
-        
-        AuthenticationError: When Azure credentials are invalid:
-            - DefaultAzureCredential not configured
-            - Insufficient permissions
-            - Expired authentication token
-        
-        HTTPError: When Purview API returns error:
-            - 400: Bad request (invalid parameters)
-            - 401: Unauthorized (authentication failed)
-            - 403: Forbidden (insufficient permissions)
-            - 404: Resource not found
-            - 429: Rate limit exceeded
-            - 500: Internal server error
-        
-        NetworkError: When network connectivity fails
-    
-Example:
-        # Basic usage
-        client = Scan()
-        
-        result = client.scanReadAnalytics(args=...)
-        print(f"Result: {result}")
-    
-Use Cases:
-        - Data Discovery: Find and explore data assets
-        - Compliance Auditing: Review metadata and classifications
-        - Reporting: Generate catalog reports
-    """
-        self.method = "GET"
-        self.endpoint = ENDPOINTS["scanning"]["get_scan_analytics"].format(
-            dataSourceName=args["--dataSourceName"], scanName=args["--scanName"]
-        )
-        self.params = {
-            **get_api_version_params("scanning"),
-            "startTime": args.get("--startTime"),
-            "endTime": args.get("--endTime"),
-            "metrics": args.get("--metrics", "all"),
-        }
-
-    @decorator
-    def scanReadHistory(self, args):
-        """
-Retrieve scan information.
-    
-    Retrieves detailed information about the specified scan.
-    Returns complete scan metadata and properties.
-    
-Args:
-        args: Dictionary of operation arguments.
-               Contains operation-specific parameters.
-               See method implementation for details.
-    
-Returns:
-        Dictionary containing scan information:
-            {
-                'guid': str,          # Unique identifier
-                'name': str,          # Resource name
-                'attributes': dict,   # Resource attributes
-                'status': str,        # Resource status
-                'updateTime': int     # Last update timestamp
-            }
-    
-Raises:
-        ValueError: When required parameters are missing or invalid:
-            - Empty or None values for required fields
-            - Invalid GUID format
-            - Out-of-range values
-        
-        AuthenticationError: When Azure credentials are invalid:
-            - DefaultAzureCredential not configured
-            - Insufficient permissions
-            - Expired authentication token
-        
-        HTTPError: When Purview API returns error:
-            - 400: Bad request (invalid parameters)
-            - 401: Unauthorized (authentication failed)
-            - 403: Forbidden (insufficient permissions)
-            - 404: Resource not found
-            - 429: Rate limit exceeded
-            - 500: Internal server error
-        
-        NetworkError: When network connectivity fails
-    
-Example:
-        # Basic usage
-        client = Scan()
-        
-        result = client.scanReadHistory(args=...)
-        print(f"Result: {result}")
-    
-Use Cases:
-        - Data Discovery: Find and explore data assets
-        - Compliance Auditing: Review metadata and classifications
-        - Reporting: Generate catalog reports
-    """
-        self.method = "GET"
-        self.endpoint = ENDPOINTS["scanning"]["get_scan_history"].format(
-            dataSourceName=args["--dataSourceName"], scanName=args["--scanName"]
-        )
-        self.params = {
-            **get_api_version_params("scanning"),
-            "limit": args.get("--limit", 50),
-            "offset": args.get("--offset", 0),
-            "orderBy": args.get("--orderBy", "startTime desc"),
-        }
-
-    # === SCAN SCHEDULING ===
-
-    @decorator
-    def scanScheduleCreate(self, args):
-        """
-Create a new scan.
-    
-    Creates a new scan in Microsoft Purview.
-    Requires appropriate permissions and valid scan definition.
-    
-Args:
-        args: Dictionary of operation arguments.
-               Contains operation-specific parameters.
-               See method implementation for details.
-    
-Returns:
-        Dictionary containing created scan:
+        Dictionary containing created resource:
             {
                 'guid': str,         # Unique identifier
                 'name': str,         # Resource name
@@ -1672,9 +1042,9 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
-        result = client.scanScheduleCreate(args=...)
+        result = client.policystoreCreateSelfServicePolicy(args=...)
         print(f"Result: {result}")
         
         # With detailed data
@@ -1687,7 +1057,7 @@ Example:
             }
         }
         
-        result = client.scanScheduleCreate(data)
+        result = client.policystoreCreateSelfServicePolicy(data)
         print(f"Created/Updated: {result['guid']}")
     
 Use Cases:
@@ -1695,81 +1065,14 @@ Use Cases:
         - Metadata Management: Add descriptive metadata to assets
         - Automation: Programmatically populate catalog
     """
-        self.method = "PUT"
-        self.endpoint = ENDPOINTS["scanning"]["schedule_scan"].format(
-            dataSourceName=args["--dataSourceName"], scanName=args["--scanName"]
-        )
-        self.params = get_api_version_params("scanning")
-        self.payload = get_json(args, "--payloadFile")
 
-    @decorator
-    def scanScheduleRead(self, args):
-        """
-Retrieve scan information.
-    
-    Retrieves detailed information about the specified scan.
-    Returns complete scan metadata and properties.
-    
-Args:
-        args: Dictionary of operation arguments.
-               Contains operation-specific parameters.
-               See method implementation for details.
-    
-Returns:
-        Dictionary containing scan information:
-            {
-                'guid': str,          # Unique identifier
-                'name': str,          # Resource name
-                'attributes': dict,   # Resource attributes
-                'status': str,        # Resource status
-                'updateTime': int     # Last update timestamp
-            }
-    
-Raises:
-        ValueError: When required parameters are missing or invalid:
-            - Empty or None values for required fields
-            - Invalid GUID format
-            - Out-of-range values
-        
-        AuthenticationError: When Azure credentials are invalid:
-            - DefaultAzureCredential not configured
-            - Insufficient permissions
-            - Expired authentication token
-        
-        HTTPError: When Purview API returns error:
-            - 400: Bad request (invalid parameters)
-            - 401: Unauthorized (authentication failed)
-            - 403: Forbidden (insufficient permissions)
-            - 404: Resource not found
-            - 429: Rate limit exceeded
-            - 500: Internal server error
-        
-        NetworkError: When network connectivity fails
-    
-Example:
-        # Basic usage
-        client = Scan()
-        
-        result = client.scanScheduleRead(args=...)
-        print(f"Result: {result}")
-    
-Use Cases:
-        - Data Discovery: Find and explore data assets
-        - Compliance Auditing: Review metadata and classifications
-        - Reporting: Generate catalog reports
+================================================================================
+
+## Policystore.policystoreUpdateSelfServicePolicy
     """
-        self.method = "GET"
-        self.endpoint = ENDPOINTS["scanning"]["get_scan_schedule"].format(
-            dataSourceName=args["--dataSourceName"], scanName=args["--scanName"]
-        )
-        self.params = get_api_version_params("scanning")
-
-    @decorator
-    def scanScheduleUpdate(self, args):
-        """
-Update an existing scan.
+Update an existing resource.
     
-    Updates an existing scan with new values.
+    Updates an existing resource with new values.
     Only specified fields are modified; others remain unchanged.
     
 Args:
@@ -1778,7 +1081,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing updated scan:
+        Dictionary containing updated resource:
             {
                 'guid': str,          # Unique identifier
                 'attributes': dict,   # Updated attributes
@@ -1808,9 +1111,9 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
-        result = client.scanScheduleUpdate(args=...)
+        result = client.policystoreUpdateSelfServicePolicy(args=...)
         print(f"Result: {result}")
         
         # With detailed data
@@ -1823,7 +1126,7 @@ Example:
             }
         }
         
-        result = client.scanScheduleUpdate(data)
+        result = client.policystoreUpdateSelfServicePolicy(data)
         print(f"Created/Updated: {result['guid']}")
     
 Use Cases:
@@ -1831,19 +1134,14 @@ Use Cases:
         - Ownership Changes: Reassign data ownership
         - Classification: Apply or modify data classifications
     """
-        self.method = "PUT"
-        self.endpoint = ENDPOINTS["scanning"]["update_scan_schedule"].format(
-            dataSourceName=args["--dataSourceName"], scanName=args["--scanName"]
-        )
-        self.params = get_api_version_params("scanning")
-        self.payload = get_json(args, "--payloadFile")
 
-    @decorator
-    def scanScheduleDelete(self, args):
-        """
-Delete a scan.
+================================================================================
+
+## Policystore.policystoreDeleteSelfServicePolicy
+    """
+Delete a resource.
     
-    Permanently deletes the specified scan.
+    Permanently deletes the specified resource.
     This operation cannot be undone. Use with caution.
     
 Args:
@@ -1882,9 +1180,9 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
-        result = client.scanScheduleDelete(args=...)
+        result = client.policystoreDeleteSelfServicePolicy(args=...)
         print(f"Result: {result}")
     
 Use Cases:
@@ -1892,21 +1190,15 @@ Use Cases:
         - Decommissioning: Delete resources no longer in use
         - Testing: Clean up test environments
     """
-        self.method = "DELETE"
-        self.endpoint = ENDPOINTS["scanning"]["delete_scan_schedule"].format(
-            dataSourceName=args["--dataSourceName"], scanName=args["--scanName"]
-        )
-        self.params = get_api_version_params("scanning")
 
-    # === SCAN MONITORING AND REPORTING ===
+================================================================================
 
-    @decorator
-    def scanReadStatus(self, args):
-        """
-Retrieve scan information.
+## Policystore.policystoreGetPolicyCollections
+    """
+Retrieve resource information.
     
-    Retrieves detailed information about the specified scan.
-    Returns complete scan metadata and properties.
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
     
 Args:
         args: Dictionary of operation arguments.
@@ -1914,7 +1206,7 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing scan information:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -1946,9 +1238,9 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = CollectionsClient()
         
-        result = client.scanReadStatus(args=...)
+        result = client.policystoreGetPolicyCollections(args=...)
         print(f"Result: {result}")
     
 Use Cases:
@@ -1956,16 +1248,255 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
-        self.method = "GET"
-        self.endpoint = f"{ENDPOINTS['scanning']['get_scan'].format(dataSourceName=args['--dataSourceName'], scanName=args['--scanName'])}/status"
-        self.params = {
-            **get_api_version_params("scanning"),
-            "includeDetails": str(args.get("--includeDetails", True)).lower(),
-        }
 
-    @decorator
-    def scanGenerateReport(self, args):
-        """
+================================================================================
+
+## Policystore.policystoreGetPolicyAssignments
+    """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.policystoreGetPolicyAssignments(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
+
+================================================================================
+
+## Policystore.policystoreCreatePolicyAssignment
+    """
+Create a new resource.
+    
+    Creates a new resource in Microsoft Purview.
+    Requires appropriate permissions and valid resource definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created resource:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.policystoreCreatePolicyAssignment(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.policystoreCreatePolicyAssignment(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
+
+================================================================================
+
+## Policystore.policystoreDeletePolicyAssignment
+    """
+Delete a resource.
+    
+    Permanently deletes the specified resource.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.policystoreDeletePolicyAssignment(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
+
+================================================================================
+
+## Policystore.policystoreGetPolicyEffects
+    """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.policystoreGetPolicyEffects(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
+
+================================================================================
+
+## Policystore.policystoreEvaluatePolicies
+    """
 Perform operation on resource.
     
     
@@ -2002,9 +1533,9 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
-        result = client.scanGenerateReport(args=...)
+        result = client.policystoreEvaluatePolicies(args=...)
         print(f"Result: {result}")
     
 Use Cases:
@@ -2012,17 +1543,854 @@ Use Cases:
         - [TODO: Include business context]
         - [TODO: Explain when to use this method]
     """
-        self.method = "POST"
-        self.endpoint = f"{ENDPOINTS['scanning']['get_scan'].format(dataSourceName=args['--dataSourceName'], scanName=args['--scanName'])}/report"
-        self.params = {
-            **get_api_version_params("scanning"),
-            "reportType": args.get("--reportType", "summary"),
-            "format": args.get("--format", "json"),
-        }
 
-    @decorator
-    def scanExportResults(self, args):
-        """
+================================================================================
+
+## Policystore.policystoreGetUserPermissions
+    """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.policystoreGetUserPermissions(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
+
+================================================================================
+
+## Policystore.policystoreCheckAccess
+    """
+Perform operation on resource.
+    
+    
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.policystoreCheckAccess(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
+
+================================================================================
+
+## Policystore.policystoreGetPolicyTemplates
+    """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.policystoreGetPolicyTemplates(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
+
+================================================================================
+
+## Policystore.policystoreGetPolicyDefinitions
+    """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.policystoreGetPolicyDefinitions(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
+
+================================================================================
+
+## Policystore.policystoreCreatePolicyDefinition
+    """
+Create a new resource.
+    
+    Creates a new resource in Microsoft Purview.
+    Requires appropriate permissions and valid resource definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created resource:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.policystoreCreatePolicyDefinition(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.policystoreCreatePolicyDefinition(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
+
+================================================================================
+
+## Policystore.policystoreListRoleAssignments
+    """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        List of resource dictionaries, each containing:
+            - guid (str): Unique identifier
+            - name (str): Resource name
+            - attributes (dict): Resource attributes
+            - status (str): Resource status
+        
+        Returns empty list if no resources found.
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.policystoreListRoleAssignments(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
+
+================================================================================
+
+## Policystore.policystoreCreateRoleAssignment
+    """
+Create a new resource.
+    
+    Creates a new resource in Microsoft Purview.
+    Requires appropriate permissions and valid resource definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created resource:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.policystoreCreateRoleAssignment(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.policystoreCreateRoleAssignment(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
+
+================================================================================
+
+## Policystore.policystoreDeleteRoleAssignment
+    """
+Delete a resource.
+    
+    Permanently deletes the specified resource.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.policystoreDeleteRoleAssignment(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
+
+================================================================================
+
+## Policystore.policystoreGetRoleDefinitions
+    """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.policystoreGetRoleDefinitions(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
+
+================================================================================
+
+## Policystore.policystoreListDataAccessPolicies
+    """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        List of resource dictionaries, each containing:
+            - guid (str): Unique identifier
+            - name (str): Resource name
+            - attributes (dict): Resource attributes
+            - status (str): Resource status
+        
+        Returns empty list if no resources found.
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.policystoreListDataAccessPolicies(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
+
+================================================================================
+
+## Policystore.policystoreGetDataAccessPolicy
+    """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.policystoreGetDataAccessPolicy(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
+
+================================================================================
+
+## Policystore.policystoreCreateDataAccessPolicy
+    """
+Create a new resource.
+    
+    Creates a new resource in Microsoft Purview.
+    Requires appropriate permissions and valid resource definition.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing created resource:
+            {
+                'guid': str,         # Unique identifier
+                'name': str,         # Resource name
+                'status': str,       # Creation status
+                'attributes': dict,  # Resource attributes
+                'createTime': int    # Creation timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 409: Conflict (resource already exists)
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.policystoreCreateDataAccessPolicy(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.policystoreCreateDataAccessPolicy(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Data Onboarding: Register new data sources in catalog
+        - Metadata Management: Add descriptive metadata to assets
+        - Automation: Programmatically populate catalog
+    """
+
+================================================================================
+
+## Policystore.policystoreGetPolicyAuditLogs
+    """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.policystoreGetPolicyAuditLogs(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
+
+================================================================================
+
+## Policystore.policystoreGetComplianceReport
+    """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing resource information:
+            {
+                'guid': str,          # Unique identifier
+                'name': str,          # Resource name
+                'attributes': dict,   # Resource attributes
+                'status': str,        # Resource status
+                'updateTime': int     # Last update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.policystoreGetComplianceReport(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
+
+================================================================================
+
+## Policystore.policystoreBulkPolicyOperation
+    """
 Perform batch operation on resources.
     
     Processes multiple resources in a single operation.
@@ -2065,9 +2433,9 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
-        result = client.scanExportResults(args=...)
+        result = client.policystoreBulkPolicyOperation(args=...)
         print(f"Result: {result}")
     
 Use Cases:
@@ -2075,160 +2443,11 @@ Use Cases:
         - Migration: Transfer catalog from other systems
         - Mass Updates: Apply changes to many resources
     """
-        self.method = "POST"
-        self.endpoint = f"{ENDPOINTS['scanning']['list_scan_results'].format(dataSourceName=args['--dataSourceName'], scanName=args['--scanName'])}/export"
-        self.params = {
-            **get_api_version_params("scanning"),
-            "format": args.get("--format", "csv"),
-            "runId": args.get("--runId"),
-        }
 
-    # === LEGACY COMPATIBILITY METHODS ===
+================================================================================
 
-    @decorator
-    def scanCreateOrUpdateDataSource(self, args):
-        """
-Create a new scan.
-    
-    Creates a new scan in Microsoft Purview.
-    Requires appropriate permissions and valid scan definition.
-    
-Args:
-        args: Dictionary of operation arguments.
-               Contains operation-specific parameters.
-               See method implementation for details.
-    
-Returns:
-        Dictionary containing created scan:
-            {
-                'guid': str,         # Unique identifier
-                'name': str,         # Resource name
-                'status': str,       # Creation status
-                'attributes': dict,  # Resource attributes
-                'createTime': int    # Creation timestamp
-            }
-    
-Raises:
-        ValueError: When required parameters are missing or invalid:
-            - Empty or None values for required fields
-            - Invalid GUID format
-            - Out-of-range values
-        
-        AuthenticationError: When Azure credentials are invalid:
-            - DefaultAzureCredential not configured
-            - Insufficient permissions
-            - Expired authentication token
-        
-        HTTPError: When Purview API returns error:
-            - 400: Bad request (invalid parameters)
-            - 401: Unauthorized (authentication failed)
-            - 403: Forbidden (insufficient permissions)
-            - 404: Resource not found
-            - 409: Conflict (resource already exists)
-            - 429: Rate limit exceeded
-            - 500: Internal server error
-        
-        NetworkError: When network connectivity fails
-    
-Example:
-        # Basic usage
-        client = Scan()
-        
-        result = client.scanCreateOrUpdateDataSource(args=...)
-        print(f"Result: {result}")
-        
-        # With detailed data
-        data = {
-            'name': 'My Resource',
-            'description': 'Resource description',
-            'attributes': {
-                'key1': 'value1',
-                'key2': 'value2'
-            }
-        }
-        
-        result = client.scanCreateOrUpdateDataSource(data)
-        print(f"Created/Updated: {result['guid']}")
-    
-Use Cases:
-        - Data Onboarding: Register new data sources in catalog
-        - Metadata Management: Add descriptive metadata to assets
-        - Automation: Programmatically populate catalog
+## Policystore.policystoreValidatePolicy
     """
-        return self.scanDataSourceCreate(args)
-
-    @decorator
-    def scanPutDataSource(self, args):
-        """
-Update an existing scan.
-    
-    Updates an existing scan with new values.
-    Only specified fields are modified; others remain unchanged.
-    
-Args:
-        args: Dictionary of operation arguments.
-               Contains operation-specific parameters.
-               See method implementation for details.
-    
-Returns:
-        Dictionary containing updated scan:
-            {
-                'guid': str,          # Unique identifier
-                'attributes': dict,   # Updated attributes
-                'updateTime': int     # Update timestamp
-            }
-    
-Raises:
-        ValueError: When required parameters are missing or invalid:
-            - Empty or None values for required fields
-            - Invalid GUID format
-            - Out-of-range values
-        
-        AuthenticationError: When Azure credentials are invalid:
-            - DefaultAzureCredential not configured
-            - Insufficient permissions
-            - Expired authentication token
-        
-        HTTPError: When Purview API returns error:
-            - 400: Bad request (invalid parameters)
-            - 401: Unauthorized (authentication failed)
-            - 403: Forbidden (insufficient permissions)
-            - 404: Resource not found
-            - 429: Rate limit exceeded
-            - 500: Internal server error
-        
-        NetworkError: When network connectivity fails
-    
-Example:
-        # Basic usage
-        client = Scan()
-        
-        result = client.scanPutDataSource(args=...)
-        print(f"Result: {result}")
-        
-        # With detailed data
-        data = {
-            'name': 'My Resource',
-            'description': 'Resource description',
-            'attributes': {
-                'key1': 'value1',
-                'key2': 'value2'
-            }
-        }
-        
-        result = client.scanPutDataSource(data)
-        print(f"Created/Updated: {result['guid']}")
-    
-Use Cases:
-        - Metadata Enrichment: Update descriptions and tags
-        - Ownership Changes: Reassign data ownership
-        - Classification: Apply or modify data classifications
-    """
-        return self.scanDataSourceCreate(args)
-
-    @decorator
-    def scanTrigger(self, args):
-        """
 Perform operation on resource.
     
     
@@ -2265,9 +2484,9 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
-        result = client.scanTrigger(args=...)
+        result = client.policystoreValidatePolicy(args=...)
         print(f"Result: {result}")
     
 Use Cases:
@@ -2275,15 +2494,14 @@ Use Cases:
         - [TODO: Include business context]
         - [TODO: Explain when to use this method]
     """
-        return self.scanRun(args)
 
-    @decorator
-    def scanReadResults(self, args):
-        """
-Retrieve scan information.
+================================================================================
+
+## Policystore.policystoreSimulatePolicy
+    """
+Perform operation on resource.
     
-    Retrieves detailed information about the specified scan.
-    Returns complete scan metadata and properties.
+    
     
 Args:
         args: Dictionary of operation arguments.
@@ -2291,7 +2509,59 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing scan information:
+        [TODO: Specify return type and structure]
+        [TODO: Document nested fields]
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.policystoreSimulatePolicy(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - [TODO: Add specific use cases for this operation]
+        - [TODO: Include business context]
+        - [TODO: Explain when to use this method]
+    """
+
+================================================================================
+
+## Policystore.policystoreGetPolicyChanges
+    """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing resource information:
             {
                 'guid': str,          # Unique identifier
                 'name': str,          # Resource name
@@ -2323,9 +2593,9 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
-        result = client.scanReadResults(args=...)
+        result = client.policystoreGetPolicyChanges(args=...)
         print(f"Result: {result}")
     
 Use Cases:
@@ -2333,87 +2603,15 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
-        return self.scanReadResult(args)
 
-    @decorator
-    def scanCreateOrUpdate(self, args):
-        """
-Create a new scan.
-    
-    Creates a new scan in Microsoft Purview.
-    Requires appropriate permissions and valid scan definition.
-    
-Args:
-        args: Dictionary of operation arguments.
-               Contains operation-specific parameters.
-               See method implementation for details.
-    
-Returns:
-        Dictionary containing created scan:
-            {
-                'guid': str,         # Unique identifier
-                'name': str,         # Resource name
-                'status': str,       # Creation status
-                'attributes': dict,  # Resource attributes
-                'createTime': int    # Creation timestamp
-            }
-    
-Raises:
-        ValueError: When required parameters are missing or invalid:
-            - Empty or None values for required fields
-            - Invalid GUID format
-            - Out-of-range values
-        
-        AuthenticationError: When Azure credentials are invalid:
-            - DefaultAzureCredential not configured
-            - Insufficient permissions
-            - Expired authentication token
-        
-        HTTPError: When Purview API returns error:
-            - 400: Bad request (invalid parameters)
-            - 401: Unauthorized (authentication failed)
-            - 403: Forbidden (insufficient permissions)
-            - 404: Resource not found
-            - 409: Conflict (resource already exists)
-            - 429: Rate limit exceeded
-            - 500: Internal server error
-        
-        NetworkError: When network connectivity fails
-    
-Example:
-        # Basic usage
-        client = Scan()
-        
-        result = client.scanCreateOrUpdate(args=...)
-        print(f"Result: {result}")
-        
-        # With detailed data
-        data = {
-            'name': 'My Resource',
-            'description': 'Resource description',
-            'attributes': {
-                'key1': 'value1',
-                'key2': 'value2'
-            }
-        }
-        
-        result = client.scanCreateOrUpdate(data)
-        print(f"Created/Updated: {result['guid']}")
-    
-Use Cases:
-        - Data Onboarding: Register new data sources in catalog
-        - Metadata Management: Add descriptive metadata to assets
-        - Automation: Programmatically populate catalog
+================================================================================
+
+## Policystore.policystoreExportPolicies
     """
-        return self.scanCreate(args)
-
-    @decorator
-    def scanPut(self, args):
-        """
-Update an existing scan.
+Perform batch operation on resources.
     
-    Updates an existing scan with new values.
-    Only specified fields are modified; others remain unchanged.
+    Processes multiple resources in a single operation.
+    More efficient than individual operations for bulk data.
     
 Args:
         args: Dictionary of operation arguments.
@@ -2421,11 +2619,12 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing updated scan:
+        Dictionary with batch operation results:
             {
-                'guid': str,          # Unique identifier
-                'attributes': dict,   # Updated attributes
-                'updateTime': int     # Update timestamp
+                'succeeded': int,        # Success count
+                'failed': int,           # Failure count
+                'results': [...],        # Per-item results
+                'errors': [...]          # Error details
             }
     
 Raises:
@@ -2451,38 +2650,25 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
-        result = client.scanPut(args=...)
+        result = client.policystoreExportPolicies(args=...)
         print(f"Result: {result}")
-        
-        # With detailed data
-        data = {
-            'name': 'My Resource',
-            'description': 'Resource description',
-            'attributes': {
-                'key1': 'value1',
-                'key2': 'value2'
-            }
-        }
-        
-        result = client.scanPut(data)
-        print(f"Created/Updated: {result['guid']}")
     
 Use Cases:
-        - Metadata Enrichment: Update descriptions and tags
-        - Ownership Changes: Reassign data ownership
-        - Classification: Apply or modify data classifications
+        - Bulk Import: Load large volumes of metadata
+        - Migration: Transfer catalog from other systems
+        - Mass Updates: Apply changes to many resources
     """
-        return self.scanCreate(args)
 
-    @decorator
-    def scanReadRuleset(self, args):
-        """
-Retrieve scan information.
+================================================================================
+
+## Policystore.policystoreImportPolicies
+    """
+Perform batch operation on resources.
     
-    Retrieves detailed information about the specified scan.
-    Returns complete scan metadata and properties.
+    Processes multiple resources in a single operation.
+    More efficient than individual operations for bulk data.
     
 Args:
         args: Dictionary of operation arguments.
@@ -2490,13 +2676,12 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing scan information:
+        Dictionary with batch operation results:
             {
-                'guid': str,          # Unique identifier
-                'name': str,          # Resource name
-                'attributes': dict,   # Resource attributes
-                'status': str,        # Resource status
-                'updateTime': int     # Last update timestamp
+                'succeeded': int,        # Success count
+                'failed': int,           # Failure count
+                'results': [...],        # Per-item results
+                'errors': [...]          # Error details
             }
     
 Raises:
@@ -2522,86 +2707,16 @@ Raises:
     
 Example:
         # Basic usage
-        client = Scan()
+        client = Client()
         
-        result = client.scanReadRuleset(args=...)
+        result = client.policystoreImportPolicies(args=...)
         print(f"Result: {result}")
     
 Use Cases:
-        - Data Discovery: Find and explore data assets
-        - Compliance Auditing: Review metadata and classifications
-        - Reporting: Generate catalog reports
+        - Bulk Import: Load large volumes of metadata
+        - Migration: Transfer catalog from other systems
+        - Mass Updates: Apply changes to many resources
     """
-        return self.scanRuleSetRead(args)
 
-    @decorator
-    def scanCreateRuleset(self, args):
-        """
-Create a new scan.
-    
-    Creates a new scan in Microsoft Purview.
-    Requires appropriate permissions and valid scan definition.
-    
-Args:
-        args: Dictionary of operation arguments.
-               Contains operation-specific parameters.
-               See method implementation for details.
-    
-Returns:
-        Dictionary containing created scan:
-            {
-                'guid': str,         # Unique identifier
-                'name': str,         # Resource name
-                'status': str,       # Creation status
-                'attributes': dict,  # Resource attributes
-                'createTime': int    # Creation timestamp
-            }
-    
-Raises:
-        ValueError: When required parameters are missing or invalid:
-            - Empty or None values for required fields
-            - Invalid GUID format
-            - Out-of-range values
-        
-        AuthenticationError: When Azure credentials are invalid:
-            - DefaultAzureCredential not configured
-            - Insufficient permissions
-            - Expired authentication token
-        
-        HTTPError: When Purview API returns error:
-            - 400: Bad request (invalid parameters)
-            - 401: Unauthorized (authentication failed)
-            - 403: Forbidden (insufficient permissions)
-            - 404: Resource not found
-            - 409: Conflict (resource already exists)
-            - 429: Rate limit exceeded
-            - 500: Internal server error
-        
-        NetworkError: When network connectivity fails
-    
-Example:
-        # Basic usage
-        client = Scan()
-        
-        result = client.scanCreateRuleset(args=...)
-        print(f"Result: {result}")
-        
-        # With detailed data
-        data = {
-            'name': 'My Resource',
-            'description': 'Resource description',
-            'attributes': {
-                'key1': 'value1',
-                'key2': 'value2'
-            }
-        }
-        
-        result = client.scanCreateRuleset(data)
-        print(f"Created/Updated: {result['guid']}")
-    
-Use Cases:
-        - Data Onboarding: Register new data sources in catalog
-        - Metadata Management: Add descriptive metadata to assets
-        - Automation: Programmatically populate catalog
-    """
-        return self.scanRuleSetCreate(args)
+================================================================================
+
