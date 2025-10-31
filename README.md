@@ -1,10 +1,10 @@
-# PURVIEW CLI v1.2.5 - Microsoft Purview Automation & Data Governance
+# PURVIEW CLI v1.2.6 - Microsoft Purview Automation & Data Governance
 
-[![Version](https://img.shields.io/badge/version-1.2.5-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.2.5)
+[![Version](https://img.shields.io/badge/version-1.2.5-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.2.6)
 [![API Coverage](https://img.shields.io/badge/UC%20API%20Coverage-86%25-green.svg)](https://github.com/Keayoub/pvw-cli)
 [![Status](https://img.shields.io/badge/status-stable-success.svg)](https://github.com/Keayoub/pvw-cli)
 
-> **LATEST UPDATE v1.2.5 (October 30, 2025):**
+> **LATEST UPDATE v1.2.6 (October 30, 2025):**
 >
 > **🎯 Major Milestone: 86% UC API Coverage (45/52 operations) - Grade A-**
 >
@@ -26,13 +26,13 @@
 > - 80+ usage examples across all new APIs
 > - Roadmap to 100% coverage with gap analysis
 >
-> **[Full Release Notes](releases/v1.2.5.md)** | **[Migration Guide](releases/v1.2.5.md#migration-guide)**
+> **[Full Release Notes](releases/v1.2.6.md)** | **[Migration Guide](releases/v1.2.6.md#migration-guide)**
 
 ---
 
 ## What is PVW CLI?
 
-**PVW CLI v1.2.5** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* with **86% Unified Catalog API coverage** (45 of 52 operations).
+**PVW CLI v1.2.6** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* with **86% Unified Catalog API coverage** (45 of 52 operations).
 
 ### Key Capabilities
 
@@ -73,7 +73,7 @@ The CLI is designed for data engineers, stewards, architects, and platform teams
 
 ---
 
-## What's New in v1.2.5
+## What's New in v1.2.6
 
 ### 🎯 86% Unified Catalog API Coverage
 
@@ -149,7 +149,7 @@ Version 1.2.5 achieves **86% coverage** of the Microsoft Purview Unified Catalog
 - Complete API coverage gap analysis
 - Roadmap to 100% with implementation plans
 
-**[View Full Release Notes](releases/v1.2.5.md)**
+**[View Full Release Notes](releases/v1.2.6.md)**
 
 ---
 
@@ -226,7 +226,7 @@ For more advanced usage, see the documentation in `doc/` or the project docs: <h
 
 ---
 
-## Quick Start Examples - v1.2.5 Features
+## Quick Start Examples - v1.2.6 Features
 
 ### Relationships API - Link Resources
 
@@ -307,7 +307,7 @@ powershell -ExecutionPolicy Bypass -File "samples\powershell\create_lineage_inte
 
 ## Overview
 
-**PVW CLI v1.2.5** is a modern command-line interface and Python library for Microsoft Purview, enabling:
+**PVW CLI v1.2.6** is a modern command-line interface and Python library for Microsoft Purview, enabling:
 
 - **MCP Server** - Natural language interface for AI assistants (Claude, Cline)
 - Advanced data catalog search and discovery
@@ -672,7 +672,7 @@ The PVW CLI provides advanced search using the latest Microsoft Purview Discover
 - Use autocomplete and suggestion endpoints
 - Perform faceted, time-based, and entity-type-specific queries
 
-**v1.2.5 Improvements:**
+**v1.2.6 Improvements:**
 
 - Fixed `suggest` and `autocomplete` API payload format (removed empty filter causing HTTP 400 errors)
 - Enhanced collection display with robust type checking and fallback logic
@@ -1436,7 +1436,7 @@ PVW CLI includes comprehensive sample files and scripts for bulk operations:
 - Success/failure tracking per term
 - Rate limiting (200ms delay)
 
-### Critical Fixes (v1.2.5)
+### Critical Fixes (v1.2.6)
 
 - **Search API Suggest/Autocomplete:** Fixed HTTP 400 errors by removing empty filter objects from payload
 - **Collection Display:** Enhanced collection name detection with proper fallback logic (isinstance checks)
@@ -1499,9 +1499,9 @@ See [LICENSE](LICENSE) file for details.
 
 ---
 
-**PVW CLI v1.2.5 empowers data engineers, stewards, and architects to automate, scale, and enhance their Microsoft Purview experience with powerful command-line and programmatic capabilities.**
+**PVW CLI v1.2.6 empowers data engineers, stewards, and architects to automate, scale, and enhance their Microsoft Purview experience with powerful command-line and programmatic capabilities.**
 
-**Latest in v1.2.5:**
+**Latest in v1.2.6:**
 
 - Fixed Search API suggest/autocomplete (HTTP 400 errors resolved)
 - Enhanced collection display with robust fallback logic
