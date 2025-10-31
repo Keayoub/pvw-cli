@@ -44,3 +44,5 @@ node_modules/
 
 mcp/vscode-extension/src/extension.ts.backup
 doc/boilerplate/BOILERPLATE_SYSTEM.md
+doc/api-documentation-status.md
+doc/documentation-completion-summary.md

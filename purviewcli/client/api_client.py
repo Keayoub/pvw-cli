@@ -278,7 +278,42 @@ class PurviewClient:
     async def batch_create_entities(
         self, entities: List[Dict], progress_callback=None
     ) -> List[Dict]:
-        """Create multiple entities in batches"""
+        """
+        Create multiple entities in batches to avoid API rate limiting and timeouts.
+
+        Args:
+            entities: List of entity dictionaries to create, each containing:
+                - typeName (str): Entity type (e.g., "DataSet", "azure_sql_table")
+                - attributes (dict): Entity attributes including name, qualifiedName, etc.
+            progress_callback: Optional callback function(processed: int, total: int) for progress tracking
+
+        Returns:
+            List of dictionaries containing created entities with assigned GUIDs and system attributes
+
+        Raises:
+            PurviewException: If batch creation fails due to API errors
+            ValueError: If entities contain invalid data or missing required fields
+
+        Example:
+            ```python
+            entities = [
+                {"typeName": "DataSet", "attributes": {"name": "dataset1", "qualifiedName": "dataset1@purview"}},
+                {"typeName": "DataSet", "attributes": {"name": "dataset2", "qualifiedName": "dataset2@purview"}}
+            ]
+            
+            def progress(processed, total):
+                print(f"Progress: {processed}/{total}")
+            
+            created = await client.batch_create_entities(entities, progress_callback=progress)
+            print(f"Created {len(created)} entities")
+            ```
+
+        Use Cases:
+            - Import large datasets from external systems into Purview
+            - Bulk provisioning of data assets during migration
+            - Automated asset registration from data discovery tools
+            - Periodic synchronization of assets from source systems
+        """
         results = []
         total = len(entities)
 
@@ -304,7 +339,39 @@ class PurviewClient:
     async def batch_update_entities(
         self, entities: List[Dict], progress_callback=None
     ) -> List[Dict]:
-        """Update multiple entities in batches"""
+        """
+        Update multiple entities in batches to avoid API rate limiting and timeouts.
+
+        Args:
+            entities: List of entity dictionaries to update, each must include:
+                - guid (str): Entity GUID to update
+                - attributes (dict): Updated attributes (only changed fields needed)
+            progress_callback: Optional callback function(processed: int, total: int) for progress tracking
+
+        Returns:
+            List of dictionaries containing updated entities with modified attributes and timestamps
+
+        Raises:
+            PurviewException: If batch update fails due to API errors
+            ValueError: If entities missing GUID or contain invalid data
+
+        Example:
+            ```python
+            entities = [
+                {"guid": "guid-1", "attributes": {"description": "Updated description"}},
+                {"guid": "guid-2", "attributes": {"owner": "newowner@company.com"}}
+            ]
+            
+            updated = await client.batch_update_entities(entities)
+            print(f"Updated {len(updated)} entities")
+            ```
+
+        Use Cases:
+            - Bulk update entity metadata from external systems
+            - Apply classification or glossary terms to multiple assets
+            - Synchronize ownership or stewardship information
+            - Update descriptions and documentation across many entities
+        """
         results = []
         total = len(entities)
 
@@ -329,7 +396,42 @@ class PurviewClient:
 
     # CSV Import/Export Methods
     async def import_entities_from_csv(self, csv_file_path: str, mapping_config: Dict) -> Dict:
-        """Import entities from CSV file"""
+        """
+        Import entities from CSV file using column-to-attribute mapping configuration.
+
+        Args:
+            csv_file_path: Path to CSV file containing entity data
+            mapping_config: Dictionary specifying how to map CSV columns to entity attributes:
+                - typeName (str): Entity type for all imported entities
+                - attributes (dict): Mapping of CSV column names to entity attribute names
+
+        Returns:
+            Dict containing import results with created entity GUIDs
+
+        Raises:
+            FileNotFoundError: If CSV file doesn't exist
+            ValueError: If mapping_config is invalid or CSV has missing required columns
+
+        Example:
+            ```python
+            mapping = {
+                "typeName": "azure_sql_table",
+                "attributes": {
+                    "table_name": "name",
+                    "schema_name": "schema",
+                    "table_description": "description"
+                }
+            }
+            results = await client.import_entities_from_csv("tables.csv", mapping)
+            print(f"Imported {len(results)} entities")
+            ```
+
+        Use Cases:
+            - Bulk import assets from external catalogs or CMDBs
+            - Migrate metadata from legacy systems to Purview
+            - Load entity data from Excel/CSV exports
+            - Automate asset registration from data discovery tools
+        """
         df = pd.read_csv(csv_file_path)
         entities = []
 
@@ -343,7 +445,38 @@ class PurviewClient:
     async def export_entities_to_csv(
         self, query: str, csv_file_path: str, columns: List[str] = None
     ) -> str:
-        """Export entities to CSV file"""
+        """
+        Export entities matching search query to CSV file.
+
+        Args:
+            query: Search query to find entities (e.g., "*" for all, "type:DataSet" for specific type)
+            csv_file_path: Output CSV file path
+            columns: Optional list of column names to include (default: all available columns)
+
+        Returns:
+            String message confirming export with count of exported entities
+
+        Raises:
+            PurviewException: If search fails
+            IOError: If unable to write CSV file
+
+        Example:
+            ```python
+            # Export all DataSet entities
+            message = await client.export_entities_to_csv(
+                "type:DataSet",
+                "datasets.csv",
+                columns=["guid", "name", "typeName", "attr_owner"]
+            )
+            print(message)  # "Exported 150 entities to datasets.csv"
+            ```
+
+        Use Cases:
+            - Extract metadata for reporting and analysis
+            - Create backups of entity metadata
+            - Share asset information with stakeholders via CSV
+            - Generate data catalogs for external consumption
+        """
         search_results = await self.search_entities(query, limit=1000)
         entities = search_results.get("value", [])
 
@@ -517,7 +650,33 @@ class PurviewClient:
 
     # Data Estate Insights
     async def get_asset_distribution(self) -> Dict:
-        """Get asset distribution insights"""
+        """
+        Get asset distribution insights across the Purview data estate.
+
+        Returns:
+            Dict containing asset distribution statistics including:
+                - asset counts by type (DataSet, Table, Column, etc.)
+                - asset counts by classification
+                - asset counts by collection
+                - asset counts by source type
+
+        Raises:
+            PurviewException: If the request fails or API endpoint is unavailable
+
+        Example:
+            ```python
+            distribution = await client.get_asset_distribution()
+            print(f"Total assets: {distribution.get('totalAssets', 0)}")
+            for asset_type, count in distribution.get('assetsByType', {}).items():
+                print(f"{asset_type}: {count}")
+            ```
+
+        Use Cases:
+            - Generate data estate overview dashboards
+            - Monitor asset growth and distribution trends
+            - Identify collections with the most assets
+            - Create reports on data source coverage
+        """
         return await self._make_request("GET", "/mapanddiscover/api/browse")
 
         # === ACCOUNT MANAGEMENT (Official API Operations) ===    async def get_account_properties(self) -> Dict:
@@ -526,19 +685,107 @@ class PurviewClient:
         return await self._make_request("GET", ENDPOINTS["account"]["account"], params=params)
 
     async def update_account_properties(self, account_data: Dict) -> Dict:
-        """Update Account Properties - Official API Operation"""
+        """
+        Update Microsoft Purview account properties and settings.
+
+        Args:
+            account_data: Dictionary containing account properties to update:
+                - friendlyName (str): Display name for the account
+                - publicNetworkAccess (str): "Enabled" or "Disabled"
+                - managedResourceGroupName (str): Resource group name
+                - tags (dict): Azure resource tags
+
+        Returns:
+            Dict containing updated account information including:
+                - name, id, location, sku
+                - properties (friendlyName, publicNetworkAccess, etc.)
+                - systemData (created/modified timestamps)
+
+        Raises:
+            PurviewException: If update fails or account not found
+            ValueError: If account_data contains invalid properties
+
+        Example:
+            ```python
+            updated = await client.update_account_properties({
+                "friendlyName": "Production Data Catalog",
+                "publicNetworkAccess": "Enabled",
+                "tags": {"environment": "production", "department": "data"}
+            })
+            print(f"Account updated: {updated['properties']['friendlyName']}")
+            ```
+
+        Use Cases:
+            - Update account display name for better organization
+            - Configure network access policies
+            - Add or modify resource tags for cost tracking
+            - Update managed resource group settings
+        """
         params = get_api_version_params("account")
         return await self._make_request(
             "PATCH", ENDPOINTS["account"]["account_update"], json=account_data, params=params
         )
 
     async def get_access_keys(self) -> Dict:
-        """Get Access Keys - Official API Operation"""
+        """
+        Retrieve the primary and secondary access keys for the Purview account.
+
+        Returns:
+            Dict containing access key information:
+                - atlasKafkaPrimaryEndpoint (str): Primary Kafka endpoint
+                - atlasKafkaSecondaryEndpoint (str): Secondary Kafka endpoint
+
+        Raises:
+            PurviewException: If unable to retrieve keys or insufficient permissions
+            PermissionError: If caller lacks Key Vault access
+
+        Example:
+            ```python
+            keys = await client.get_access_keys()
+            primary_key = keys.get('atlasKafkaPrimaryEndpoint')
+            print(f"Primary endpoint: {primary_key}")
+            ```
+
+        Use Cases:
+            - Configure external applications to connect to Purview event streams
+            - Rotate access keys periodically for security
+            - Integrate Purview events with Azure Event Hub or Kafka consumers
+            - Validate access key availability before deployment
+        """
         params = get_api_version_params("account")
         return await self._make_request("POST", ENDPOINTS["account"]["access_keys"], params=params)
 
     async def regenerate_access_key(self, key_data: Dict) -> Dict:
-        """Regenerate Access Key - Official API Operation"""
+        """
+        Regenerate the primary or secondary access key for the Purview account.
+
+        Args:
+            key_data: Dictionary specifying which key to regenerate:
+                - keyType (str): "PrimaryAtlasKafkaKey" or "SecondaryAtlasKafkaKey"
+
+        Returns:
+            Dict containing the new access key information after regeneration
+
+        Raises:
+            PurviewException: If key regeneration fails
+            ValueError: If keyType is invalid
+            PermissionError: If caller lacks Key Vault access
+
+        Example:
+            ```python
+            # Regenerate primary key
+            new_key = await client.regenerate_access_key({
+                "keyType": "PrimaryAtlasKafkaKey"
+            })
+            print(f"Primary key regenerated: {new_key['atlasKafkaPrimaryEndpoint']}")
+            ```
+
+        Use Cases:
+            - Rotate keys periodically as part of security best practices
+            - Revoke compromised keys and generate new ones
+            - Update application configurations with new credentials
+            - Implement key rotation automation in CI/CD pipelines
+        """
         params = get_api_version_params("account")
         return await self._make_request(
             "POST", ENDPOINTS["account"]["regenerate_access_key"], json=key_data, params=params
@@ -595,7 +842,39 @@ class PurviewClient:
         return await self._make_request("GET", endpoint, params=params)
 
     async def create_collection(self, collection_name: str, collection_data: Dict) -> Dict:
-        """Create Collection - Official API Operation"""
+        """
+        Create a new collection in the Purview account hierarchy.
+
+        Args:
+            collection_name: Unique collection name (used in URLs, no spaces)
+            collection_data: Dictionary containing collection properties:
+                - friendlyName (str): Display name for the collection
+                - description (str): Optional description
+                - parentCollection (dict): Reference to parent collection {"referenceName": "parent-name"}
+
+        Returns:
+            Dict containing the created collection with assigned system properties
+
+        Raises:
+            PurviewException: If collection creation fails
+            ValueError: If collection_name already exists or parentCollection not found
+
+        Example:
+            ```python
+            collection = await client.create_collection("finance-data", {
+                "friendlyName": "Finance Data Collection",
+                "description": "All financial datasets and reports",
+                "parentCollection": {"referenceName": "myorg"}
+            })
+            print(f"Created: {collection['name']}")
+            ```
+
+        Use Cases:
+            - Organize data assets by department or business unit
+            - Implement multi-tenant data governance with collection hierarchies
+            - Apply role-based access control at the collection level
+            - Isolate data assets for compliance or security requirements
+        """
         endpoint = format_endpoint(
             ENDPOINTS["collections"]["create_or_update"], collectionName=collection_name
         )
@@ -603,7 +882,38 @@ class PurviewClient:
         return await self._make_request("PUT", endpoint, json=collection_data, params=params)
 
     async def update_collection(self, collection_name: str, collection_data: Dict) -> Dict:
-        """Update Collection - Official API Operation"""
+        """
+        Update an existing collection's properties.
+
+        Args:
+            collection_name: The unique name of the collection to update
+            collection_data: Dictionary with fields to update:
+                - friendlyName (str): New display name
+                - description (str): Updated description
+                - parentCollection (dict): New parent if moving in hierarchy
+
+        Returns:
+            Dict containing the updated collection information
+
+        Raises:
+            PurviewException: If update fails
+            ValueError: If collection_name not found
+
+        Example:
+            ```python
+            updated = await client.update_collection("finance-data", {
+                "friendlyName": "Finance & Accounting Data",
+                "description": "Updated: All financial and accounting datasets"
+            })
+            print(f"Updated: {updated['friendlyName']}")
+            ```
+
+        Use Cases:
+            - Update collection display names and descriptions
+            - Reorganize collection hierarchy by changing parent
+            - Maintain collection metadata as business needs evolve
+            - Correct naming or organizational structure
+        """
         endpoint = format_endpoint(
             ENDPOINTS["collections"]["create_or_update"], collectionName=collection_name
         )
@@ -613,7 +923,34 @@ class PurviewClient:
     async def create_or_update_collection(
         self, collection_name: str, collection_data: Dict
     ) -> Dict:
-        """Create Or Update Collection - Official API Operation (Backward Compatibility)"""
+        """
+        Create a new collection or update an existing one (upsert operation).
+
+        Args:
+            collection_name: The unique name of the collection
+            collection_data: Dictionary containing collection properties (see create_collection)
+
+        Returns:
+            Dict containing the created or updated collection information
+
+        Raises:
+            PurviewException: If operation fails
+
+        Example:
+            ```python
+            # Will create if doesn't exist, update if exists
+            collection = await client.create_or_update_collection("finance-data", {
+                "friendlyName": "Finance Data",
+                "description": "Financial datasets"
+            })
+            ```
+
+        Use Cases:
+            - Idempotent collection management in automation scripts
+            - Simplify collection provisioning without checking existence
+            - Update collection metadata without separate create/update logic
+            - Implement declarative collection configuration
+        """
         endpoint = format_endpoint(
             ENDPOINTS["collections"]["create_or_update"], collectionName=collection_name
         )
@@ -621,7 +958,31 @@ class PurviewClient:
         return await self._make_request("PUT", endpoint, json=collection_data, params=params)
 
     async def delete_collection(self, collection_name: str) -> Dict:
-        """Delete Collection - Official API Operation"""
+        """
+        Delete a collection from the Purview account.
+
+        Args:
+            collection_name: The unique name of the collection to delete
+
+        Returns:
+            Dict containing deletion confirmation (typically empty on success)
+
+        Raises:
+            PurviewException: If deletion fails
+            ValueError: If collection not found or still contains assets
+
+        Example:
+            ```python
+            await client.delete_collection("finance-data")
+            print("Collection deleted successfully")
+            ```
+
+        Use Cases:
+            - Remove unused or obsolete collections
+            - Clean up test collections after development
+            - Reorganize collection hierarchy by removing intermediate levels
+            - Implement collection lifecycle management
+        """
         endpoint = format_endpoint(
             ENDPOINTS["collections"]["delete"], collectionName=collection_name
         )
@@ -629,7 +990,34 @@ class PurviewClient:
         return await self._make_request("DELETE", endpoint, params=params)
 
     async def get_collection_path(self, collection_name: str) -> Dict:
-        """Get Collection Path - Official API Operation"""
+        """
+        Get the full hierarchical path from root to the specified collection.
+
+        Args:
+            collection_name: The unique name of the collection
+
+        Returns:
+            Dict containing the collection path information:
+                - parentFriendlyNameChain (list): Ordered list of friendly names from root to parent
+                - parentNameChain (list): Ordered list of collection names from root to parent
+
+        Raises:
+            PurviewException: If request fails
+            ValueError: If collection not found
+
+        Example:
+            ```python
+            path = await client.get_collection_path("finance-reports")
+            print(" > ".join(path['parentFriendlyNameChain']))
+            # Output: "Root > Finance > Reports"
+            ```
+
+        Use Cases:
+            - Display collection breadcrumb navigation in UI
+            - Understand collection hierarchy and relationships
+            - Validate collection positioning in organizational structure
+            - Generate collection path reports for governance
+        """
         endpoint = format_endpoint(
             ENDPOINTS["collections"]["get_collection_path"], collectionName=collection_name
         )
@@ -637,7 +1025,33 @@ class PurviewClient:
         return await self._make_request("GET", endpoint, params=params)
 
     async def get_child_collection_names(self, collection_name: str) -> List[str]:
-        """List Child Collection Names - Official API Operation"""
+        """
+        Get the names of all immediate child collections under the specified collection.
+
+        Args:
+            collection_name: The unique name of the parent collection
+
+        Returns:
+            List of strings containing child collection names (not friendly names)
+
+        Raises:
+            PurviewException: If request fails
+            ValueError: If parent collection not found
+
+        Example:
+            ```python
+            children = await client.get_child_collection_names("finance")
+            for child in children:
+                print(f"Child collection: {child}")
+            # Output: finance-reports, finance-analytics, finance-archive
+            ```
+
+        Use Cases:
+            - Navigate collection hierarchy programmatically
+            - Build collection tree visualizations
+            - Audit collection structure and organization
+            - Implement recursive collection operations
+        """
         endpoint = format_endpoint(
             ENDPOINTS["collections"]["get_child_collection_names"], collectionName=collection_name
         )

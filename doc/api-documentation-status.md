@@ -6,8 +6,8 @@
 
 - **Total Modules:** 20
 - **Total Public Methods:** 624
-- **Comprehensively Documented:** 553
-- **Documentation Coverage:** 88.6%
+- **Comprehensively Documented:** 565
+- **Documentation Coverage:** 90.5%
 
 ## Documentation Progress
 
@@ -101,6 +101,21 @@
 - **Classes:** Insight
 - **Module Docstring:** [YES]
 
+### 🔄 api_client.py
+
+- **Progress:** 23/29 methods (79%)
+- **Classes:** PurviewConfig, PurviewClient, BatchOperationProgress
+- **Module Docstring:** [YES]
+
+**Methods Needing Documentation:**
+
+- `get_asset_distribution` (line 652) - Missing: Parameter documentation
+- `get_access_keys` (line 729) - Missing: Parameter documentation
+- `list_collections` (line 796) - Missing: Parameter documentation, Exception documentation, Use case documentation
+- `import_collections_from_csv` (line 1149) - Missing: Parameter documentation, Return value documentation, Exception documentation, Usage examples, Use case documentation
+- `export_collections_to_csv` (line 1212) - Missing: Parameter documentation, Return value documentation, Exception documentation, Usage examples, Use case documentation
+- `update` (line 1281) - Missing: Parameter documentation, Return value documentation, Exception documentation, Usage examples, Use case documentation
+
 ### 🔄 _domain.py
 
 - **Progress:** 5/7 methods (71%)
@@ -109,28 +124,8 @@
 
 **Methods Needing Documentation:**
 
-- `get_api_version` (line 359) - Missing: Parameter documentation, Return value documentation, Exception documentation, Usage examples, Use case documentation
-- `get_api_version_params` (line 363) - Missing: Parameter documentation, Return value documentation, Exception documentation, Usage examples, Use case documentation
-
-### 🔄 api_client.py
-
-- **Progress:** 11/29 methods (38%)
-- **Classes:** PurviewConfig, PurviewClient, BatchOperationProgress
-- **Module Docstring:** [YES]
-
-**Methods Needing Documentation:**
-
-- `batch_create_entities` (line 278) - Missing: Parameter documentation, Return value documentation, Exception documentation, Usage examples, Use case documentation
-- `batch_update_entities` (line 304) - Missing: Parameter documentation, Return value documentation, Exception documentation, Usage examples, Use case documentation
-- `import_entities_from_csv` (line 331) - Missing: Parameter documentation, Return value documentation, Exception documentation, Usage examples, Use case documentation
-- `export_entities_to_csv` (line 343) - Missing: Parameter documentation, Return value documentation, Exception documentation, Usage examples, Use case documentation
-- `get_asset_distribution` (line 519) - Missing: Parameter documentation, Return value documentation, Exception documentation, Usage examples, Use case documentation
-- `update_account_properties` (line 528) - Missing: Parameter documentation, Return value documentation, Exception documentation, Usage examples, Use case documentation
-- `get_access_keys` (line 535) - Missing: Parameter documentation, Return value documentation, Exception documentation, Usage examples, Use case documentation
-- `regenerate_access_key` (line 540) - Missing: Parameter documentation, Return value documentation, Exception documentation, Usage examples, Use case documentation
-- `list_collections` (line 549) - Missing: Parameter documentation, Exception documentation, Use case documentation
-- `create_collection` (line 597) - Missing: Parameter documentation, Return value documentation, Exception documentation, Usage examples, Use case documentation
-- ... and 8 more
+- `get_api_version` (line 359) - Missing: Parameter documentation
+- `get_api_version_params` (line 384) - Missing: Parameter documentation
 
 ### ❌ _share.py
 
@@ -199,7 +194,7 @@ These modules are most likely to be used by LLMs via MCP:
 - **_lineage.py:** ✅ Complete (23/23 methods)
 - **_search.py:** ✅ Complete (22/22 methods)
 - **_unified_catalog.py:** ✅ Complete (60/60 methods)
-- **api_client.py:** 🔄 38% complete (11/29 methods)
+- **api_client.py:** 🔄 79% complete (23/29 methods)
 
 ### Medium Priority (Supporting Operations)
 

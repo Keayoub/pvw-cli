@@ -357,11 +357,55 @@ Use Cases:
         return result
 
     def get_api_version(self):
-        """Return the current API version for the domain (datamap) endpoint."""
+        """
+        Get the API version string for governance domain (datamap) operations.
+
+        Returns:
+            str: The API version string (e.g., "2023-09-01") used for all domain-related endpoints.
+
+        Raises:
+            None: This method does not raise exceptions.
+
+        Example:
+            ```python
+            domain = Domain()
+            version = domain.get_api_version()
+            print(f"Using API version: {version}")
+            ```
+
+        Use Cases:
+            - Retrieve the current API version for documentation purposes
+            - Construct custom API requests with correct version parameter
+            - Validate API compatibility when integrating with other systems
+            - Log API version information for troubleshooting
+        """
         return DATAMAP_API_VERSION
 
     def get_api_version_params(self):
-        """Return the current API version params for the domain (datamap) endpoint."""
+        """
+        Get the API version parameter dictionary for governance domain operations.
+
+        Returns:
+            dict: Dictionary containing the API version parameter in the format
+                  {"api-version": "2023-09-01"} ready for use in HTTP requests.
+
+        Raises:
+            None: This method does not raise exceptions.
+
+        Example:
+            ```python
+            domain = Domain()
+            params = domain.get_api_version_params()
+            # Use in requests: requests.get(url, params=params)
+            print(params)  # {"api-version": "2023-09-01"}
+            ```
+
+        Use Cases:
+            - Automatically add correct API version to HTTP request parameters
+            - Ensure consistent API version across all domain operations
+            - Simplify request parameter construction when calling domain endpoints
+            - Maintain version compatibility when API versions change
+        """
         return {"api-version": DATAMAP_API_VERSION}
 
     # Example usage in a real API call (when available):

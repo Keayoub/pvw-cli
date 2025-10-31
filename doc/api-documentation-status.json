@@ -2,7 +2,7 @@
   "summary": {
     "total_modules": 20,
     "total_methods": 624,
-    "documented_methods": 553
+    "documented_methods": 565
   },
   "modules": {
     "_entity.py": {
@@ -1093,25 +1093,17 @@
           "signature": "def get_api_version(self)",
           "has_docs": false,
           "missing": [
-            "Parameter documentation",
-            "Return value documentation",
-            "Exception documentation",
-            "Usage examples",
-            "Use case documentation"
+            "Parameter documentation"
           ],
           "is_async": false
         },
         {
           "name": "get_api_version_params",
-          "line": 363,
+          "line": 384,
           "signature": "def get_api_version_params(self)",
           "has_docs": false,
           "missing": [
-            "Parameter documentation",
-            "Return value documentation",
-            "Exception documentation",
-            "Usage examples",
-            "Use case documentation"
+            "Parameter documentation"
           ],
           "is_async": false
         }
@@ -4896,61 +4888,37 @@
           "name": "batch_create_entities",
           "line": 278,
           "signature": "async def batch_create_entities(self, entities: List[Dict], progress_callback) -> List[Dict]",
-          "has_docs": false,
-          "missing": [
-            "Parameter documentation",
-            "Return value documentation",
-            "Exception documentation",
-            "Usage examples",
-            "Use case documentation"
-          ],
+          "has_docs": true,
+          "missing": [],
           "is_async": true
         },
         {
           "name": "batch_update_entities",
-          "line": 304,
+          "line": 339,
           "signature": "async def batch_update_entities(self, entities: List[Dict], progress_callback) -> List[Dict]",
-          "has_docs": false,
-          "missing": [
-            "Parameter documentation",
-            "Return value documentation",
-            "Exception documentation",
-            "Usage examples",
-            "Use case documentation"
-          ],
+          "has_docs": true,
+          "missing": [],
           "is_async": true
         },
         {
           "name": "import_entities_from_csv",
-          "line": 331,
+          "line": 398,
           "signature": "async def import_entities_from_csv(self, csv_file_path: str, mapping_config: Dict) -> Dict",
-          "has_docs": false,
-          "missing": [
-            "Parameter documentation",
-            "Return value documentation",
-            "Exception documentation",
-            "Usage examples",
-            "Use case documentation"
-          ],
+          "has_docs": true,
+          "missing": [],
           "is_async": true
         },
         {
           "name": "export_entities_to_csv",
-          "line": 343,
+          "line": 445,
           "signature": "async def export_entities_to_csv(self, query: str, csv_file_path: str, columns: List[str]) -> str",
-          "has_docs": false,
-          "missing": [
-            "Parameter documentation",
-            "Return value documentation",
-            "Exception documentation",
-            "Usage examples",
-            "Use case documentation"
-          ],
+          "has_docs": true,
+          "missing": [],
           "is_async": true
         },
         {
           "name": "get_glossary_terms",
-          "line": 409,
+          "line": 542,
           "signature": "async def get_glossary_terms(self, glossary_guid: str) -> List[Dict]",
           "has_docs": true,
           "missing": [
@@ -4961,7 +4929,7 @@
         },
         {
           "name": "create_glossary_term",
-          "line": 446,
+          "line": 579,
           "signature": "async def create_glossary_term(self, term_data: Dict) -> Dict",
           "has_docs": true,
           "missing": [
@@ -4971,7 +4939,7 @@
         },
         {
           "name": "assign_term_to_entities",
-          "line": 484,
+          "line": 617,
           "signature": "async def assign_term_to_entities(self, term_guid: str, entity_guids: List[str]) -> Dict",
           "has_docs": true,
           "missing": [
@@ -4981,63 +4949,43 @@
         },
         {
           "name": "get_asset_distribution",
-          "line": 519,
+          "line": 652,
           "signature": "async def get_asset_distribution(self) -> Dict",
           "has_docs": false,
           "missing": [
-            "Parameter documentation",
-            "Return value documentation",
-            "Exception documentation",
-            "Usage examples",
-            "Use case documentation"
+            "Parameter documentation"
           ],
           "is_async": true
         },
         {
           "name": "update_account_properties",
-          "line": 528,
+          "line": 687,
           "signature": "async def update_account_properties(self, account_data: Dict) -> Dict",
-          "has_docs": false,
-          "missing": [
-            "Parameter documentation",
-            "Return value documentation",
-            "Exception documentation",
-            "Usage examples",
-            "Use case documentation"
-          ],
+          "has_docs": true,
+          "missing": [],
           "is_async": true
         },
         {
           "name": "get_access_keys",
-          "line": 535,
+          "line": 729,
           "signature": "async def get_access_keys(self) -> Dict",
           "has_docs": false,
           "missing": [
-            "Parameter documentation",
-            "Return value documentation",
-            "Exception documentation",
-            "Usage examples",
-            "Use case documentation"
+            "Parameter documentation"
           ],
           "is_async": true
         },
         {
           "name": "regenerate_access_key",
-          "line": 540,
+          "line": 758,
           "signature": "async def regenerate_access_key(self, key_data: Dict) -> Dict",
-          "has_docs": false,
-          "missing": [
-            "Parameter documentation",
-            "Return value documentation",
-            "Exception documentation",
-            "Usage examples",
-            "Use case documentation"
-          ],
+          "has_docs": true,
+          "missing": [],
           "is_async": true
         },
         {
           "name": "list_collections",
-          "line": 549,
+          "line": 796,
           "signature": "async def list_collections(self) -> List[Dict]",
           "has_docs": false,
           "missing": [
@@ -5049,7 +4997,7 @@
         },
         {
           "name": "get_collection",
-          "line": 574,
+          "line": 821,
           "signature": "async def get_collection(self, collection_name: str) -> Dict",
           "has_docs": true,
           "missing": [
@@ -5059,91 +5007,55 @@
         },
         {
           "name": "create_collection",
-          "line": 597,
+          "line": 844,
           "signature": "async def create_collection(self, collection_name: str, collection_data: Dict) -> Dict",
-          "has_docs": false,
-          "missing": [
-            "Parameter documentation",
-            "Return value documentation",
-            "Exception documentation",
-            "Usage examples",
-            "Use case documentation"
-          ],
+          "has_docs": true,
+          "missing": [],
           "is_async": true
         },
         {
           "name": "update_collection",
-          "line": 605,
+          "line": 884,
           "signature": "async def update_collection(self, collection_name: str, collection_data: Dict) -> Dict",
-          "has_docs": false,
-          "missing": [
-            "Parameter documentation",
-            "Return value documentation",
-            "Exception documentation",
-            "Usage examples",
-            "Use case documentation"
-          ],
+          "has_docs": true,
+          "missing": [],
           "is_async": true
         },
         {
           "name": "create_or_update_collection",
-          "line": 613,
+          "line": 923,
           "signature": "async def create_or_update_collection(self, collection_name: str, collection_data: Dict) -> Dict",
-          "has_docs": false,
-          "missing": [
-            "Parameter documentation",
-            "Return value documentation",
-            "Exception documentation",
-            "Usage examples",
-            "Use case documentation"
-          ],
+          "has_docs": true,
+          "missing": [],
           "is_async": true
         },
         {
           "name": "delete_collection",
-          "line": 623,
+          "line": 960,
           "signature": "async def delete_collection(self, collection_name: str) -> Dict",
-          "has_docs": false,
-          "missing": [
-            "Parameter documentation",
-            "Return value documentation",
-            "Exception documentation",
-            "Usage examples",
-            "Use case documentation"
-          ],
+          "has_docs": true,
+          "missing": [],
           "is_async": true
         },
         {
           "name": "get_collection_path",
-          "line": 631,
+          "line": 992,
           "signature": "async def get_collection_path(self, collection_name: str) -> Dict",
-          "has_docs": false,
-          "missing": [
-            "Parameter documentation",
-            "Return value documentation",
-            "Exception documentation",
-            "Usage examples",
-            "Use case documentation"
-          ],
+          "has_docs": true,
+          "missing": [],
           "is_async": true
         },
         {
           "name": "get_child_collection_names",
-          "line": 639,
+          "line": 1027,
           "signature": "async def get_child_collection_names(self, collection_name: str) -> List[str]",
-          "has_docs": false,
-          "missing": [
-            "Parameter documentation",
-            "Return value documentation",
-            "Exception documentation",
-            "Usage examples",
-            "Use case documentation"
-          ],
+          "has_docs": true,
+          "missing": [],
           "is_async": true
         },
         {
           "name": "get_lineage",
-          "line": 648,
+          "line": 1062,
           "signature": "async def get_lineage(self, guid: str, direction: str, depth: int) -> Dict",
           "has_docs": true,
           "missing": [
@@ -5153,7 +5065,7 @@
         },
         {
           "name": "create_lineage",
-          "line": 696,
+          "line": 1110,
           "signature": "async def create_lineage(self, lineage_data: Dict) -> Dict",
           "has_docs": true,
           "missing": [
@@ -5164,7 +5076,7 @@
         },
         {
           "name": "import_collections_from_csv",
-          "line": 735,
+          "line": 1149,
           "signature": "async def import_collections_from_csv(self, csv_file_path: str, progress_callback) -> Dict",
           "has_docs": false,
           "missing": [
@@ -5178,7 +5090,7 @@
         },
         {
           "name": "export_collections_to_csv",
-          "line": 798,
+          "line": 1212,
           "signature": "async def export_collections_to_csv(self, csv_file_path: str, include_hierarchy: bool, include_metadata: bool) -> str",
           "has_docs": false,
           "missing": [
@@ -5192,7 +5104,7 @@
         },
         {
           "name": "update",
-          "line": 867,
+          "line": 1281,
           "signature": "def update(self, processed: int, total: int)",
           "has_docs": false,
           "missing": [
