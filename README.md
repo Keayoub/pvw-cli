@@ -1,32 +1,41 @@
 # PURVIEW CLI v1.2.7 - Microsoft Purview Automation & Data Governance
 
-[![Version](https://img.shields.io/badge/version-1.2.5-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.2.7)
+[![Version](https://img.shields.io/badge/version-1.2.7-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.2.7)
 [![API Coverage](https://img.shields.io/badge/UC%20API%20Coverage-86%25-green.svg)](https://github.com/Keayoub/pvw-cli)
+[![Lineage](https://img.shields.io/badge/Lineage-Enhanced-green.svg)](https://github.com/Keayoub/pvw-cli)
 [![Status](https://img.shields.io/badge/status-stable-success.svg)](https://github.com/Keayoub/pvw-cli)
 
-> **LATEST UPDATE v1.2.7 (October 30, 2025):**
+> **LATEST UPDATE v1.2.7 (November 3, 2025):**
 >
-> **🎯 Major Milestone: 86% UC API Coverage (45/52 operations) - Grade A-**
+> **🔗 Advanced Lineage Features & Column-Level Mapping**
 >
-> **New Features (35+ operations):**
-> - **[NEW]** Relationships API (6 ops) - Link data products/CDEs/terms to entities and columns
-> - **[NEW]** Query APIs (4 ops) - Advanced OData filtering with multi-criteria search
-> - **[NEW]** Policy Management (5 ops) - Complete policy CRUD for governance and RBAC
-> - **[NEW]** Custom Metadata (5 ops) - Business metadata via Atlas API with UC fallback
-> - **[NEW]** Custom Attributes (5 ops) - Extensible attribute definitions for UC resources
+> **New Lineage Capabilities:**
+> - **[NEW]** Column-level lineage with multi-target support (1 source → N targets)
+> - **[NEW]** Direct lineage (UI-style) - No visible Process entity
+> - **[NEW]** Dual-mode CSV import - Automatic detection of Process vs Direct lineage
+> - **[NEW]** Column mapping in direct relationships - Granular data flow tracking
+> - **[NEW]** Enhanced error handling with SSL retry strategies
 >
-> **Major Improvements:**
-> - **[FIXED]** Lineage Management - Complete rewrite with interactive PowerShell script, real entity support
-> - **[FIXED]** Search API Integration - Fixed `suggest` and `autocomplete` HTTP 400 errors
-> - **[ENHANCED]** Business Metadata - Fixed Business Concept scope with proper classification
-> - **[REFACTORED]** Architecture - Unified endpoints, zero hardcoded URLs, complete consistency
+> **New CLI Commands:**
+> ```bash
+> pvw lineage create-column   # Column-level lineage (Process-based)
+> pvw lineage create-direct   # Direct lineage (UI-style, no Process)
+> pvw lineage list-column     # List column lineages
+> pvw lineage delete-column   # Delete column lineage
+> ```
 >
-> **Documentation (15+ guides, 3,500+ lines):**
-> - Complete relationships, query, lineage, and business metadata guides
-> - 80+ usage examples across all new APIs
-> - Roadmap to 100% coverage with gap analysis
+> **What's New:**
+> - ✅ Column mapping visible in Purview UI
+> - ✅ Compatible with manual UI lineage creation
+> - ✅ Type validation (prevent invalid lineage)
+> - ✅ Batch CSV import with 5 sample files
+> - ✅ Comprehensive documentation & examples
 >
-> **[Full Release Notes](releases/v1.2.7.md)** | **[Migration Guide](releases/v1.2.7.md#migration-guide)**
+> **Previous Releases:**
+> - **v1.2.6** - Initial lineage improvements
+> - **v1.2.5** - 86% UC API Coverage (45/52 operations) with Relationships, Query, Policies APIs
+>
+> **[Full Release Notes v1.2.7](releases/v1.2.7.md)** | **[v1.2.5 Release Notes](releases/v1.2.5.md)** | **[Migration Guide](releases/v1.2.7.md#migration-guide)**
 
 ---
 
@@ -73,9 +82,37 @@ The CLI is designed for data engineers, stewards, architects, and platform teams
 
 ---
 
-## What's New in v1.2.7
+## What's New in Recent Releases
 
-### 🎯 86% Unified Catalog API Coverage
+### v1.2.7 (November 3, 2025) - Advanced Lineage Features
+
+**Column-Level Lineage & Direct Relationships:**
+- Column-level lineage with multi-target support (1→N)
+- Direct lineage creation (UI-style, no visible Process)
+- Dual-mode CSV import with automatic type detection
+- Column mapping in direct relationships
+- Enhanced error handling with SSL retry strategies
+
+**New Commands:**
+```bash
+pvw lineage create-column   # Column lineage (Process-based)
+pvw lineage create-direct   # Direct lineage (UI-style)
+pvw lineage list-column     # List column lineages
+pvw lineage delete-column   # Delete lineage
+```
+
+**CSV Import Examples:**
+```csv
+# Direct lineage with column mapping
+source_entity_guid,target_entity_guid,relationship_type,column_mapping
+guid1,guid2,direct_lineage_dataset_dataset,"[{""Source"":""ID"",""Sink"":""ID""}]"
+```
+
+**[Full v1.2.7 Release Notes](releases/v1.2.7.md)**
+
+---
+
+### v1.2.5 (October 30, 2025) - 86% UC API Coverage
 
 Version 1.2.5 achieves **86% coverage** of the Microsoft Purview Unified Catalog API with **35 new operations**:
 
@@ -226,9 +263,35 @@ For more advanced usage, see the documentation in `doc/` or the project docs: <h
 
 ---
 
-## Quick Start Examples - v1.2.7 Features
+## Quick Start Examples
 
-### Relationships API - Link Resources
+### v1.2.7 - Column-Level Lineage
+
+```bash
+# Create column-level lineage (Process-based)
+pvw lineage create-column \
+  --process-name "ETL_Sales_Transform" \
+  --source-table-guid "9ebbd583-4987-4d1b-b4f5-d8f6f6f60000" \
+  --target-table-guids "c88126ba-5fb5-4d33-bbe2-5ff6f6f60000" \
+  --column-mapping "ProductID:ProductID,Name:Name"
+
+# Create direct lineage (UI-style, no visible Process)
+pvw lineage create-direct \
+  --source-guid "9ebbd583-4987-4d1b-b4f5-d8f6f6f60000" \
+  --target-guid "c88126ba-5fb5-4d33-bbe2-5ff6f6f60000" \
+  --column-mapping "ProductID:ProductID,Name:Name,Amount:TotalAmount"
+
+# Import lineage from CSV (automatic type detection)
+pvw lineage import samples/csv/lineage_with_columns.csv
+
+# List column lineages
+pvw lineage list-column --format table
+
+# Delete column lineage
+pvw lineage delete-column --process-guid <guid> --force
+```
+
+### v1.2.5 - Relationships API
 
 ```bash
 # Link data product to SQL table
@@ -247,7 +310,7 @@ pvw uc cde link-entity \
 pvw uc dataproduct list-entities --id "dp-sales-2024"
 ```
 
-### Query APIs - Advanced Filtering
+### v1.2.5 - Query APIs
 
 ```bash
 # Query terms by domain and status
@@ -260,7 +323,7 @@ pvw uc dataproduct query --keywords "customer,revenue" --skip 0 --top 25
 pvw uc cde query --domain-ids "compliance" --orderby "name" --top 100
 ```
 
-### Policy Management
+### v1.2.5 - Policy Management
 
 ```bash
 # List all policies
@@ -273,7 +336,7 @@ pvw uc policy create --payload-file policy-rbac.json
 pvw uc policy update --id "policy-001" --payload-file updated.json
 ```
 
-### Custom Metadata & Attributes
+### v1.2.5 - Custom Metadata
 
 ```bash
 # Import business metadata from CSV
@@ -287,20 +350,6 @@ pvw uc custom-metadata add \
 
 # Create custom attribute
 pvw uc custom-attribute create --name "Department" --type String
-```
-
-### Lineage Creation (Interactive)
-
-```powershell
-# Run interactive PowerShell wizard
-powershell -ExecutionPolicy Bypass -File "samples\powershell\create_lineage_interactive.ps1"
-
-# Script will:
-# 1. List available SQL tables
-# 2. Let you select source
-# 3. List available datasets
-# 4. Let you select target
-# 5. Generate JSON and create lineage
 ```
 
 ---
