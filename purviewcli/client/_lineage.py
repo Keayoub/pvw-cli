@@ -935,6 +935,52 @@ Use Cases:
         else:
             raise ValueError(f"Unsupported file format: {file_ext}. Supported formats: .csv, .json")
 
+    def _process_csv_direct_lineage(self, csv_file, df, args):
+        """Process CSV file for direct lineage relationships (UI-style)"""
+        import pandas as pd
+        
+        # Create direct lineage relationships
+        relationships = []
+        
+        for idx, row in df.iterrows():
+            # Get relationship type
+            relationship_type = str(row.get('relationship_type', 'direct_lineage_dataset_dataset')).strip()
+            
+            # Clean GUIDs
+            source_guid = str(row['source_entity_guid']).strip().replace('guid=', '').strip('"')
+            target_guid = str(row['target_entity_guid']).strip().replace('guid=', '').strip('"')
+            
+            # Get entity types
+            source_type = row.get('source_type', 'DataSet')
+            target_type = row.get('target_type', 'DataSet')
+            
+            # Get column mapping if present
+            column_mapping = str(row.get('columnMapping', row.get('column_mapping', '')))
+            
+            # Create direct lineage relationship
+            relationship = {
+                "typeName": relationship_type,
+                "guid": f"-{idx + 1}",  # Negative GUID for auto-generation
+                "end1": {
+                    "guid": source_guid,
+                    "typeName": source_type
+                },
+                "end2": {
+                    "guid": target_guid,
+                    "typeName": target_type
+                },
+                "attributes": {
+                    "columnMapping": column_mapping
+                }
+            }
+            
+            relationships.append(relationship)
+        
+        # Return format for relationship creation
+        return {
+            "relationships": relationships
+        }
+    
     def _process_csv_lineage(self, csv_file, args):
         """Process CSV file and convert to lineage API format"""
         import pandas as pd
@@ -952,21 +998,38 @@ Use Cases:
                 "or (source_qualified_name, target_qualified_name) columns"
             )
         
-        # Generate lineage entities and relationships
+        # Check if any row uses direct_lineage_dataset_dataset type
+        # If so, we'll create relationships instead of Process entities
+        use_direct_lineage = False
+        if 'relationship_type' in df.columns:
+            use_direct_lineage = any(df['relationship_type'].str.contains('direct_lineage_dataset_dataset', na=False))
+        
+        if use_direct_lineage:
+            # Create direct relationships (UI-style lineage)
+            return self._process_csv_direct_lineage(csv_file, df, args)
+        
+        # Generate lineage entities (relationships are defined via inputs/outputs attributes)
         lineage_entities = []
-        lineage_relationships = []
         
         for idx, row in df.iterrows():
             # Create process entity for each lineage relationship
-            process_guid = str(uuid.uuid4())
+            # Use unique negative GUIDs (-1, -2, -3, ...) to let Atlas auto-generate the GUID for each Process
+            process_guid = f"-{idx + 1}"
             process_name = row.get('process_name', f"Process_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{idx}")
             
-            # Clean GUIDs if present (remove guid= prefix and quotes)
+            # Prepare inputs/outputs based on format
             if has_guid_columns:
+                # Clean GUIDs (remove guid= prefix and quotes)
                 source_guid = str(row['source_entity_guid']).strip().replace('guid=', '').strip('"')
                 target_guid = str(row['target_entity_guid']).strip().replace('guid=', '').strip('"')
+                
+                inputs = [{"guid": source_guid, "typeName": row.get('source_type', 'DataSet')}]
+                outputs = [{"guid": target_guid, "typeName": row.get('target_type', 'DataSet')}]
+            else:
+                inputs = [{"typeName": row.get('source_type', 'DataSet'), "uniqueAttributes": {"qualifiedName": row['source_qualified_name']}}]
+                outputs = [{"typeName": row.get('target_type', 'DataSet'), "uniqueAttributes": {"qualifiedName": row['target_qualified_name']}}]
             
-            # Process entity
+            # Process entity - let Atlas generate the GUID
             process_entity = {
                 "guid": process_guid,
                 "typeName": "Process",
@@ -975,6 +1038,8 @@ Use Cases:
                     "name": process_name,
                     "description": str(row.get('description', '')),
                     "owner": str(row.get('owner', '')),
+                    "inputs": inputs,
+                    "outputs": outputs
                 },
                 "classifications": [],
                 "meanings": []
@@ -996,80 +1061,11 @@ Use Cases:
             
             lineage_entities.append(process_entity)
             
-            # Determine relationship type
-            relationship_type = str(row.get('relationship_type', 'Process')).strip() or 'Process'
-            
-            # Input relationship (source -> process)
-            if has_guid_columns:
-                input_relationship = {
-                    "guid": str(uuid.uuid4()),
-                    "typeName": relationship_type,
-                    "end1": {
-                        "guid": source_guid,
-                        "typeName": row.get('source_type', 'DataSet')
-                    },
-                    "end2": {
-                        "guid": process_guid,
-                        "typeName": "Process"
-                    },
-                    "label": "inputToProcesses"
-                }
-                
-                # Output relationship (process -> target)
-                output_relationship = {
-                    "guid": str(uuid.uuid4()),
-                    "typeName": relationship_type,
-                    "end1": {
-                        "guid": process_guid,
-                        "typeName": "Process"
-                    },
-                    "end2": {
-                        "guid": target_guid,
-                        "typeName": row.get('target_type', 'DataSet')
-                    },
-                    "label": "outputFromProcesses"
-                }
-            else:
-                # Use qualified names
-                input_relationship = {
-                    "guid": str(uuid.uuid4()),
-                    "typeName": relationship_type,
-                    "end1": {
-                        "guid": "-1",
-                        "typeName": row.get('source_type', 'DataSet'),
-                        "uniqueAttributes": {
-                            "qualifiedName": row['source_qualified_name']
-                        }
-                    },
-                    "end2": {
-                        "guid": process_guid,
-                        "typeName": "Process"
-                    },
-                    "label": "inputToProcesses"
-                }
-                
-                output_relationship = {
-                    "guid": str(uuid.uuid4()),
-                    "typeName": relationship_type,
-                    "end1": {
-                        "guid": process_guid,
-                        "typeName": "Process"
-                    },
-                    "end2": {
-                        "guid": "-1",
-                        "typeName": row.get('target_type', 'DataSet'),
-                        "uniqueAttributes": {
-                            "qualifiedName": row['target_qualified_name']
-                        }
-                    },
-                    "label": "outputFromProcesses"
-                }
-            
-            lineage_relationships.extend([input_relationship, output_relationship])
+            # Note: Relationships are now defined via the inputs/outputs attributes in the Process entity
+            # No need to create separate relationship objects
         
         return {
             "entities": lineage_entities,
-            "relationships": lineage_relationships,
             "referredEntities": {}
         }
 
@@ -1131,11 +1127,19 @@ Use Cases:
         # Process CSV and create lineage payload
         lineage_data = self._process_csv_lineage(csv_file, args)
         
-        # Create lineage using the API
-        self.method = "POST"
-        self.endpoint = ENDPOINTS["lineage"]["create_lineage"]
-        self.params = get_api_version_params("datamap")
-        self.payload = lineage_data
+        # Check if this is direct lineage (relationships) or Process lineage (entities)
+        if "relationships" in lineage_data and "entities" not in lineage_data:
+            # Direct lineage - use relationship bulk API
+            self.method = "POST"
+            self.endpoint = ENDPOINTS["relationship"]["bulk_create_relationships"]
+            self.params = get_api_version_params("datamap")
+            self.payload = lineage_data["relationships"]
+        else:
+            # Process lineage - use entity bulk API
+            self.method = "POST"
+            self.endpoint = ENDPOINTS["entity"]["bulk_create_or_update"]
+            self.params = get_api_version_params("datamap")
+            self.payload = lineage_data
         
         # Return the payload for inspection (actual API call handled by decorator)
         return lineage_data
@@ -1745,3 +1749,390 @@ Use Cases:
         - Reporting: Generate catalog reports
     """
         return self.lineageReadNextPage(args)
+
+    def lineageCreateColumnLevel(self, args):
+        """
+Create column-level lineage between tables (supports 1 source → N targets).
+
+This method creates Process entities that link specific columns from a source table
+to columns in target table(s), establishing column-level data lineage.
+
+Args:
+        args: Dictionary containing:
+            --source-table-guid: GUID of the source table
+            --target-table-guids: List of GUIDs of target tables (or single GUID for backward compat)
+            --source-column: Name of the source column
+            --target-columns: List of target column names (or single name for backward compat)
+            --process-name: Optional name for the process (default: auto-generated)
+            --description: Optional description
+            --owner: Optional owner (default: data-engineering)
+            --validate-types: Boolean to validate column type compatibility
+
+Returns:
+        Dictionary with status and created entities
+
+Raises:
+        ValueError: When required parameters are missing
+        HTTPError: When API returns error status
+
+Example:
+        # Single target
+        client = Lineage()
+        args = {
+            "--source-table-guid": "abc-123",
+            "--target-table-guids": ["def-456"],
+            "--source-column": "CityKey",
+            "--target-columns": ["CityKey"],
+        }
+        
+        # Multiple targets
+        args = {
+            "--source-table-guid": "abc-123",
+            "--target-table-guids": ["def-456", "ghi-789"],
+            "--source-column": "CityKey",
+            "--target-columns": ["CityKey", "City_ID"],
+        }
+        result = client.lineageCreateColumnLevel(args)
+
+Use Cases:
+        - ETL Documentation: Document column transformations
+        - Data Lineage: Track data flow at column level
+        - Impact Analysis: Understand column dependencies
+        - Multi-target mapping: One source feeding multiple targets
+    """
+        from .endpoint import get_data
+        
+        # Extract parameters with backward compatibility
+        source_table_guid = args.get("--source-table-guid")
+        
+        # Support both old (single) and new (multiple) formats
+        target_table_guids = args.get("--target-table-guids")
+        if not target_table_guids:
+            # Backward compatibility: single target
+            single_target = args.get("--target-table-guid")
+            target_table_guids = [single_target] if single_target else []
+        
+        source_column_name = args.get("--source-column")
+        
+        target_columns = args.get("--target-columns")
+        if not target_columns:
+            # Backward compatibility: single column
+            single_column = args.get("--target-column")
+            target_columns = [single_column] if single_column else []
+        
+        # Validation
+        if not source_table_guid:
+            raise ValueError("Missing required parameter: --source-table-guid")
+        if not source_column_name:
+            raise ValueError("Missing required parameter: --source-column")
+        if not target_table_guids or len(target_table_guids) == 0:
+            raise ValueError("Missing required parameter: --target-table-guids (or --target-table-guid)")
+        if not target_columns or len(target_columns) == 0:
+            raise ValueError("Missing required parameter: --target-columns (or --target-column)")
+        
+        if len(target_table_guids) != len(target_columns):
+            raise ValueError(f"Mismatch: {len(target_table_guids)} target tables but {len(target_columns)} target columns")
+        
+        # Extract optional parameters (defined here for use in loop)
+        process_name = args.get("--process-name")
+        description = args.get("--description")
+        owner = args.get("--owner", "data-engineering")
+        validate_types = args.get("--validate-types", False)
+        
+        # Step 1: Get source table columns using the sync client
+        source_table = get_data({
+            "app": "catalog",
+            "method": "GET",
+            "endpoint": f"/datamap/api/atlas/v2/entity/guid/{source_table_guid}",
+            "params": get_api_version_params("datamap")
+        })
+        
+        if not source_table or isinstance(source_table, dict) and source_table.get("status") == "error":
+            return {"status": "error", "message": f"Failed to get source table: {source_table}"}
+        
+        source_columns_list = source_table.get('entity', {}).get('relationshipAttributes', {}).get('columns', [])
+        
+        source_column = None
+        for col in source_columns_list:
+            if col.get('displayText', '').lower() == source_column_name.lower():
+                source_column = col
+                break
+        
+        if not source_column:
+            available_cols = [c.get('displayText') for c in source_columns_list]
+            return {"status": "error", "message": f"Source column '{source_column_name}' not found. Available: {available_cols}"}
+        
+        source_column_guid = source_column['guid']
+        source_data_type = source_column.get('attributes', {}).get('dataType', 'unknown')
+        
+        # Step 2: Process each target (multi-target support)
+        results = []
+        all_entities = []
+        all_relationships = []
+        relationship_guid_counter = -2  # Start from -2 for relationship GUIDs
+        
+        for idx, (target_table_guid, target_column_name) in enumerate(zip(target_table_guids, target_columns)):
+            # Get target table columns
+            target_table = get_data({
+                "app": "catalog",
+                "method": "GET",
+                "endpoint": f"/datamap/api/atlas/v2/entity/guid/{target_table_guid}",
+                "params": get_api_version_params("datamap")
+            })
+            
+            if not target_table or isinstance(target_table, dict) and target_table.get("status") == "error":
+                results.append({
+                    "target_index": idx,
+                    "target_table_guid": target_table_guid,
+                    "target_column": target_column_name,
+                    "status": "error",
+                    "message": f"Failed to get target table: {target_table}"
+                })
+                continue
+            
+            target_columns_list = target_table.get('entity', {}).get('relationshipAttributes', {}).get('columns', [])
+            
+            target_column = None
+            for col in target_columns_list:
+                if col.get('displayText', '').lower() == target_column_name.lower():
+                    target_column = col
+                    break
+            
+            if not target_column:
+                available_cols = [c.get('displayText') for c in target_columns_list]
+                results.append({
+                    "target_index": idx,
+                    "target_table_guid": target_table_guid,
+                    "target_column": target_column_name,
+                    "status": "error",
+                    "message": f"Target column '{target_column_name}' not found. Available: {available_cols}"
+                })
+                continue
+            
+            target_column_guid = target_column['guid']
+            target_data_type = target_column.get('attributes', {}).get('dataType', 'unknown')
+            
+            # Type validation if requested
+            if validate_types:
+                if not self._are_types_compatible(source_data_type, target_data_type):
+                    results.append({
+                        "target_index": idx,
+                        "target_table_guid": target_table_guid,
+                        "target_column": target_column_name,
+                        "status": "error",
+                        "message": f"Type mismatch: source '{source_data_type}' not compatible with target '{target_data_type}'"
+                    })
+                    continue
+            
+            # Generate unique qualified name and process name
+            process_guid = f"-{idx + 1}"  # -1, -2, -3, etc. for each process
+            qualified_name = f"ColumnMapping_{source_column_name}_{source_table_guid}_to_{target_column_name}_{target_table_guid}@default"
+            
+            default_process_name = f"{source_column_name}_to_{target_column_name}_Mapping"
+            final_process_name = process_name if process_name else default_process_name
+            
+            default_description = f"Column lineage: {source_column_name} -> {target_column_name}"
+            final_description = description if description else default_description
+            
+            # Create Process entity for this target
+            process_entity = {
+                "guid": process_guid,
+                "typeName": "Process",
+                "attributes": {
+                    "qualifiedName": qualified_name,
+                    "name": final_process_name,
+                    "description": final_description,
+                    "owner": owner,
+                    "inputs": [{"guid": source_column_guid, "typeName": "column"}],
+                    "outputs": [{"guid": target_column_guid, "typeName": "column"}]
+                },
+                "classifications": [],
+                "meanings": []
+            }
+            
+            all_entities.append(process_entity)
+            
+            # Create relationships for this process
+            input_relationship = {
+                "guid": str(relationship_guid_counter),
+                "typeName": "dataset_process_inputs",
+                "end1": {
+                    "guid": source_column_guid,
+                    "typeName": "column"
+                },
+                "end2": {
+                    "guid": process_guid,
+                    "typeName": "Process"
+                }
+            }
+            relationship_guid_counter -= 1
+            
+            output_relationship = {
+                "guid": str(relationship_guid_counter),
+                "typeName": "process_dataset_outputs",
+                "end1": {
+                    "guid": process_guid,
+                    "typeName": "Process"
+                },
+                "end2": {
+                    "guid": target_column_guid,
+                    "typeName": "column"
+                }
+            }
+            relationship_guid_counter -= 1
+            
+            all_relationships.append(input_relationship)
+            all_relationships.append(output_relationship)
+            
+            results.append({
+                "target_index": idx,
+                "target_table_guid": target_table_guid,
+                "target_column": target_column_name,
+                "status": "pending"
+            })
+        
+        # Check if any targets succeeded
+        if not all_entities:
+            return {
+                "status": "error",
+                "message": "All targets failed validation",
+                "results": results
+            }
+        
+        # Step 3: Create all lineages in a single bulk operation
+        column_lineage_payload = {
+            "entities": all_entities,
+            "relationships": all_relationships
+        }
+        
+        # Step 4: Create the lineage using the sync client
+        api_result = get_data({
+            "app": "catalog",
+            "method": "POST",
+            "endpoint": ENDPOINTS["entity"]["bulk_create_or_update"],
+            "params": get_api_version_params("datamap"),
+            "payload": column_lineage_payload
+        })
+        
+        # Update results with success status
+        created_entities = api_result.get('mutatedEntities', {}).get('CREATE', []) if api_result else []
+        for result in results:
+            if result['status'] == 'pending':
+                result['status'] = 'success'
+        
+        return {
+            "status": "success",
+            "message": f"Created {len(all_entities)} column lineage(s)",
+            "created_count": len(all_entities),
+            "results": results,
+            "api_response": api_result
+        }
+    
+    def _are_types_compatible(self, source_type, target_type):
+        """
+        Check if source and target column types are compatible for lineage.
+        
+        Args:
+            source_type: Source column data type
+            target_type: Target column data type
+        
+        Returns:
+            Boolean indicating compatibility
+        """
+        # Normalize types
+        source = source_type.lower() if source_type else 'unknown'
+        target = target_type.lower() if target_type else 'unknown'
+        
+        # Exact match
+        if source == target:
+            return True
+        
+        # Integer family compatibility
+        int_types = {'int', 'integer', 'bigint', 'smallint', 'tinyint', 'long'}
+        if source in int_types and target in int_types:
+            return True
+        
+        # Float/decimal family compatibility
+        float_types = {'float', 'double', 'decimal', 'numeric', 'real'}
+        if source in float_types and target in float_types:
+            return True
+        
+        # String family compatibility
+        string_types = {'string', 'varchar', 'char', 'text', 'nvarchar', 'nchar'}
+        if source in string_types and target in string_types:
+            return True
+        
+        # Date/time family compatibility
+        datetime_types = {'date', 'datetime', 'datetime2', 'timestamp', 'time'}
+        if source in datetime_types and target in datetime_types:
+            return True
+        
+        # Allow promotion from int to float
+        if source in int_types and target in float_types:
+            return True
+        
+        # Unknown types are compatible (permissive approach)
+        if source == 'unknown' or target == 'unknown':
+            return True
+        
+        return False
+
+    @decorator
+    def lineageCreateDirect(self, args):
+        """
+        Create direct lineage between two datasets (UI-style lineage without visible Process).
+        
+        This creates a direct_lineage_dataset_dataset relationship, which is what Purview UI uses
+        when you manually create lineage. The Process is created internally but hidden in the UI.
+        
+        Args:
+            args: Dictionary with keys:
+                --source-guid: Source entity GUID
+                --target-guid: Target entity GUID
+                --source-type: Source entity type (e.g., azure_sql_table)
+                --target-type: Target entity type (e.g., azure_sql_table)
+                --column-mapping: Optional column mapping JSON string
+        
+        Returns:
+            Created relationship details
+        
+        Example:
+            client = Lineage()
+            result = client.lineageCreateDirect({
+                "--source-guid": "9ebbd583-4987-4d1b-b4f5-d8f6f6f60000",
+                "--target-guid": "52c7d566-87ab-4753-a23a-d3f6f6f60000",
+                "--source-type": "azure_sql_table",
+                "--target-type": "azure_sql_table",
+                "--column-mapping": ""
+            })
+        """
+        source_guid = args.get("--source-guid")
+        target_guid = args.get("--target-guid")
+        source_type = args.get("--source-type", "DataSet")
+        target_type = args.get("--target-type", "DataSet")
+        column_mapping = args.get("--column-mapping", "")
+        
+        if not source_guid or not target_guid:
+            raise ValueError("Both --source-guid and --target-guid are required")
+        
+        # Create direct lineage relationship (UI-style)
+        relationship = {
+            "typeName": "direct_lineage_dataset_dataset",
+            "guid": "-1",  # Let Atlas generate
+            "end1": {
+                "guid": source_guid,
+                "typeName": source_type
+            },
+            "end2": {
+                "guid": target_guid,
+                "typeName": target_type
+            },
+            "attributes": {
+                "columnMapping": column_mapping
+            }
+        }
+        
+        self.method = "POST"
+        self.endpoint = ENDPOINTS["relationship"]["create"]
+        self.params = get_api_version_params("datamap")
+        self.payload = relationship
