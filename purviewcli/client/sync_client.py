@@ -8,6 +8,10 @@ import json
 from typing import Dict, Optional
 from azure.identity import DefaultAzureCredential, ClientSecretCredential
 from azure.core.exceptions import ClientAuthenticationError
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+import ssl
+import urllib3
 
 
 class SyncPurviewConfig:
@@ -44,6 +48,33 @@ class SyncPurviewClient:
         self._token = None
         self._uc_token = None
         self._credential = None
+        
+        # Configure session with retry strategy for Azure Front Door SSL issues
+        self._session = self._create_session_with_retries()
+
+    def _create_session_with_retries(self):
+        """Create a requests session with retry strategy and SSL workarounds for Azure Front Door"""
+        session = requests.Session()
+        
+        # Retry strategy for transient errors and SSL issues
+        retry_strategy = Retry(
+            total=5,  # Total number of retries
+            backoff_factor=1,  # Wait 1, 2, 4, 8, 16 seconds between retries
+            status_forcelist=[429, 500, 502, 503, 504],  # Retry on these HTTP status codes
+            allowed_methods=["HEAD", "GET", "PUT", "DELETE", "OPTIONS", "TRACE", "POST"]  # Retry on all methods
+        )
+        
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        session.mount("https://", adapter)
+        session.mount("http://", adapter)
+        
+        # Workaround for Azure Front Door SSL issues (TLS inspection, protocol mismatch)
+        # Disable SSL verification warnings (only if needed in corporate environments)
+        if os.getenv("PURVIEW_DISABLE_SSL_VERIFY", "false").lower() == "true":
+            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+            session.verify = False
+        
+        return session
 
     def _get_purview_account_id(self):
         """Get Purview account ID from Atlas endpoint URL"""
@@ -141,14 +172,14 @@ class SyncPurviewClient:
                 "User-Agent": "purviewcli/2.0",
             }
 
-            # Make the actual HTTP request
-            response = requests.request(
+            # Make the actual HTTP request using session with retries
+            response = self._session.request(
                 method=method.upper(),
                 url=url,
                 headers=headers,
                 params=kwargs.get("params"),
                 json=kwargs.get("json"),
-                timeout=30,
+                timeout=60,  # Increased timeout for Azure Front Door
             )
             # Handle the response
             if response.status_code in [200, 201]:
@@ -163,18 +194,25 @@ class SyncPurviewClient:
                     }
             elif response.status_code == 401:
                 # Token might be expired, try to refresh
-                self._token = None
-                self._get_authentication_token()
-                headers["Authorization"] = f"Bearer {self._token}"
+                if is_unified_catalog:
+                    self._uc_token = None
+                    self._get_authentication_token(for_unified_catalog=True)
+                    token = self._uc_token
+                else:
+                    self._token = None
+                    self._get_authentication_token(for_unified_catalog=False)
+                    token = self._token
+                    
+                headers["Authorization"] = f"Bearer {token}"
 
-                # Retry the request
-                response = requests.request(
+                # Retry the request with session
+                response = self._session.request(
                     method=method.upper(),
                     url=url,
                     headers=headers,
                     params=kwargs.get("params"),
                     json=kwargs.get("json"),
-                    timeout=30,
+                    timeout=60,
                 )
 
                 if response.status_code in [200, 201]:

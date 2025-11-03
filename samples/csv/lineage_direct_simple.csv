@@ -1,0 +1,3 @@
+source_entity_guid,target_entity_guid,source_type,target_type,relationship_type
+9ebbd583-4987-4d1b-b4f5-d8f6f6f60000,c88126ba-5fb5-4d33-bbe2-5ff6f6f60000,azure_sql_table,azure_sql_view,direct_lineage_dataset_dataset
+9ebbd583-4987-4d1b-b4f5-d8f6f6f60000,52c7d566-87ab-4753-a23a-d3f6f6f60000,azure_sql_table,azure_sql_table,direct_lineage_dataset_dataset

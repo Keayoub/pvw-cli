@@ -1,0 +1,1253 @@
+# Generated Docstrings for _search.py
+# Copy these to your Python source file
+
+## Search.searchQuery
+    """
+Search for resources.
+    
+    Searches for resources matching the specified criteria.
+    Supports filtering, pagination, and sorting.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing search results:
+            {
+                'value': [...]     # List of matching resources
+                'count': int,      # Total results count
+                'nextLink': str    # Pagination link (if applicable)
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.searchQuery(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Locate datasets by name or properties
+        - Impact Analysis: Find all assets related to a term
+        - Compliance: Identify sensitive data across catalog
+    """
+
+================================================================================
+
+## Search.searchSuggest
+    """
+Search for resources.
+    
+    Searches for resources matching the specified criteria.
+    Supports filtering, pagination, and sorting.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing search results:
+            {
+                'value': [...]     # List of matching resources
+                'count': int,      # Total results count
+                'nextLink': str    # Pagination link (if applicable)
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.searchSuggest(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Locate datasets by name or properties
+        - Impact Analysis: Find all assets related to a term
+        - Compliance: Identify sensitive data across catalog
+    """
+
+================================================================================
+
+## Search.searchAutocomplete
+    """
+Search for resources.
+    
+    Searches for resources matching the specified criteria.
+    Supports filtering, pagination, and sorting.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing search results:
+            {
+                'value': [...]     # List of matching resources
+                'count': int,      # Total results count
+                'nextLink': str    # Pagination link (if applicable)
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.searchAutocomplete(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Locate datasets by name or properties
+        - Impact Analysis: Find all assets related to a term
+        - Compliance: Identify sensitive data across catalog
+    """
+
+================================================================================
+
+## Search.searchBrowse
+    """
+Search for resources.
+    
+    Searches for resources matching the specified criteria.
+    Supports filtering, pagination, and sorting.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing search results:
+            {
+                'value': [...]     # List of matching resources
+                'count': int,      # Total results count
+                'nextLink': str    # Pagination link (if applicable)
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.searchBrowse(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Locate datasets by name or properties
+        - Impact Analysis: Find all assets related to a term
+        - Compliance: Identify sensitive data across catalog
+    """
+
+================================================================================
+
+## Search.searchAdvanced
+    """
+Search for resources.
+    
+    Searches for resources matching the specified criteria.
+    Supports filtering, pagination, and sorting.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing search results:
+            {
+                'value': [...]     # List of matching resources
+                'count': int,      # Total results count
+                'nextLink': str    # Pagination link (if applicable)
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.searchAdvanced(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Locate datasets by name or properties
+        - Impact Analysis: Find all assets related to a term
+        - Compliance: Identify sensitive data across catalog
+    """
+
+================================================================================
+
+## Search.searchFaceted
+    """
+Search for resources.
+    
+    Searches for resources matching the specified criteria.
+    Supports filtering, pagination, and sorting.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing search results:
+            {
+                'value': [...]     # List of matching resources
+                'count': int,      # Total results count
+                'nextLink': str    # Pagination link (if applicable)
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.searchFaceted(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Locate datasets by name or properties
+        - Impact Analysis: Find all assets related to a term
+        - Compliance: Identify sensitive data across catalog
+    """
+
+================================================================================
+
+## Search.searchSave
+    """
+Search for resources.
+    
+    Searches for resources matching the specified criteria.
+    Supports filtering, pagination, and sorting.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing search results:
+            {
+                'value': [...]     # List of matching resources
+                'count': int,      # Total results count
+                'nextLink': str    # Pagination link (if applicable)
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.searchSave(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Locate datasets by name or properties
+        - Impact Analysis: Find all assets related to a term
+        - Compliance: Identify sensitive data across catalog
+    """
+
+================================================================================
+
+## Search.searchReadSaved
+    """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        List of resource dictionaries, each containing:
+            - guid (str): Unique identifier
+            - name (str): Resource name
+            - attributes (dict): Resource attributes
+            - status (str): Resource status
+        
+        Returns empty list if no resources found.
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.searchReadSaved(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
+
+================================================================================
+
+## Search.searchDeleteSaved
+    """
+Delete a resource.
+    
+    Permanently deletes the specified resource.
+    This operation cannot be undone. Use with caution.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary with deletion status:
+            {
+                'guid': str,       # Deleted resource ID
+                'status': str,     # Deletion status
+                'message': str     # Confirmation message
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.searchDeleteSaved(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Cleanup: Remove obsolete or test data
+        - Decommissioning: Delete resources no longer in use
+        - Testing: Clean up test environments
+    """
+
+================================================================================
+
+## Search.searchReadAnalytics
+    """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        List of resource dictionaries, each containing:
+            - guid (str): Unique identifier
+            - name (str): Resource name
+            - attributes (dict): Resource attributes
+            - status (str): Resource status
+        
+        Returns empty list if no resources found.
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.searchReadAnalytics(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
+
+================================================================================
+
+## Search.searchReadTemplates
+    """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        List of resource dictionaries, each containing:
+            - guid (str): Unique identifier
+            - name (str): Resource name
+            - attributes (dict): Resource attributes
+            - status (str): Resource status
+        
+        Returns empty list if no resources found.
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.searchReadTemplates(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
+
+================================================================================
+
+## Search.searchReadConfiguration
+    """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        List of resource dictionaries, each containing:
+            - guid (str): Unique identifier
+            - name (str): Resource name
+            - attributes (dict): Resource attributes
+            - status (str): Resource status
+        
+        Returns empty list if no resources found.
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.searchReadConfiguration(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
+
+================================================================================
+
+## Search.searchUpdateConfiguration
+    """
+Update an existing resource.
+    
+    Updates an existing resource with new values.
+    Only specified fields are modified; others remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing updated resource:
+            {
+                'guid': str,          # Unique identifier
+                'attributes': dict,   # Updated attributes
+                'updateTime': int     # Update timestamp
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.searchUpdateConfiguration(args=...)
+        print(f"Result: {result}")
+        
+        # With detailed data
+        data = {
+            'name': 'My Resource',
+            'description': 'Resource description',
+            'attributes': {
+                'key1': 'value1',
+                'key2': 'value2'
+            }
+        }
+        
+        result = client.searchUpdateConfiguration(data)
+        print(f"Created/Updated: {result['guid']}")
+    
+Use Cases:
+        - Metadata Enrichment: Update descriptions and tags
+        - Ownership Changes: Reassign data ownership
+        - Classification: Apply or modify data classifications
+    """
+
+================================================================================
+
+## Search.searchReadIndexStatus
+    """
+Retrieve resource information.
+    
+    Retrieves detailed information about the specified resource.
+    Returns complete resource metadata and properties.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        List of resource dictionaries, each containing:
+            - guid (str): Unique identifier
+            - name (str): Resource name
+            - attributes (dict): Resource attributes
+            - status (str): Resource status
+        
+        Returns empty list if no resources found.
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.searchReadIndexStatus(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Find and explore data assets
+        - Compliance Auditing: Review metadata and classifications
+        - Reporting: Generate catalog reports
+    """
+
+================================================================================
+
+## Search.searchRebuildIndex
+    """
+Search for resources.
+    
+    Searches for resources matching the specified criteria.
+    Supports filtering, pagination, and sorting.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing search results:
+            {
+                'value': [...]     # List of matching resources
+                'count': int,      # Total results count
+                'nextLink': str    # Pagination link (if applicable)
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.searchRebuildIndex(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Locate datasets by name or properties
+        - Impact Analysis: Find all assets related to a term
+        - Compliance: Identify sensitive data across catalog
+    """
+
+================================================================================
+
+## Search.searchExportResults
+    """
+Search for resources.
+    
+    Searches for resources matching the specified criteria.
+    Supports filtering, pagination, and sorting.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing search results:
+            {
+                'value': [...]     # List of matching resources
+                'count': int,      # Total results count
+                'nextLink': str    # Pagination link (if applicable)
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.searchExportResults(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Locate datasets by name or properties
+        - Impact Analysis: Find all assets related to a term
+        - Compliance: Identify sensitive data across catalog
+    """
+
+================================================================================
+
+## Search.searchGenerateReport
+    """
+Search for resources.
+    
+    Searches for resources matching the specified criteria.
+    Supports filtering, pagination, and sorting.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing search results:
+            {
+                'value': [...]     # List of matching resources
+                'count': int,      # Total results count
+                'nextLink': str    # Pagination link (if applicable)
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.searchGenerateReport(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Locate datasets by name or properties
+        - Impact Analysis: Find all assets related to a term
+        - Compliance: Identify sensitive data across catalog
+    """
+
+================================================================================
+
+## Search.searchEntities
+    """
+Search for resources.
+    
+    Searches for resources matching the specified criteria.
+    Supports filtering, pagination, and sorting.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing search results:
+            {
+                'value': [...]     # List of matching resources
+                'count': int,      # Total results count
+                'nextLink': str    # Pagination link (if applicable)
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.searchEntities(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Locate datasets by name or properties
+        - Impact Analysis: Find all assets related to a term
+        - Compliance: Identify sensitive data across catalog
+    """
+
+================================================================================
+
+## Search.querySuggest
+    """
+Search for resources.
+    
+    Searches for resources matching the specified criteria.
+    Supports filtering, pagination, and sorting.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing search results:
+            {
+                'value': [...]     # List of matching resources
+                'count': int,      # Total results count
+                'nextLink': str    # Pagination link (if applicable)
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.querySuggest(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Locate datasets by name or properties
+        - Impact Analysis: Find all assets related to a term
+        - Compliance: Identify sensitive data across catalog
+    """
+
+================================================================================
+
+## Search.queryAutoComplete
+    """
+Search for resources.
+    
+    Searches for resources matching the specified criteria.
+    Supports filtering, pagination, and sorting.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing search results:
+            {
+                'value': [...]     # List of matching resources
+                'count': int,      # Total results count
+                'nextLink': str    # Pagination link (if applicable)
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.queryAutoComplete(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Locate datasets by name or properties
+        - Impact Analysis: Find all assets related to a term
+        - Compliance: Identify sensitive data across catalog
+    """
+
+================================================================================
+
+## Search.browseEntity
+    """
+Search for resources.
+    
+    Searches for resources matching the specified criteria.
+    Supports filtering, pagination, and sorting.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing search results:
+            {
+                'value': [...]     # List of matching resources
+                'count': int,      # Total results count
+                'nextLink': str    # Pagination link (if applicable)
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = EntityClient()
+        
+        result = client.browseEntity(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Locate datasets by name or properties
+        - Impact Analysis: Find all assets related to a term
+        - Compliance: Identify sensitive data across catalog
+    """
+
+================================================================================
+
+## Search.searchWithFacets
+    """
+Search for resources.
+    
+    Searches for resources matching the specified criteria.
+    Supports filtering, pagination, and sorting.
+    
+Args:
+        args: Dictionary of operation arguments.
+               Contains operation-specific parameters.
+               See method implementation for details.
+    
+Returns:
+        Dictionary containing search results:
+            {
+                'value': [...]     # List of matching resources
+                'count': int,      # Total results count
+                'nextLink': str    # Pagination link (if applicable)
+            }
+    
+Raises:
+        ValueError: When required parameters are missing or invalid:
+            - Empty or None values for required fields
+            - Invalid GUID format
+            - Out-of-range values
+        
+        AuthenticationError: When Azure credentials are invalid:
+            - DefaultAzureCredential not configured
+            - Insufficient permissions
+            - Expired authentication token
+        
+        HTTPError: When Purview API returns error:
+            - 400: Bad request (invalid parameters)
+            - 401: Unauthorized (authentication failed)
+            - 403: Forbidden (insufficient permissions)
+            - 404: Resource not found
+            - 429: Rate limit exceeded
+            - 500: Internal server error
+        
+        NetworkError: When network connectivity fails
+    
+Example:
+        # Basic usage
+        client = Client()
+        
+        result = client.searchWithFacets(args=...)
+        print(f"Result: {result}")
+    
+Use Cases:
+        - Data Discovery: Locate datasets by name or properties
+        - Impact Analysis: Find all assets related to a term
+        - Compliance: Identify sensitive data across catalog
+    """
+
+================================================================================
+

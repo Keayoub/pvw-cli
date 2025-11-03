@@ -1,0 +1,4 @@
+source_entity_guid,target_entity_guid,source_type,target_type,relationship_type,column_mapping
+9ebbd583-4987-4d1b-b4f5-d8f6f6f60000,9d2c1035-98c7-4db1-9555-00f6f6f60000,azure_sql_table,azure_sql_view,direct_lineage_dataset_dataset,"[{""Source"":""ProductCategoryID"",""Sink"":""ProductCategoryID""}]"
+9ebbd583-4987-4d1b-b4f5-d8f6f6f60000,52c7d566-87ab-4753-a23a-d3f6f6f60000,azure_sql_table,azure_sql_table,direct_lineage_dataset_dataset,"[{""Source"":""ProductDescriptionID"",""Sink"":""ProductDescriptionID""},{""Source"":""Name"",""Sink"":""Description""}]"
+9ebbd583-4987-4d1b-b4f5-d8f6f6f60000,8187d83a-c75f-45b2-ad67-60f6f6f60000,azure_sql_table,azure_sql_view,direct_lineage_dataset_dataset,"[{""Source"":""ProductModelID"",""Sink"":""ProductModelID""},{""Source"":""Name"",""Sink"":""Name""}]"

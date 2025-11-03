@@ -1,0 +1,8 @@
+{
+  "or": [
+    { "entityType": "azure_sql_table" },
+    { "entityType": "azure_sql_db_table" },
+    { "entityType": "mssql_table" },
+    { "entityType": "sql_table" }
+  ]
+}

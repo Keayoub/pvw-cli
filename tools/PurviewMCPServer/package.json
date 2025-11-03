@@ -1,5 +1,5 @@
 {
-  "name": "purview-mcp-server",
+  "name": "chat.mcp.purview",
   "version": "1.0.0",
   "description": "Model Context Protocol server for Microsoft Purview CLI - enables LLM-powered data governance workflows",
   "type": "module",
@@ -10,15 +10,19 @@
     "start": "python server.py"
   },
   "mcp": {
-    "command": "python",
-    "args": ["server.py"],
-    "env": {
-      "PURVIEW_ACCOUNT_NAME": "${PURVIEW_ACCOUNT_NAME}",
-      "AZURE_TENANT_ID": "${AZURE_TENANT_ID}",
-      "AZURE_REGION": "${AZURE_REGION}",
-      "PURVIEW_MAX_RETRIES": "${PURVIEW_MAX_RETRIES:-3}",
-      "PURVIEW_TIMEOUT": "${PURVIEW_TIMEOUT:-30}",
-      "PURVIEW_BATCH_SIZE": "${PURVIEW_BATCH_SIZE:-100}"
+    "servers": {
+      "chat.mcp.purview": {
+        "command": "python",
+        "args": ["server.py"],
+        "env": {
+          "PURVIEW_ACCOUNT_NAME": "${PURVIEW_ACCOUNT_NAME}",
+          "PURVIEW_ACCOUNT_ID": "${PURVIEW_ACCOUNT_ID}",
+          "AZURE_TENANT_ID": "${AZURE_TENANT_ID}",
+          "PURVIEW_MAX_RETRIES": "${PURVIEW_MAX_RETRIES:-3}",
+          "PURVIEW_TIMEOUT": "${PURVIEW_TIMEOUT:-30}",
+          "PURVIEW_BATCH_SIZE": "${PURVIEW_BATCH_SIZE:-100}"
+        }
+      }
     }
   },
   "keywords": [
@@ -30,9 +34,11 @@
     "llm",
     "ai-assistant",
     "claude",
-    "cline"
+    "cline",
+    "vscode-extension",
+    "cursor"
   ],
-  "author": "AYOUB KEBAILI",
+  "author": "keayoub",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -41,3 +47,4 @@
   },
   "homepage": "https://github.com/Keayoub/pvw-cli/tree/main/mcp"
 }
+

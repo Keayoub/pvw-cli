@@ -1,0 +1,10 @@
+# Exemple mixte: lineage avec ET sans column_mapping
+# Le column_mapping est optionnel - vous pouvez l'omettre ou laisser vide
+
+source_entity_guid,target_entity_guid,source_type,target_type,relationship_type,column_mapping
+# Exemple 1: AVEC mapping de colonnes (3 colonnes)
+9ebbd583-4987-4d1b-b4f5-d8f6f6f60000,c88126ba-5fb5-4d33-bbe2-5ff6f6f60000,azure_sql_table,azure_sql_view,direct_lineage_dataset_dataset,"[{""Source"":""ProductID"",""Sink"":""ProductID""},{""Source"":""Name"",""Sink"":""Name""},{""Source"":""ProductNumber"",""Sink"":""ProductNumber""}]"
+# Exemple 2: SANS mapping de colonnes (lineage table-à-table simple)
+9ebbd583-4987-4d1b-b4f5-d8f6f6f60000,52c7d566-87ab-4753-a23a-d3f6f6f60000,azure_sql_table,azure_sql_table,direct_lineage_dataset_dataset,
+# Exemple 3: AVEC mapping de 2 colonnes
+9d2c1035-98c7-4db1-9555-00f6f6f60000,cf2e7723-07cb-4a88-be95-98f6f6f60000,azure_sql_table,azure_sql_view,direct_lineage_dataset_dataset,"[{""Source"":""ProductCategoryID"",""Sink"":""ProductCategoryID""},{""Source"":""Name"",""Sink"":""ProductCategoryName""}]"

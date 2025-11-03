@@ -1,0 +1,137 @@
+{
+    "name": "purview-mcp-server",
+    "displayName": "Purview MCP Server",
+    "description": "Provides Model Context Protocol (MCP) integration and tooling for Microsoft Purview in Visual Studio Code. Now powered by FastMCP!",
+    "publisher": "keayoub",
+    "version": "0.1.0",
+    "icon": "icon.png",
+    "engines": {
+        "vscode": "^1.60.0"
+    },
+    "categories": [
+        "AI",
+        "Azure",
+        "Chat",
+        "Extension Packs"
+    ],
+    "activationEvents": [
+        "onStartupFinished",
+        "onCommand:purview-mcp.startServer",
+        "onCommand:purview-mcp.stopServer",
+        "onCommand:purview-mcp.diagnose"
+    ],
+    "main": "./dist/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "purview-mcp.startServer",
+                "title": "Start Server",
+                "category": "Purview MCP"
+            },
+            {
+                "command": "purview-mcp.stopServer",
+                "title": "Stop Server",
+                "category": "Purview MCP"
+            },
+            {
+                "command": "purview-mcp.diagnose",
+                "title": "Diagnose Setup",
+                "category": "Purview MCP"
+            }
+        ],
+        "configuration": {
+            "title": "Purview MCP Server",
+            "properties": {
+                "purview-mcp.accountName": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Azure Purview account name (PURVIEW_ACCOUNT_NAME)"
+                },
+                "purview-mcp.accountId": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Azure Purview account ID (PURVIEW_ACCOUNT_ID) - For Unified Catalog"
+                },
+                "purview-mcp.tenantId": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Azure tenant ID (optional, AZURE_TENANT_ID)"
+                },
+                "purview-mcp.developmentMode": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Enable development mode (installs pvw-cli in editable mode from local source)"
+                },
+                "purview-mcp.useBundledScripts": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Use the bundled start/stop scripts provided by the extension when available (standalone mode)"
+                },
+                "purview-mcp.autoStart": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Automatically start the Purview MCP server when VS Code starts"
+                },        
+                "purview-mcp.autoInstallDependencies": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "When true, the extension will attempt to install Python dependencies from the bundled requirements.txt on activation (requires Python and network access)."
+                }
+            }
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run build",
+        "build": "tsc -p ./",
+        "watch": "tsc -w -p ./",
+        "package": "npx @vscode/vsce package",
+        "build-extension": "pwsh -File build-extension.ps1"
+    },
+    "devDependencies": {
+        "typescript": "^4.0.0",
+        "@types/node": "^14.0.0",
+        "@types/vscode": "^1.60.0"
+    },
+    "keywords": [
+        "mcp",
+        "purview",
+        "ai",
+        "agents",
+        "copilot",
+        "azure",
+        "chat",
+        "model-context-protocol",
+        "language-model-tools"
+    ],
+    "homepage": "https://github.com/Keayoub/pvw-cli/tree/main/mcp",
+    "galleryBanner": {
+        "color": "#0078D4",
+        "theme": "dark"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Keayoub/pvw-cli.git",
+        "directory": "mcp/vscode-extension"
+    },
+    "bugs": {
+        "url": "https://github.com/Keayoub/pvw-cli/issues"
+    },
+    "license": "MIT",
+    "mcp": {
+        "servers": {
+            "chat.mcp.purview": {
+                "displayName": "Purview MCP (FastMCP)",
+                "command": "python",
+                "args": [
+                    "${extensionPath}/bundled/server.py",
+                    "--no-banner"
+                ],
+                "env": {
+                    "PURVIEW_ACCOUNT_NAME": "${config:purview-mcp.accountName}",
+                    "PURVIEW_ACCOUNT_ID": "${config:purview-mcp.accountId}",
+                    "AZURE_TENANT_ID": "${config:purview-mcp.tenantId}"
+                }
+            }
+        }
+    }
+}
