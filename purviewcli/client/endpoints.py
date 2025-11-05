@@ -413,6 +413,12 @@ ENDPOINTS = {
         "delete_objective": "/datagovernance/catalog/objectives/{objectiveId}",
         # Objectives query
         "query_objectives": "/datagovernance/catalog/objectives/query",
+        # Key Results (OKRs - under objectives)
+        "list_key_results": "/datagovernance/catalog/objectives/{objectiveId}/keyResults",
+        "get_key_result": "/datagovernance/catalog/objectives/{objectiveId}/keyResults/{keyResultId}",
+        "create_key_result": "/datagovernance/catalog/objectives/{objectiveId}/keyResults",
+        "update_key_result": "/datagovernance/catalog/objectives/{objectiveId}/keyResults/{keyResultId}",
+        "delete_key_result": "/datagovernance/catalog/objectives/{objectiveId}/keyResults/{keyResultId}",
         # Critical Data Elements
         "list_critical_data_elements": "/datagovernance/catalog/criticalDataElements",
         "create_critical_data_element": "/datagovernance/catalog/criticalDataElements",
