@@ -2709,6 +2709,239 @@ def query_cdes(ids, domain_ids, name_keyword, owners, status, multi_status,
 
 
 # ========================================
+# KEY RESULTS (OKRs)
+# ========================================
+
+
+@uc.group()
+def keyresult():
+    """Manage key results for objectives (OKRs)."""
+    pass
+
+
+@keyresult.command(name="list")
+@click.option("--objective-id", required=True, help="Objective ID to list key results for")
+@click.option("--json", "output_json", is_flag=True, help="Output results in JSON format")
+def list_key_results(objective_id, output_json):
+    """List all key results for an objective."""
+    try:
+        client = UnifiedCatalogClient()
+        args = {"--objective-id": [objective_id]}
+        result = client.get_key_results(args)
+
+        if not result:
+            console.print("[yellow]No key results found.[/yellow]")
+            return
+
+        # Handle response format
+        if isinstance(result, (list, tuple)):
+            key_results = result
+        elif isinstance(result, dict):
+            key_results = result.get("value", [])
+        else:
+            key_results = []
+
+        if not key_results:
+            console.print("[yellow]No key results found.[/yellow]")
+            return
+
+        # Output in JSON format if requested
+        if output_json:
+            _format_json_output(key_results)
+            return
+
+        table = Table(title=f"Key Results for Objective {objective_id[:8]}...")
+        table.add_column("ID", style="cyan", no_wrap=True)
+        table.add_column("Definition", style="green", max_width=50)
+        table.add_column("Progress", style="blue")
+        table.add_column("Goal", style="yellow")
+        table.add_column("Max", style="magenta")
+        table.add_column("Status", style="white")
+
+        for kr in key_results:
+            definition = kr.get("definition", "N/A")
+            if len(definition) > 47:
+                definition = definition[:47] + "..."
+            
+            table.add_row(
+                kr.get("id", "N/A")[:13] + "...",
+                definition,
+                str(kr.get("progress", "N/A")),
+                str(kr.get("goal", "N/A")),
+                str(kr.get("max", "N/A")),
+                kr.get("status", "N/A"),
+            )
+
+        console.print(table)
+        console.print(f"\n[dim]Found {len(key_results)} key result(s)[/dim]")
+
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@keyresult.command()
+@click.option("--objective-id", required=True, help="Objective ID")
+@click.option("--key-result-id", required=True, help="Key result ID")
+def show(objective_id, key_result_id):
+    """Show details of a key result."""
+    try:
+        client = UnifiedCatalogClient()
+        args = {
+            "--objective-id": [objective_id],
+            "--key-result-id": [key_result_id]
+        }
+        result = client.get_key_result_by_id(args)
+
+        if not result:
+            console.print("[red]ERROR:[/red] No response received")
+            return
+        if isinstance(result, dict) and "error" in result:
+            console.print(f"[red]ERROR:[/red] {result.get('error', 'Key result not found')}")
+            return
+
+        console.print(json.dumps(result, indent=2))
+
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@keyresult.command()
+@click.option("--objective-id", required=True, help="Objective ID")
+@click.option("--governance-domain-id", required=True, help="Governance domain ID")
+@click.option("--definition", required=True, help="Definition/description of the key result")
+@click.option("--progress", required=False, type=int, default=0, help="Current progress value (default: 0)")
+@click.option("--goal", required=True, type=int, help="Target goal value")
+@click.option("--max", "max_value", required=False, type=int, default=100, help="Maximum possible value (default: 100)")
+@click.option(
+    "--status",
+    required=False,
+    default="OnTrack",
+    type=click.Choice(["OnTrack", "AtRisk", "OffTrack", "Completed"]),
+    help="Status of the key result",
+)
+def create(objective_id, governance_domain_id, definition, progress, goal, max_value, status):
+    """Create a new key result for an objective."""
+    try:
+        client = UnifiedCatalogClient()
+
+        args = {
+            "--objective-id": [objective_id],
+            "--governance-domain-id": [governance_domain_id],
+            "--definition": [definition],
+            "--progress": [str(progress)],
+            "--goal": [str(goal)],
+            "--max": [str(max_value)],
+            "--status": [status],
+        }
+
+        result = client.create_key_result(args)
+
+        if not result:
+            console.print("[red]ERROR:[/red] No response received")
+            return
+        if isinstance(result, dict) and "error" in result:
+            console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
+            return
+
+        console.print(f"[green]SUCCESS:[/green] Created key result")
+        console.print(json.dumps(result, indent=2))
+
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@keyresult.command()
+@click.option("--objective-id", required=True, help="Objective ID")
+@click.option("--key-result-id", required=True, help="Key result ID to update")
+@click.option("--governance-domain-id", required=False, help="Governance domain ID")
+@click.option("--definition", required=False, help="New definition/description")
+@click.option("--progress", required=False, type=int, help="New progress value")
+@click.option("--goal", required=False, type=int, help="New goal value")
+@click.option("--max", "max_value", required=False, type=int, help="New maximum value")
+@click.option(
+    "--status",
+    required=False,
+    type=click.Choice(["OnTrack", "AtRisk", "OffTrack", "Completed"]),
+    help="Status of the key result",
+)
+def update(objective_id, key_result_id, governance_domain_id, definition, progress, goal, max_value, status):
+    """Update an existing key result."""
+    try:
+        client = UnifiedCatalogClient()
+
+        # Build args dictionary - only include provided values
+        args = {
+            "--objective-id": [objective_id],
+            "--key-result-id": [key_result_id]
+        }
+
+        if governance_domain_id:
+            args["--governance-domain-id"] = [governance_domain_id]
+        if definition:
+            args["--definition"] = [definition]
+        if progress is not None:
+            args["--progress"] = [str(progress)]
+        if goal is not None:
+            args["--goal"] = [str(goal)]
+        if max_value is not None:
+            args["--max"] = [str(max_value)]
+        if status:
+            args["--status"] = [status]
+
+        result = client.update_key_result(args)
+
+        if not result:
+            console.print("[red]ERROR:[/red] No response received")
+            return
+        if isinstance(result, dict) and "error" in result:
+            console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
+            return
+
+        console.print(f"[green]SUCCESS:[/green] Updated key result '{key_result_id}'")
+        console.print(json.dumps(result, indent=2))
+
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@keyresult.command()
+@click.option("--objective-id", required=True, help="Objective ID")
+@click.option("--key-result-id", required=True, help="Key result ID to delete")
+@click.option("--yes", "-y", is_flag=True, help="Skip confirmation prompt")
+def delete(objective_id, key_result_id, yes):
+    """Delete a key result."""
+    try:
+        if not yes:
+            confirm = click.confirm(
+                f"Are you sure you want to delete key result '{key_result_id}'?",
+                default=False
+            )
+            if not confirm:
+                console.print("[yellow]Deletion cancelled.[/yellow]")
+                return
+
+        client = UnifiedCatalogClient()
+        args = {
+            "--objective-id": [objective_id],
+            "--key-result-id": [key_result_id]
+        }
+        result = client.delete_key_result(args)
+
+        # DELETE operations may return empty response on success
+        if result is None or (isinstance(result, dict) and not result.get("error")):
+            console.print(f"[green]SUCCESS:[/green] Deleted key result '{key_result_id}'")
+        elif isinstance(result, dict) and "error" in result:
+            console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
+        else:
+            console.print(f"[green]SUCCESS:[/green] Deleted key result")
+            if result:
+                console.print(json.dumps(result, indent=2))
+
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+# ========================================
 # HEALTH MANAGEMENT - IMPLEMENTED! 
 # ========================================
 
