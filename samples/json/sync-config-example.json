@@ -1,0 +1,85 @@
+{
+  "syncConfiguration": {
+    "defaultBehavior": {
+      "createGlossaries": true,
+      "updateExisting": true,
+      "dryRun": false
+    },
+    "mappings": [
+      {
+        "domainId": "abc12345-1234-5678-9abc-def012345678",
+        "domainName": "Sales",
+        "glossaryGuid": "xyz98765-4321-8765-4321-fed098765432",
+        "glossaryName": "Sales Glossary",
+        "enabled": true,
+        "syncOptions": {
+          "createGlossary": false,
+          "updateExisting": true
+        },
+        "notes": "Main sales domain - sync daily"
+      },
+      {
+        "domainId": "def45678-5678-9012-3def-456789012345",
+        "domainName": "Marketing",
+        "glossaryName": "Marketing Terms",
+        "enabled": true,
+        "syncOptions": {
+          "createGlossary": true,
+          "updateExisting": true
+        },
+        "notes": "Marketing domain - auto-create glossary if not exists"
+      },
+      {
+        "domainId": "ghi78901-9012-3456-7ghi-890123456789",
+        "domainName": "Finance",
+        "glossaryGuid": "uvw65432-8765-4321-9uvw-876543210987",
+        "glossaryName": "Financial Glossary",
+        "enabled": false,
+        "notes": "Finance domain - sync disabled temporarily for maintenance"
+      },
+      {
+        "domainId": "jkl01234-2345-6789-0jkl-123456789012",
+        "domainName": "Human Resources",
+        "enabled": true,
+        "syncOptions": {
+          "createGlossary": true,
+          "updateExisting": false
+        },
+        "notes": "HR domain - only create new terms, don't update existing"
+      }
+    ],
+    "schedule": {
+      "enabled": true,
+      "cron": "0 2 * * *",
+      "timezone": "Europe/Paris",
+      "description": "Run daily at 2:00 AM Paris time"
+    },
+    "notifications": {
+      "email": {
+        "enabled": true,
+        "recipients": [
+          "data-governance@company.com",
+          "admin@company.com"
+        ],
+        "onSuccess": false,
+        "onFailure": true
+      },
+      "webhook": {
+        "enabled": false,
+        "url": "https://hooks.company.com/webhook/purview-sync"
+      }
+    },
+    "logging": {
+      "level": "INFO",
+      "logFile": "C:\\Logs\\Purview\\sync-uc-classic.log",
+      "maxLogSize": "10MB",
+      "retentionDays": 30
+    }
+  },
+  "_metadata": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-01-15T10:00:00Z",
+    "author": "Data Governance Team",
+    "description": "Configuration for syncing Unified Catalog terms to Classic Glossaries"
+  }
+}

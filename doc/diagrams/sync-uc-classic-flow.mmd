@@ -1,0 +1,242 @@
+```mermaid
+flowchart TD
+    Start([Démarrage: pvw uc term sync-classic]) --> CheckParams{Paramètres<br/>valides?}
+    
+    CheckParams -->|Non| ErrorParams[Erreur: Paramètres manquants]
+    CheckParams -->|Oui| FetchUCTerms[Récupérer les termes UC<br/>du domaine]
+    
+    FetchUCTerms --> HasTerms{Termes<br/>trouvés?}
+    HasTerms -->|Non| WarnNoTerms[Avertissement: Aucun terme]
+    HasTerms -->|Oui| DetermineGlossary{Glossaire<br/>spécifié?}
+    
+    DetermineGlossary -->|Oui| UseSpecified[Utiliser le glossaire<br/>spécifié]
+    DetermineGlossary -->|Non| SearchByName[Rechercher glossaire<br/>par nom de domaine]
+    
+    SearchByName --> GlossaryFound{Glossaire<br/>trouvé?}
+    GlossaryFound -->|Oui| UseFound[Utiliser le glossaire<br/>trouvé]
+    GlossaryFound -->|Non| CheckCreate{--create-glossary<br/>activé?}
+    
+    CheckCreate -->|Non| ErrorNoGlossary[Erreur: Aucun glossaire cible]
+    CheckCreate -->|Oui| CreateGlossary{Dry-run?}
+    
+    CreateGlossary -->|Oui| ShowWouldCreate[Afficher: Would create<br/>glossary]
+    CreateGlossary -->|Non| DoCreate[Créer le glossaire]
+    
+    UseSpecified --> FetchExisting[Récupérer les termes<br/>existants du glossaire]
+    UseFound --> FetchExisting
+    DoCreate --> FetchExisting
+    ShowWouldCreate --> FetchExisting
+    
+    FetchExisting --> ProcessTerms[Traiter chaque terme UC]
+    
+    ProcessTerms --> CheckExists{Terme<br/>existe?}
+    
+    CheckExists -->|Non| CheckDryRun1{Dry-run?}
+    CheckExists -->|Oui| CheckUpdate{--update-existing<br/>activé?}
+    
+    CheckUpdate -->|Non| Skip[⊖ Ignorer le terme]
+    CheckUpdate -->|Oui| CheckDryRun2{Dry-run?}
+    
+    CheckDryRun1 -->|Oui| ShowWouldCreate2[Afficher: Would create]
+    CheckDryRun1 -->|Non| CreateTerm[✓ Créer le terme]
+    
+    CheckDryRun2 -->|Oui| ShowWouldUpdate[Afficher: Would update]
+    CheckDryRun2 -->|Non| UpdateTerm[✓ Mettre à jour]
+    
+    CreateTerm --> CountStats
+    UpdateTerm --> CountStats
+    Skip --> CountStats
+    ShowWouldCreate2 --> CountStats
+    ShowWouldUpdate --> CountStats
+    
+    CountStats{Plus de<br/>termes?} -->|Oui| ProcessTerms
+    CountStats -->|Non| GenerateReport[Générer le rapport<br/>de synchronisation]
+    
+    GenerateReport --> ShowSummary[Afficher le résumé:<br/>- Total UC Terms<br/>- Created<br/>- Updated<br/>- Skipped<br/>- Failed]
+    
+    ShowSummary --> CheckDryRunFinal{Dry-run?}
+    CheckDryRunFinal -->|Oui| ShowDryRunNote[💡 Dry run - aucune<br/>modification appliquée]
+    CheckDryRunFinal -->|Non| CheckSuccess{Échecs?}
+    
+    CheckSuccess -->|Oui| ErrorSummary[⚠ Synchronisation<br/>avec erreurs]
+    CheckSuccess -->|Non| SuccessSummary[✅ Synchronisation<br/>réussie!]
+    
+    ShowDryRunNote --> End([Fin])
+    ErrorSummary --> End
+    SuccessSummary --> End
+    ErrorParams --> End
+    WarnNoTerms --> End
+    ErrorNoGlossary --> End
+    
+    style Start fill:#0078D4,stroke:#004578,color:#fff
+    style End fill:#0078D4,stroke:#004578,color:#fff
+    style CreateTerm fill:#28a745,stroke:#1e7e34,color:#fff
+    style UpdateTerm fill:#ffc107,stroke:#d39e00,color:#000
+    style Skip fill:#6c757d,stroke:#545b62,color:#fff
+    style ErrorParams fill:#dc3545,stroke:#bd2130,color:#fff
+    style ErrorNoGlossary fill:#dc3545,stroke:#bd2130,color:#fff
+    style ErrorSummary fill:#dc3545,stroke:#bd2130,color:#fff
+    style SuccessSummary fill:#28a745,stroke:#1e7e34,color:#fff
+    style ShowDryRunNote fill:#ffc107,stroke:#d39e00,color:#000
+```
+
+## Légende
+
+### États du processus
+
+- 🔵 **Bleu** : Début/Fin du processus
+- 🟢 **Vert** : Opération de création réussie
+- 🟡 **Jaune** : Opération de mise à jour
+- ⚫ **Gris** : Terme ignoré (skip)
+- 🔴 **Rouge** : Erreur
+
+### Symboles
+
+- **Rectangle arrondi** : Début/Fin
+- **Rectangle** : Action/Opération
+- **Losange** : Décision/Condition
+- **Flèche** : Flux du processus
+
+## Scénarios détaillés
+
+### Scénario 1 : Première synchronisation (sans glossaire existant)
+
+```
+Start → Paramètres OK → Récupérer termes UC (15 termes)
+→ Aucun glossaire trouvé → --create-glossary activé
+→ Créer nouveau glossaire "Sales" → Récupérer existants (0 termes)
+→ Créer terme 1 → Créer terme 2 → ... → Créer terme 15
+→ Résumé: 15 créés, 0 mis à jour, 0 ignorés, 0 échecs
+→ ✅ Succès
+```
+
+### Scénario 2 : Synchronisation avec glossaire existant
+
+```
+Start → Paramètres OK → Récupérer termes UC (20 termes)
+→ Glossaire "Sales" trouvé → Récupérer existants (10 termes)
+→ Traiter termes:
+  - Termes 1-10: Ignorés (déjà existants)
+  - Termes 11-20: Créés
+→ Résumé: 10 créés, 0 mis à jour, 10 ignorés, 0 échecs
+→ ✅ Succès
+```
+
+### Scénario 3 : Mise à jour de termes existants
+
+```
+Start → Paramètres OK avec --update-existing
+→ Récupérer termes UC (15 termes)
+→ Glossaire trouvé → Récupérer existants (15 termes)
+→ Traiter termes:
+  - Tous les 15 termes: Mis à jour
+→ Résumé: 0 créés, 15 mis à jour, 0 ignorés, 0 échecs
+→ ✅ Succès
+```
+
+### Scénario 4 : Dry-run (prévisualisation)
+
+```
+Start → Paramètres OK avec --dry-run
+→ Récupérer termes UC (10 termes)
+→ Glossaire trouvé → Récupérer existants (5 termes)
+→ Traiter termes:
+  - Termes 1-5: Would update (si --update-existing)
+  - Termes 6-10: Would create
+→ Résumé avec note "This was a dry run"
+→ 💡 Aucune modification appliquée
+```
+
+### Scénario 5 : Erreur - Aucun glossaire
+
+```
+Start → Paramètres OK (sans --create-glossary)
+→ Récupérer termes UC (10 termes)
+→ Aucun glossaire trouvé
+→ ❌ Erreur: No target glossary found
+```
+
+## Points de décision clés
+
+### 1. Détermination du glossaire cible
+
+```
+Si --glossary-guid fourni:
+    Utiliser ce glossaire
+Sinon:
+    Rechercher par nom de domaine
+    Si trouvé:
+        Utiliser ce glossaire
+    Sinon si --create-glossary:
+        Créer nouveau glossaire
+    Sinon:
+        Erreur
+```
+
+### 2. Traitement d'un terme
+
+```
+Pour chaque terme UC:
+    Si terme existe dans glossaire classique:
+        Si --update-existing:
+            Mettre à jour le terme
+        Sinon:
+            Ignorer le terme
+    Sinon:
+        Créer nouveau terme
+```
+
+### 3. Mode dry-run
+
+```
+Si --dry-run:
+    Afficher "Would create" ou "Would update"
+    Ne pas modifier les données
+    Incrémenter les compteurs
+Sinon:
+    Exécuter l'action réelle
+    Incrémenter les compteurs
+```
+
+## Gestion des erreurs
+
+### Points d'erreur possibles
+
+1. **Paramètres invalides**
+   - Domaine ID manquant ET glossaire GUID manquant
+   - Format GUID invalide
+
+2. **API Purview**
+   - Authentification échouée
+   - Permissions insuffisantes
+   - Timeout de connexion
+
+3. **Glossaire**
+   - Glossaire non trouvé (sans --create-glossary)
+   - Échec de création de glossaire
+
+4. **Termes**
+   - Échec de création/mise à jour d'un terme
+   - Format de données invalide
+
+### Stratégie de gestion
+
+- **Erreurs critiques** : Arrêt du processus
+- **Erreurs de terme individuel** : Continuer avec les autres termes
+- **Compteur d'échecs** : Suivre le nombre de termes en échec
+- **Logs détaillés** : Enregistrer toutes les erreurs
+
+## Optimisations
+
+### Performances
+
+1. **Récupération en lot** : Tous les termes UC en une seule requête
+2. **Cache local** : Termes existants chargés une fois
+3. **Traitement séquentiel** : Un terme à la fois (évite les conflits)
+
+### Fiabilité
+
+1. **Validation préalable** : Vérifier les paramètres avant traitement
+2. **Dry-run par défaut** : Encourager la prévisualisation
+3. **Statistiques détaillées** : Transparence sur les actions effectuées
+4. **Mode debug** : Logging étendu pour troubleshooting

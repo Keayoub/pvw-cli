@@ -20,6 +20,66 @@ az account show
 
 ## 🚀 **Available Scripts**
 
+### 🔄 **Sync-UCToClassicGlossary.ps1** (New!)
+**Purpose**: Automatically synchronize Unified Catalog terms to Classic Glossaries.
+
+**Features**:
+- ✅ Synchronization of multiple domains
+- ✅ Detailed logging with log rotation
+- ✅ Error handling and automatic retry
+- ✅ Dry-run support
+- ✅ Synchronization statistics
+
+**Usage**:
+```powershell
+# Sync specific domains
+.\Sync-UCToClassicGlossary.ps1 -DomainIds "abc-123", "def-456" -CreateGlossaries
+
+# Preview mode
+.\Sync-UCToClassicGlossary.ps1 -DomainIds "abc-123" -DryRun
+
+# Sync all domains
+.\Sync-UCToClassicGlossary.ps1 -CreateGlossaries -UpdateExisting
+```
+
+**Parameters**:
+- `DomainIds` (Optional): List of domain GUIDs
+- `CreateGlossaries`: Create missing glossaries
+- `UpdateExisting`: Update existing terms
+- `DryRun`: Preview mode
+- `LogFile`: Log file path
+
+**Documentation**: See [sync-uc-to-classic-glossary.md](../../doc/guides/sync-uc-to-classic-glossary.md)
+
+---
+
+### 🎯 **Complete-Sync-Example.ps1** (New!)
+**Purpose**: Complete enterprise automation example with advanced features.
+
+**Features**:
+- ✅ Centralized configuration (mappings, notifications, reports)
+- ✅ HTML report generation
+- ✅ Email and Teams notifications
+- ✅ Automatic retry on failure
+- ✅ Advanced log management
+- ✅ Support for enabled/disabled domains
+- ✅ Detailed statistics
+
+**Usage**:
+```powershell
+# Normal execution
+.\Complete-Sync-Example.ps1
+
+# Configure in $Config section of the script
+```
+
+**Generated Reports**:
+- 📊 Interactive HTML report with statistics
+- 📝 Detailed log of all operations
+- 📧 Email/Teams notifications on failure
+
+---
+
 ### 1. **List-AllPurviewCollections.ps1**
 **Purpose**: Enumerate and display all collections in a Purview account with detailed information.
 
