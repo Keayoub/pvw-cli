@@ -2078,6 +2078,8 @@ def sync_classic(domain_id, glossary_guid, create_glossary, dry_run, update_exis
     """
     try:
         from purviewcli.client._glossary import Glossary
+        import tempfile
+        import traceback
         
         uc_client = UnifiedCatalogClient()
         glossary_client = Glossary()
