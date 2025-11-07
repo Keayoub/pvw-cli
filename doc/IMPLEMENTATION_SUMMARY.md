@@ -175,7 +175,7 @@ $Config = @{
 
 ### 5. Notes de version
 
-#### `releases/v1.3.0.md` (Nouveau)
+#### `releases/v1.3.1.md` (Nouveau)
 **Contenu** : Release notes complètes
 
 **Sections** :
