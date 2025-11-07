@@ -1069,7 +1069,7 @@ def verify_glossary_links():
         console.print(f"  • Unlinked domains: [yellow]{unlinked_count}[/yellow]")
         
         if unlinked_count > 0:
-            console.print(f"\n[dim]💡 Tip: Run 'pvw uc glossary create-for-domains' to create glossaries for unlinked domains[/dim]")
+            console.print(f"\n[dim][TIP] Tip: Run 'pvw uc glossary create-for-domains' to create glossaries for unlinked domains[/dim]")
         
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
@@ -2082,12 +2082,12 @@ def sync_classic(domain_id, glossary_guid, create_glossary, dry_run, update_exis
         uc_client = UnifiedCatalogClient()
         glossary_client = Glossary()
         
-        console.print("[cyan]═══════════════════════════════════════════════════════════[/cyan]")
+        console.print("[cyan]" + "-" * 59 + "[/cyan]")
         console.print("[bold cyan]  Unified Catalog → Classic Glossary Sync  [/bold cyan]")
-        console.print("[cyan]═══════════════════════════════════════════════════════════[/cyan]\n")
+        console.print("[cyan]" + "-" * 59 + "[/cyan]\n")
         
         if dry_run:
-            console.print("[yellow]🔍 DRY RUN MODE - No changes will be made[/yellow]\n")
+            console.print("[yellow][*] DRY RUN MODE - No changes will be made[/yellow]\n")
         
         # Step 1: Get UC terms
         console.print("[bold]Step 1:[/bold] Fetching Unified Catalog terms...")
@@ -2105,10 +2105,10 @@ def sync_classic(domain_id, glossary_guid, create_glossary, dry_run, update_exis
             uc_terms = uc_result
         
         if not uc_terms:
-            console.print("[yellow]⚠ No Unified Catalog terms found.[/yellow]")
+            console.print("[yellow][!] No Unified Catalog terms found.[/yellow]")
             return
         
-        console.print(f"[green]✓[/green] Found {len(uc_terms)} UC term(s)\n")
+        console.print(f"[green][OK][/green] Found {len(uc_terms)} UC term(s)\n")
         
         # Step 2: Determine or create target glossary
         console.print("[bold]Step 2:[/bold] Determining target glossary...")
@@ -2139,7 +2139,7 @@ def sync_classic(domain_id, glossary_guid, create_glossary, dry_run, update_exis
                         g_qualified == f"{domain_name}@Glossary" or
                         g_qualified == f"{domain_name}@{domain_id}"):
                         target_glossary_guid = g.get("guid")
-                        console.print(f"[green]✓[/green] Found existing glossary: {g_name} ({target_glossary_guid})\n")
+                        console.print(f"[green][OK][/green] Found existing glossary: {g_name} ({target_glossary_guid})\n")
                         break
                 
                 if not target_glossary_guid and create_glossary:
@@ -2165,7 +2165,7 @@ def sync_classic(domain_id, glossary_guid, create_glossary, dry_run, update_exis
                         try:
                             new_glossary = glossary_client.glossaryCreate({"--payloadFile": temp_file})
                             target_glossary_guid = new_glossary.get("guid")
-                            console.print(f"[green]✓[/green] Created glossary: {domain_name} ({target_glossary_guid})\n")
+                            console.print(f"[green][OK][/green] Created glossary: {domain_name} ({target_glossary_guid})\n")
                         finally:
                             os.unlink(temp_file)
                 elif not target_glossary_guid:
@@ -2175,7 +2175,7 @@ def sync_classic(domain_id, glossary_guid, create_glossary, dry_run, update_exis
                 console.print("[red]ERROR:[/red] Either --domain-id or --glossary-guid must be provided")
                 return
         else:
-            console.print(f"[green]✓[/green] Using target glossary: {target_glossary_guid}\n")
+            console.print(f"[green][OK][/green] Using target glossary: {target_glossary_guid}\n")
         
         # Step 3: Get existing classic glossary terms
         console.print("[bold]Step 3:[/bold] Checking existing classic glossary terms...")
@@ -2191,9 +2191,9 @@ def sync_classic(domain_id, glossary_guid, create_glossary, dry_run, update_exis
                 if term_name:
                     existing_terms[term_name.lower()] = term_guid
             
-            console.print(f"[green]✓[/green] Found {len(existing_terms)} existing term(s) in classic glossary\n")
+            console.print(f"[green][OK][/green] Found {len(existing_terms)} existing term(s) in classic glossary\n")
         except Exception as e:
-            console.print(f"[yellow]⚠[/yellow] Could not fetch existing terms: {e}\n")
+            console.print(f"[yellow][!][/yellow] Could not fetch existing terms: {e}\n")
         
         # Step 4: Sync terms
         console.print("[bold]Step 4:[/bold] Synchronizing terms...")
@@ -2212,7 +2212,7 @@ def sync_classic(domain_id, glossary_guid, create_glossary, dry_run, update_exis
             existing_guid = existing_terms.get(term_name.lower())
             
             if existing_guid and not update_existing:
-                console.print(f"   [dim]⊖ Skipping:[/dim] {term_name} (already exists)")
+                console.print(f"   [dim][-] Skipping:[/dim] {term_name} (already exists)")
                 skipped_count += 1
                 continue
             
@@ -2237,7 +2237,7 @@ def sync_classic(domain_id, glossary_guid, create_glossary, dry_run, update_exis
                         
                         try:
                             glossary_client.glossaryUpdateTerm({"--payloadFile": temp_file})
-                            console.print(f"   [green]✓ Updated:[/green] {term_name}")
+                            console.print(f"   [green][OK] Updated:[/green] {term_name}")
                             updated_count += 1
                         finally:
                             os.unlink(temp_file)
@@ -2264,19 +2264,19 @@ def sync_classic(domain_id, glossary_guid, create_glossary, dry_run, update_exis
                         
                         try:
                             glossary_client.glossaryCreateTerm({"--payloadFile": temp_file})
-                            console.print(f"   [green]✓ Created:[/green] {term_name}")
+                            console.print(f"   [green][OK] Created:[/green] {term_name}")
                             created_count += 1
                         finally:
                             os.unlink(temp_file)
             
             except Exception as e:
-                console.print(f"   [red]✗ Failed:[/red] {term_name} - {str(e)}")
+                console.print(f"   [red][X] Failed:[/red] {term_name} - {str(e)}")
                 failed_count += 1
         
         # Summary
-        console.print("\n[cyan]═══════════════════════════════════════════════════════════[/cyan]")
+        console.print("\n[cyan]" + "-" * 59 + "[/cyan]")
         console.print("[bold cyan]  Synchronization Summary  [/bold cyan]")
-        console.print("[cyan]═══════════════════════════════════════════════════════════[/cyan]")
+        console.print("[cyan]" + "-" * 59 + "[/cyan]")
         
         summary_table = Table(show_header=False, box=None)
         summary_table.add_column("Metric", style="bold")
@@ -2291,9 +2291,9 @@ def sync_classic(domain_id, glossary_guid, create_glossary, dry_run, update_exis
         console.print(summary_table)
         
         if dry_run:
-            console.print("\n[yellow]💡 This was a dry run. Use without --dry-run to apply changes.[/yellow]")
+            console.print("\n[yellow][TIP] This was a dry run. Use without --dry-run to apply changes.[/yellow]")
         elif failed_count == 0 and (created_count > 0 or updated_count > 0):
-            console.print("\n[green]✅ Synchronization completed successfully![/green]")
+            console.print("\n[green][OK] Synchronization completed successfully![/green]")
         
     except Exception as e:
         console.print(f"\n[red]ERROR:[/red] {str(e)}")
