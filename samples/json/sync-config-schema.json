@@ -1,0 +1,208 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "UC to Classic Glossary Sync Configuration",
+  "description": "Configuration file for mapping Unified Catalog domains to Classic Glossaries",
+  "type": "object",
+  "properties": {
+    "syncConfiguration": {
+      "type": "object",
+      "properties": {
+        "defaultBehavior": {
+          "type": "object",
+          "properties": {
+            "createGlossaries": {
+              "type": "boolean",
+              "description": "Auto-create glossaries if they don't exist",
+              "default": false
+            },
+            "updateExisting": {
+              "type": "boolean",
+              "description": "Update existing classic terms during sync",
+              "default": false
+            },
+            "dryRun": {
+              "type": "boolean",
+              "description": "Preview changes without applying them",
+              "default": true
+            }
+          }
+        },
+        "mappings": {
+          "type": "array",
+          "description": "List of domain-to-glossary mappings",
+          "items": {
+            "type": "object",
+            "required": ["domainId", "domainName"],
+            "properties": {
+              "domainId": {
+                "type": "string",
+                "description": "Unified Catalog domain GUID",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "example": "abc12345-1234-5678-9abc-def012345678"
+              },
+              "domainName": {
+                "type": "string",
+                "description": "Human-readable domain name",
+                "example": "Sales Domain"
+              },
+              "glossaryGuid": {
+                "type": "string",
+                "description": "Target classic glossary GUID (optional, auto-detected if not provided)",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "example": "xyz98765-4321-8765-4321-fed098765432"
+              },
+              "glossaryName": {
+                "type": "string",
+                "description": "Target glossary name",
+                "example": "Sales Glossary"
+              },
+              "enabled": {
+                "type": "boolean",
+                "description": "Enable/disable sync for this mapping",
+                "default": true
+              },
+              "syncOptions": {
+                "type": "object",
+                "description": "Override default sync options for this mapping",
+                "properties": {
+                  "createGlossary": {
+                    "type": "boolean"
+                  },
+                  "updateExisting": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "notes": {
+                "type": "string",
+                "description": "Additional notes or documentation"
+              }
+            }
+          }
+        },
+        "schedule": {
+          "type": "object",
+          "description": "Scheduling configuration for automated sync",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "cron": {
+              "type": "string",
+              "description": "Cron expression for scheduling",
+              "example": "0 2 * * *"
+            },
+            "timezone": {
+              "type": "string",
+              "description": "Timezone for schedule",
+              "example": "Europe/Paris"
+            }
+          }
+        },
+        "notifications": {
+          "type": "object",
+          "properties": {
+            "email": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "recipients": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                },
+                "onSuccess": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "onFailure": {
+                  "type": "boolean",
+                  "default": true
+                }
+              }
+            },
+            "webhook": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "url": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "syncConfiguration": {
+        "defaultBehavior": {
+          "createGlossaries": true,
+          "updateExisting": true,
+          "dryRun": false
+        },
+        "mappings": [
+          {
+            "domainId": "abc12345-1234-5678-9abc-def012345678",
+            "domainName": "Sales",
+            "glossaryGuid": "xyz98765-4321-8765-4321-fed098765432",
+            "glossaryName": "Sales Glossary",
+            "enabled": true,
+            "syncOptions": {
+              "createGlossary": false,
+              "updateExisting": true
+            },
+            "notes": "Main sales domain - sync daily"
+          },
+          {
+            "domainId": "def45678-5678-9012-3def-456789012345",
+            "domainName": "Marketing",
+            "glossaryName": "Marketing Terms",
+            "enabled": true,
+            "syncOptions": {
+              "createGlossary": true,
+              "updateExisting": true
+            },
+            "notes": "Marketing domain - auto-create glossary"
+          },
+          {
+            "domainId": "ghi78901-9012-3456-7ghi-890123456789",
+            "domainName": "Finance",
+            "glossaryGuid": "uvw65432-8765-4321-9uvw-876543210987",
+            "glossaryName": "Financial Glossary",
+            "enabled": false,
+            "notes": "Finance domain - sync disabled temporarily"
+          }
+        ],
+        "schedule": {
+          "enabled": true,
+          "cron": "0 2 * * *",
+          "timezone": "Europe/Paris"
+        },
+        "notifications": {
+          "email": {
+            "enabled": true,
+            "recipients": [
+              "data-governance@company.com",
+              "admin@company.com"
+            ],
+            "onSuccess": false,
+            "onFailure": true
+          }
+        }
+      }
+    }
+  ]
+}

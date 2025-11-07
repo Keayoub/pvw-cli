@@ -2048,6 +2048,260 @@ def query_terms(ids, domain_ids, name_keyword, acronyms, owners, status, multi_s
         console.print(f"[red]ERROR:[/red] {str(e)}")
 
 
+@term.command(name="sync-classic")
+@click.option("--domain-id", required=False, help="Governance domain ID to sync terms from (if not provided, syncs all domains)")
+@click.option("--glossary-guid", required=False, help="Target classic glossary GUID (if not provided, creates/uses glossary with domain name)")
+@click.option("--create-glossary", is_flag=True, help="Create classic glossary if it doesn't exist")
+@click.option("--dry-run", is_flag=True, help="Preview changes without applying them")
+@click.option("--update-existing", is_flag=True, help="Update existing classic terms if they already exist")
+def sync_classic(domain_id, glossary_guid, create_glossary, dry_run, update_existing):
+    """Synchronize Unified Catalog terms to classic glossary terms.
+    
+    This command bridges the Unified Catalog (business metadata) with classic glossaries,
+    enabling you to sync terms from governance domains to traditional glossary structures.
+    
+    Examples:
+        # Sync all terms from a specific domain to its corresponding glossary
+        pvw uc term sync-classic --domain-id <domain-guid>
+        
+        # Sync to a specific glossary
+        pvw uc term sync-classic --domain-id <domain-guid> --glossary-guid <glossary-guid>
+        
+        # Create glossary if needed and sync
+        pvw uc term sync-classic --domain-id <domain-guid> --create-glossary
+        
+        # Preview sync without making changes
+        pvw uc term sync-classic --domain-id <domain-guid> --dry-run
+        
+        # Update existing terms in classic glossary
+        pvw uc term sync-classic --domain-id <domain-guid> --update-existing
+    """
+    try:
+        from purviewcli.client._glossary import Glossary
+        
+        uc_client = UnifiedCatalogClient()
+        glossary_client = Glossary()
+        
+        console.print("[cyan]═══════════════════════════════════════════════════════════[/cyan]")
+        console.print("[bold cyan]  Unified Catalog → Classic Glossary Sync  [/bold cyan]")
+        console.print("[cyan]═══════════════════════════════════════════════════════════[/cyan]\n")
+        
+        if dry_run:
+            console.print("[yellow]🔍 DRY RUN MODE - No changes will be made[/yellow]\n")
+        
+        # Step 1: Get UC terms
+        console.print("[bold]Step 1:[/bold] Fetching Unified Catalog terms...")
+        uc_args = {}
+        if domain_id:
+            uc_args["--governance-domain-id"] = [domain_id]
+        
+        uc_result = uc_client.get_terms(uc_args)
+        
+        # Extract terms from response
+        uc_terms = []
+        if isinstance(uc_result, dict):
+            uc_terms = uc_result.get("value", [])
+        elif isinstance(uc_result, (list, tuple)):
+            uc_terms = uc_result
+        
+        if not uc_terms:
+            console.print("[yellow]⚠ No Unified Catalog terms found.[/yellow]")
+            return
+        
+        console.print(f"[green]✓[/green] Found {len(uc_terms)} UC term(s)\n")
+        
+        # Step 2: Determine or create target glossary
+        console.print("[bold]Step 2:[/bold] Determining target glossary...")
+        
+        target_glossary_guid = glossary_guid
+        
+        if not target_glossary_guid:
+            # Get domain info to use domain name as glossary name
+            if domain_id:
+                domain_info = uc_client.get_governance_domain_by_id({"--domain-id": [domain_id]})
+                domain_name = domain_info.get("name", "Unknown Domain")
+                console.print(f"   Domain: [cyan]{domain_name}[/cyan]")
+                
+                # Try to find existing glossary with matching name
+                all_glossaries = glossary_client.glossaryRead({})
+                if isinstance(all_glossaries, dict):
+                    all_glossaries = all_glossaries.get("value", [])
+                
+                for g in all_glossaries:
+                    g_name = g.get("name", "")
+                    g_qualified = g.get("qualifiedName", "")
+                    
+                    # Check multiple formats for compatibility:
+                    # 1. Exact name match
+                    # 2. Standard format: DomainName@Glossary
+                    # 3. Old format (for backward compatibility): DomainName@domain-id
+                    if (g_name == domain_name or 
+                        g_qualified == f"{domain_name}@Glossary" or
+                        g_qualified == f"{domain_name}@{domain_id}"):
+                        target_glossary_guid = g.get("guid")
+                        console.print(f"[green]✓[/green] Found existing glossary: {g_name} ({target_glossary_guid})\n")
+                        break
+                
+                if not target_glossary_guid and create_glossary:
+                    if dry_run:
+                        console.print(f"[yellow]Would create glossary:[/yellow] {domain_name}\n")
+                    else:
+                        # Create glossary with proper qualifiedName format
+                        # Format: GlossaryName@Glossary (standard Purview format)
+                        qualified_name = f"{domain_name}@Glossary"
+                        
+                        glossary_payload = {
+                            "name": domain_name,
+                            "qualifiedName": qualified_name,
+                            "shortDescription": f"Auto-synced from Unified Catalog domain: {domain_name}",
+                            "longDescription": f"This glossary is automatically synchronized with the Unified Catalog governance domain '{domain_name}' (ID: {domain_id})"
+                        }
+                        
+                        import tempfile
+                        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+                            json.dump(glossary_payload, f)
+                            temp_file = f.name
+                        
+                        try:
+                            new_glossary = glossary_client.glossaryCreate({"--payloadFile": temp_file})
+                            target_glossary_guid = new_glossary.get("guid")
+                            console.print(f"[green]✓[/green] Created glossary: {domain_name} ({target_glossary_guid})\n")
+                        finally:
+                            os.unlink(temp_file)
+                elif not target_glossary_guid:
+                    console.print(f"[red]ERROR:[/red] No target glossary found. Use --glossary-guid or --create-glossary")
+                    return
+            else:
+                console.print("[red]ERROR:[/red] Either --domain-id or --glossary-guid must be provided")
+                return
+        else:
+            console.print(f"[green]✓[/green] Using target glossary: {target_glossary_guid}\n")
+        
+        # Step 3: Get existing classic glossary terms
+        console.print("[bold]Step 3:[/bold] Checking existing classic glossary terms...")
+        
+        existing_terms = {}
+        try:
+            glossary_details = glossary_client.glossaryReadDetailed({"--glossaryGuid": [target_glossary_guid]})
+            existing_term_list = glossary_details.get("terms", [])
+            
+            for term in existing_term_list:
+                term_name = term.get("displayText") or term.get("name")
+                term_guid = term.get("termGuid") or term.get("guid")
+                if term_name:
+                    existing_terms[term_name.lower()] = term_guid
+            
+            console.print(f"[green]✓[/green] Found {len(existing_terms)} existing term(s) in classic glossary\n")
+        except Exception as e:
+            console.print(f"[yellow]⚠[/yellow] Could not fetch existing terms: {e}\n")
+        
+        # Step 4: Sync terms
+        console.print("[bold]Step 4:[/bold] Synchronizing terms...")
+        
+        created_count = 0
+        updated_count = 0
+        skipped_count = 0
+        failed_count = 0
+        
+        for uc_term in uc_terms:
+            term_name = uc_term.get("name", "")
+            term_description = uc_term.get("description", "")
+            term_status = uc_term.get("status", "Draft")
+            
+            # Check if term already exists
+            existing_guid = existing_terms.get(term_name.lower())
+            
+            if existing_guid and not update_existing:
+                console.print(f"   [dim]⊖ Skipping:[/dim] {term_name} (already exists)")
+                skipped_count += 1
+                continue
+            
+            try:
+                if existing_guid and update_existing:
+                    # Update existing term
+                    if dry_run:
+                        console.print(f"   [yellow]Would update:[/yellow] {term_name}")
+                        updated_count += 1
+                    else:
+                        update_payload = {
+                            "guid": existing_guid,
+                            "name": term_name,
+                            "longDescription": term_description,
+                            "status": term_status,
+                            "anchor": {"glossaryGuid": target_glossary_guid}
+                        }
+                        
+                        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+                            json.dump(update_payload, f)
+                            temp_file = f.name
+                        
+                        try:
+                            glossary_client.glossaryUpdateTerm({"--payloadFile": temp_file})
+                            console.print(f"   [green]✓ Updated:[/green] {term_name}")
+                            updated_count += 1
+                        finally:
+                            os.unlink(temp_file)
+                else:
+                    # Create new term
+                    if dry_run:
+                        console.print(f"   [yellow]Would create:[/yellow] {term_name}")
+                        created_count += 1
+                    else:
+                        create_payload = {
+                            "name": term_name,
+                            "longDescription": term_description,
+                            "status": term_status,
+                            "anchor": {"glossaryGuid": target_glossary_guid}
+                        }
+                        
+                        # Add optional fields
+                        if uc_term.get("acronyms"):
+                            create_payload["abbreviation"] = ", ".join(uc_term["acronyms"])
+                        
+                        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+                            json.dump(create_payload, f)
+                            temp_file = f.name
+                        
+                        try:
+                            glossary_client.glossaryCreateTerm({"--payloadFile": temp_file})
+                            console.print(f"   [green]✓ Created:[/green] {term_name}")
+                            created_count += 1
+                        finally:
+                            os.unlink(temp_file)
+            
+            except Exception as e:
+                console.print(f"   [red]✗ Failed:[/red] {term_name} - {str(e)}")
+                failed_count += 1
+        
+        # Summary
+        console.print("\n[cyan]═══════════════════════════════════════════════════════════[/cyan]")
+        console.print("[bold cyan]  Synchronization Summary  [/bold cyan]")
+        console.print("[cyan]═══════════════════════════════════════════════════════════[/cyan]")
+        
+        summary_table = Table(show_header=False, box=None)
+        summary_table.add_column("Metric", style="bold")
+        summary_table.add_column("Count", style="cyan")
+        
+        summary_table.add_row("Total UC Terms", str(len(uc_terms)))
+        summary_table.add_row("Created", f"[green]{created_count}[/green]")
+        summary_table.add_row("Updated", f"[yellow]{updated_count}[/yellow]")
+        summary_table.add_row("Skipped", f"[dim]{skipped_count}[/dim]")
+        summary_table.add_row("Failed", f"[red]{failed_count}[/red]")
+        
+        console.print(summary_table)
+        
+        if dry_run:
+            console.print("\n[yellow]💡 This was a dry run. Use without --dry-run to apply changes.[/yellow]")
+        elif failed_count == 0 and (created_count > 0 or updated_count > 0):
+            console.print("\n[green]✅ Synchronization completed successfully![/green]")
+        
+    except Exception as e:
+        console.print(f"\n[red]ERROR:[/red] {str(e)}")
+        import traceback
+        if os.getenv("PURVIEWCLI_DEBUG"):
+            console.print(traceback.format_exc())
+
+
 # ========================================
 # OBJECTIVES AND KEY RESULTS (OKRs)
 # ========================================
