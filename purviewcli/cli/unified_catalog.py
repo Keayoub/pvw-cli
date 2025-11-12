@@ -2148,9 +2148,8 @@ def sync_classic(domain_id, glossary_guid, create_glossary, dry_run, update_exis
                     if dry_run:
                         console.print(f"[yellow]Would create glossary:[/yellow] {domain_name}\n")
                     else:
-                        # Create glossary with proper qualifiedName format
-                        # Format: GlossaryName@Glossary (standard Purview format)
-                        qualified_name = f"{domain_name}@Glossary"
+                        # Create glossary with simple qualifiedName format
+                        qualified_name = domain_name
                         
                         glossary_payload = {
                             "name": domain_name,
@@ -2179,13 +2178,19 @@ def sync_classic(domain_id, glossary_guid, create_glossary, dry_run, update_exis
         else:
             console.print(f"[green][OK][/green] Using target glossary: {target_glossary_guid}\n")
         
-        # Step 3: Get existing classic glossary terms
+        # Step 3: Get existing classic glossary terms and glossary name
         console.print("[bold]Step 3:[/bold] Checking existing classic glossary terms...")
         
         existing_terms = {}
+        glossary_name = "Glossary"  # Default fallback
+        glossary_qualified_name = "Glossary"  # Default fallback for qualified name
         try:
             glossary_details = glossary_client.glossaryReadDetailed({"--glossaryGuid": [target_glossary_guid]})
             existing_term_list = glossary_details.get("terms", [])
+            
+            # Get glossary name and qualifiedName for term qualifiedName construction
+            glossary_name = glossary_details.get("name", "Glossary")
+            glossary_qualified_name = glossary_details.get("qualifiedName", f"{glossary_name}@Glossary")
             
             for term in existing_term_list:
                 term_name = term.get("displayText") or term.get("name")
@@ -2225,12 +2230,20 @@ def sync_classic(domain_id, glossary_guid, create_glossary, dry_run, update_exis
                         console.print(f"   [yellow]Would update:[/yellow] {term_name}")
                         updated_count += 1
                     else:
+                        # Construct qualifiedName: TermName@GlossaryQualifiedName
+                        # Use the stored glossary_qualified_name from Step 3
+                        term_qualified_name = f"{term_name}@{glossary_qualified_name}"
+                        
                         update_payload = {
                             "guid": existing_guid,
                             "name": term_name,
+                            "qualifiedName": term_qualified_name,
                             "longDescription": term_description,
                             "status": term_status,
-                            "anchor": {"glossaryGuid": target_glossary_guid}
+                            "anchor": {"glossaryGuid": target_glossary_guid},
+                            "termTemplate": {
+                                "termTemplateName": "System default"
+                            }
                         }
                         
                         with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
@@ -2249,11 +2262,19 @@ def sync_classic(domain_id, glossary_guid, create_glossary, dry_run, update_exis
                         console.print(f"   [yellow]Would create:[/yellow] {term_name}")
                         created_count += 1
                     else:
+                        # Construct qualifiedName: TermName@GlossaryQualifiedName
+                        # Use the stored glossary_qualified_name from Step 3
+                        term_qualified_name = f"{term_name}@{glossary_qualified_name}"
+                        
                         create_payload = {
                             "name": term_name,
+                            "qualifiedName": term_qualified_name,
                             "longDescription": term_description,
                             "status": term_status,
-                            "anchor": {"glossaryGuid": target_glossary_guid}
+                            "anchor": {"glossaryGuid": target_glossary_guid},
+                            "termTemplate": {
+                                "termTemplateName": "System default"
+                            }
                         }
                         
                         # Add optional fields
