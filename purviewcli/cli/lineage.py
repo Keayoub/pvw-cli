@@ -471,7 +471,7 @@ def read_lineage(ctx, guid, direction, depth):
         from purviewcli.client._lineage import Lineage
         lineage_client = Lineage()
         args = {"--guid": guid, "--direction": direction, "--depth": depth}
-        result = lineage_client.get_lineage_by_guid(args)
+        result = lineage_client.lineageReadByGuid(args)
         console.print("[green][OK] Lineage read completed successfully[/green]")
         console.print(json.dumps(result, indent=2))
     except Exception as e:
