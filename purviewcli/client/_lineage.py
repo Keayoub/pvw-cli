@@ -998,11 +998,20 @@ Use Cases:
                 "or (source_qualified_name, target_qualified_name) columns"
             )
         
-        # Check if any row uses direct_lineage_dataset_dataset type
+        # Check if any row uses direct relationship types (not Process-based lineage)
         # If so, we'll create relationships instead of Process entities
         use_direct_lineage = False
         if 'relationship_type' in df.columns:
-            use_direct_lineage = any(df['relationship_type'].str.contains('direct_lineage_dataset_dataset', na=False))
+            # List of official direct relationship types supported by Microsoft Purview
+            # Reference: https://learn.microsoft.com/en-us/purview/data-gov-api-create-lineage-relationships#concepts
+            direct_relationship_types = [
+                'direct_lineage_dataset_dataset',  # DataSet → DataSet (direct link)
+                'dataset_process_inputs',          # DataSet → Process (input)
+                'process_dataset_outputs'          # Process → DataSet (output)
+            ]
+            use_direct_lineage = any(
+                df['relationship_type'].str.contains('|'.join(direct_relationship_types), na=False, case=False)
+            )
         
         if use_direct_lineage:
             # Create direct relationships (UI-style lineage)
