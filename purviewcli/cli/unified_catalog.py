@@ -1400,60 +1400,114 @@ def update(term_id, name, description, domain_id, parent_id, status, acronym, ow
 def import_terms_from_csv(csv_file, domain_id, dry_run):
     """Bulk import glossary terms from a CSV file.
     
-    CSV Format:
-    name,description,status,acronyms,owner_ids,resource_name,resource_url
-    
-    - name: Required term name
-    - description: Optional description
-    - status: Draft, Published, or Archived (default: Draft)
-    - acronyms: Comma-separated list (e.g., "API,REST")
-    - owner_ids: Comma-separated list of Entra Object IDs
-    - resource_name: Name of related resource
-    - resource_url: URL of related resource
-    
-    Multiple resources can be specified by separating with semicolons.
+    Accepts any CSV format - adapts to whatever columns are present.
+    Works with Purview UI exports or custom CSV files.
     """
     try:
         client = UnifiedCatalogClient()
         
-        # Read and parse CSV
+        console.print(f"[cyan]Importing terms from: {csv_file}[/cyan]")
+        
+        # Read and parse CSV - adapt to whatever columns exist
         terms = []
+        unsupported_fields = set()
+        
         with open(csv_file, 'r', encoding='utf-8') as f:
             reader = csv.DictReader(f)
+            
             for row in reader:
+                # Skip instruction rows
+                if row.get('Name', '').startswith('(Please remove'):
+                    continue
+                
+                # Try to get name from either "Name" or "name" column
+                name = row.get("Name") or row.get("name") or ""
+                if not name.strip():
+                    continue
+                
                 term = {
-                    "name": row.get("name", "").strip(),
-                    "description": row.get("description", "").strip(),
-                    "status": row.get("status", "Draft").strip(),
+                    "name": name.strip(),
+                    "description": (row.get("Definition") or row.get("description") or "").strip(),
+                    "status": (row.get("Status") or row.get("status") or "Draft").strip(),
                     "domain_id": domain_id,
                     "acronyms": [],
                     "owner_ids": [],
                     "resources": []
                 }
                 
-                # Parse acronyms
-                if row.get("acronyms"):
-                    term["acronyms"] = [a.strip() for a in row["acronyms"].split(",") if a.strip()]
-                
-                # Parse owner IDs
-                if row.get("owner_ids"):
-                    term["owner_ids"] = [o.strip() for o in row["owner_ids"].split(",") if o.strip()]
+                # Parse acronyms from either column name
+                acronym_field = row.get("Acronym") or row.get("acronym") or row.get("acronyms") or ""
+                if acronym_field:
+                    term["acronyms"] = [a.strip() for a in acronym_field.split(",") if a.strip()]
                 
                 # Parse resources
-                resource_names = row.get("resource_name", "").strip()
-                resource_urls = row.get("resource_url", "").strip()
+                resources_field = row.get("Resources") or ""
+                resource_name_field = row.get("resource_name") or ""
+                resource_url_field = row.get("resource_url") or ""
                 
-                if resource_names and resource_urls:
-                    names = [n.strip() for n in resource_names.split(";") if n.strip()]
-                    urls = [u.strip() for u in resource_urls.split(";") if u.strip()]
+                if resources_field:
+                    # UI format: "name:url;name:url"
+                    for item in resources_field.split(";"):
+                        item = item.strip()
+                        if ":" in item:
+                            parts = item.split(":", 1)
+                            if len(parts) == 2:
+                                name_part = parts[0].strip()
+                                url_part = parts[1].strip()
+                                if url_part.startswith("//") or "://" in item:
+                                    # Handle URLs properly
+                                    url_full = item.split(":", 1)[1].strip() if not url_part.startswith("//") else item[item.index("://")-4:]
+                                    term["resources"].append({"name": name_part, "url": url_full})
+                                else:
+                                    term["resources"].append({"name": name_part, "url": url_part})
+                elif resource_name_field and resource_url_field:
+                    # CLI format: separate columns
+                    names = [n.strip() for n in resource_name_field.split(";") if n.strip()]
+                    urls = [u.strip() for u in resource_url_field.split(";") if u.strip()]
                     term["resources"] = [{"name": n, "url": u} for n, u in zip(names, urls)]
                 
-                if term["name"]:  # Only add if name is present
-                    terms.append(term)
+                # Handle owners from various column names
+                owner_ids_field = row.get("owner_ids") or row.get("owner_id") or ""
+                experts_field = row.get("Experts") or ""
+                stewards_field = row.get("Stewards") or ""
+                
+                if owner_ids_field:
+                    # CLI format: GUIDs
+                    term["owner_ids"] = [o.strip() for o in owner_ids_field.split(",") if o.strip()]
+                elif experts_field or stewards_field:
+                    # UI format: email:info;email:info
+                    for field in [experts_field, stewards_field]:
+                        for item in field.split(";"):
+                            item = item.strip()
+                            if item:
+                                contact = item.split(":")[0].strip()
+                                term["owner_ids"].append(contact)
+                    
+                    if any("@" in owner for owner in term["owner_ids"]):
+                        console.print(f"[yellow]WARNING: Term '{term['name']}' has email addresses in owners[/yellow]")
+                        console.print(f"[dim]UC API requires Entra Object IDs (GUIDs). Emails may fail.[/dim]")
+                
+                # Warn about unsupported fields (only once)
+                if row.get("Parent Term Name"):
+                    unsupported_fields.add("Parent Term hierarchy")
+                if row.get("Related Terms"):
+                    unsupported_fields.add("Related Terms")
+                if row.get("Term Template Names"):
+                    unsupported_fields.add("Term Templates")
+                if row.get("Synonyms"):
+                    unsupported_fields.add("Synonyms")
+                
+                terms.append(term)
         
         if not terms:
             console.print("[yellow]No valid terms found in CSV file.[/yellow]")
             return
+        
+        if unsupported_fields:
+            console.print("\n[yellow]NOTE: Following UI fields are not supported by UC API:[/yellow]")
+            for field in unsupported_fields:
+                console.print(f"  [dim]• {field} (will be ignored)[/dim]")
+            console.print()
         
         console.print(f"[cyan]Found {len(terms)} term(s) in CSV file[/cyan]")
         
@@ -1468,7 +1522,7 @@ def import_terms_from_csv(csv_file, domain_id, dry_run):
             
             for i, term in enumerate(terms, 1):
                 acronyms = ", ".join(term.get("acronyms", []))
-                owners = ", ".join(term.get("owner_ids", []))
+                owners = ", ".join(term.get("owner_ids", []))[:30]  # Truncate long GUIDs
                 table.add_row(
                     str(i),
                     term["name"],

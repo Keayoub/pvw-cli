@@ -2336,7 +2336,10 @@ Perform batch operation on resources.
 Args:
         args: Dictionary of operation arguments.
                Contains operation-specific parameters.
-               See method implementation for details.
+               --csvFile: Path to CSV file for multipart upload (UI format)
+               --payloadFile: Path to JSON file (legacy format)
+               --glossaryGuid: Glossary GUID
+               --includeTermHierarchy: Include term hierarchy
     
 Returns:
         Dictionary with batch operation results:
@@ -2382,8 +2385,22 @@ Use Cases:
     """
         self.method = "POST"
         self.endpoint = ENDPOINTS["glossary"]["terms_import"].format(glossaryGuid=args["--glossaryGuid"])
-        self.params = get_api_version_params("datamap")
-        self.payload = get_json(args, "--payloadFile")
+        self.params = {
+            **get_api_version_params("datamap"),
+            "includeTermHierarchy": str(args.get("--includeTermHierarchy", True)).lower()
+        }
+        
+        # Check if CSV file upload (multipart/form-data)
+        if args.get("--csvFile"):
+            csv_path = args["--csvFile"]
+            # Set up file upload - the sync_client will handle this
+            self.files = {"file": open(csv_path, 'rb')}
+            self.headers = {}  # Don't set Content-Type, let requests handle multipart
+            self.payload = None
+        else:
+            # JSON payload (legacy format)
+            self.payload = get_json(args, "--payloadFile")
+            self.files = None
 
     @decorator
     def glossaryImportTermsByName(self, args):

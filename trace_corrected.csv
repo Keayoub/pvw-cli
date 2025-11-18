@@ -1,2 +1,0 @@
-source_entity_guid,target_entity_guid,source_type,target_type,relationship_type
-4fae348b-e960-42f7-834c-38f6f6f60000,c8daf98e-3113-446b-91bf-894236c790c3,azure_sql_table,fabric_pipeline,dataset_process_inputs

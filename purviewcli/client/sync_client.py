@@ -168,9 +168,21 @@ class SyncPurviewClient:
             url = f"{base_url}{endpoint}"
             headers = {
                 "Authorization": f"Bearer {token}",
-                "Content-Type": "application/json",
                 "User-Agent": "purviewcli/2.0",
             }
+            
+            # Handle file uploads vs JSON payload
+            files = kwargs.get("files")
+            custom_headers = kwargs.get("headers", {})
+            
+            if files:
+                # For multipart/form-data uploads, don't set Content-Type
+                # Let requests library handle it automatically
+                headers.update(custom_headers)
+            else:
+                # For JSON payloads
+                headers["Content-Type"] = "application/json"
+                headers.update(custom_headers)
 
             # Make the actual HTTP request using session with retries
             response = self._session.request(
@@ -178,7 +190,8 @@ class SyncPurviewClient:
                 url=url,
                 headers=headers,
                 params=kwargs.get("params"),
-                json=kwargs.get("json"),
+                json=kwargs.get("json") if not files else None,
+                files=files,
                 timeout=60,  # Increased timeout for Azure Front Door
             )
             # Handle the response
@@ -211,7 +224,8 @@ class SyncPurviewClient:
                     url=url,
                     headers=headers,
                     params=kwargs.get("params"),
-                    json=kwargs.get("json"),
+                    json=kwargs.get("json") if not files else None,
+                    files=files,
                     timeout=60,
                 )
 

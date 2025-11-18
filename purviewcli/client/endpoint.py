@@ -46,7 +46,8 @@ def get_data(http_dict):
                     "method": http_dict.get("method", "GET"),
                     "endpoint": http_dict.get("endpoint", "/"),
                     "params": http_dict.get("params"),
-                    "payload": http_dict.get("payload"),
+                    "has_payload": http_dict.get("payload") is not None,
+                    "has_files": http_dict.get("files") is not None,
                 }
                 print("[PURVIEWCLI DEBUG] Request:", json.dumps(base_info, default=str, indent=2))
             except Exception:
@@ -57,6 +58,8 @@ def get_data(http_dict):
             endpoint=http_dict.get("endpoint", "/"),
             params=http_dict.get("params"),
             json=http_dict.get("payload"),
+            files=http_dict.get("files"),
+            headers=http_dict.get("headers", {}),
         )
 
         if debug:
