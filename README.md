@@ -1,7 +1,3 @@
-
-<a href="https://www.buymeacoffee.com/ayoubkebaiq" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
-
-
 # PURVIEW CLI v1.3.5 - Microsoft Purview Automation & Data Governance
 
 [![Version](https://img.shields.io/badge/version-1.3.3-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.3.5)
