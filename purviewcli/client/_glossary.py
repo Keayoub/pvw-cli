@@ -2387,7 +2387,7 @@ Use Cases:
         self.endpoint = ENDPOINTS["glossary"]["terms_import"].format(glossaryGuid=args["--glossaryGuid"])
         self.params = {
             **get_api_version_params("datamap"),
-            "includeTermHierarchy": str(args.get("--includeTermHierarchy", False)).lower()
+            "includeTermHierarchy": str(args.get("--includeTermHierarchy", True)).lower()
         }
         
         # Check if CSV file upload (multipart/form-data)

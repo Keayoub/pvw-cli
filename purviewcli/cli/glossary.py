@@ -466,7 +466,7 @@ def read_terms_related(term_guid, limit, offset, sort):
 @click.option('--csv-file', required=False, type=click.Path(exists=True), help='CSV file with glossary terms')
 @click.option('--json-file', required=False, type=click.Path(exists=True), help='JSON file with glossary terms')
 @click.option('--glossary-guid', required=True, help='The globally unique identifier for glossary')
-@click.option('--include-term-hierarchy', is_flag=True, help='Include term hierarchy in creation')
+@click.option('--include-term-hierarchy', is_flag=True, default=True, help='Include term hierarchy (default: True)')
 def import_terms_csv(csv_file, json_file, glossary_guid, include_term_hierarchy):
     """Import glossary terms from a CSV or JSON file.
     

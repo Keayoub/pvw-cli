@@ -1,2 +1,3 @@
 ﻿Nick Name,Name,Definition,IsDefinitionRichText,Status,Related Terms,Synonyms,Acronym,Experts,Stewards,Resources,Parent Term Name,Term Template Names
-Sample,Sample,<div>Sample update from import</div>,TRUE,Draft,,,,,,,,System Default;
+Sample,Sample,<div>Sample update from CLI and Import UI</div>,TRUE,Draft,,,,,,,,System Default;
+Sample2,Sample2,<div>Sample2 update from CLI and Import UI 2</div>,TRUE,Draft,,,,,,,,System Default;
