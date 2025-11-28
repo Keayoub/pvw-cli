@@ -36,18 +36,19 @@ def search():
     pass
 
 
-def _format_json_output(data):
-    """Format JSON output with syntax highlighting using Rich"""
-    from rich.console import Console
-    from rich.syntax import Syntax
+def _format_json_output(data, pretty=False):
+    """Format JSON output: pretty (Rich) or compact (raw)"""
     import json
-
-    console = Console()
-
-    # Pretty print JSON with syntax highlighting
-    json_str = json.dumps(data, indent=2)
-    syntax = Syntax(json_str, "json", theme="monokai", line_numbers=True)
-    console.print(syntax)
+    if pretty:
+        from rich.console import Console
+        from rich.syntax import Syntax
+        console = Console()
+        json_str = json.dumps(data, indent=2)
+        syntax = Syntax(json_str, "json", theme="monokai", line_numbers=True)
+        console.print(syntax)
+    else:
+        # Compact JSON, no Rich, no line numbers
+        print(json.dumps(data, separators=(",", ":"), ensure_ascii=False))
 
 
 def _format_detailed_output(data):
@@ -195,6 +196,7 @@ def _invoke_search_method(method_name, **kwargs):
     # Extract formatting options, don't pass to API
     show_ids = kwargs.pop("show_ids", False)
     output_json = kwargs.pop("output_json", False)
+    output_json_detail = kwargs.pop("output_json_detail", False)
     detailed = kwargs.pop("detailed", False)
 
     args = {f"--{k}": v for k, v in kwargs.items() if v is not None}
@@ -202,7 +204,9 @@ def _invoke_search_method(method_name, **kwargs):
         result = method(args)
         # Choose output format
         if output_json:
-            _format_json_output(result)
+            _format_json_output(result, pretty=False)
+        elif output_json_detail:
+            _format_json_output(result, pretty=True)
         elif detailed and method_name in [
             "searchQuery",
             "searchBrowse",
@@ -220,7 +224,7 @@ def _invoke_search_method(method_name, **kwargs):
         ]:
             _format_search_results(result, show_ids=show_ids)
         else:
-            _format_json_output(result)
+            _format_json_output(result, pretty=True)
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
 
@@ -266,9 +270,10 @@ def browse(entitytype, path, limit, offset, output_json):
 @click.option("--filterFile", required=False, type=click.Path(exists=True))
 @click.option("--facets-file", required=False, type=click.Path(exists=True))
 @click.option("--show-ids", is_flag=True, help="Show entity IDs in the results")
-@click.option("--json", "output_json", is_flag=True, help="Show full JSON details instead of table")
+@click.option("--json", "output_json", is_flag=True, help="Show compact JSON (for scripts)")
+@click.option("--json-detail", "output_json_detail", is_flag=True, help="Show pretty JSON with Rich coloring")
 @click.option("--detailed", is_flag=True, help="Show detailed information in readable format")
-def query(keywords, limit, offset, filterfile, facets_file, show_ids, output_json, detailed):
+def query(keywords, limit, offset, filterfile, facets_file, show_ids, output_json, output_json_detail, detailed):
     """Run a search query"""
     _invoke_search_method(
         "searchQuery",
@@ -279,6 +284,7 @@ def query(keywords, limit, offset, filterfile, facets_file, show_ids, output_jso
         facets_file=facets_file,
         show_ids=show_ids,
         output_json=output_json,
+        output_json_detail=output_json_detail,
         detailed=detailed,
     )
 
