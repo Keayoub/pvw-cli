@@ -267,7 +267,11 @@ Use Cases:
         - Reporting: Generate catalog reports
     """
         self.method = "GET"
-        self.endpoint = ENDPOINTS["entity"]["get"].format(guid=args["--guid"][0])
+        # Fix: GUID is passed as string, not as list - don't index it
+        guid_value = args["--guid"]
+        if isinstance(guid_value, list):
+            guid_value = guid_value[0]
+        self.endpoint = ENDPOINTS["entity"]["get"].format(guid=guid_value)
         self.params = {
             **get_api_version_params("datamap"),
             "ignoreRelationships": str(args.get("--ignoreRelationships", False)).lower(),

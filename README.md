@@ -31,11 +31,8 @@
 > - ✅ Batch CSV import with 5 sample files
 > - ✅ Comprehensive documentation & examples
 >
-> **Previous Releases:**
-> - **v1.2.6** - Initial lineage improvements
-> - **v1.2.5** - 86% UC API Coverage (45/52 operations) with Relationships, Query, Policies APIs
 >
-> **[Full Release Notes v1.3.7](releases/v1.3.7.md)** | **[v1.2.5 Release Notes](releases/v1.2.5.md)** | **[Migration Guide](releases/v1.3.7.md#migration-guide)**
+> **[Full Release Notes v1.3.7](releases/v1.3.7.md)** | **[v1.3.3 Release Notes](releases/v1.3.3.md)** | **[Migration Guide](releases/v1.3.7.md#migration-guide)**
 
 ---
 

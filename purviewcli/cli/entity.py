@@ -38,10 +38,19 @@ def entity(ctx):
     is_flag=True,
     help="Whether to return minimal information for referred entities",
 )
+@click.option(
+    "--json", "json_output", is_flag=True, help="Output pure JSON without status messages"
+)
 @click.pass_context
-def read(ctx, guid, ignore_relationships, min_ext_info):
+def read(ctx, guid, ignore_relationships, min_ext_info, json_output):
     """Read entity information by GUID"""
     try:
+        # Debug: Log the received GUID
+        if not json_output:
+            console.print(f"[dim]DEBUG: Received GUID = '{guid}'[/dim]")
+            console.print(f"[dim]DEBUG: GUID type = {type(guid).__name__}[/dim]")
+            console.print(f"[dim]DEBUG: GUID length = {len(str(guid))}[/dim]")
+        
         if ctx.obj.get("mock"):
             console.print("[yellow]🎭 Mock: entity read command[/yellow]")
             console.print(f"[dim]GUID: {guid}[/dim]")
@@ -62,13 +71,22 @@ def read(ctx, guid, ignore_relationships, min_ext_info):
         result = entity_client.entityRead(args)
 
         if result:
-            console.print("[green][OK] Entity read completed successfully[/green]")
-            console.print(json.dumps(result, indent=2))
+            if json_output:
+                # Pure JSON output without status messages
+                print(json.dumps(result, indent=2))
+            else:
+                console.print("[green][OK] Entity read completed successfully[/green]")
+                console.print(json.dumps(result, indent=2))
         else:
-            console.print("[yellow][!] Entity read completed with no result[/yellow]")
+            if not json_output:
+                console.print("[yellow][!] Entity read completed with no result[/yellow]")
 
     except Exception as e:
-        console.print(f"[red][X] Error executing entity read: {str(e)}[/red]")
+        if json_output:
+            # Output error as JSON for consistency
+            print(json.dumps({"error": str(e)}, indent=2))
+        else:
+            console.print(f"[red][X] Error executing entity read: {str(e)}[/red]")
 
 
 @entity.command()
@@ -1782,18 +1800,72 @@ def bulk_update_csv(ctx, csv_file, batch_size, dry_run, error_csv):
                             failed_rows.append(r)
 
                 else:
-                    # Fallback: call bulk create-or-update with guid included in each entity object.
-                    # Map each row into an entity dict keeping non-null columns.
-                    entities = []
+                    # Fallback: Use partial attribute updates for each entity
+                    # This approach updates attributes without requiring qualifiedName
                     for r in rows:
-                        if pd.isna(r.get("guid")):
+                        guid = r.get("guid")
+                        if pd.isna(guid):
                             failed_rows.append(r)
                             failed += 1
                             continue
-                        ent = {k: v for k, v in r.items() if pd.notnull(v)}
-                        # ensure guid is string under top-level 'guid' field for server bulk endpoints
-                        ent["guid"] = str(ent.get("guid"))
-                        entities.append(ent)
+                        
+                        guid = str(guid)
+                        
+                        # Map CSV column names to Purview attribute names
+                        column_mapping = {
+                            "DisplayName": "displayName",
+                            "Description": "description",
+                        }
+                        
+                        # Update each attribute individually
+                        for csv_col, purview_attr in column_mapping.items():
+                            if csv_col in r and pd.notnull(r.get(csv_col)):
+                                attr_value = r.get(csv_col)
+                                
+                                if dry_run:
+                                    console.print(f"[blue]DRY RUN: Would update GUID {guid} set {purview_attr}={attr_value}[/blue]")
+                                    continue
+                                
+                                try:
+                                    args = {"--guid": [guid], "--attrName": purview_attr, "--attrValue": str(attr_value)}
+                                    result = entity_client.entityPartialUpdateAttribute(args)
+                                    if result and (not isinstance(result, dict) or result.get("status") != "error"):
+                                        success += 1
+                                    else:
+                                        failed += 1
+                                        errors.append(f"GUID {guid} attr {purview_attr}: {result}")
+                                        if r not in failed_rows:
+                                            failed_rows.append(r)
+                                except Exception as e:
+                                    failed += 1
+                                    errors.append(f"GUID {guid} attr {purview_attr}: {str(e)}")
+                                    if r not in failed_rows:
+                                        failed_rows.append(r)
+                        
+                        # Handle any other custom attributes
+                        for k, v in r.items():
+                            if pd.notnull(v) and k not in column_mapping and k != "guid":
+                                if dry_run:
+                                    console.print(f"[blue]DRY RUN: Would update GUID {guid} set {k}={v}[/blue]")
+                                    continue
+                                
+                                try:
+                                    args = {"--guid": [guid], "--attrName": k, "--attrValue": str(v)}
+                                    result = entity_client.entityPartialUpdateAttribute(args)
+                                    if result and (not isinstance(result, dict) or result.get("status") != "error"):
+                                        success += 1
+                                    else:
+                                        failed += 1
+                                        errors.append(f"GUID {guid} attr {k}: {result}")
+                                        if r not in failed_rows:
+                                            failed_rows.append(r)
+                                except Exception as e:
+                                    failed += 1
+                                    errors.append(f"GUID {guid} attr {k}: {str(e)}")
+                                    if r not in failed_rows:
+                                        failed_rows.append(r)
+                    
+                    continue  # Skip the bulk payload creation below
 
                     if not entities:
                         continue
