@@ -499,4 +499,273 @@ def _bulk_delete_collection_assets(search_client, entity_client, collection_name
     return deleted_count
 
 
+@collections.command()
+@click.option(
+    "--collection-name",
+    help="Filter by specific collection name"
+)
+@click.option(
+    "--format",
+    type=click.Choice(["table", "json", "csv"]),
+    default="table",
+    help="Output format (default: table)"
+)
+@click.option(
+    "--json",
+    "output_json",
+    is_flag=True,
+    help="Output in JSON format (shorthand for --format json)"
+)
+@click.option(
+    "--sort-by",
+    type=click.Choice(["name", "type", "guid"]),
+    default="name",
+    help="Sort assets by field (default: name)"
+)
+@click.option(
+    "--asset-type",
+    help="Filter by asset type (e.g., azure_sql_table, powerbi_dataset)"
+)
+@click.option(
+    "--data-source",
+    help="Filter by data source keyword (e.g., Fabric, Azure SQL, Power BI)"
+)
+@click.option(
+    "--limit",
+    type=int,
+    default=1000,
+    help="Maximum number of assets to retrieve per collection (default: 1000)"
+)
+def resources(collection_name, format, output_json, sort_by, asset_type, data_source, limit):
+    """List assets in collections with filtering options"""
+    try:
+        from rich.console import Console
+        from rich.table import Table
+        import csv
+        from io import StringIO
+        from ..client._search import Search
+        
+        # Override format if --json flag is used
+        if output_json:
+            format = "json"
+        
+        console = Console(force_terminal=True, legacy_windows=False)
+        collections_client = Collections()
+        search_client = Search()
+        
+        # Fetch all collections
+        click.echo(f"📁 Fetching collections...", err=True)
+        collections_result = collections_client.collectionsRead({})
+        
+        if isinstance(collections_result, dict) and 'value' in collections_result:
+            collections_list = collections_result['value']
+        elif isinstance(collections_result, list):
+            collections_list = collections_result
+        else:
+            click.echo("⚠️  No collections found", err=True)
+            return
+        
+        # Build collection map and filter if needed
+        target_collections = {}
+        for coll in collections_list:
+            coll_name = coll.get('name', 'Unknown')
+            if collection_name is None or coll_name == collection_name:
+                target_collections[coll_name] = coll
+        
+        # Fetch assets for each target collection
+        collections_assets = {}
+        
+        for coll_name in sorted(target_collections.keys()):
+            click.echo(f"📊 Fetching assets from '{coll_name}'...", err=True)
+            
+            try:
+                # Build API filter with collectionId and optional entityType
+                filter_dict = {"collectionId": coll_name}
+                
+                # Add entityType filter to API request if specified
+                if asset_type:
+                    filter_dict["entityType"] = asset_type
+                
+                # Fetch up to 1000 assets per collection (API limit)
+                search_args = {
+                    '--filter': json.dumps(filter_dict),
+                    '--limit': min(1000, limit)
+                }
+                
+                search_result = search_client.searchQuery(search_args)
+                
+                if isinstance(search_result, dict):
+                    entities = search_result.get('value', [])
+                elif isinstance(search_result, list):
+                    entities = search_result
+                else:
+                    entities = []
+                
+                # Warn if we hit the limit
+                if len(entities) == 1000:
+                    click.echo(f"   ⚠️  Retrieved 1000 assets (API limit). Collection may contain more.", err=True)
+                
+                # Apply client-side filter only for data source (assetType field)
+                # since it's not a standard API filter
+                filtered_entities = []
+                for entity in entities:
+                    if not isinstance(entity, dict):
+                        continue
+                    
+                    # Filter by data source if specified (client-side only)
+                    if data_source:
+                        data_source_lower = data_source.lower()
+                        asset_types = entity.get('assetType', [])
+                        found = False
+                        
+                        if asset_types:
+                            try:
+                                for at in asset_types:
+                                    if data_source_lower in str(at).lower():
+                                        found = True
+                                        break
+                            except TypeError:
+                                if data_source_lower in str(asset_types).lower():
+                                    found = True
+                        
+                        if not found:
+                            continue
+                    
+                    filtered_entities.append(entity)
+                
+                # Count by type
+                type_counts = {}
+                for entity in filtered_entities:
+                    entity_type = entity.get('entityType') or entity.get('typeName') or entity.get('objectType') or 'Unknown'
+                    type_counts[entity_type] = type_counts.get(entity_type, 0) + 1
+                
+                collections_assets[coll_name] = {
+                    'assets': filtered_entities,
+                    'type_counts': type_counts
+                }
+                
+                click.echo(f"   Found {len(filtered_entities)} assets (from {len(entities)} total)", err=True)
+                
+            except Exception as e:
+                click.echo(f"   ⚠️  Error: {e}", err=True)
+                collections_assets[coll_name] = {
+                    'assets': [],
+                    'type_counts': {}
+                }
+        
+        # Helper function to safely extract data source
+        def get_data_source(asset):
+            asset_types = asset.get('assetType', [])
+            if not asset_types:
+                return 'N/A'
+            
+            try:
+                return ', '.join(asset_types)
+            except TypeError:
+                return str(asset_types)
+        
+        # Sort assets
+        def sort_assets(assets, sort_field):
+            def get_sort_key(asset):
+                if sort_field == 'name':
+                    return (asset.get('name') or asset.get('displayText', 'Unknown')).lower()
+                elif sort_field == 'type':
+                    return (asset.get('entityType') or asset.get('typeName') or asset.get('objectType', 'Unknown')).lower()
+                elif sort_field == 'guid':
+                    return str(asset.get('id') or asset.get('guid', 'N/A'))
+                return ''
+            
+            return sorted(assets, key=get_sort_key)
+        
+        # Apply sorting
+        for coll_name in collections_assets.keys():
+            collections_assets[coll_name]['assets'] = sort_assets(
+                collections_assets[coll_name]['assets'],
+                sort_by
+            )
+        
+        # Calculate totals
+        total_resources = sum(len(c['assets']) for c in collections_assets.values())
+        
+        # Output based on format
+        if format == 'json':
+            output = {
+                'total_collections': len(collections_assets),
+                'total_resources': total_resources,
+                'collections': []
+            }
+            
+            for coll_name in sorted(collections_assets.keys()):
+                coll_data = collections_assets[coll_name]
+                assets_list = []
+                
+                for asset in coll_data['assets']:
+                    assets_list.append({
+                        'name': asset.get('name') or asset.get('displayText', 'Unknown'),
+                        'guid': asset.get('id') or asset.get('guid', 'N/A'),
+                        'type': asset.get('entityType') or asset.get('typeName') or asset.get('objectType', 'Unknown'),
+                        'data_source': get_data_source(asset)
+                    })
+                
+                output['collections'].append({
+                    'name': coll_name,
+                    'total_assets': len(assets_list),
+                    'assets': assets_list
+                })
+            
+            click.echo(json.dumps(output, indent=2))
+        
+        elif format == 'csv':
+            output = StringIO()
+            writer = csv.writer(output)
+            writer.writerow(['Collection', 'Asset Name', 'GUID', 'Type', 'Data Source'])
+            
+            for coll_name in sorted(collections_assets.keys()):
+                coll_data = collections_assets[coll_name]
+                for asset in coll_data['assets']:
+                    writer.writerow([
+                        coll_name,
+                        asset.get('name') or asset.get('displayText', 'Unknown'),
+                        asset.get('id') or asset.get('guid', 'N/A'),
+                        asset.get('entityType') or asset.get('typeName') or asset.get('objectType', 'Unknown'),
+                        get_data_source(asset)
+                    ])
+            
+            click.echo(output.getvalue())
+        
+        else:  # table format
+            if not collections_assets or total_resources == 0:
+                console.print("[yellow]No assets found[/yellow]")
+                return
+            
+            title = f"📊 Assets in '{collection_name}'" if collection_name else "📊 Assets by Collection"
+            table = Table(title=title, show_lines=False)
+            table.add_column("Asset Name", style="cyan", no_wrap=False)
+            table.add_column("GUID", style="yellow", no_wrap=True, overflow="fold")
+            table.add_column("Type", style="green")
+            table.add_column("Data Source", style="magenta")
+            
+            for coll_name in sorted(collections_assets.keys()):
+                coll_data = collections_assets[coll_name]
+                
+                if coll_data['assets']:
+                    if not collection_name:
+                        table.add_row(f"[bold]{coll_name}[/bold]", "", "", "")
+                    
+                    for asset in coll_data['assets']:
+                        asset_name = asset.get('name') or asset.get('displayText', 'Unknown')
+                        asset_guid = str(asset.get('id') or asset.get('guid', 'N/A'))
+                        asset_type = asset.get('entityType') or asset.get('typeName') or asset.get('objectType', 'Unknown')
+                        
+                        table.add_row(asset_name, asset_guid, asset_type, get_data_source(asset))
+            
+            console.print(table)
+            console.print(f"\n[bold]Summary:[/bold] {total_resources} asset(s) in {len(collections_assets)} collection(s)")
+    
+    except Exception as e:
+        click.echo(f"Error: {e}", err=True)
+        import traceback
+        traceback.print_exc()
+
+
 __all__ = ["collections"]
