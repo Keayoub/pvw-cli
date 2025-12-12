@@ -3867,5 +3867,5 @@ def request():
 @request.command(name="list")
 def list_requests():
     """List access requests (coming soon)."""
-    console.print("[yellow]🚧 Access Requests are coming soon[/yellow]")
+    console.print("[yellow][COMING SOON] Access Requests are coming soon[/yellow]")
     console.print("This feature is under development for data access workflows")

@@ -26,7 +26,7 @@ def list(ctx, output_json):
     """List all workflows."""
     try:
         if ctx.obj and ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: workflow list command[/yellow]")
+            console.print("[yellow][MOCK] workflow list command[/yellow]")
             console.print("[green][OK] Mock workflow list completed successfully[/green]")
             return
 
@@ -97,7 +97,7 @@ def create(ctx, workflow_id, payload_file):
     """Create a new workflow."""
     try:
         if ctx.obj and ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: workflow create command[/yellow]")
+            console.print("[yellow][MOCK] workflow create command[/yellow]")
             console.print(f"[dim]Workflow ID: {workflow_id}[/dim]")
             console.print(f"[dim]Payload File: {payload_file}[/dim]")
             console.print("[green][OK] Mock workflow create completed successfully[/green]")
@@ -125,7 +125,7 @@ def get(ctx, workflow_id):
     """Get a specific workflow."""
     try:
         if ctx.obj and ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: workflow get command[/yellow]")
+            console.print("[yellow][MOCK] workflow get command[/yellow]")
             console.print(f"[dim]Workflow ID: {workflow_id}[/dim]")
             console.print("[green][OK] Mock workflow get completed successfully[/green]")
             return
@@ -155,7 +155,7 @@ def execute(ctx, workflow_id, payload_file):
     """Execute a workflow."""
     try:
         if ctx.obj and ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: workflow execute command[/yellow]")
+            console.print("[yellow][MOCK] workflow execute command[/yellow]")
             console.print(f"[dim]Workflow ID: {workflow_id}[/dim]")
             if payload_file:
                 console.print(f"[dim]Payload File: {payload_file}[/dim]")
@@ -186,7 +186,7 @@ def executions(ctx, workflow_id):
     """List workflow executions."""
     try:
         if ctx.obj and ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: workflow executions command[/yellow]")
+            console.print("[yellow][MOCK] workflow executions command[/yellow]")
             console.print(f"[dim]Workflow ID: {workflow_id}[/dim]")
             console.print("[green][OK] Mock workflow executions completed successfully[/green]")
             return
@@ -217,7 +217,7 @@ def approvals(ctx, status, assigned_to):
     """List approval requests."""
     try:
         if ctx.obj and ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: workflow approvals command[/yellow]")
+            console.print("[yellow][MOCK] workflow approvals command[/yellow]")
             if status:
                 console.print(f"[dim]Status Filter: {status}[/dim]")
             if assigned_to:
@@ -252,7 +252,7 @@ def approve(ctx, request_id, comments):
     """Approve a request."""
     try:
         if ctx.obj and ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: workflow approve command[/yellow]")
+            console.print("[yellow][MOCK] workflow approve command[/yellow]")
             console.print(f"[dim]Request ID: {request_id}[/dim]")
             if comments:
                 console.print(f"[dim]Comments: {comments}[/dim]")
@@ -284,7 +284,7 @@ def reject(ctx, request_id, comments):
     """Reject a request."""
     try:
         if ctx.obj and ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: workflow reject command[/yellow]")
+            console.print("[yellow][MOCK] workflow reject command[/yellow]")
             console.print(f"[dim]Request ID: {request_id}[/dim]")
             if comments:
                 console.print(f"[dim]Comments: {comments}[/dim]")
@@ -317,7 +317,7 @@ def templates(ctx):
     """List available workflow templates."""
     try:
         if ctx.obj and ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: workflow templates command[/yellow]")
+            console.print("[yellow][MOCK] workflow templates command[/yellow]")
             console.print("[green][OK] Mock workflow templates completed successfully[/green]")
             return
 
@@ -343,7 +343,7 @@ def template(ctx, template_id):
     """Get a specific workflow template."""
     try:
         if ctx.obj and ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: workflow template command[/yellow]")
+            console.print("[yellow][MOCK] workflow template command[/yellow]")
             console.print(f"[dim]Template ID: {template_id}[/dim]")
             console.print("[green][OK] Mock workflow template completed successfully[/green]")
             return
@@ -378,7 +378,7 @@ def validate(ctx, payload_file):
     """Validate a workflow definition."""
     try:
         if ctx.obj and ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: workflow validate command[/yellow]")
+            console.print("[yellow][MOCK] workflow validate command[/yellow]")
             console.print(f"[dim]Payload File: {payload_file}[/dim]")
             console.print("[green][OK] Mock workflow validate completed successfully[/green]")
             return

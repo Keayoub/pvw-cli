@@ -37,7 +37,7 @@ def get_account(ctx):
     """Get account information"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: account get-account command[/yellow]")
+            console.print("[yellow][MOCK] account get-account command[/yellow]")
             console.print("[green][OK] Mock account get-account completed successfully[/green]")
             return
 
@@ -63,7 +63,7 @@ def get_access_keys(ctx):
     """Get account access keys"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: account get-access-keys command[/yellow]")
+            console.print("[yellow][MOCK] account get-access-keys command[/yellow]")
             console.print("[green][OK] Mock account get-access-keys completed successfully[/green]")
             return
 
@@ -92,7 +92,7 @@ def regenerate_access_keys(ctx, key_type):
     """Regenerate account access keys"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: account regenerate-access-keys command[/yellow]")
+            console.print("[yellow][MOCK] account regenerate-access-keys command[/yellow]")
             console.print(f"[dim]Key Type: {key_type}[/dim]")
             console.print("[green][OK] Mock account regenerate-access-keys completed successfully[/green]")
             return
@@ -120,7 +120,7 @@ def update_account(ctx, friendly_name):
     """Update account information"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: account update-account command[/yellow]")
+            console.print("[yellow][MOCK] account update-account command[/yellow]")
             console.print(f"[dim]Friendly Name: {friendly_name}[/dim]")
             console.print("[green][OK] Mock account update-account completed successfully[/green]")
             return
@@ -147,7 +147,7 @@ def get_collections(ctx):
     """Get all collections"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: account get-collections command[/yellow]")
+            console.print("[yellow][MOCK] account get-collections command[/yellow]")
             console.print("[green][OK] Mock account get-collections completed successfully[/green]")
             return
 
@@ -174,7 +174,7 @@ def get_collection(ctx, collection_name):
     """Get specific collection information"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: account get-collection command[/yellow]")
+            console.print("[yellow][MOCK] account get-collection command[/yellow]")
             console.print(f"[dim]Collection Name: {collection_name}[/dim]")
             console.print("[green][OK] Mock account get-collection completed successfully[/green]")
             return
