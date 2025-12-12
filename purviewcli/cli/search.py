@@ -125,7 +125,7 @@ def _format_detailed_output(data):
 
     # Add pagination hint if there are more results
     if len(items) < count:
-        console.print(f"\n💡 [dim]More results available. Use --offset to paginate.[/dim]")
+        console.print(f"\n[TIP] [dim]More results available. Use --offset to paginate.[/dim]")
 
     return
 
@@ -184,7 +184,7 @@ def _format_search_results(data, show_ids=False):
 
     # Add pagination hint if there are more results
     if len(items) < count:
-        console.print(f"\n💡 More results available. Use --offset to paginate.")
+        console.print(f"\n[TIP] More results available. Use --offset to paginate.")
 
     return
 

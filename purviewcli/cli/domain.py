@@ -250,7 +250,7 @@ def check_attributes():
 def create_using_collections(domain_name, show_examples):
     """Provides a step-by-step guide to create domain-like structures using collections."""
     try:
-        console.print("\n[bold blue]📋 Creating Domain-like Structures with Microsoft Purview Collections[/bold blue]")
+        console.print("\n[bold blue][INFO] Creating Domain-like Structures with Microsoft Purview Collections[/bold blue]")
         console.print("\n[yellow]OVERVIEW:[/yellow] Since governance domains are not available in the public API, you can use collections to create hierarchical, domain-like organizational structures.")
         
         console.print("\n[cyan][*]  COLLECTIONS AS DOMAINS - KEY CAPABILITIES:[/cyan]")
@@ -261,7 +261,7 @@ def create_using_collections(domain_name, show_examples):
         console.print("[OK] [green]Metadata Management:[/green] Organize metadata within business contexts")
         
         if domain_name:
-            console.print(f"\n[cyan]🚀 CREATING DOMAIN-LIKE COLLECTION: '{domain_name}'[/cyan]")
+            console.print(f"\n[cyan][START] CREATING DOMAIN-LIKE COLLECTION: '{domain_name}'[/cyan]")
             console.print(f"1. [bold]Create top-level collection:[/bold]")
             console.print(f"   pvw collections create --collection-name {domain_name.lower().replace(' ', '-')} --friendly-name \"{domain_name}\" --description \"Top-level domain collection for {domain_name}\"")
             
@@ -269,7 +269,7 @@ def create_using_collections(domain_name, show_examples):
             console.print(f"   pvw collections create --collection-name {domain_name.lower().replace(' ', '-')}-finance --friendly-name \"{domain_name} Finance\" --parent-collection {domain_name.lower().replace(' ', '-')}")
             console.print(f"   pvw collections create --collection-name {domain_name.lower().replace(' ', '-')}-operations --friendly-name \"{domain_name} Operations\" --parent-collection {domain_name.lower().replace(' ', '-')}")
             
-        console.print("\n[cyan]📖 STEP-BY-STEP GUIDE:[/cyan]")
+        console.print("\n[cyan][GUIDE] STEP-BY-STEP GUIDE:[/cyan]")
         console.print("1. [bold]Plan Your Hierarchy:[/bold]")
         console.print("   • Design your domain structure (departments, teams, projects)")
         console.print("   • Consider security boundaries and access requirements")
@@ -286,9 +286,9 @@ def create_using_collections(domain_name, show_examples):
         console.print("   pvw collections create --collection-name my-domain-hr-payroll --friendly-name \"Payroll Team\" --parent-collection my-domain-hr")
         
         if show_examples:
-            console.print("\n[cyan]💡 DOMAIN ORGANIZATION PATTERNS:[/cyan]")
+            console.print("\n[cyan][TIP] DOMAIN ORGANIZATION PATTERNS:[/cyan]")
             
-            console.print("\n[bold]🏢 Pattern 1: Business Unit Domains[/bold]")
+            console.print("\n[bold][PATTERN] Pattern 1: Business Unit Domains[/bold]")
             console.print("```")
             console.print("Healthcare-Organization (Root)")
             console.print("├── Hospitals-Domain")
@@ -303,7 +303,7 @@ def create_using_collections(domain_name, show_examples):
             console.print("    └── Finance-Systems")
             console.print("```")
             
-            console.print("\n[bold]🌍 Pattern 2: Geographic Domains[/bold]")
+            console.print("\n[bold][PATTERN] Pattern 2: Geographic Domains[/bold]")
             console.print("```")
             console.print("Global-Corporation (Root)")
             console.print("├── North-America")
@@ -317,7 +317,7 @@ def create_using_collections(domain_name, show_examples):
             console.print("    └── Australia-Operations")
             console.print("```")
             
-            console.print("\n[bold]🔄 Pattern 3: Lifecycle/Environment Domains[/bold]")
+            console.print("\n[bold][PATTERN] Pattern 3: Lifecycle/Environment Domains[/bold]")
             console.print("```")
             console.print("Data-Platform (Root)")
             console.print("├── Development")
@@ -333,7 +333,7 @@ def create_using_collections(domain_name, show_examples):
             console.print("    └── Analytics-Data")
             console.print("```")
         
-        console.print("\n[cyan]🔐 ACCESS CONTROL & SECURITY:[/cyan]")
+        console.print("\n[cyan][SECURITY] ACCESS CONTROL & SECURITY:[/cyan]")
         console.print("• Assign Collection Admin role for domain managers")
         console.print("• Use Data Reader role for read-only access")
         console.print("• Set Data Curator role for metadata management")
@@ -344,7 +344,7 @@ def create_using_collections(domain_name, show_examples):
         console.print("• [bold]Glossary Terms:[/bold] Create domain-specific business vocabularies")
         console.print("• [bold]Classifications:[/bold] Apply domain-based data classifications")
         
-        console.print("\n[cyan]📝 USEFUL COMMANDS:[/cyan]")
+        console.print("\n[cyan][COMMANDS] USEFUL COMMANDS:[/cyan]")
         console.print("• List all collections: [bold]pvw collections list[/bold]")
         console.print("• Get collection details: [bold]pvw collections get --collection-name <name>[/bold]")
         console.print("• Search domain assets: [bold]pvw domain search-assets --domain <domain-name>[/bold]")

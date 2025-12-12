@@ -165,7 +165,7 @@ def list_detailed(ctx, output_format, include_assets, include_scans, max_depth):
         collections_client = Collections()
 
         # Get all collections
-        console.print("[blue]📋 Retrieving all collections...[/blue]")
+        console.print("[blue][INFO] Retrieving all collections...[/blue]")
         collections_result = collections_client.collectionsRead({})
         
         if not collections_result or "value" not in collections_result:
@@ -218,7 +218,7 @@ def get_details(ctx, collection_name, include_assets, include_data_sources, incl
         search_client = Search()
 
         # Get collection information
-        console.print(f"[blue]📋 Retrieving details for collection: {collection_name}[/blue]")
+        console.print(f"[blue][INFO] Retrieving details for collection: {collection_name}[/blue]")
         
         collection_info = collections_client.collectionsRead({"--name": collection_name})
         if not collection_info:
@@ -236,7 +236,7 @@ def get_details(ctx, collection_name, include_assets, include_data_sources, incl
 
         # Get data sources if requested
         if include_data_sources:
-            console.print("[blue]🔌 Retrieving data sources...[/blue]")
+            console.print("[blue][INFO] Retrieving data sources...[/blue]")
             console.print("[yellow][!] Data source information feature coming soon[/yellow]")
 
         # Get scan information if requested
@@ -316,7 +316,7 @@ def force_delete(ctx, collection_name, delete_assets, delete_data_sources,
 
         # Step 3: Delete data sources if requested
         if delete_data_sources:
-            console.print(f"[blue]🔌 {'[DRY RUN] ' if dry_run else ''}Deleting data sources...[/blue]")
+            console.print(f"[blue][DELETE] {'[DRY RUN] ' if dry_run else ''}Deleting data sources...[/blue]")
             console.print("[yellow][!] Data source deletion feature coming soon[/yellow]")
 
         # Step 4: Delete the collection itself
@@ -396,7 +396,7 @@ def _display_collections_tree(collections_data, include_assets, include_scans, m
     from rich.console import Console
     
     console = Console()
-    console.print("[blue]🌳 Collections Hierarchy:[/blue]")
+    console.print("[blue][TREE] Collections Hierarchy:[/blue]")
     # Implementation would build tree structure from parent-child relationships
     for i, collection in enumerate(collections_data[:10]):  # Limit for demo
         name = collection.get("name", "")
@@ -554,7 +554,7 @@ def resources(collection_name, format, output_json, sort_by, asset_type, data_so
         search_client = Search()
         
         # Fetch all collections
-        click.echo(f"📁 Fetching collections...", err=True)
+        click.echo(f"[INFO] Fetching collections...", err=True)
         collections_result = collections_client.collectionsRead({})
         
         if isinstance(collections_result, dict) and 'value' in collections_result:
@@ -562,7 +562,7 @@ def resources(collection_name, format, output_json, sort_by, asset_type, data_so
         elif isinstance(collections_result, list):
             collections_list = collections_result
         else:
-            click.echo("⚠️  No collections found", err=True)
+            click.echo("[WARN] No collections found", err=True)
             return
         
         # Build collection map and filter if needed
@@ -576,7 +576,7 @@ def resources(collection_name, format, output_json, sort_by, asset_type, data_so
         collections_assets = {}
         
         for coll_name in sorted(target_collections.keys()):
-            click.echo(f"📊 Fetching assets from '{coll_name}'...", err=True)
+            click.echo(f"[FETCH] Fetching assets from '{coll_name}'...", err=True)
             
             try:
                 # Build API filter with collectionId and optional entityType
@@ -603,7 +603,7 @@ def resources(collection_name, format, output_json, sort_by, asset_type, data_so
                 
                 # Warn if we hit the limit
                 if len(entities) == 1000:
-                    click.echo(f"   ⚠️  Retrieved 1000 assets (API limit). Collection may contain more.", err=True)
+                    click.echo(f"   [WARN] Retrieved 1000 assets (API limit). Collection may contain more.", err=True)
                 
                 # Apply client-side filter only for data source (assetType field)
                 # since it's not a standard API filter
@@ -647,7 +647,7 @@ def resources(collection_name, format, output_json, sort_by, asset_type, data_so
                 click.echo(f"   Found {len(filtered_entities)} assets (from {len(entities)} total)", err=True)
                 
             except Exception as e:
-                click.echo(f"   ⚠️  Error: {e}", err=True)
+                click.echo(f"   [ERROR] Error: {e}", err=True)
                 collections_assets[coll_name] = {
                     'assets': [],
                     'type_counts': {}
@@ -738,7 +738,7 @@ def resources(collection_name, format, output_json, sort_by, asset_type, data_so
                 console.print("[yellow]No assets found[/yellow]")
                 return
             
-            title = f"📊 Assets in '{collection_name}'" if collection_name else "📊 Assets by Collection"
+            title = f"Assets in '{collection_name}'" if collection_name else "Assets by Collection"
             table = Table(title=title, show_lines=False)
             table.add_column("Asset Name", style="cyan", no_wrap=False)
             table.add_column("GUID", style="yellow", no_wrap=True, overflow="fold")
