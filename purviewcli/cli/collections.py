@@ -236,7 +236,7 @@ def get_details(ctx, collection_name, include_assets, include_data_sources, incl
 
         # Get data sources if requested
         if include_data_sources:
-            console.print("[blue]🔌 Retrieving data sources...[/blue]")
+            console.print("[blue][INFO] Retrieving data sources...[/blue]")
             console.print("[yellow][!] Data source information feature coming soon[/yellow]")
 
         # Get scan information if requested
@@ -316,7 +316,7 @@ def force_delete(ctx, collection_name, delete_assets, delete_data_sources,
 
         # Step 3: Delete data sources if requested
         if delete_data_sources:
-            console.print(f"[blue]🔌 {'[DRY RUN] ' if dry_run else ''}Deleting data sources...[/blue]")
+            console.print(f"[blue][DELETE] {'[DRY RUN] ' if dry_run else ''}Deleting data sources...[/blue]")
             console.print("[yellow][!] Data source deletion feature coming soon[/yellow]")
 
         # Step 4: Delete the collection itself
@@ -396,7 +396,7 @@ def _display_collections_tree(collections_data, include_assets, include_scans, m
     from rich.console import Console
     
     console = Console()
-    console.print("[blue]🌳 Collections Hierarchy:[/blue]")
+    console.print("[blue][TREE] Collections Hierarchy:[/blue]")
     # Implementation would build tree structure from parent-child relationships
     for i, collection in enumerate(collections_data[:10]):  # Limit for demo
         name = collection.get("name", "")

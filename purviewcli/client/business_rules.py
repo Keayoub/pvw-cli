@@ -569,12 +569,12 @@ class BusinessRulesEngine:
         summary_text = f"""
 [bold green]Compliance Report Generated[/bold green]
 
-📊 [cyan]Report Statistics:[/cyan]
+[STATS] [cyan]Report Statistics:[/cyan]
    • Total Violations: {summary['total_violations']}
    • Entities Affected: {summary['entities_with_violations']}
    • Collection: {summary['collection']}
 
-🚨 [yellow]Violations by Severity:[/yellow]
+[ALERT] [yellow]Violations by Severity:[/yellow]
 """
         
         for severity, count in summary['violations_by_severity'].items():

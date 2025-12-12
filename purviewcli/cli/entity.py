@@ -2187,7 +2187,7 @@ def count_assets(ctx, collection_name, by_type, include_relationships):
 
         if include_relationships:
             rel_count = _get_relationship_count(collection_name)
-            console.print(f"[blue]🔗 Total relationships: {rel_count}[/blue]")
+            console.print(f"[blue][LINK] Total relationships: {rel_count}[/blue]")
 
     except Exception as e:
         from rich.console import Console
@@ -2384,7 +2384,7 @@ def _continuous_collection_deletion(ctx, collection_name, bulk_size, max_paralle
     console.print(f"[blue][PATTERN] Starting continuous deletion for collection: {collection_name}[/blue]")
 
     while True:
-        console.print(f"\n[blue]📅 Iteration {iteration}: Finding assets to delete...[/blue]")
+        console.print(f"\n[blue][ITER] Iteration {iteration}: Finding assets to delete...[/blue]")
         
         # Get next batch of assets from collection
         asset_guids = _get_collection_assets_batch(collection_name, batch_size)

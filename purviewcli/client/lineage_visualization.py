@@ -445,7 +445,7 @@ class AdvancedLineageAnalyzer:
         
         if impact_level == ImpactLevel.CRITICAL:
             recommendations.extend([
-                "⚠️  CRITICAL IMPACT: Coordinate changes with all stakeholders",
+                "[WARN] CRITICAL IMPACT: Coordinate changes with all stakeholders",
                 "Implement comprehensive testing before deployment",
                 "Consider phased rollout approach",
                 "Set up monitoring for downstream systems"
@@ -487,7 +487,7 @@ class AdvancedLineageAnalyzer:
         
         # Create root tree
         tree = Tree(
-            f"🏠 [bold blue]{root_node.name}[/bold blue] ({root_node.type_name})",
+            f"[ROOT] [bold blue]{root_node.name}[/bold blue] ({root_node.type_name})",
             guide_style="bold bright_blue"
         )
         
@@ -500,7 +500,7 @@ class AdvancedLineageAnalyzer:
         # Add downstream section
         downstream_nodes = [n for n in graph.nodes.values() if n.direction == "OUTPUT"]
         if downstream_nodes:
-            downstream_branch = tree.add("➡️  [bold yellow]Downstream Impact[/bold yellow]")
+            downstream_branch = tree.add("[->] [bold yellow]Downstream Impact[/bold yellow]")
             self._add_nodes_to_tree(downstream_branch, downstream_nodes, graph.edges, max_depth)
         
         return tree
@@ -530,14 +530,14 @@ class AdvancedLineageAnalyzer:
                 # Create node label with metadata
                 classifications_str = ", ".join(node.classifications[:3]) if node.classifications else "None"
                 
-                node_label = f"📊 {node.name} ({node.type_name})"
+                node_label = f"[DATA] {node.name} ({node.type_name})"
                 if node.classifications:
-                    node_label += f" | 🏷️  {classifications_str}"
+                    node_label += f" | [TAG] {classifications_str}"
                 
                 # Add connection count if available
                 if 'connection_count' in node.metadata:
                     conn_count = node.metadata['connection_count']
-                    node_label += f" | 🔗 {conn_count} connections"
+                    node_label += f" | [LINK] {conn_count} connections"
                 
                 parent_branch.add(node_label)
     
