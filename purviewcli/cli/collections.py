@@ -441,10 +441,10 @@ def _display_asset_summary(assets):
     
     console = Console()
     if not assets:
-        console.print("[yellow][!] No assets found in collection[/yellow]")
+        click.echo("[!] No assets found in collection", err=True)
         return
     
-    console.print(f"[green][OK] Found {len(assets)} assets[/green]")
+    click.echo(f"[OK] Found {len(assets)} assets", err=True)
     # Would display asset type breakdown, etc.
 
 
@@ -549,7 +549,7 @@ def resources(collection_name, format, output_json, sort_by, asset_type, data_so
         if output_json:
             format = "json"
         
-        console = Console(force_terminal=True, legacy_windows=False)
+        console = Console()
         collections_client = Collections()
         search_client = Search()
         
@@ -735,7 +735,7 @@ def resources(collection_name, format, output_json, sort_by, asset_type, data_so
         
         else:  # table format
             if not collections_assets or total_resources == 0:
-                console.print("[yellow]No assets found[/yellow]")
+                click.echo("No assets found", err=True)
                 return
             
             title = f"Assets in '{collection_name}'" if collection_name else "Assets by Collection"
@@ -760,7 +760,7 @@ def resources(collection_name, format, output_json, sort_by, asset_type, data_so
                         table.add_row(asset_name, asset_guid, asset_type, get_data_source(asset))
             
             console.print(table)
-            console.print(f"\n[bold]Summary:[/bold] {total_resources} asset(s) in {len(collections_assets)} collection(s)")
+            click.echo(f"\nSummary: {total_resources} asset(s) in {len(collections_assets)} collection(s)")
     
     except Exception as e:
         click.echo(f"Error: {e}", err=True)
