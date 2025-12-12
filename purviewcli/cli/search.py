@@ -541,9 +541,18 @@ def find_table(
                         # Apply additional filtering based on criteria (case-insensitive)
                         matches = True
 
-                        # Filter by name if specified (case-insensitive)
-                        if name and name.lower() not in item_name.lower():
-                            matches = False
+                        # Filter by name if specified
+                        # Exact match if no wildcard, otherwise wildcard pattern matching (case-insensitive)
+                        if name:
+                            if '*' in name or '?' in name:
+                                # Wildcard pattern matching
+                                import fnmatch
+                                if not fnmatch.fnmatch(item_name.lower(), name.lower()):
+                                    matches = False
+                            else:
+                                # Exact match - name must equal exactly (case-insensitive)
+                                if item_name.lower() != name.lower():
+                                    matches = False
 
                         # Filter by schema (case-insensitive)
                         if schema and schema.lower() not in item_qn.lower():

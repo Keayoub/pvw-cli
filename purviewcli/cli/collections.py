@@ -664,6 +664,40 @@ def resources(collection_name, format, output_json, sort_by, asset_type, data_so
             except TypeError:
                 return str(asset_types)
         
+        # Helper function to extract hierarchy from qualifiedName
+        def get_hierarchy(asset):
+            qn = asset.get('qualifiedName', '')
+            if not qn:
+                return 'N/A'
+            
+            # Parse different formats
+            # SQL: mssql://server/database/schema/table
+            # ADLS: https://account.dfs.core.windows.net/container/path
+            # Power BI: https://app.powerbi.com/groups/workspace/datasets/id
+            
+            parts = []
+            if qn.startswith('mssql://'):
+                # SQL format: mssql://server/database/schema/table
+                path = qn.replace('mssql://', '').split('/')
+                if len(path) >= 4:
+                    parts = [path[0], path[1], path[2], path[3]]  # server, db, schema, table
+                elif len(path) >= 3:
+                    parts = [path[0], path[1], path[2]]  # server, db, schema
+                elif len(path) >= 2:
+                    parts = [path[0], path[1]]  # server, db
+            elif '.dfs.core.windows.net' in qn or '.blob.core.windows.net' in qn:
+                # ADLS/Blob format
+                parts_list = qn.replace('https://', '').split('/')
+                if len(parts_list) >= 2:
+                    parts = [parts_list[0], parts_list[1]]  # account, container
+                    if len(parts_list) > 2:
+                        parts.append('/'.join(parts_list[2:]))  # path
+            elif 'app.powerbi.com' in qn:
+                # Power BI format - extract workspace name if possible
+                parts = ['Power BI']
+            
+            return ' > '.join(parts) if parts else qn[:50]
+        
         # Sort assets
         def sort_assets(assets, sort_field):
             def get_sort_key(asset):
@@ -704,7 +738,9 @@ def resources(collection_name, format, output_json, sort_by, asset_type, data_so
                         'name': asset.get('name') or asset.get('displayText', 'Unknown'),
                         'guid': asset.get('id') or asset.get('guid', 'N/A'),
                         'type': asset.get('entityType') or asset.get('typeName') or asset.get('objectType', 'Unknown'),
-                        'data_source': get_data_source(asset)
+                        'data_source': get_data_source(asset),
+                        'hierarchy': get_hierarchy(asset),
+                        'qualified_name': asset.get('qualifiedName', 'N/A')
                     })
                 
                 output['collections'].append({
@@ -718,7 +754,7 @@ def resources(collection_name, format, output_json, sort_by, asset_type, data_so
         elif format == 'csv':
             output = StringIO()
             writer = csv.writer(output)
-            writer.writerow(['Collection', 'Asset Name', 'GUID', 'Type', 'Data Source'])
+            writer.writerow(['Collection', 'Asset Name', 'Type', 'Data Source', 'Hierarchy', 'Qualified Name', 'GUID'])
             
             for coll_name in sorted(collections_assets.keys()):
                 coll_data = collections_assets[coll_name]
@@ -726,9 +762,11 @@ def resources(collection_name, format, output_json, sort_by, asset_type, data_so
                     writer.writerow([
                         coll_name,
                         asset.get('name') or asset.get('displayText', 'Unknown'),
-                        asset.get('id') or asset.get('guid', 'N/A'),
                         asset.get('entityType') or asset.get('typeName') or asset.get('objectType', 'Unknown'),
-                        get_data_source(asset)
+                        get_data_source(asset),
+                        get_hierarchy(asset),
+                        asset.get('qualifiedName', 'N/A'),
+                        asset.get('id') or asset.get('guid', 'N/A')
                     ])
             
             click.echo(output.getvalue())
@@ -741,9 +779,10 @@ def resources(collection_name, format, output_json, sort_by, asset_type, data_so
             title = f"Assets in '{collection_name}'" if collection_name else "Assets by Collection"
             table = Table(title=title, show_lines=False)
             table.add_column("Asset Name", style="cyan", no_wrap=False)
-            table.add_column("GUID", style="yellow", no_wrap=True, overflow="fold")
             table.add_column("Type", style="green")
             table.add_column("Data Source", style="magenta")
+            table.add_column("Hierarchy", style="blue", no_wrap=False, overflow="fold")
+            table.add_column("GUID", style="yellow", no_wrap=True, overflow="fold")
             
             for coll_name in sorted(collections_assets.keys()):
                 coll_data = collections_assets[coll_name]
@@ -757,7 +796,7 @@ def resources(collection_name, format, output_json, sort_by, asset_type, data_so
                         asset_guid = str(asset.get('id') or asset.get('guid', 'N/A'))
                         asset_type = asset.get('entityType') or asset.get('typeName') or asset.get('objectType', 'Unknown')
                         
-                        table.add_row(asset_name, asset_guid, asset_type, get_data_source(asset))
+                        table.add_row(asset_name, asset_type, get_data_source(asset), get_hierarchy(asset), asset_guid)
             
             console.print(table)
             click.echo(f"\nSummary: {total_resources} asset(s) in {len(collections_assets)} collection(s)")
