@@ -632,7 +632,7 @@ class BusinessRulesEngine:
         with open(output_file, 'w') as f:
             json.dump(rules_config, f, indent=2)
         
-        self.console.print(f"[green]✓ Rules configuration exported to {output_file}[/green]")
+        self.console.print(f"[green][OK] Rules configuration exported to {output_file}[/green]")
     
     def import_rules_config(self, config_file: str):
         """Import rules configuration from file"""
@@ -662,7 +662,7 @@ class BusinessRulesEngine:
             except Exception as e:
                 self.console.print(f"[red]Failed to import rule {rule_id}: {str(e)}[/red]")
         
-        self.console.print(f"[green]✓ Imported {imported_count} rules from {config_file}[/green]")
+        self.console.print(f"[green][OK] Imported {imported_count} rules from {config_file}[/green]")
 
 # Export the main classes
 __all__ = [

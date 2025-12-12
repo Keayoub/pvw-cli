@@ -52,7 +52,7 @@ def read(ctx, guid, ignore_relationships, min_ext_info, json_output):
             console.print(f"[dim]DEBUG: GUID length = {len(str(guid))}[/dim]")
         
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity read command[/yellow]")
+            console.print("[yellow][MOCK] entity read command[/yellow]")
             console.print(f"[dim]GUID: {guid}[/dim]")
             console.print(f"[dim]Ignore Relationships: {ignore_relationships}[/dim]")
             console.print(f"[dim]Min Ext Info: {min_ext_info}[/dim]")
@@ -101,7 +101,7 @@ def create(ctx, payload_file):
     """Create a new entity"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity create command[/yellow]")
+            console.print("[yellow][MOCK] entity create command[/yellow]")
             console.print(f"[dim]Payload File: {payload_file}[/dim]")
             console.print("[green][OK] Mock entity create completed successfully[/green]")
             return
@@ -130,7 +130,7 @@ def delete(ctx, guid):
     """Delete an entity by GUID"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity delete command[/yellow]")
+            console.print("[yellow][MOCK] entity delete command[/yellow]")
             console.print(f"[dim]GUID: {guid}[/dim]")
             console.print("[green][OK] Mock entity delete completed successfully[/green]")
             return
@@ -164,7 +164,7 @@ def bulk_create(ctx, payload_file):
     """Create multiple entities in bulk"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity bulk-create command[/yellow]")
+            console.print("[yellow][MOCK] entity bulk-create command[/yellow]")
             console.print(f"[dim]Payload File: {payload_file}[/dim]")
             console.print("[green][OK] Mock entity bulk-create completed successfully[/green]")
             return
@@ -198,7 +198,7 @@ def bulk_update(ctx, payload_file):
     """Bulk update/create entities from a JSON payload file (uses qualifiedName to match existing entities)."""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity bulk-update command[/yellow]")
+            console.print("[yellow][MOCK] entity bulk-update command[/yellow]")
             console.print(f"[dim]Payload File: {payload_file}[/dim]")
             console.print("[green][OK] Mock entity bulk-update completed successfully[/green]")
             return
@@ -240,7 +240,7 @@ def bulk_read(ctx, guid, ignore_relationships, min_ext_info):
     """Read multiple entities by their GUIDs"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity bulk-read command[/yellow]")
+            console.print("[yellow][MOCK] entity bulk-read command[/yellow]")
             console.print(f"[dim]GUIDs: {', '.join(guid)}[/dim]")
             console.print("[green][OK] Mock entity bulk-read completed successfully[/green]")
             return
@@ -275,7 +275,7 @@ def bulk_delete(ctx, guid):
     """Delete multiple entities by their GUIDs"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity bulk-delete command[/yellow]")
+            console.print("[yellow][MOCK] entity bulk-delete command[/yellow]")
             console.print(f"[dim]GUIDs: {', '.join(guid)}[/dim]")
             console.print("[green][OK] Mock entity bulk-delete completed successfully[/green]")
             return
@@ -316,7 +316,7 @@ def read_by_attribute(ctx, type_name, qualified_name, ignore_relationships, min_
     """Read entity by unique attributes"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity read-by-attribute command[/yellow]")
+            console.print("[yellow][MOCK] entity read-by-attribute command[/yellow]")
             console.print(f"[dim]Type: {type_name}, Qualified Name: {qualified_name}[/dim]")
             console.print("[green][OK] Mock entity read-by-attribute completed successfully[/green]")
             return
@@ -361,7 +361,7 @@ def bulk_read_by_attribute(ctx, type_name, qualified_name, ignore_relationships,
     """Read multiple entities by unique attributes"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity bulk-read-by-attribute command[/yellow]")
+            console.print("[yellow][MOCK] entity bulk-read-by-attribute command[/yellow]")
             console.print(
                 f"[dim]Type: {type_name}, Qualified Names: {', '.join(qualified_name)}[/dim]"
             )
@@ -402,7 +402,7 @@ def delete_by_attribute(ctx, type_name, qualified_name):
     """Delete entity by unique attributes"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity delete-by-attribute command[/yellow]")
+            console.print("[yellow][MOCK] entity delete-by-attribute command[/yellow]")
             console.print(f"[dim]Type: {type_name}, Qualified Name: {qualified_name}[/dim]")
             console.print("[green][OK] Mock entity delete-by-attribute completed successfully[/green]")
             return
@@ -441,7 +441,7 @@ def update_by_attribute(ctx, type_name, qualified_name, payload_file):
     """Update entity by unique attributes"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity update-by-attribute command[/yellow]")
+            console.print("[yellow][MOCK] entity update-by-attribute command[/yellow]")
             console.print(f"[dim]Type: {type_name}, Qualified Name: {qualified_name}[/dim]")
             console.print("[green][OK] Mock entity update-by-attribute completed successfully[/green]")
             return
@@ -477,7 +477,7 @@ def read_header(ctx, guid):
     """Read entity header information by GUID"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity read-header command[/yellow]")
+            console.print("[yellow][MOCK] entity read-header command[/yellow]")
             console.print(f"[dim]GUID: {guid}[/dim]")
             console.print("[green][OK] Mock entity read-header completed successfully[/green]")
             return
@@ -508,7 +508,7 @@ def update_attribute(ctx, guid, attr_name, attr_value):
     """Update a specific attribute of an entity"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity update-attribute command[/yellow]")
+            console.print("[yellow][MOCK] entity update-attribute command[/yellow]")
             console.print(f"[dim]GUID: {guid}, Attribute: {attr_name}, Value: {attr_value}[/dim]")
             console.print("[green][OK] Mock entity update-attribute completed successfully[/green]")
             return
@@ -545,7 +545,7 @@ def read_classification(ctx, guid, classification_name):
     """Read specific classification for an entity"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity read-classification command[/yellow]")
+            console.print("[yellow][MOCK] entity read-classification command[/yellow]")
             console.print(f"[dim]GUID: {guid}, Classification: {classification_name}[/dim]")
             console.print("[green][OK] Mock entity read-classification completed successfully[/green]")
             return
@@ -577,7 +577,7 @@ def read_classifications(ctx, guid):
     """Read all classifications for an entity"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity read-classifications command[/yellow]")
+            console.print("[yellow][MOCK] entity read-classifications command[/yellow]")
             console.print(f"[dim]GUID: {guid}[/dim]")
             console.print(
                 "[green][OK] Mock entity read-classifications completed successfully[/green]"
@@ -614,7 +614,7 @@ def add_classifications(ctx, guid, payload_file):
     """Add classifications to an entity"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity add-classifications command[/yellow]")
+            console.print("[yellow][MOCK] entity add-classifications command[/yellow]")
             console.print(f"[dim]GUID: {guid}, Payload File: {payload_file}[/dim]")
             console.print("[green][OK] Mock entity add-classifications completed successfully[/green]")
             return
@@ -652,7 +652,7 @@ def update_classifications(ctx, guid, payload_file):
     """Update classifications on an entity"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity update-classifications command[/yellow]")
+            console.print("[yellow][MOCK] entity update-classifications command[/yellow]")
             console.print(f"[dim]GUID: {guid}, Payload File: {payload_file}[/dim]")
             console.print(
                 "[green][OK] Mock entity update-classifications completed successfully[/green]"
@@ -691,7 +691,7 @@ def remove_classification(ctx, guid, classification_name):
     """Remove classification from an entity"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity remove-classification command[/yellow]")
+            console.print("[yellow][MOCK] entity remove-classification command[/yellow]")
             console.print(f"[dim]GUID: {guid}, Classification: {classification_name}[/dim]")
             console.print(
                 "[green][OK] Mock entity remove-classification completed successfully[/green]"
@@ -738,7 +738,7 @@ def add_classifications_by_attribute(ctx, type_name, qualified_name, payload_fil
     try:
         if ctx.obj.get("mock"):
             console.print(
-                "[yellow]🎭 Mock: entity add-classifications-by-attribute command[/yellow]"
+                "[yellow][MOCK] entity add-classifications-by-attribute command[/yellow]"
             )
             console.print(f"[dim]Type: {type_name}, Qualified Name: {qualified_name}[/dim]")
             console.print(
@@ -788,7 +788,7 @@ def update_classifications_by_attribute(ctx, type_name, qualified_name, payload_
     try:
         if ctx.obj.get("mock"):
             console.print(
-                "[yellow]🎭 Mock: entity update-classifications-by-attribute command[/yellow]"
+                "[yellow][MOCK] entity update-classifications-by-attribute command[/yellow]"
             )
             console.print(f"[dim]Type: {type_name}, Qualified Name: {qualified_name}[/dim]")
             console.print(
@@ -835,7 +835,7 @@ def remove_classification_by_attribute(ctx, type_name, qualified_name, classific
     try:
         if ctx.obj.get("mock"):
             console.print(
-                "[yellow]🎭 Mock: entity remove-classification-by-attribute command[/yellow]"
+                "[yellow][MOCK] entity remove-classification-by-attribute command[/yellow]"
             )
             console.print(
                 f"[dim]Type: {type_name}, Qualified Name: {qualified_name}, Classification: {classification_name}[/dim]"
@@ -887,7 +887,7 @@ def bulk_add_classification(ctx, payload_file):
     """Add classification to multiple entities in bulk"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity bulk-add-classification command[/yellow]")
+            console.print("[yellow][MOCK] entity bulk-add-classification command[/yellow]")
             console.print(f"[dim]Payload File: {payload_file}[/dim]")
             console.print(
                 "[green][OK] Mock entity bulk-add-classification completed successfully[/green]"
@@ -925,7 +925,7 @@ def bulk_set_classifications(ctx, payload_file):
     """Set classifications on multiple entities in bulk"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity bulk-set-classifications command[/yellow]")
+            console.print("[yellow][MOCK] entity bulk-set-classifications command[/yellow]")
             console.print(f"[dim]Payload File: {payload_file}[/dim]")
             console.print(
                 "[green][OK] Mock entity bulk-set-classifications completed successfully[/green]"
@@ -967,7 +967,7 @@ def add_labels(ctx, guid, payload_file):
     """Add labels to an entity"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity add-labels command[/yellow]")
+            console.print("[yellow][MOCK] entity add-labels command[/yellow]")
             console.print(f"[dim]GUID: {guid}, Payload File: {payload_file}[/dim]")
             console.print("[green][OK] Mock entity add-labels completed successfully[/green]")
             return
@@ -1005,7 +1005,7 @@ def set_labels(ctx, guid, payload_file):
     """Set labels on an entity"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity set-labels command[/yellow]")
+            console.print("[yellow][MOCK] entity set-labels command[/yellow]")
             console.print(f"[dim]GUID: {guid}, Payload File: {payload_file}[/dim]")
             console.print("[green][OK] Mock entity set-labels completed successfully[/green]")
             return
@@ -1043,7 +1043,7 @@ def remove_labels(ctx, guid, payload_file):
     """Remove labels from an entity"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity remove-labels command[/yellow]")
+            console.print("[yellow][MOCK] entity remove-labels command[/yellow]")
             console.print(f"[dim]GUID: {guid}, Payload File: {payload_file}[/dim]")
             console.print("[green][OK] Mock entity remove-labels completed successfully[/green]")
             return
@@ -1085,7 +1085,7 @@ def add_labels_by_attribute(ctx, type_name, qualified_name, payload_file):
     """Add labels by unique attribute"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity add-labels-by-attribute command[/yellow]")
+            console.print("[yellow][MOCK] entity add-labels-by-attribute command[/yellow]")
             console.print(f"[dim]Type: {type_name}, Qualified Name: {qualified_name}[/dim]")
             console.print(
                 "[green][OK] Mock entity add-labels-by-attribute completed successfully[/green]"
@@ -1129,7 +1129,7 @@ def set_labels_by_attribute(ctx, type_name, qualified_name, payload_file):
     """Set labels by unique attribute"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity set-labels-by-attribute command[/yellow]")
+            console.print("[yellow][MOCK] entity set-labels-by-attribute command[/yellow]")
             console.print(f"[dim]Type: {type_name}, Qualified Name: {qualified_name}[/dim]")
             console.print(
                 "[green][OK] Mock entity set-labels-by-attribute completed successfully[/green]"
@@ -1171,7 +1171,7 @@ def bulk_remove_labels(ctx, payload_file):
     """Remove labels from multiple entities in bulk (by GUID)"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity bulk-remove-labels command[/yellow]")
+            console.print("[yellow][MOCK] entity bulk-remove-labels command[/yellow]")
             console.print(f"[dim]Payload File: {payload_file}[/dim]")
             console.print("[green][OK] Mock entity bulk-remove-labels completed successfully[/green]")
             return
@@ -1202,7 +1202,7 @@ def bulk_remove_labels_by_attribute(ctx, type_name, qualified_name, payload_file
     """Remove labels from multiple entities in bulk (by unique attribute)"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity bulk-remove-labels-by-attribute command[/yellow]")
+            console.print("[yellow][MOCK] entity bulk-remove-labels-by-attribute command[/yellow]")
             console.print(f"[dim]Type: {type_name}, Qualified Name: {qualified_name}, Payload File: {payload_file}[/dim]")
             console.print("[green][OK] Mock entity bulk-remove-labels-by-attribute completed successfully[/green]")
             return
@@ -1238,7 +1238,7 @@ def add_business_metadata(ctx, guid, payload_file, is_overwrite):
     """Add or update business metadata to an entity"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity add-business-metadata command[/yellow]")
+            console.print("[yellow][MOCK] entity add-business-metadata command[/yellow]")
             console.print(f"[dim]GUID: {guid}, Overwrite: {is_overwrite}[/dim]")
             console.print(
                 "[green][OK] Mock entity add-business-metadata completed successfully[/green]"
@@ -1283,7 +1283,7 @@ def add_business_metadata_attributes(ctx, guid, bm_name, payload_file):
     try:
         if ctx.obj.get("mock"):
             console.print(
-                "[yellow]🎭 Mock: entity add-business-metadata-attributes command[/yellow]"
+                "[yellow][MOCK] entity add-business-metadata-attributes command[/yellow]"
             )
             console.print(f"[dim]GUID: {guid}, BM Name: {bm_name}[/dim]")
             console.print(
@@ -1331,7 +1331,7 @@ def remove_business_metadata(ctx, guid, payload_file):
     """Remove business metadata from an entity"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity remove-business-metadata command[/yellow]")
+            console.print("[yellow][MOCK] entity remove-business-metadata command[/yellow]")
             console.print(f"[dim]GUID: {guid}[/dim]")
             console.print(
                 "[green][OK] Mock entity remove-business-metadata completed successfully[/green]"
@@ -1375,7 +1375,7 @@ def remove_business_metadata_attributes(ctx, guid, bm_name, payload_file):
     try:
         if ctx.obj.get("mock"):
             console.print(
-                "[yellow]🎭 Mock: entity remove-business-metadata-attributes command[/yellow]"
+                "[yellow][MOCK] entity remove-business-metadata-attributes command[/yellow]"
             )
             console.print(f"[dim]GUID: {guid}, BM Name: {bm_name}[/dim]")
             console.print(
@@ -1422,7 +1422,7 @@ def import_business_metadata(ctx, bm_file):
     """Import business metadata in bulk from CSV"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity import-business-metadata command[/yellow]")
+            console.print("[yellow][MOCK] entity import-business-metadata command[/yellow]")
             console.print(f"[dim]BM File: {bm_file}[/dim]")
             console.print(
                 "[green][OK] Mock entity import-business-metadata completed successfully[/green]"
@@ -1454,7 +1454,7 @@ def get_business_metadata_template(ctx):
     """Get sample template for business metadata"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity get-business-metadata-template command[/yellow]")
+            console.print("[yellow][MOCK] entity get-business-metadata-template command[/yellow]")
             console.print(
                 "[green][OK] Mock entity get-business-metadata-template completed successfully[/green]"
             )
@@ -1498,7 +1498,7 @@ def move_to_collection(ctx, payload_file):
     """Move entities to a target collection"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity move-to-collection command[/yellow]")
+            console.print("[yellow][MOCK] entity move-to-collection command[/yellow]")
             console.print(f"[dim]Payload File: {payload_file}[/dim]")
             console.print("[green][OK] Mock entity move-to-collection completed successfully[/green]")
             return
@@ -1530,7 +1530,7 @@ def read_sample(ctx, guid):
     """Get sample data for an entity"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity read-sample command[/yellow]")
+            console.print("[yellow][MOCK] entity read-sample command[/yellow]")
             console.print(f"[dim]GUID: {guid}[/dim]")
             console.print("[green][OK] Mock entity read-sample completed successfully[/green]")
             return
@@ -1563,7 +1563,7 @@ def bulk_classify_csv(ctx, csv_file, batch_size):
     from purviewcli.client._entity import Entity
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity bulk-classify-csv command[/yellow]")
+            console.print("[yellow][MOCK] entity bulk-classify-csv command[/yellow]")
             console.print(f"[dim]CSV File: {csv_file}[/dim]")
             console.print("[green][OK] Mock entity bulk-classify-csv completed successfully[/green]")
             return
@@ -1631,7 +1631,7 @@ def bulk_create_csv(ctx, csv_file, batch_size, dry_run, error_csv):
     from purviewcli.client._entity import Entity
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity bulk-create-csv command[/yellow]")
+            console.print("[yellow][MOCK] entity bulk-create-csv command[/yellow]")
             console.print(f"[dim]CSV File: {csv_file}[/dim]")
             console.print("[green][OK] Mock entity bulk-create-csv completed successfully[/green]")
             return
@@ -1701,7 +1701,7 @@ def bulk_update_csv(ctx, csv_file, batch_size, dry_run, error_csv):
     from purviewcli.client._entity import Entity
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity bulk-update-csv command[/yellow]")
+            console.print("[yellow][MOCK] entity bulk-update-csv command[/yellow]")
             console.print(f"[dim]CSV File: {csv_file}[/dim]")
             console.print("[green][OK] Mock entity bulk-update-csv completed successfully[/green]")
             return
@@ -1930,7 +1930,7 @@ def bulk_delete_csv(ctx, csv_file, batch_size, dry_run, error_csv):
     from purviewcli.client._entity import Entity
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity bulk-delete-csv command[/yellow]")
+            console.print("[yellow][MOCK] entity bulk-delete-csv command[/yellow]")
             console.print(f"[dim]CSV File: {csv_file}[/dim]")
             console.print("[green][OK] Mock entity bulk-delete-csv completed successfully[/green]")
             return
@@ -1985,7 +1985,7 @@ def audit(ctx, guid):
     """Get audit events for an entity by GUID"""
     try:
         if ctx.obj.get("mock"):
-            console.print("[yellow]🎭 Mock: entity audit command[/yellow]")
+            console.print("[yellow][MOCK] entity audit command[/yellow]")
             console.print(f"[dim]GUID: {guid}[/dim]")
             console.print("[green][OK] Mock entity audit completed successfully[/green]")
             return
@@ -2084,11 +2084,11 @@ def bulk_delete_optimized(ctx, guids, bulk_size, max_parallel, throttle_ms,
             
             console.print(f"[blue][*] Mathematical Optimization Analysis:[/blue]")
             console.print(f"   [INFO] Total Assets: {total_assets}")
-            console.print(f"   🔄 Parallel Jobs: {max_parallel}")
-            console.print(f"   📦 Assets per Job: {assets_per_job}")
-            console.print(f"   🚀 Bulk Size: {bulk_size}")
+            console.print(f"   [PATTERN] Parallel Jobs: {max_parallel}")
+            console.print(f"   [INFO] Assets per Job: {assets_per_job}")
+            console.print(f"   [START] Bulk Size: {bulk_size}")
             console.print(f"   📞 API Calls per Job: {api_calls_per_job}")
-            console.print(f"   📈 Total API Calls: {total_api_calls}")
+            console.print(f"   [STATS] Total API Calls: {total_api_calls}")
             
             # Check for perfect division (like PowerShell mathematical optimization)
             if total_assets % (max_parallel * bulk_size) == 0:
@@ -2144,7 +2144,7 @@ def bulk_delete_from_collection(ctx, collection_name, bulk_size, max_parallel,
         from rich.console import Console
         
         console = Console()
-        console.print(f"[blue]🎯 Starting continuous deletion for collection: {collection_name}[/blue]")
+        console.print(f"[blue][TARGET] Starting continuous deletion for collection: {collection_name}[/blue]")
         
         deleted_count = _continuous_collection_deletion(
             ctx, collection_name, bulk_size, max_parallel, 
@@ -2210,7 +2210,7 @@ def analyze_performance(ctx, bulk_size, max_parallel, asset_count):
         import math
         
         console = Console()
-        console.print("[blue]📈 Performance Analysis[/blue]")
+        console.print("[blue][STATS] Performance Analysis[/blue]")
         
         # Mathematical calculations (from PowerShell scripts)
         assets_per_job = math.ceil(asset_count / max_parallel)
@@ -2248,14 +2248,14 @@ def analyze_performance(ctx, bulk_size, max_parallel, asset_count):
         console.print(table)
 
         # Recommendations (from PowerShell optimization experience)
-        console.print("\n[blue]💡 Optimization Recommendations:[/blue]")
+        console.print("\n[blue][TIP] Optimization Recommendations:[/blue]")
         
         if asset_count % (max_parallel * bulk_size) == 0:
             console.print("[green][OK] Perfect mathematical division - optimal configuration![/green]")
         else:
             # Calculate optimal configurations
             optimal_configs = _calculate_optimal_configs(asset_count, bulk_size)
-            console.print("[yellow]💡 Consider these optimal configurations:[/yellow]")
+            console.print("[yellow][TIP] Consider these optimal configurations:[/yellow]")
             for config in optimal_configs[:3]:
                 console.print(f"   • {config['parallel']} parallel jobs: {config['efficiency']:.1f}% efficiency")
 
@@ -2303,7 +2303,7 @@ def _execute_optimized_bulk_delete(ctx, guids, bulk_size, max_parallel, throttle
         if start_idx < total_assets:
             job_batches.append(guids[start_idx:end_idx])
 
-    console.print(f"[blue]🚀 Starting {len(job_batches)} parallel deletion jobs...[/blue]")
+    console.print(f"[blue][START] Starting {len(job_batches)} parallel deletion jobs...[/blue]")
 
     with Progress(
         SpinnerColumn(),
@@ -2381,7 +2381,7 @@ def _continuous_collection_deletion(ctx, collection_name, bulk_size, max_paralle
     total_deleted = 0
     iteration = 1
 
-    console.print(f"[blue]🔄 Starting continuous deletion for collection: {collection_name}[/blue]")
+    console.print(f"[blue][PATTERN] Starting continuous deletion for collection: {collection_name}[/blue]")
 
     while True:
         console.print(f"\n[blue]📅 Iteration {iteration}: Finding assets to delete...[/blue]")
@@ -2408,7 +2408,7 @@ def _continuous_collection_deletion(ctx, collection_name, bulk_size, max_paralle
             
             total_deleted += deleted_in_iteration
             console.print(f"[green][OK] Iteration {iteration}: Deleted {deleted_in_iteration}/{found_count} assets[/green]")
-            console.print(f"[blue]📈 Running total: {total_deleted} assets deleted[/blue]")
+            console.print(f"[blue][STATS] Running total: {total_deleted} assets deleted[/blue]")
         
         iteration += 1
         

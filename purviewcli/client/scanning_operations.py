@@ -265,8 +265,8 @@ class ScanningManager:
             'total_scan_runs': len(report_data)
         }
         
-        console.print(f"[green]✓ Scan report saved to {output_file}[/green]")
-        console.print(f"[green]✓ Found {len(report_data)} scan runs across {summary_stats['total_sources']} data sources[/green]")
+        console.print(f"[green][OK] Scan report saved to {output_file}[/green]")
+        console.print(f"[green][OK] Found {len(report_data)} scan runs across {summary_stats['total_sources']} data sources[/green]")
         
         return summary
     
@@ -484,9 +484,9 @@ async def create_scanning_cli_commands():
             manager = ScanningManager(client)
             results = await manager.bulk_create_data_sources(sources_config)
             
-            console.print(f"[green]✓ Created {len(results['created'])} data sources[/green]")
+            console.print(f"[green][OK] Created {len(results['created'])} data sources[/green]")
             if results['failed']:
-                console.print(f"[red]✗ Failed to create {len(results['failed'])} data sources[/red]")
+                console.print(f"[red][ERROR] Failed to create {len(results['failed'])} data sources[/red]")
     
     @scanning.command()
     @click.option('--output-file', required=True, help='Output file for scan report')

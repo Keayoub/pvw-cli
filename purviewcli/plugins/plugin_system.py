@@ -257,10 +257,10 @@ class PluginManager:
                     if await plugin_instance.initialize():
                         self.loaded_plugins[name] = plugin_instance
                         self.plugin_status[name] = PluginStatus.ACTIVE
-                        self.console.print(f"[green]✓ Loaded plugin: {name} v{metadata.version}[/green]")
+                        self.console.print(f"[green][OK] Loaded plugin: {name} v{metadata.version}[/green]")
                     else:
                         self.plugin_status[name] = PluginStatus.ERROR
-                        self.console.print(f"[red]✗ Failed to initialize plugin: {name}[/red]")
+                        self.console.print(f"[red][ERROR] Failed to initialize plugin: {name}[/red]")
                     
         except Exception as e:
             self.console.print(f"[red]Error loading Python plugin {plugin_file}: {e}[/red]")
@@ -570,10 +570,10 @@ class PluginRegistry:
         
         try:
             # This would normally download and install the plugin
-            self.console.print(f"[green]✓ Plugin '{plugin_name}' v{version} installed successfully[/green]")
+            self.console.print(f"[green][OK] Plugin '{plugin_name}' v{version} installed successfully[/green]")
             return True
         except Exception as e:
-            self.console.print(f"[red]✗ Failed to install plugin '{plugin_name}': {e}[/red]")
+            self.console.print(f"[red][ERROR] Failed to install plugin '{plugin_name}': {e}[/red]")
             return False
     
     def uninstall_plugin(self, plugin_name: str) -> bool:
@@ -581,10 +581,10 @@ class PluginRegistry:
         
         try:
             # This would normally remove the plugin files
-            self.console.print(f"[green]✓ Plugin '{plugin_name}' uninstalled successfully[/green]")
+            self.console.print(f"[green][OK] Plugin '{plugin_name}' uninstalled successfully[/green]")
             return True
         except Exception as e:
-            self.console.print(f"[red]✗ Failed to uninstall plugin '{plugin_name}': {e}[/red]")
+            self.console.print(f"[red][ERROR] Failed to uninstall plugin '{plugin_name}': {e}[/red]")
             return False
     
     def update_plugin(self, plugin_name: str) -> bool:
@@ -592,10 +592,10 @@ class PluginRegistry:
         
         try:
             # This would normally check for updates and install them
-            self.console.print(f"[green]✓ Plugin '{plugin_name}' updated successfully[/green]")
+            self.console.print(f"[green][OK] Plugin '{plugin_name}' updated successfully[/green]")
             return True
         except Exception as e:
-            self.console.print(f"[red]✗ Failed to update plugin '{plugin_name}': {e}[/red]")
+            self.console.print(f"[red][ERROR] Failed to update plugin '{plugin_name}': {e}[/red]")
             return False
 
 # Example plugin implementations
