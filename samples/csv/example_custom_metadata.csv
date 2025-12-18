@@ -1,0 +1,6 @@
+guid,displayName,description,businessMetadata.department,businessMetadata.costCenter,businessMetadata.owner,businessMetadata.dataClassification,customAttributes.sourceSystem,customAttributes.refreshFrequency,customAttributes.lastRefreshDate
+aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee,Sales Customer Data,Customer information from sales system,Sales,CC-1234,john.doe@company.com,CONFIDENTIAL,SAP-ERP,DAILY,2025-12-18
+bbbbbbbb-cccc-dddd-eeee-aaaaaaaaaaaa,Marketing Campaign Metrics,Campaign performance analytics,Marketing,CC-5678,jane.smith@company.com,INTERNAL,Salesforce,HOURLY,2025-12-18
+cccccccc-dddd-eeee-aaaa-bbbbbbbbbbbb,Engineering Project Data,Project tracking and metrics,Engineering,CC-9012,bob.johnson@company.com,PUBLIC,JIRA,WEEKLY,2025-12-15
+dddddddd-eeee-aaaa-bbbb-cccccccccccc,Finance Reports,Financial analysis and reporting,Finance,CC-3456,alice.williams@company.com,HIGHLY_CONFIDENTIAL,Oracle-ERP,DAILY,2025-12-18
+eeeeeeee-aaaa-bbbb-cccc-dddddddddddd,HR Employee Data,Employee records and information,Human Resources,CC-7890,charlie.brown@company.com,RESTRICTED,Workday,REAL_TIME,2025-12-18
