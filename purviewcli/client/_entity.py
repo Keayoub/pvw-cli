@@ -19,11 +19,24 @@ from .endpoint import Endpoint, decorator, get_json, no_api_call_decorator
 from .endpoints import ENDPOINTS, get_api_version_params
 
 
-def map_flat_entity_to_purview_entity(row):
+def map_flat_entity_to_purview_entity(row, debug=False):
     """Map a flat row (pandas Series or dict) into a Purview entity dict.
 
     Expected minimal input: { 'typeName': 'DataSet', 'qualifiedName': '...','attr1': 'v', ... }
     Produces: { 'typeName': ..., 'attributes': { 'qualifiedName': ..., 'attr1': 'v', ... } }
+    
+    Supports:
+    - Standard attributes (displayName, description, etc.)
+    - Custom attributes (any column name)
+    - Nested attributes using dot notation (e.g., 'businessMetadata.attribute' -> {'businessMetadata': {'attribute': value}})
+    - Special handling for custom attributes that should be in 'customAttributes' section
+    
+    Args:
+        row: pandas Series or dict with entity data
+        debug: Enable debug output (default: False)
+    
+    Returns:
+        dict: Purview entity structure with typeName and attributes
     """
     try:
         data = row.to_dict()
@@ -32,9 +45,15 @@ def map_flat_entity_to_purview_entity(row):
 
     # pop typeName
     type_name = data.pop("typeName", None)
+    
+    # pop guid if present (it should not be in attributes)
+    guid = data.pop("guid", None)
 
     # build attributes, skipping null-like values
     attrs = {}
+    business_metadata = {}
+    custom_attrs = {}
+    
     from math import isnan
 
     for k, v in data.items():
@@ -49,9 +68,50 @@ def map_flat_entity_to_purview_entity(row):
                 continue
         except Exception:
             pass
-        attrs[k] = v
+        
+        # Handle nested attributes (dot notation)
+        if "." in k:
+            parts = k.split(".", 1)
+            parent_key = parts[0]
+            child_key = parts[1]
+            
+            # Special handling for businessMetadata
+            if parent_key == "businessMetadata":
+                if "businessMetadata" not in attrs:
+                    attrs["businessMetadata"] = {}
+                attrs["businessMetadata"][child_key] = v
+                if debug:
+                    print(f"[DEBUG] Added businessMetadata.{child_key} = {v}")
+            # Handle other nested structures
+            elif parent_key == "customAttributes":
+                if "customAttributes" not in attrs:
+                    attrs["customAttributes"] = {}
+                attrs["customAttributes"][child_key] = v
+                if debug:
+                    print(f"[DEBUG] Added customAttributes.{child_key} = {v}")
+            else:
+                # Generic nested attribute
+                if parent_key not in attrs:
+                    attrs[parent_key] = {}
+                if isinstance(attrs[parent_key], dict):
+                    attrs[parent_key][child_key] = v
+                    if debug:
+                        print(f"[DEBUG] Added {parent_key}.{child_key} = {v}")
+        else:
+            # Standard attributes
+            attrs[k] = v
+            if debug:
+                print(f"[DEBUG] Added attribute {k} = {v}")
 
-    return {"typeName": type_name, "attributes": attrs}
+    result = {"typeName": type_name, "attributes": attrs}
+    
+    # Add guid if it was present in the original data
+    if guid is not None:
+        result["guid"] = str(guid)
+        if debug:
+            print(f"[DEBUG] Added guid = {guid}")
+    
+    return result
 
 
 class Entity(Endpoint):

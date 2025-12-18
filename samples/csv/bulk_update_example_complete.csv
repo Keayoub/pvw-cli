@@ -1,0 +1,11 @@
+guid,displayName,description,sourceSystem,refreshFrequency,lastRefreshDate,dataOwner,businessMetadata.department,businessMetadata.costCenter,businessMetadata.project,customAttributes.dataClassification,customAttributes.sensitivityLevel,customAttributes.retentionDays
+a1b2c3d4-e5f6-47a8-b9c0-d1e2f3a4b5c6,Customer Master Data,Complete customer information from CRM system,Salesforce-CRM,DAILY,2025-12-18,crm-team@company.com,Sales,CC-1001,CRM-Migration-2025,PII,HIGH,2555
+b2c3d4e5-f6a7-48b9-c0d1-e2f3a4b5c6d7,Product Catalog,Master product list and attributes,SAP-ERP,WEEKLY,2025-12-15,product-team@company.com,Product Management,CC-1002,Catalog-Update-2025,INTERNAL,MEDIUM,1825
+c3d4e5f6-a7b8-49ca-d1e2-f3a4b5c6d7e8,Sales Orders History,Historical sales transactions and details,SAP-ERP,HOURLY,2025-12-18,sales-analytics@company.com,Sales,CC-1001,Analytics-2025,CONFIDENTIAL,HIGH,3650
+d4e5f6a7-b8c9-50db-e2f3-a4b5c6d7e8f9,Marketing Campaign Metrics,Campaign performance KPIs and results,Salesforce-CRM,REAL_TIME,2025-12-18,marketing-ops@company.com,Marketing,CC-1003,Campaign-Analytics-2025,INTERNAL,LOW,365
+e5f6a7b8-c9da-51ec-f3a4-b5c6d7e8f9a0,Employee Directory,HR employee records and contact information,Workday-HR,DAILY,2025-12-18,hr-team@company.com,Human Resources,CC-1004,HR-System-2025,RESTRICTED,CRITICAL,7300
+f6a7b8c9-daeb-52fd-a4b5-c6d7e8f9a0b1,Financial Reports,Monthly and quarterly financial statements,Oracle-ERP,MONTHLY,2025-12-01,finance-team@company.com,Finance,CC-1005,Financial-Reporting-2025,HIGHLY_CONFIDENTIAL,CRITICAL,10950
+a7b8c9da-ebfc-530e-b5c6-d7e8f9a0b1c2,Inventory Levels,Current stock and inventory information,SAP-ERP,REAL_TIME,2025-12-18,supply-chain@company.com,Supply Chain,CC-1006,Inventory-2025,INTERNAL,MEDIUM,730
+b8c9daeb-fcaf-541f-c6d7-e8f9a0b1c2d3,Website Analytics,Web traffic and user behavior data,Google-Analytics,DAILY,2025-12-18,web-team@company.com,Digital,CC-1007,Web-Analytics-2025,PUBLIC,LOW,395
+c9daebfc-fbb0-5520-d7e8-f9a0b1c2d3e4,Social Media Metrics,Social platform engagement and reach data,Hootsuite,HOURLY,2025-12-18,social-team@company.com,Marketing,CC-1003,Social-Analytics-2025,INTERNAL,LOW,180
+daebfcfd-fcb1-5631-e8f9-a0b1c2d3e4f5,Supply Chain Events,Logistics and supply chain event tracking,Kinaxis,REAL_TIME,2025-12-18,logistics-team@company.com,Supply Chain,CC-1006,Supply-Chain-2025,INTERNAL,MEDIUM,1095

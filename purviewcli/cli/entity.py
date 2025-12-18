@@ -1691,8 +1691,9 @@ def bulk_create_csv(ctx, csv_file, batch_size, dry_run, error_csv):
 @click.option("--batch-size", default=100, help="Batch size for API calls")
 @click.option("--dry-run", is_flag=True, help="Preview entities to be updated without making changes")
 @click.option("--error-csv", type=click.Path(), help="CSV file to write failed rows (optional)")
+@click.option("--debug", is_flag=True, help="Enable debug mode for detailed logging")
 @click.pass_context
-def bulk_update_csv(ctx, csv_file, batch_size, dry_run, error_csv):
+def bulk_update_csv(ctx, csv_file, batch_size, dry_run, error_csv, debug):
     """Bulk update entities from a CSV file (guid, attributes...)"""
     import pandas as pd
     import tempfile
@@ -1700,6 +1701,12 @@ def bulk_update_csv(ctx, csv_file, batch_size, dry_run, error_csv):
     import json
     from purviewcli.client._entity import Entity
     try:
+        if debug:
+            console.print(f"[cyan][DEBUG] CSV File: {csv_file}[/cyan]")
+            console.print(f"[cyan][DEBUG] Batch Size: {batch_size}[/cyan]")
+            console.print(f"[cyan][DEBUG] Dry Run: {dry_run}[/cyan]")
+            console.print(f"[cyan][DEBUG] Error CSV: {error_csv}[/cyan]")
+        
         if ctx.obj.get("mock"):
             console.print("[yellow][MOCK] entity bulk-update-csv command[/yellow]")
             console.print(f"[dim]CSV File: {csv_file}[/dim]")
@@ -1710,6 +1717,11 @@ def bulk_update_csv(ctx, csv_file, batch_size, dry_run, error_csv):
         if df.empty:
             console.print("[yellow]No rows found in CSV. Exiting.[/yellow]")
             return
+        
+        if debug:
+            console.print(f"[cyan][DEBUG] CSV columns: {list(df.columns)}[/cyan]")
+            console.print(f"[cyan][DEBUG] Total rows: {len(df)}[/cyan]")
+            console.print(f"[cyan][DEBUG] First row:\n{df.iloc[0].to_dict()}[/cyan]")
 
         entity_client = Entity()
         total = len(df)
@@ -1722,6 +1734,10 @@ def bulk_update_csv(ctx, csv_file, batch_size, dry_run, error_csv):
         # - Else if CSV has 'guid' -> build guid-based payloads (preferred for partial attribute updates)
         has_type_qn = ("typeName" in df.columns and "qualifiedName" in df.columns)
         has_guid = "guid" in df.columns
+        
+        if debug:
+            console.print(f"[cyan][DEBUG] has_type_qn: {has_type_qn}[/cyan]")
+            console.print(f"[cyan][DEBUG] has_guid: {has_guid}[/cyan]")
 
         for i in range(0, total, batch_size):
             batch = df.iloc[i : i + batch_size]
@@ -1730,7 +1746,10 @@ def bulk_update_csv(ctx, csv_file, batch_size, dry_run, error_csv):
                 # Map flat rows to Purview entity objects using helper
                 from purviewcli.client._entity import map_flat_entity_to_purview_entity
 
-                entities = [map_flat_entity_to_purview_entity(row) for _, row in batch.iterrows()]
+                entities = [map_flat_entity_to_purview_entity(row, debug=debug) for _, row in batch.iterrows()]
+                
+                if debug:
+                    console.print(f"[cyan][DEBUG] Batch {i//batch_size+1} entities: {json.dumps(entities, indent=2, default=str)}[/cyan]")
                 payload = {"entities": entities}
 
                 if dry_run:
@@ -1741,10 +1760,16 @@ def bulk_update_csv(ctx, csv_file, batch_size, dry_run, error_csv):
                     json.dump(payload, tmpf, indent=2)
                     tmpf.flush()
                     payload_file = tmpf.name
+                
+                if debug:
+                    console.print(f"[cyan][DEBUG] Payload file: {payload_file}[/cyan]")
+                    console.print(f"[cyan][DEBUG] Payload:\n{json.dumps(payload, indent=2, default=str)}[/cyan]")
 
                 try:
                     args = {"--payloadFile": payload_file}
                     result = entity_client.entityCreateBulk(args)
+                    if debug:
+                        console.print(f"[cyan][DEBUG] API Result: {result}[/cyan]")
                     if result and (not isinstance(result, dict) or result.get("status") != "error"):
                         success += len(batch)
                     else:
@@ -1755,6 +1780,8 @@ def bulk_update_csv(ctx, csv_file, batch_size, dry_run, error_csv):
                     failed += len(batch)
                     errors.append(f"Batch {i//batch_size+1}: {str(e)}")
                     failed_rows.extend(batch.to_dict(orient="records"))
+                    if debug:
+                        console.print(f"[cyan][DEBUG] Exception: {str(e)}[/cyan]")
                 finally:
                     try:
                         os.remove(payload_file)
