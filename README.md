@@ -1,11 +1,11 @@
-# PURVIEW CLI v1.4.0 - Microsoft Purview Automation & Data Governance
+# PURVIEW CLI v1.4.1 - Microsoft Purview Automation & Data Governance
 
-[![Version](https://img.shields.io/badge/version-1.3.3-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.4.0)
+[![Version](https://img.shields.io/badge/version-1.3.3-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.4.1)
 [![API Coverage](https://img.shields.io/badge/UC%20API%20Coverage-86%25-green.svg)](https://github.com/Keayoub/pvw-cli)
 [![Lineage](https://img.shields.io/badge/Lineage-Enhanced-green.svg)](https://github.com/Keayoub/pvw-cli)
 [![Status](https://img.shields.io/badge/status-stable-success.svg)](https://github.com/Keayoub/pvw-cli)
 
-> **LATEST UPDATE v1.4.0 (November 3, 2025):**
+> **LATEST UPDATE v1.4.1 (November 3, 2025):**
 >
 > **🔗 Advanced Lineage Features & Column-Level Mapping**
 >
@@ -32,13 +32,13 @@
 > - ✅ Comprehensive documentation & examples
 >
 >
-> **[Full Release Notes v1.4.0](releases/v1.4.0.md)** | **[v1.3.3 Release Notes](releases/v1.3.3.md)** | **[Migration Guide](releases/v1.4.0.md#migration-guide)**
+> **[Full Release Notes v1.4.1](releases/v1.4.1.md)** | **[v1.3.3 Release Notes](releases/v1.3.3.md)** | **[Migration Guide](releases/v1.4.1.md#migration-guide)**
 
 ---
 
 ## What is PVW CLI?
 
-**PVW CLI v1.4.0** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* with **86% Unified Catalog API coverage** (45 of 52 operations).
+**PVW CLI v1.4.1** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* with **86% Unified Catalog API coverage** (45 of 52 operations).
 
 ### Key Capabilities
 
@@ -81,7 +81,7 @@ The CLI is designed for data engineers, stewards, architects, and platform teams
 
 ## What's New in Recent Releases
 
-### v1.4.0 (November 3, 2025) - Advanced Lineage Features
+### v1.4.1 (November 3, 2025) - Advanced Lineage Features
 
 **Column-Level Lineage & Direct Relationships:**
 - Column-level lineage with multi-target support (1→N)
@@ -105,7 +105,7 @@ source_entity_guid,target_entity_guid,relationship_type,column_mapping
 guid1,guid2,direct_lineage_dataset_dataset,"[{""Source"":""ID"",""Sink"":""ID""}]"
 ```
 
-**[Full v1.4.0 Release Notes](releases/v1.4.0.md)**
+**[Full v1.4.1 Release Notes](releases/v1.4.1.md)**
 
 ---
 
@@ -183,7 +183,7 @@ Version 1.2.5 achieves **86% coverage** of the Microsoft Purview Unified Catalog
 - Complete API coverage gap analysis
 - Roadmap to 100% with implementation plans
 
-**[View Full Release Notes](releases/v1.4.0.md)**
+**[View Full Release Notes](releases/v1.4.1.md)**
 
 ---
 
@@ -262,7 +262,7 @@ For more advanced usage, see the documentation in `doc/` or the project docs: <h
 
 ## Quick Start Examples
 
-### v1.4.0 - Column-Level Lineage
+### v1.4.1 - Column-Level Lineage
 
 ```bash
 # Create column-level lineage (Process-based)
@@ -353,7 +353,7 @@ pvw uc custom-attribute create --name "Department" --type String
 
 ## Overview
 
-**PVW CLI v1.4.0** is a modern command-line interface and Python library for Microsoft Purview, enabling:
+**PVW CLI v1.4.1** is a modern command-line interface and Python library for Microsoft Purview, enabling:
 
 - **MCP Server** - Natural language interface for AI assistants (Claude, Cline)
 - Advanced data catalog search and discovery
@@ -718,7 +718,7 @@ The PVW CLI provides advanced search using the latest Microsoft Purview Discover
 - Use autocomplete and suggestion endpoints
 - Perform faceted, time-based, and entity-type-specific queries
 
-**v1.4.0 Improvements:**
+**v1.4.1 Improvements:**
 
 - Fixed `suggest` and `autocomplete` API payload format (removed empty filter causing HTTP 400 errors)
 - Enhanced collection display with robust type checking and fallback logic
@@ -1482,7 +1482,7 @@ PVW CLI includes comprehensive sample files and scripts for bulk operations:
 - Success/failure tracking per term
 - Rate limiting (200ms delay)
 
-### Critical Fixes (v1.4.0)
+### Critical Fixes (v1.4.1)
 
 - **Search API Suggest/Autocomplete:** Fixed HTTP 400 errors by removing empty filter objects from payload
 - **Collection Display:** Enhanced collection name detection with proper fallback logic (isinstance checks)
@@ -1545,9 +1545,9 @@ See [LICENSE](LICENSE) file for details.
 
 ---
 
-**PVW CLI v1.4.0 empowers data engineers, stewards, and architects to automate, scale, and enhance their Microsoft Purview experience with powerful command-line and programmatic capabilities.**
+**PVW CLI v1.4.1 empowers data engineers, stewards, and architects to automate, scale, and enhance their Microsoft Purview experience with powerful command-line and programmatic capabilities.**
 
-**Latest in v1.4.0:**
+**Latest in v1.4.1:**
 
 - Fixed Search API suggest/autocomplete (HTTP 400 errors resolved)
 - Enhanced collection display with robust fallback logic

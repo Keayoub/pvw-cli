@@ -1,0 +1,3 @@
+term_id,name,description,status,parent_id,acronyms,owner_ids,add_acronyms,add_owner_ids,customAttributes.classification,customAttributes.sensitivity
+TERM-TEST-001,,,Draft,,,,,,PII,HIGH
+TERM-TEST-002,New Term Name,Updated description,Published,,,,,,CONFIDENTIAL,MEDIUM

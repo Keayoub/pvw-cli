@@ -1617,18 +1617,32 @@ def bulk_classify_csv(ctx, csv_file, batch_size):
 
 # === BULK ENTITY CSV OPERATIONS ===
 
+
 @entity.command()
 @click.option("--csv-file", required=True, type=click.Path(exists=True), help="CSV file with entity attributes (typeName, qualifiedName, ...)")
 @click.option("--batch-size", default=100, help="Batch size for API calls")
 @click.option("--dry-run", is_flag=True, help="Preview entities to be created without making changes")
 @click.option("--error-csv", type=click.Path(), help="CSV file to write failed rows (optional)")
+@click.option("--debug", is_flag=True, help="Enable debug mode for detailed logging")
 @click.pass_context
-def bulk_create_csv(ctx, csv_file, batch_size, dry_run, error_csv):
-    """Bulk create entities from a CSV file (typeName, qualifiedName, ... columns)"""
+def bulk_create_csv(ctx, csv_file, batch_size, dry_run, error_csv, debug):
+    """Bulk create entities from a CSV file with support for custom attributes via dot notation.
+    
+    Supports dot notation for nested attributes:
+    - businessMetadata.fieldName: Creates nested businessMetadata structure
+    - customAttributes.fieldName: Creates nested customAttributes structure
+    - Simple field names: Added to root attributes
+    
+    Example CSV:
+    typeName,qualifiedName,displayName,businessMetadata.department,customAttributes.classification
+    DataSet,my-data-asset,My Asset,Sales,PII
+    """
     import pandas as pd
     import tempfile
     import os
-    from purviewcli.client._entity import Entity
+    import json
+    from purviewcli.client._entity import Entity, map_flat_entity_to_purview_entity
+    
     try:
         if ctx.obj.get("mock"):
             console.print("[yellow][MOCK] entity bulk-create-csv command[/yellow]")
@@ -1637,44 +1651,83 @@ def bulk_create_csv(ctx, csv_file, batch_size, dry_run, error_csv):
             return
 
         df = pd.read_csv(csv_file)
+        
+        # Debug: Show CSV structure
+        if debug:
+            console.print("[cyan][DEBUG] CSV Structure:[/cyan]")
+            console.print(f"  Columns: {list(df.columns)}")
+            console.print(f"  Total rows: {len(df)}")
+            console.print("\n[cyan][DEBUG] First row data:[/cyan]")
+            if len(df) > 0:
+                console.print(df.iloc[0].to_dict())
+        
         if "typeName" not in df.columns or "qualifiedName" not in df.columns:
             console.print("[red][X] CSV must contain at least 'typeName' and 'qualifiedName' columns[/red]")
             return
+        
         entity_client = Entity()
         total = len(df)
         success, failed = 0, 0
         errors = []
         failed_rows = []
+        
         for i in range(0, total, batch_size):
             batch = df.iloc[i:i+batch_size]
-            # Map each row to the correct Purview entity format
-            from purviewcli.client._entity import map_flat_entity_to_purview_entity
-            entities = [map_flat_entity_to_purview_entity(row) for _, row in batch.iterrows()]
+            
+            # Map each row to the correct Purview entity format (with custom attributes support)
+            entities = []
+            for _, row in batch.iterrows():
+                entity = map_flat_entity_to_purview_entity(row, debug=debug)
+                entities.append(entity)
+            
             payload = {"entities": entities}
+            
+            if debug:
+                console.print(f"\n[cyan][DEBUG] Batch {i//batch_size+1} Payload:[/cyan]")
+                payload_str = json.dumps(payload, indent=2)
+                console.print(payload_str[:500] + "..." if len(payload_str) > 500 else payload_str)
+            
             if dry_run:
                 console.print(f"[blue]DRY RUN: Would create batch {i//batch_size+1} with {len(batch)} entities[/blue]")
+                if debug:
+                    console.print(f"[dim]Payload size: {len(json.dumps(payload))} bytes[/dim]")
                 continue
+            
             with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as tmpf:
-                import json
                 json.dump(payload, tmpf, indent=2)
                 tmpf.flush()
                 payload_file = tmpf.name
+            
             try:
                 args = {"--payloadFile": payload_file}
                 result = entity_client.entityCreateBulk(args)
+                
+                if debug:
+                    console.print(f"[cyan][DEBUG] API Response (batch {i//batch_size+1}):[/cyan]")
+                    result_str = json.dumps(result, indent=2)
+                    console.print(result_str[:500] + "..." if len(result_str) > 500 else result_str)
+                
                 if result and (not isinstance(result, dict) or result.get("status") != "error"):
                     success += len(batch)
+                    console.print(f"[green]✓ Batch {i//batch_size+1} created successfully[/green]")
                 else:
                     failed += len(batch)
                     errors.append(f"Batch {i//batch_size+1}: {result}")
                     failed_rows.extend(batch.to_dict(orient="records"))
             except Exception as e:
                 failed += len(batch)
-                errors.append(f"Batch {i//batch_size+1}: {str(e)}")
+                error_msg = str(e)
+                errors.append(f"Batch {i//batch_size+1}: {error_msg}")
                 failed_rows.extend(batch.to_dict(orient="records"))
+                
+                if debug:
+                    console.print(f"[red][DEBUG] Exception (batch {i//batch_size+1}):[/red]")
+                    import traceback
+                    console.print(traceback.format_exc())
             finally:
                 os.remove(payload_file)
-        console.print(f"[green]SUCCESS: Bulk create completed. Success: {success}, Failed: {failed}[/green]")
+        
+        console.print(f"\n[green]SUCCESS: Bulk create completed. Success: {success}, Failed: {failed}[/green]")
         if errors:
             console.print("[red]Errors:[/red]")
             for err in errors:
@@ -1684,6 +1737,9 @@ def bulk_create_csv(ctx, csv_file, batch_size, dry_run, error_csv):
             console.print(f"[yellow]WARNING: Failed rows written to {error_csv}[/yellow]")
     except Exception as e:
         console.print(f"[red]ERROR: Error executing entity bulk-create-csv: {str(e)}[/red]")
+        import traceback
+        if debug:
+            console.print(f"[dim]{traceback.format_exc()}[/dim]")
 
 
 @entity.command()

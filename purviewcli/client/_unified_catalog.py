@@ -1840,6 +1840,33 @@ Use Cases:
             # Keep existing resources
             payload["resources"] = existing_resources
 
+        # Handle custom attributes (merge provided with existing)
+        try:
+            provided_ca = args.get("--custom-attributes")
+            if provided_ca:
+                import json as _json
+                provided = {}
+                # Support list of JSON strings or dicts
+                for item in provided_ca:
+                    if isinstance(item, str):
+                        try:
+                            provided.update(_json.loads(item))
+                        except Exception:
+                            # ignore invalid JSON
+                            pass
+                    elif isinstance(item, dict):
+                        provided.update(item)
+                existing_ca = existing_term.get("customAttributes") or {}
+                if isinstance(existing_ca, dict):
+                    merged = {**existing_ca, **provided}
+                else:
+                    merged = provided
+                if merged:
+                    payload["customAttributes"] = merged
+        except Exception:
+            # Non-fatal if parsing custom attributes fails
+            pass
+
         # Now make the actual PUT request
         http_dict = {
             "app": "datagovernance",
