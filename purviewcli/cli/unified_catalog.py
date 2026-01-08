@@ -1719,11 +1719,15 @@ def import_terms_from_json(json_file, dry_run):
 @term.command(name="update-csv")
 @click.option("--csv-file", required=True, type=click.Path(exists=True), help="Path to CSV file with term updates")
 @click.option("--dry-run", is_flag=True, help="Preview updates without applying them")
-def update_terms_from_csv(csv_file, dry_run):
-    """Bulk update glossary terms from a CSV file.
+@click.option("--debug", is_flag=True, help="Enable debug mode for detailed logging")
+def update_terms_from_csv(csv_file, dry_run, debug):
+    """Bulk update glossary terms from a CSV file with custom attribute support.
     
-    CSV Format:
+    CSV Format (standard fields):
     term_id,name,description,status,parent_id,acronyms,owner_ids,add_acronyms,add_owner_ids
+    
+    Custom Attributes (via dot notation):
+    - customAttributes.fieldName: Creates nested customAttributes structure
     
     Required:
     - term_id: The ID of the term to update
@@ -1737,13 +1741,15 @@ def update_terms_from_csv(csv_file, dry_run):
     - owner_ids: New owner IDs separated by semicolons (replaces all existing)
     - add_acronyms: Acronyms to add separated by semicolons (preserves existing)
     - add_owner_ids: Owner IDs to add separated by semicolons (preserves existing)
+    - customAttributes.fieldName: Custom attribute value
     
     Example CSV:
-    term_id,name,description,status,parent_id,add_acronyms,add_owner_ids
-    abc-123,,Updated description,Published,parent-term-guid,API;REST,user1@company.com
-    def-456,New Name,,,parent-term-guid,SQL,
+    term_id,name,description,status,parent_id,add_acronyms,add_owner_ids,customAttributes.classification
+    abc-123,,Updated description,Published,parent-term-guid,API;REST,user1@company.com,PII
+    def-456,New Name,,,parent-term-guid,SQL,,INTERNAL
     """
     import csv
+    import json
     
     try:
         # Read CSV file
@@ -1788,6 +1794,12 @@ def update_terms_from_csv(csv_file, dry_run):
                     changes.append(f"owners: {update['owner_ids']}")
                 if update.get('add_owner_ids', '').strip():
                     changes.append(f"add owners: {update['add_owner_ids']}")
+
+                # Detect customAttributes.* columns
+                custom_attrs = {k.split('.', 1)[1]: v.strip() for k, v in update.items() if k.startswith('customAttributes.') and str(v).strip()}
+                if custom_attrs:
+                    ca_preview = "; ".join(f"{k}={v}" for k, v in custom_attrs.items())
+                    changes.append(f"customAttrs: {ca_preview}")
                 
                 table.add_row(str(idx), term_id[:36], ", ".join(changes) if changes else "No changes")
             
@@ -1831,6 +1843,13 @@ def update_terms_from_csv(csv_file, dry_run):
                 args['--add-acronym'] = [a.strip() for a in update['add_acronyms'].split(';') if a.strip()]
             if update.get('add_owner_ids', '').strip():
                 args['--add-owner-id'] = [o.strip() for o in update['add_owner_ids'].split(';') if o.strip()]
+
+            # Collect customAttributes.* into JSON
+            custom_attrs = {k.split('.', 1)[1]: v.strip() for k, v in update.items() if k.startswith('customAttributes.') and str(v).strip()}
+            if custom_attrs:
+                args['--custom-attributes'] = [json.dumps(custom_attrs)]
+                if debug:
+                    console.print(f"[cyan][DEBUG] Parsed custom attributes for {term_id}: {custom_attrs}[/cyan]")
             
             # Display progress
             display_name = update.get('name', term_id[:36])

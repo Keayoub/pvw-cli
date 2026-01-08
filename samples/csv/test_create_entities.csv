@@ -1,0 +1,3 @@
+typeName,qualifiedName,displayName,businessMetadata.department,customAttributes.classification
+DataSet,my-data-asset-001,My Asset,Sales,PII
+DataSet,my-data-asset-002,Another Asset,Finance,CONFIDENTIAL
