@@ -6,10 +6,12 @@ Centralized endpoint management for ALL Purview services and operations
 import os
 
 # Complete API version definitions for all Purview services
+# Based on official Microsoft documentation: https://learn.microsoft.com/rest/api/purview/
+# Note: Account endpoint uses older API version as newer versions are not yet supported
 API_VERSION = {
     "datamap": {"stable": "2023-09-01", "preview": "2024-03-01-preview"},
-    "account": {"preview": "2019-11-01-preview"},
-    "scanning": {"stable": "2023-09-01", "preview": "2022-07-01-preview"},
+    "account": {"preview": "2019-11-01-preview"},  # Only preview version available
+    "scanning": {"stable": "2023-09-01", "preview": "2024-03-01-preview"},
     "workflow": {"preview": "2023-10-01-preview"},
     "devops_policies": {"preview": "2022-11-01-preview"},
     "self_service_policies": {"preview": "2022-12-01-preview"},
