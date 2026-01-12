@@ -38,7 +38,7 @@ class SyncPurviewClient:
             self.auth_scope = "https://purview.azure.us/.default"
         else:
             self.base_url = f"https://{config.account_name}.purview.azure.com"
-            self.auth_scope = "https://purview.azure.net/.default"
+            self.auth_scope = "https://purview.azure.com/.default"
 
         # Set up Unified Catalog endpoint using Purview account ID format
         self.account_id = config.account_id or self._get_purview_account_id()
