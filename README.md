@@ -1,11 +1,20 @@
-# PURVIEW CLI v1.4.2 - Microsoft Purview Automation & Data Governance
+# PURVIEW CLI v1.5.0 - Microsoft Purview Automation & Data Governance
 
-[![Version](https://img.shields.io/badge/version-1.3.3-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.4.2)
+[![Version](https://img.shields.io/badge/version-1.5.0-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.5.0)
 [![API Coverage](https://img.shields.io/badge/UC%20API%20Coverage-86%25-green.svg)](https://github.com/Keayoub/pvw-cli)
 [![Lineage](https://img.shields.io/badge/Lineage-Enhanced-green.svg)](https://github.com/Keayoub/pvw-cli)
 [![Status](https://img.shields.io/badge/status-stable-success.svg)](https://github.com/Keayoub/pvw-cli)
 
-> **LATEST UPDATE v1.4.2 (November 3, 2025):**
+> **LATEST UPDATE v1.5.0 (January 13, 2026):**
+>
+> **🔐 Legacy Tenant Authentication Support**
+>
+> - **[NEW]** Support for legacy Azure tenants using `https://purview.azure.net` service principal
+> - **[NEW]** `PURVIEW_AUTH_SCOPE` environment variable for custom authentication scope
+> - **[NEW]** Comprehensive tenant detection and configuration guide
+> - **[FIXED]** Authentication errors (AADSTS500011) for legacy tenants
+>
+> **Previous Update v1.4.2 (November 3, 2025):**
 >
 > **🔗 Advanced Lineage Features & Column-Level Mapping**
 >
@@ -32,7 +41,7 @@
 > - ✅ Comprehensive documentation & examples
 >
 >
-> **[Full Release Notes v1.4.2](releases/v1.4.2.md)** | **[v1.3.3 Release Notes](releases/v1.3.3.md)** | **[Migration Guide](releases/v1.4.2.md#migration-guide)**
+> **[Full Release Notes v1.5.0](releases/v1.5.0.md)** | **[v1.4.2 Release Notes](releases/v1.4.2.md)** | **[v1.3.3 Release Notes](releases/v1.3.3.md)**
 
 ---
 
