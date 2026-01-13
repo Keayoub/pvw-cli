@@ -242,6 +242,54 @@ Follow this short flow to get PVW CLI installed and running quickly.
 - Run `az login` (recommended), or
 - Provide Service Principal credentials via environment variables.
 
+**Important for Legacy Tenants:**
+
+Some Azure environments use the legacy Purview service principal (`https://purview.azure.net`) instead of the current one (`https://purview.azure.com`). If you encounter authentication errors like:
+
+```
+AADSTS500011: The resource principal named https://purview.azure.com was not found in the tenant
+```
+
+You need to detect and set the correct authentication scope:
+
+**Step 1: Detect your tenant's Purview service principal**
+
+```powershell
+# Check which service principal your tenant uses
+az ad sp show --id "73c2949e-da2d-457a-9607-fcc665198967" --query "servicePrincipalNames" -o json
+```
+
+Look for one of these values:
+- `https://purview.azure.com` or `https://purview.azure.com/` → Use `.com` (default)
+- `https://purview.azure.net` or `https://purview.azure.net/` → Use `.net` (legacy)
+
+**Step 2: Set the authentication scope (if using legacy .net)**
+
+If your tenant uses the legacy service principal, set this environment variable:
+
+```powershell
+# PowerShell
+$env:PURVIEW_AUTH_SCOPE = "https://purview.azure.net/.default"
+
+# Or add to your profile for persistence
+Add-Content $PROFILE "`n`$env:PURVIEW_AUTH_SCOPE = 'https://purview.azure.net/.default'"
+```
+
+```bash
+# Bash/Linux
+export PURVIEW_AUTH_SCOPE="https://purview.azure.net/.default"
+
+# Or add to ~/.bashrc for persistence
+echo 'export PURVIEW_AUTH_SCOPE="https://purview.azure.net/.default"' >> ~/.bashrc
+```
+
+```cmd
+# Windows CMD
+set PURVIEW_AUTH_SCOPE=https://purview.azure.net/.default
+```
+
+**Note:** Most modern Azure tenants use `https://purview.azure.com` (default), but some legacy or special environments (test, government clouds) may still use `https://purview.azure.net`. Always verify using the command above if you encounter authentication issues.
+
 4. Try a few commands:
 
   ```bash
