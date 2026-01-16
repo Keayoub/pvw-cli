@@ -1795,10 +1795,25 @@ def update_terms_from_csv(csv_file, dry_run, debug):
                 if update.get('add_owner_ids', '').strip():
                     changes.append(f"add owners: {update['add_owner_ids']}")
 
-                # Detect customAttributes.* columns
-                custom_attrs = {k.split('.', 1)[1]: v.strip() for k, v in update.items() if k.startswith('customAttributes.') and str(v).strip()}
+                # Detect customAttributes.* columns and build nested structure
+                custom_attrs = {}
+                for k, v in update.items():
+                    if k.startswith('customAttributes.') and str(v).strip():
+                        # Remove 'customAttributes.' prefix and split remaining path
+                        path = k.split('.', 1)[1]  # e.g., "Glossaire.Reference"
+                        parts = path.split('.')     # e.g., ["Glossaire", "Reference"]
+                        value = v.strip()
+                        
+                        # Build nested dictionary
+                        current = custom_attrs
+                        for i, part in enumerate(parts[:-1]):
+                            if part not in current:
+                                current[part] = {}
+                            current = current[part]
+                        current[parts[-1]] = value
+                
                 if custom_attrs:
-                    ca_preview = "; ".join(f"{k}={v}" for k, v in custom_attrs.items())
+                    ca_preview = json.dumps(custom_attrs, ensure_ascii=False)
                     changes.append(f"customAttrs: {ca_preview}")
                 
                 table.add_row(str(idx), term_id[:36], ", ".join(changes) if changes else "No changes")
@@ -1844,12 +1859,27 @@ def update_terms_from_csv(csv_file, dry_run, debug):
             if update.get('add_owner_ids', '').strip():
                 args['--add-owner-id'] = [o.strip() for o in update['add_owner_ids'].split(';') if o.strip()]
 
-            # Collect customAttributes.* into JSON
-            custom_attrs = {k.split('.', 1)[1]: v.strip() for k, v in update.items() if k.startswith('customAttributes.') and str(v).strip()}
+            # Collect customAttributes.* into nested JSON structure
+            custom_attrs = {}
+            for k, v in update.items():
+                if k.startswith('customAttributes.') and str(v).strip():
+                    # Remove 'customAttributes.' prefix and split remaining path
+                    path = k.split('.', 1)[1]  # e.g., "Glossaire.Reference"
+                    parts = path.split('.')     # e.g., ["Glossaire", "Reference"]
+                    value = v.strip()
+                    
+                    # Build nested dictionary
+                    current = custom_attrs
+                    for i, part in enumerate(parts[:-1]):
+                        if part not in current:
+                            current[part] = {}
+                        current = current[part]
+                    current[parts[-1]] = value
+            
             if custom_attrs:
                 args['--custom-attributes'] = [json.dumps(custom_attrs)]
                 if debug:
-                    console.print(f"[cyan][DEBUG] Parsed custom attributes for {term_id}: {custom_attrs}[/cyan]")
+                    console.print(f"[cyan][DEBUG] Parsed custom attributes for {term_id}: {json.dumps(custom_attrs, indent=2)}[/cyan]")
             
             # Display progress
             display_name = update.get('name', term_id[:36])
