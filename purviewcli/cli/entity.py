@@ -1775,7 +1775,8 @@ def bulk_update_csv(ctx, csv_file, batch_size, dry_run, error_csv, debug):
             return
         
         if debug:
-            console.print(f"[cyan][DEBUG] CSV columns: {list(df.columns)}[/cyan]")
+            # Use __builtins__['list'] to avoid conflict with entity list command below
+            console.print(f"[cyan][DEBUG] CSV columns: {__builtins__['list'](df.columns)}[/cyan]")
             console.print(f"[cyan][DEBUG] Total rows: {len(df)}[/cyan]")
             console.print(f"[cyan][DEBUG] First row:\n{df.iloc[0].to_dict()}[/cyan]")
 

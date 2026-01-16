@@ -1,4 +1,4 @@
-__version__ = "1.4.2"
+__version__ = "1.5.2"
 
 # Import main client modules
 from .client import *
