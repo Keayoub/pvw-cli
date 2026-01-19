@@ -16,7 +16,8 @@ from typing import Dict, List, Optional
 import click
 from rich.console import Console
 
-console = Console()
+# Initialize console with UTF-8 encoding for Windows compatibility
+console = Console(legacy_windows=False)
 
 # Import version for the CLI
 try:

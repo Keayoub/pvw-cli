@@ -31,7 +31,8 @@ except ImportError as e:
 
 from .api_client import PurviewClient, PurviewConfig
 
-console = Console()
+# Initialize console with UTF-8 encoding for Windows compatibility
+console = Console(legacy_windows=False)
 
 class LineageDirection(Enum):
     """Lineage direction options"""
@@ -100,7 +101,7 @@ class AdvancedLineageAnalyzer:
     
     def __init__(self, client: PurviewClient):
         self.client = client
-        self.console = Console()
+        self.console = Console(legacy_windows=False)
     
     async def get_comprehensive_lineage(
         self, 
@@ -738,7 +739,7 @@ class LineageReporting:
     
     def __init__(self, analyzer: AdvancedLineageAnalyzer):
         self.analyzer = analyzer
-        self.console = Console()
+        self.console = Console(legacy_windows=False)
     
     async def generate_impact_report(
         self, 

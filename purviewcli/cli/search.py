@@ -27,7 +27,8 @@ from rich.console import Console
 from rich.table import Table
 from purviewcli.client._search import Search
 
-console = Console()
+# Initialize console with UTF-8 encoding for Windows compatibility
+console = Console(legacy_windows=False)
 
 
 @click.group()

@@ -22,7 +22,8 @@ from rich.console import Console
 from typing import Optional
 from purviewcli.client._lineage import Lineage
 
-console = Console()
+# Initialize console with UTF-8 encoding for Windows compatibility
+console = Console(legacy_windows=False)
 
 
 @click.group(help="""

@@ -23,14 +23,15 @@ except ImportError:
 
 from .api_client import PurviewClient
 
-console = Console()
+# Initialize console with UTF-8 encoding for Windows compatibility
+console = Console(legacy_windows=False)
 
 class ScanningManager:
     """Advanced scanning operations and automation"""
     
     def __init__(self, client: PurviewClient):
         self.client = client
-        self.console = Console()
+        self.console = Console(legacy_windows=False)
     
     async def create_data_source(self, data_source_config: Dict) -> Dict:
         """Create a new data source"""
