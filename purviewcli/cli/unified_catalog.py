@@ -1341,7 +1341,8 @@ def delete(term_id, force):
 @click.option("--add-acronym", required=False, help="Add acronym to existing ones (can be specified multiple times)", multiple=True)
 @click.option("--add-owner-id", required=False, help="Add owner to existing ones (can be specified multiple times)", multiple=True)
 @click.option("--custom-attributes", required=False, help="Custom attributes as JSON string (e.g., '{\"Group\": {\"Field\": \"value\"}}')")
-def update(term_id, name, description, domain_id, parent_id, status, acronym, owner_id, resource_name, resource_url, add_acronym, add_owner_id, custom_attributes):
+@click.option("--debug", is_flag=True, help="Enable debug output")
+def update(term_id, name, description, domain_id, parent_id, status, acronym, owner_id, resource_name, resource_url, add_acronym, add_owner_id, custom_attributes, debug):
     """Update an existing Unified Catalog term."""
     try:
         client = UnifiedCatalogClient()
@@ -1381,6 +1382,10 @@ def update(term_id, name, description, domain_id, parent_id, status, acronym, ow
         # Handle custom attributes
         if custom_attributes:
             args["--custom-attributes"] = [custom_attributes]
+        
+        # Add debug flag if enabled
+        if debug:
+            args["--debug"] = True
 
         result = client.update_term(args)
 
