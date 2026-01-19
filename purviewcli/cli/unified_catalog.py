@@ -15,7 +15,8 @@ from rich.text import Text
 from rich.syntax import Syntax
 from purviewcli.client._unified_catalog import UnifiedCatalogClient
 
-console = Console()
+# Initialize console with UTF-8 encoding for Windows compatibility
+console = Console(force_terminal=True, legacy_windows=False, encoding='utf-8')
 
 
 def _format_json_output(data):
