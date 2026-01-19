@@ -1,0 +1,3 @@
+name,description,status,customAttributes.DataProductGovernance.BusinessDomain,customAttributes.DataProductGovernance.ComplianceStatus,customAttributes.DataProductGovernance.DataClassification,customAttributes.DataProductGovernance.ProductOwner
+Auto Test 1,Test automatisé 1,Draft,Finance,Compliant,PII,John Doe
+Auto Test 2,Test automatisé 2,Draft,Sales,Approved,Internal,Jane Smith

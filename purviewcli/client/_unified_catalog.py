@@ -1687,6 +1687,39 @@ Use Cases:
             payload["acronyms"] = acronyms
         if resources:
             payload["resources"] = resources
+        
+        # Handle custom attributes
+        try:
+            provided_ca = args.get("--custom-attributes")
+            if provided_ca:
+                import json as _json
+                custom_attrs = {}
+                # Support list of JSON strings or dicts
+                for item in provided_ca:
+                    if isinstance(item, str):
+                        try:
+                            custom_attrs.update(_json.loads(item))
+                        except Exception as e:
+                            # Log parsing error for debugging
+                            if args.get("--debug"):
+                                print(f"[DEBUG] Failed to parse custom attribute JSON: {item}, error: {e}")
+                    elif isinstance(item, dict):
+                        custom_attrs.update(item)
+                if custom_attrs:
+                    payload["customAttributes"] = custom_attrs
+                    if args.get("--debug"):
+                        print(f"[DEBUG] Custom attributes added to payload: {_json.dumps(custom_attrs, indent=2)}")
+        except Exception as e:
+            # Non-fatal if parsing custom attributes fails
+            if args.get("--debug"):
+                print(f"[DEBUG] Error processing custom attributes: {e}")
+            pass
+
+        # Debug: print full payload before sending
+        if args.get("--debug"):
+            import json as _json
+            print(f"[DEBUG] Full payload to be sent to API:")
+            print(_json.dumps(payload, indent=2))
 
         self.payload = payload
 
@@ -1840,7 +1873,7 @@ Use Cases:
             # Keep existing resources
             payload["resources"] = existing_resources
 
-        # Handle custom attributes (merge provided with existing)
+        # Handle managed attributes (convert from nested JSON to API format)
         try:
             provided_ca = args.get("--custom-attributes")
             if provided_ca:
@@ -1851,21 +1884,62 @@ Use Cases:
                     if isinstance(item, str):
                         try:
                             provided.update(_json.loads(item))
-                        except Exception:
-                            # ignore invalid JSON
-                            pass
+                        except Exception as e:
+                            if args.get("--debug"):
+                                print(f"[DEBUG] Failed to parse custom attributes JSON: {item}, error: {e}")
                     elif isinstance(item, dict):
                         provided.update(item)
-                existing_ca = existing_term.get("customAttributes") or {}
-                if isinstance(existing_ca, dict):
-                    merged = {**existing_ca, **provided}
-                else:
-                    merged = provided
-                if merged:
-                    payload["customAttributes"] = merged
-        except Exception:
+                
+                if args.get("--debug"):
+                    print(f"[DEBUG] Parsed custom attributes (nested): {_json.dumps(provided, indent=2)}")
+                
+                # Convert nested JSON to managedAttributes format (flat list with dot notation)
+                # Input: {"DataProductGovernance": {"BusinessDomain": "Finance", ...}}
+                # Output: [{"name": "DataProductGovernance.BusinessDomain", "value": "Finance"}, ...]
+                managed_attrs = []
+                
+                def flatten_attributes(obj, parent_key=''):
+                    for key, value in obj.items():
+                        if isinstance(value, dict):
+                            flatten_attributes(value, f"{parent_key}.{key}" if parent_key else key)
+                        else:
+                            attr_name = f"{parent_key}.{key}" if parent_key else key
+                            managed_attrs.append({"name": attr_name, "value": str(value)})
+                
+                flatten_attributes(provided)
+                
+                # Get existing managed attributes from the term
+                existing_ma = existing_term.get("managedAttributes") or []
+                if not isinstance(existing_ma, list):
+                    existing_ma = []
+                
+                # Create a map of existing attributes by name for merging
+                existing_map = {ma["name"]: ma for ma in existing_ma}
+                
+                # Merge: provided attributes override existing ones
+                for ma in managed_attrs:
+                    existing_map[ma["name"]] = ma
+                
+                merged_ma = list(existing_map.values())
+                
+                if args.get("--debug"):
+                    print(f"[DEBUG] Existing managed attributes: {_json.dumps(existing_ma, indent=2)}")
+                    print(f"[DEBUG] Converted managed attributes: {_json.dumps(managed_attrs, indent=2)}")
+                    print(f"[DEBUG] Merged managed attributes: {_json.dumps(merged_ma, indent=2)}")
+                
+                if merged_ma:
+                    payload["managedAttributes"] = merged_ma
+        except Exception as e:
             # Non-fatal if parsing custom attributes fails
+            if args.get("--debug"):
+                print(f"[DEBUG] Error processing custom attributes: {e}")
             pass
+
+        # Debug: print full payload before sending
+        if args.get("--debug"):
+            import json as _json
+            print(f"[DEBUG] Full payload for PUT request:")
+            print(_json.dumps(payload, indent=2))
 
         # Now make the actual PUT request
         http_dict = {
