@@ -1340,7 +1340,8 @@ def delete(term_id, force):
 @click.option("--resource-url", required=False, help="Resource URL for additional reading (can be specified multiple times, replaces existing)", multiple=True)
 @click.option("--add-acronym", required=False, help="Add acronym to existing ones (can be specified multiple times)", multiple=True)
 @click.option("--add-owner-id", required=False, help="Add owner to existing ones (can be specified multiple times)", multiple=True)
-def update(term_id, name, description, domain_id, parent_id, status, acronym, owner_id, resource_name, resource_url, add_acronym, add_owner_id):
+@click.option("--custom-attributes", required=False, help="Custom attributes as JSON string (e.g., '{\"Group\": {\"Field\": \"value\"}}')")
+def update(term_id, name, description, domain_id, parent_id, status, acronym, owner_id, resource_name, resource_url, add_acronym, add_owner_id, custom_attributes):
     """Update an existing Unified Catalog term."""
     try:
         client = UnifiedCatalogClient()
@@ -1376,6 +1377,10 @@ def update(term_id, name, description, domain_id, parent_id, status, acronym, ow
             args["--resource-name"] = list(resource_name)
         if resource_url:
             args["--resource-url"] = list(resource_url)
+        
+        # Handle custom attributes
+        if custom_attributes:
+            args["--custom-attributes"] = [custom_attributes]
 
         result = client.update_term(args)
 
@@ -1397,8 +1402,33 @@ def update(term_id, name, description, domain_id, parent_id, status, acronym, ow
 @click.option("--csv-file", required=True, type=click.Path(exists=True), help="Path to CSV file with terms")
 @click.option("--domain-id", required=True, help="Governance domain ID for all terms")
 @click.option("--dry-run", is_flag=True, help="Preview terms without creating them")
-def import_terms_from_csv(csv_file, domain_id, dry_run):
-    """Bulk import glossary terms from a CSV file.
+@click.option("--debug", is_flag=True, help="Enable debug logging")
+def import_terms_from_csv(csv_file, domain_id, dry_run, debug):
+    """Bulk import glossary terms from a CSV file with custom attribute support.
+    
+    CSV Format (standard fields):
+    name,description,status,acronym,owner_ids,resources
+    
+    Custom Attributes (via dot notation):
+    - customAttributes.fieldName: Creates flat custom attribute
+    - customAttributes.Group.Field: Creates nested structure {"Group": {"Field": "value"}}
+    
+    Required:
+    - name or Name: Term name
+    - domain_id: Specified via --domain-id option
+    
+    Optional:
+    - description or Definition: Term description
+    - status or Status: Term status (Draft, Published, Archived)
+    - acronym or Acronym: Comma-separated acronyms
+    - owner_ids: Comma-separated owner GUIDs
+    - resources or Resources: Resource name:url pairs
+    - customAttributes.*: Custom attribute fields (supports nested paths)
+    
+    Example CSV:
+    name,description,status,customAttributes.Glossaire.Reference,customAttributes.DataQuality.Score
+    Customer,Customer entity,Draft,REF-001,85
+    Product,Product catalog,Published,REF-002,92
     
     Accepts any CSV format - adapts to whatever columns are present.
     Works with Purview UI exports or custom CSV files.
@@ -1466,6 +1496,23 @@ def import_terms_from_csv(csv_file, domain_id, dry_run):
                     urls = [u.strip() for u in resource_url_field.split(";") if u.strip()]
                     term["resources"] = [{"name": n, "url": u} for n, u in zip(names, urls)]
                 
+                # Parse custom attributes (nested support via dot notation)
+                term["custom_attributes"] = {}
+                for k, v in row.items():
+                    if k.startswith('customAttributes.') and v and str(v).strip():
+                        # Extract path after 'customAttributes.'
+                        path = k.split('.', 1)[1]  # e.g., "Glossaire.Reference" or "DataQuality.Score"
+                        parts = path.split('.')     # e.g., ["Glossaire", "Reference"]
+                        value = str(v).strip()
+                        
+                        # Build nested dictionary structure
+                        current = term["custom_attributes"]
+                        for i, part in enumerate(parts[:-1]):
+                            if part not in current:
+                                current[part] = {}
+                            current = current[part]
+                        current[parts[-1]] = value
+                
                 # Handle owners from various column names
                 owner_ids_field = row.get("owner_ids") or row.get("owner_id") or ""
                 experts_field = row.get("Experts") or ""
@@ -1519,20 +1566,30 @@ def import_terms_from_csv(csv_file, domain_id, dry_run):
             table.add_column("Status", style="yellow")
             table.add_column("Acronyms", style="magenta")
             table.add_column("Owners", style="green")
+            table.add_column("Custom Attrs", style="blue")
             
             for i, term in enumerate(terms, 1):
                 acronyms = ", ".join(term.get("acronyms", []))
                 owners = ", ".join(term.get("owner_ids", []))[:30]  # Truncate long GUIDs
+                custom_attrs = json.dumps(term.get("custom_attributes", {})) if term.get("custom_attributes") else "-"
                 table.add_row(
                     str(i),
                     term["name"],
                     term["status"],
                     acronyms or "-",
-                    owners or "-"
+                    owners or "-",
+                    custom_attrs[:40] + "..." if len(custom_attrs) > 40 else custom_attrs
                 )
             
             console.print(table)
             console.print(f"\n[dim]Domain ID: {domain_id}[/dim]")
+            
+            # Show detailed custom attributes for each term
+            for i, term in enumerate(terms, 1):
+                if term.get("custom_attributes"):
+                    console.print(f"\n[cyan]Term {i} - {term['name']} - Custom Attributes:[/cyan]")
+                    console.print(json.dumps(term["custom_attributes"], indent=2))
+            
             return
         
         # Import terms (one by one using single POST)
@@ -1553,6 +1610,9 @@ def import_terms_from_csv(csv_file, domain_id, dry_run):
                         "--status": [term.get("status", "Draft")],
                     }
                     
+                    if debug:
+                        args["--debug"] = True
+                    
                     if term.get("acronyms"):
                         args["--acronym"] = term["acronyms"]
                     
@@ -1563,13 +1623,46 @@ def import_terms_from_csv(csv_file, domain_id, dry_run):
                         args["--resource-name"] = [r["name"] for r in term["resources"]]
                         args["--resource-url"] = [r["url"] for r in term["resources"]]
                     
+                    # Add custom attributes if present
+                    if term.get("custom_attributes"):
+                        args["--custom-attributes"] = [json.dumps(term["custom_attributes"])]
+                        if debug:
+                            console.print(f"[dim]Adding custom attributes: {json.dumps(term['custom_attributes'], indent=2)}[/dim]")
+                    
                     result = client.create_term(args)
                     
                     # Check if result contains an ID (indicates successful creation)
                     if result and isinstance(result, dict) and result.get("id"):
-                        success_count += 1
                         term_id = result.get("id")
                         console.print(f"[green]Created: {term['name']} (ID: {term_id})[/green]")
+                        
+                        # If term has custom attributes, update them (API doesn't support custom attrs on CREATE)
+                        if term.get("custom_attributes"):
+                            try:
+                                if debug:
+                                    console.print(f"[dim]Updating custom attributes for {term['name']}...[/dim]")
+                                    console.print(f"[dim]Custom attributes dict: {json.dumps(term['custom_attributes'], indent=2)}[/dim]")
+                                
+                                ca_json = json.dumps(term["custom_attributes"])
+                                update_args = {
+                                    "--term-id": [term_id],
+                                    "--custom-attributes": [ca_json],
+                                }
+                                
+                                if debug:
+                                    update_args["--debug"] = True
+                                    console.print(f"[dim]Passed to update_term: --custom-attributes = {update_args['--custom-attributes']}[/dim]")
+                                
+                                update_result = client.update_term(update_args)
+                                
+                                if update_result and not (isinstance(update_result, dict) and "error" in update_result):
+                                    console.print(f"[green]  ✓ Custom attributes added[/green]")
+                                else:
+                                    console.print(f"[yellow]  ⚠ Custom attributes may not have been added[/yellow]")
+                            except Exception as e:
+                                console.print(f"[yellow]  ⚠ Failed to add custom attributes: {str(e)}[/yellow]")
+                        
+                        success_count += 1
                     elif result and not (isinstance(result, dict) and "error" in result):
                         # Got a response but no ID - might be an issue
                         console.print(f"[yellow]WARNING: Response received for {term['name']} but no ID returned[/yellow]")

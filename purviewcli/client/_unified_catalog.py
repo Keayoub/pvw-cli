@@ -1687,6 +1687,39 @@ Use Cases:
             payload["acronyms"] = acronyms
         if resources:
             payload["resources"] = resources
+        
+        # Handle custom attributes
+        try:
+            provided_ca = args.get("--custom-attributes")
+            if provided_ca:
+                import json as _json
+                custom_attrs = {}
+                # Support list of JSON strings or dicts
+                for item in provided_ca:
+                    if isinstance(item, str):
+                        try:
+                            custom_attrs.update(_json.loads(item))
+                        except Exception as e:
+                            # Log parsing error for debugging
+                            if args.get("--debug"):
+                                print(f"[DEBUG] Failed to parse custom attribute JSON: {item}, error: {e}")
+                    elif isinstance(item, dict):
+                        custom_attrs.update(item)
+                if custom_attrs:
+                    payload["customAttributes"] = custom_attrs
+                    if args.get("--debug"):
+                        print(f"[DEBUG] Custom attributes added to payload: {_json.dumps(custom_attrs, indent=2)}")
+        except Exception as e:
+            # Non-fatal if parsing custom attributes fails
+            if args.get("--debug"):
+                print(f"[DEBUG] Error processing custom attributes: {e}")
+            pass
+
+        # Debug: print full payload before sending
+        if args.get("--debug"):
+            import json as _json
+            print(f"[DEBUG] Full payload to be sent to API:")
+            print(_json.dumps(payload, indent=2))
 
         self.payload = payload
 
@@ -1851,21 +1884,38 @@ Use Cases:
                     if isinstance(item, str):
                         try:
                             provided.update(_json.loads(item))
-                        except Exception:
-                            # ignore invalid JSON
-                            pass
+                        except Exception as e:
+                            if args.get("--debug"):
+                                print(f"[DEBUG] Failed to parse custom attributes JSON: {item}, error: {e}")
                     elif isinstance(item, dict):
                         provided.update(item)
+                
+                if args.get("--debug"):
+                    print(f"[DEBUG] Parsed custom attributes: {_json.dumps(provided, indent=2)}")
+                
                 existing_ca = existing_term.get("customAttributes") or {}
                 if isinstance(existing_ca, dict):
                     merged = {**existing_ca, **provided}
                 else:
                     merged = provided
+                
+                if args.get("--debug"):
+                    print(f"[DEBUG] Existing custom attributes: {_json.dumps(existing_ca, indent=2)}")
+                    print(f"[DEBUG] Merged custom attributes: {_json.dumps(merged, indent=2)}")
+                
                 if merged:
                     payload["customAttributes"] = merged
-        except Exception:
+        except Exception as e:
             # Non-fatal if parsing custom attributes fails
+            if args.get("--debug"):
+                print(f"[DEBUG] Error processing custom attributes: {e}")
             pass
+
+        # Debug: print full payload before sending
+        if args.get("--debug"):
+            import json as _json
+            print(f"[DEBUG] Full payload for PUT request:")
+            print(_json.dumps(payload, indent=2))
 
         # Now make the actual PUT request
         http_dict = {
