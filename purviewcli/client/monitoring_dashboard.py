@@ -32,7 +32,8 @@ import threading
 
 from .api_client import PurviewClient, PurviewConfig
 
-console = Console()
+# Initialize console with UTF-8 encoding for Windows compatibility
+console = Console(legacy_windows=False)
 
 class MetricType(Enum):
     """Types of metrics to monitor"""
@@ -88,7 +89,7 @@ class MonitoringDashboard:
     
     def __init__(self, client: PurviewClient):
         self.client = client
-        self.console = Console()
+        self.console = Console(legacy_windows=False)
         self.metrics: List[Metric] = []
         self.alerts: List[Alert] = []
         self.thresholds: List[Threshold] = []
@@ -586,7 +587,7 @@ class MonitoringReports:
     
     def __init__(self, dashboard: MonitoringDashboard):
         self.dashboard = dashboard
-        self.console = Console()
+        self.console = Console(legacy_windows=False)
     
     def generate_daily_report(self, output_path: str):
         """Generate daily monitoring report"""

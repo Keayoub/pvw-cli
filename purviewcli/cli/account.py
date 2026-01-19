@@ -19,7 +19,8 @@ import json
 import click
 from rich.console import Console
 
-console = Console()
+# Initialize console with UTF-8 encoding for Windows compatibility
+console = Console(legacy_windows=False)
 
 
 @click.group()

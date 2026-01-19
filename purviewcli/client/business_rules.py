@@ -25,7 +25,8 @@ except ImportError:
 
 from .api_client import PurviewClient, PurviewConfig
 
-console = Console()
+# Initialize console with UTF-8 encoding for Windows compatibility
+console = Console(legacy_windows=False)
 
 class RuleType(Enum):
     """Types of business rules"""
@@ -88,7 +89,7 @@ class BusinessRulesEngine:
     
     def __init__(self, client: PurviewClient):
         self.client = client
-        self.console = Console()
+        self.console = Console(legacy_windows=False)
         self.rules: Dict[str, BusinessRule] = {}
         self.load_default_rules()
     

@@ -19,7 +19,8 @@ from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
 
-console = Console()
+# Initialize console with UTF-8 encoding for Windows compatibility
+console = Console(legacy_windows=False)
 
 class PluginType(Enum):
     """Types of plugins supported"""
@@ -68,7 +69,7 @@ class PluginInterface(ABC):
     
     def __init__(self, config: Dict[str, Any]):
         self.config = config
-        self.console = Console()
+        self.console = Console(legacy_windows=False)
     
     @abstractmethod
     def get_metadata(self) -> PluginMetadata:
@@ -160,7 +161,7 @@ class PluginManager:
         self.plugin_configs: Dict[str, PluginConfig] = {}
         self.plugin_metadata: Dict[str, PluginMetadata] = {}
         self.plugin_status: Dict[str, PluginStatus] = {}
-        self.console = Console()
+        self.console = Console(legacy_windows=False)
         
         # Create plugins directory if it doesn't exist
         self.plugins_directory.mkdir(exist_ok=True)
@@ -509,7 +510,7 @@ class PluginRegistry:
     """Registry for discovering and managing available plugins"""
     
     def __init__(self):
-        self.console = Console()
+        self.console = Console(legacy_windows=False)
         self.registry_url = "https://pvw-cli-plugins.registry.example.com"  # Example URL
     
     def search_plugins(self, query: str, plugin_type: Optional[PluginType] = None) -> List[Dict]:
