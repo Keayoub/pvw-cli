@@ -1,0 +1,4 @@
+name,description,status,customAttributes.DataProductGovernance.BusinessDomain,customAttributes.DataProductGovernance.ComplianceStatus,customAttributes.DataProductGovernance.DataClassification,customAttributes.DataProductGovernance.ProductOwner
+Batch Test 1,Premier terme batch,Draft,Finance,Compliant,PII,John Doe
+Batch Test 2,Deuxième terme batch,Published,Sales,Under Review,Internal,Jane Smith
+Batch Test 3,Troisième terme batch,Draft,IT,Approved,Confidential,Bob Martin

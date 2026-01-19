@@ -1,0 +1,3 @@
+name,description,status,customAttributes.DataProductGovernance.BusinessDomain,customAttributes.DataProductGovernance.ComplianceStatus,customAttributes.DataProductGovernance.DataClassification,customAttributes.DataProductGovernance.ProductOwner
+Customer Data,Données clients,Draft,Finance,Compliant,PII,John Doe
+Product Catalog,Catalogue produits,Published,Sales,Under Review,Internal,Jane Smith
