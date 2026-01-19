@@ -1,11 +1,20 @@
-# PURVIEW CLI v1.5.3 - Microsoft Purview Automation & Data Governance
+# PURVIEW CLI v1.5.4 - Microsoft Purview Automation & Data Governance
 
-[![Version](https://img.shields.io/badge/version-1.5.0-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.5.3)
+[![Version](https://img.shields.io/badge/version-1.5.4-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.5.4)
 [![API Coverage](https://img.shields.io/badge/UC%20API%20Coverage-86%25-green.svg)](https://github.com/Keayoub/pvw-cli)
 [![Lineage](https://img.shields.io/badge/Lineage-Enhanced-green.svg)](https://github.com/Keayoub/pvw-cli)
 [![Status](https://img.shields.io/badge/status-stable-success.svg)](https://github.com/Keayoub/pvw-cli)
 
-> **LATEST UPDATE v1.5.3 (January 13, 2026):**
+> **LATEST UPDATE v1.5.4 (January 19, 2026):**
+>
+> **🪟 Windows Unicode Encoding Fix**
+>
+> - **[FIXED]** Unicode encoding crashes on Windows PowerShell (CP1252 compatibility)
+> - **[FIXED]** Proper rendering of Unicode symbols (✓, ⚠) across all commands
+> - **[UPDATED]** 24 files with improved Rich Console configuration
+> - **[TESTED]** Verified on Windows PowerShell with full Unicode support
+>
+> **Previous Update v1.5.3 (January 13, 2026):**
 >
 > **🔐 Legacy Tenant Authentication Support**
 >
@@ -14,40 +23,13 @@
 > - **[NEW]** Comprehensive tenant detection and configuration guide
 > - **[FIXED]** Authentication errors (AADSTS500011) for legacy tenants
 >
-> **Previous Update v1.4.2 (November 3, 2025):**
->
-> **🔗 Advanced Lineage Features & Column-Level Mapping**
->
-> **New Lineage Capabilities:**
-> - **[NEW]** Column-level lineage with multi-target support (1 source → N targets)
-> - **[NEW]** Direct lineage (UI-style) - No visible Process entity
-> - **[NEW]** Dual-mode CSV import - Automatic detection of Process vs Direct lineage
-> - **[NEW]** Column mapping in direct relationships - Granular data flow tracking
-> - **[NEW]** Enhanced error handling with SSL retry strategies
->
-> **New CLI Commands:**
-> ```bash
-> pvw lineage create-column   # Column-level lineage (Process-based)
-> pvw lineage create-direct   # Direct lineage (UI-style, no Process)
-> pvw lineage list-column     # List column lineages
-> pvw lineage delete-column   # Delete column lineage
-> ```
->
-> **What's New:**
-> - ✅ Column mapping visible in Purview UI
-> - ✅ Compatible with manual UI lineage creation
-> - ✅ Type validation (prevent invalid lineage)
-> - ✅ Batch CSV import with 5 sample files
-> - ✅ Comprehensive documentation & examples
->
->
-> **[Full Release Notes v1.5.3](releases/v1.5.3.md)** | **[v1.4.2 Release Notes](releases/v1.4.2.md)** | **[v1.3.3 Release Notes](releases/v1.3.3.md)**
+> **[Full Release Notes v1.5.4](releases/v1.5.4.md)** | **[v1.5.3 Release Notes](releases/v1.5.3.md)** | **[v1.4.2 Release Notes](releases/v1.4.2.md)**
 
 ---
 
 ## What is PVW CLI?
 
-**PVW CLI v1.4.2** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* with **86% Unified Catalog API coverage** (45 of 52 operations).
+**PVW CLI v1.5.4** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* with **86% Unified Catalog API coverage** (45 of 52 operations).
 
 ### Key Capabilities
 

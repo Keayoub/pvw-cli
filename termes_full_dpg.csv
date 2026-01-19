@@ -1,3 +1,0 @@
-name,description,status,customAttributes.DataProductGovernance.BusinessDomain,customAttributes.DataProductGovernance.ComplianceStatus,customAttributes.DataProductGovernance.DataClassification,customAttributes.DataProductGovernance.ProductOwner
-Customer Master Data,Données maîtres clients,Published,Finance,Compliant,PII,Jean Dupont
-Product Catalog Full,Catalogue produits complet,Draft,Sales,Under Review,Internal,Marie Martin
