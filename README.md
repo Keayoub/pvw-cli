@@ -1,18 +1,18 @@
-# PURVIEW CLI v1.5.4 - Microsoft Purview Automation & Data Governance
+# PURVIEW CLI v1.5.5 - Microsoft Purview Automation & Data Governance
 
-[![Version](https://img.shields.io/badge/version-1.5.4-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.5.4)
+[![Version](https://img.shields.io/badge/version-1.5.5-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.5.5)
 [![API Coverage](https://img.shields.io/badge/UC%20API%20Coverage-86%25-green.svg)](https://github.com/Keayoub/pvw-cli)
 [![Lineage](https://img.shields.io/badge/Lineage-Enhanced-green.svg)](https://github.com/Keayoub/pvw-cli)
 [![Status](https://img.shields.io/badge/status-stable-success.svg)](https://github.com/Keayoub/pvw-cli)
 
-> **LATEST UPDATE v1.5.4 (January 19, 2026):**
+> **LATEST UPDATE v1.5.5 (January 20, 2026):**
 >
-> **🪟 Windows Unicode Encoding Fix**
+> **CSV Import Reliability**
 >
-> - **[FIXED]** Unicode encoding crashes on Windows PowerShell (CP1252 compatibility)
-> - **[FIXED]** Proper rendering of Unicode symbols (✓, ⚠) across all commands
-> - **[UPDATED]** 24 files with improved Rich Console configuration
-> - **[TESTED]** Verified on Windows PowerShell with full Unicode support
+> - **[FIXED]** CSV import no longer fails when header cells are empty (guards None keys)
+> - **[IMPROVED]** Custom attribute parsing handles list values in CSV without crashing
+> - **[UPDATED]** Sample CSVs for custom attributes with arrays
+> - **[TESTED]** CSV import confirmed working on Windows
 >
 > **Previous Update v1.5.3 (January 13, 2026):**
 >
@@ -23,7 +23,7 @@
 > - **[NEW]** Comprehensive tenant detection and configuration guide
 > - **[FIXED]** Authentication errors (AADSTS500011) for legacy tenants
 >
-> **[Full Release Notes v1.5.4](releases/v1.5.4.md)** | **[v1.5.3 Release Notes](releases/v1.5.3.md)** | **[v1.4.2 Release Notes](releases/v1.4.2.md)**
+> **[Full Release Notes v1.5.5](releases/v1.5.5.md)** | **[v1.5.4 Release Notes](releases/v1.5.4.md)** | **[v1.5.3 Release Notes](releases/v1.5.3.md)**
 
 ---
 
