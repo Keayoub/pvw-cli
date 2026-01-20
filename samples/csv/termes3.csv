@@ -1,0 +1,4 @@
+name,description,status,customAttributes.DataProductGovernance.BusinessDomain,customAttributes.DataProductGovernance.ComplianceStatus,customAttributes.SecteursActivite
+TERM-20260120-A,Sample term for finance,Approved,Finance,Compliant,"[""Banque"",""Assurance"",""Investissement""]"
+TERM-20260120-B,Sample term for sales,Draft,Sales,Pending,"[""Retail"",""Commerce"",""E-commerce""]"
+TERM-20260120-C,Sample term for it,Approved,IT,Approved,"[""Cloud"",""Data"",""Infrastructure""]"
