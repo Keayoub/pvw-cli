@@ -1505,7 +1505,7 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug):
                 # Parse custom attributes (nested support via dot notation)
                 term["custom_attributes"] = {}
                 for k, v in row.items():
-                    if k.startswith('customAttributes.') and v and str(v).strip():
+                    if k and k.startswith('customAttributes.') and v and str(v).strip():
                         # Extract path after 'customAttributes.'
                         path = k.split('.', 1)[1]  # e.g., "Glossaire.Reference" or "DataQuality.Score"
                         parts = path.split('.')     # e.g., ["Glossaire", "Reference"]
@@ -1897,7 +1897,7 @@ def update_terms_from_csv(csv_file, dry_run, debug):
                 # Detect customAttributes.* columns and build nested structure
                 custom_attrs = {}
                 for k, v in update.items():
-                    if k.startswith('customAttributes.') and str(v).strip():
+                    if k and k.startswith('customAttributes.') and str(v).strip():
                         # Remove 'customAttributes.' prefix and split remaining path
                         path = k.split('.', 1)[1]  # e.g., "Glossaire.Reference"
                         parts = path.split('.')     # e.g., ["Glossaire", "Reference"]
@@ -1961,7 +1961,7 @@ def update_terms_from_csv(csv_file, dry_run, debug):
             # Collect customAttributes.* into nested JSON structure
             custom_attrs = {}
             for k, v in update.items():
-                if k.startswith('customAttributes.') and str(v).strip():
+                if k and k.startswith('customAttributes.') and str(v).strip():
                     # Remove 'customAttributes.' prefix and split remaining path
                     path = k.split('.', 1)[1]  # e.g., "Glossaire.Reference"
                     parts = path.split('.')     # e.g., ["Glossaire", "Reference"]
