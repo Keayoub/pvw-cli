@@ -23,12 +23,11 @@ CLI for advanced search and discovery
 """
 import click
 import json
-from rich.console import Console
+from .console_utils import get_console
 from rich.table import Table
 from purviewcli.client._search import Search
 
-# Initialize console with UTF-8 encoding for Windows compatibility
-console = Console(legacy_windows=False)
+console = get_console()
 
 
 @click.group()

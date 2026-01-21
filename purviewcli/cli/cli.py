@@ -14,10 +14,10 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 import click
-from rich.console import Console
+from .console_utils import get_console
 
-# Initialize console with UTF-8 encoding for Windows compatibility
-console = Console(legacy_windows=False)
+# Initialize console with smart terminal detection for Windows PowerShell compatibility
+console = get_console()
 
 # Import version for the CLI
 try:
