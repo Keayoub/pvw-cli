@@ -9,14 +9,13 @@ import json
 import tempfile
 import os
 import time
-from rich.console import Console
+from .console_utils import get_console
 from rich.table import Table
 from rich.text import Text
 from rich.syntax import Syntax
 from purviewcli.client._unified_catalog import UnifiedCatalogClient
 
-# Initialize console with UTF-8 encoding for Windows compatibility
-console = Console(legacy_windows=False)
+console = get_console()
 
 
 def _format_json_output(data):

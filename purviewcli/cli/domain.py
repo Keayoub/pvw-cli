@@ -1,10 +1,9 @@
 import click
 import json
 from purviewcli.client._domain import Domain
-from rich.console import Console
+from .console_utils import get_console
 
-# Initialize console with UTF-8 encoding for Windows compatibility
-console = Console(legacy_windows=False)
+console = get_console()
 
 @click.group(help="Governance domain management (Limited functionality - see individual commands for details). Governance domains are currently not fully available in the public Microsoft Purview REST API. Consider using collections as an alternative organizational structure.")
 def domain():

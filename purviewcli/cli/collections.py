@@ -161,7 +161,7 @@ def list_detailed(ctx, output_format, include_assets, include_scans, max_depth):
         from rich.console import Console
         from rich.table import Table
         
-        console = Console()
+        console = Console(no_color=True)
         collections_client = Collections()
 
         # Get all collections
@@ -213,7 +213,7 @@ def get_details(ctx, collection_name, include_assets, include_data_sources, incl
         from rich.console import Console
         from rich.table import Table
         
-        console = Console()
+        console = Console(no_color=True)
         collections_client = Collections()
         search_client = Search()
 
@@ -284,7 +284,7 @@ def force_delete(ctx, collection_name, delete_assets, delete_data_sources,
         import time
         import math
         
-        console = Console()
+        console = Console(no_color=True)
 
         if dry_run:
             console.print(f"[yellow][*] DRY RUN: Analyzing collection '{collection_name}' for deletion[/yellow]")
@@ -360,7 +360,7 @@ def _display_collections_table(collections_data, include_assets, include_scans):
     from rich.table import Table
     from rich.console import Console
     
-    console = Console()
+    console = Console(no_color=True)
     table = Table(title="Collections Overview")
     
     table.add_column("Name", style="cyan")
@@ -395,7 +395,7 @@ def _display_collections_tree(collections_data, include_assets, include_scans, m
     """Display collections in a tree format"""
     from rich.console import Console
     
-    console = Console()
+    console = Console(no_color=True)
     console.print("[blue][TREE] Collections Hierarchy:[/blue]")
     # Implementation would build tree structure from parent-child relationships
     for i, collection in enumerate(collections_data[:10]):  # Limit for demo
@@ -409,7 +409,7 @@ def _display_collection_info(collection_info):
     from rich.table import Table
     from rich.console import Console
     
-    console = Console()
+    console = Console(no_color=True)
     table = Table(title="Collection Information")
     table.add_column("Property", style="cyan")
     table.add_column("Value", style="green")
@@ -439,7 +439,7 @@ def _display_asset_summary(assets):
     """Display asset summary information"""
     from rich.console import Console
     
-    console = Console()
+    console = Console(no_color=True)
     if not assets:
         click.echo("[!] No assets found in collection", err=True)
         return
@@ -459,7 +459,7 @@ def _bulk_delete_collection_assets(search_client, entity_client, collection_name
     import time
     import math
     
-    console = Console()
+    console = Console(no_color=True)
     
     # Step 1: Get all asset GUIDs in the collection
     console.print("[blue][*] Finding all assets in collection...[/blue]")
@@ -549,7 +549,7 @@ def resources(collection_name, format, output_json, sort_by, asset_type, data_so
         if output_json:
             format = "json"
         
-        console = Console()
+        console = Console(no_color=True)
         collections_client = Collections()
         search_client = Search()
         

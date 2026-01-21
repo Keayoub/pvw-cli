@@ -4,12 +4,11 @@ Health CLI commands for Microsoft Purview Unified Catalog
 
 import click
 from rich.table import Table
-from rich.console import Console
+from .console_utils import get_console
 from purviewcli.client._health import Health
 import re
 
-# Initialize console with UTF-8 encoding for Windows compatibility
-console = Console(legacy_windows=False)
+console = get_console()
 
 
 @click.group()
