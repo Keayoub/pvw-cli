@@ -16,11 +16,31 @@ def domain():
 @click.option("--payload-file", type=click.Path(exists=True), help="File path to a valid JSON document")
 def create(name, friendly_name, description, payload_file):
     """Create a new governance domain."""
+    import tempfile
+    import os
+    
+    temp_file = None
     try:
+        # If no payload file provided, create one from CLI options
+        if not payload_file:
+            payload = {
+                "name": name,
+                "friendlyName": friendly_name or name,
+                "description": description or ""
+            }
+            
+            # Create temporary payload file
+            fd, temp_file = tempfile.mkstemp(suffix='.json', text=True)
+            try:
+                with os.fdopen(fd, 'w') as f:
+                    json.dump(payload, f, indent=2)
+                payload_file = temp_file
+            except:
+                os.close(fd)
+                raise
+        
         args = {
             '--name': name,
-            '--friendlyName': friendly_name,
-            '--description': description,
             '--payloadFile': payload_file
         }
         client = Domain()
@@ -35,6 +55,13 @@ def create(name, friendly_name, description, payload_file):
             console.print(json.dumps(result, indent=2))
     except Exception as e:
         console.print(f"[red]ERROR:[/red] Failed to create governance domain: {e}")
+    finally:
+        # Clean up temp file
+        if temp_file and os.path.exists(temp_file):
+            try:
+                os.unlink(temp_file)
+            except:
+                pass
 
 @domain.command(help="List all governance domains. NOTE: This feature is not currently available in the public API.")
 def list():
@@ -79,11 +106,35 @@ def get(domain_name):
 @click.option("--payload-file", type=click.Path(exists=True), help="File path to a valid JSON document")
 def update(domain_name, friendly_name, description, payload_file):
     """Update a governance domain's friendly name and/or description."""
+    import tempfile
+    import os
+    
+    temp_file = None
     try:
+        # If no payload file provided, create one from CLI options
+        if not payload_file:
+            payload = {}
+            if friendly_name:
+                payload["friendlyName"] = friendly_name
+            if description:
+                payload["description"] = description
+            
+            if not payload:
+                console.print("[yellow]WARNING:[/yellow] No updates specified. Provide --friendly-name, --description, or --payload-file")
+                return
+            
+            # Create temporary payload file
+            fd, temp_file = tempfile.mkstemp(suffix='.json', text=True)
+            try:
+                with os.fdopen(fd, 'w') as f:
+                    json.dump(payload, f, indent=2)
+                payload_file = temp_file
+            except:
+                os.close(fd)
+                raise
+        
         args = {
             '--domainName': domain_name,
-            '--friendlyName': friendly_name,
-            '--description': description,
             '--payloadFile': payload_file
         }
         client = Domain()
@@ -96,6 +147,13 @@ def update(domain_name, friendly_name, description, payload_file):
             console.print(json.dumps(result, indent=2))
     except Exception as e:
         console.print(f"[red]ERROR:[/red] Failed to update governance domain: {e}")
+    finally:
+        # Clean up temp file
+        if temp_file and os.path.exists(temp_file):
+            try:
+                os.unlink(temp_file)
+            except:
+                pass
 
 @domain.command(help="Delete a governance domain by name. NOTE: This feature is not currently available in the public API.")
 @click.option("--domain-name", required=True, help="The name of the governance domain")

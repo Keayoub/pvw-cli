@@ -1,11 +1,11 @@
-# PURVIEW CLI v1.5.7 - Microsoft Purview Automation & Data Governance
+# PURVIEW CLI v1.5.8 - Microsoft Purview Automation & Data Governance
 
-[![Version](https://img.shields.io/badge/version-1.5.5-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.5.7)
+[![Version](https://img.shields.io/badge/version-1.5.5-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.5.8)
 [![API Coverage](https://img.shields.io/badge/UC%20API%20Coverage-86%25-green.svg)](https://github.com/Keayoub/pvw-cli)
 [![Lineage](https://img.shields.io/badge/Lineage-Enhanced-green.svg)](https://github.com/Keayoub/pvw-cli)
 [![Status](https://img.shields.io/badge/status-stable-success.svg)](https://github.com/Keayoub/pvw-cli)
 
-> **LATEST UPDATE v1.5.7 (January 20, 2026):**
+> **LATEST UPDATE v1.5.8 (January 20, 2026):**
 >
 > **CSV Import Reliability**
 >
@@ -23,7 +23,7 @@
 > - **[NEW]** Comprehensive tenant detection and configuration guide
 > - **[FIXED]** Authentication errors (AADSTS500011) for legacy tenants
 >
-> **[Full Release Notes v1.5.7](releases/v1.5.7.md)** | **[v1.5.4 Release Notes](releases/v1.5.4.md)** | **[v1.5.3 Release Notes](releases/v1.5.3.md)**
+> **[Full Release Notes v1.5.8](releases/v1.5.8.md)** | **[v1.5.4 Release Notes](releases/v1.5.4.md)** | **[v1.5.3 Release Notes](releases/v1.5.3.md)**
 
 ---
 

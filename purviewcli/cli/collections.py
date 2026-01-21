@@ -39,12 +39,34 @@ def collections():
 )
 def create(collection_name, friendly_name, description, parent_collection, payload_file):
     """Create a new collection"""
+    import tempfile
+    import os
+    
+    temp_file = None
     try:
+        # If no payload file provided, create one from CLI options
+        if not payload_file:
+            payload = {
+                "name": collection_name,
+                "friendlyName": friendly_name or collection_name,
+                "description": description or "",
+                "parentCollection": {
+                    "referenceName": parent_collection
+                }
+            }
+            
+            # Create temporary payload file that persists
+            fd, temp_file = tempfile.mkstemp(suffix='.json', text=True)
+            try:
+                with os.fdopen(fd, 'w') as f:
+                    json.dump(payload, f, indent=2)
+                payload_file = temp_file
+            except:
+                os.close(fd)
+                raise
+        
         args = {
             "--collectionName": collection_name,
-            "--friendlyName": friendly_name,
-            "--description": description,
-            "--parentCollection": parent_collection,
             "--payloadFile": payload_file,
         }
         client = Collections()
@@ -52,6 +74,13 @@ def create(collection_name, friendly_name, description, parent_collection, paylo
         click.echo(json.dumps(result, indent=2))
     except Exception as e:
         click.echo(f"Error: {e}")
+    finally:
+        # Clean up temp file
+        if temp_file and os.path.exists(temp_file):
+            try:
+                os.unlink(temp_file)
+            except:
+                pass
 
 
 @collections.command()
