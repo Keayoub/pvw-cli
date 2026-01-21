@@ -1066,8 +1066,8 @@ def verify_glossary_links():
         
         console.print(table)
         console.print(f"\n[cyan]Summary:[/cyan]")
-        console.print(f"  • Linked domains: [green]{linked_count}[/green]")
-        console.print(f"  • Unlinked domains: [yellow]{unlinked_count}[/yellow]")
+        console.print(f"  - Linked domains: [green]{linked_count}[/green]")
+        console.print(f"  - Unlinked domains: [yellow]{unlinked_count}[/yellow]")
         
         if unlinked_count > 0:
             console.print(f"\n[dim][TIP] Tip: Run 'pvw uc glossary create-for-domains' to create glossaries for unlinked domains[/dim]")
@@ -1559,7 +1559,7 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug):
         if unsupported_fields:
             console.print("\n[yellow]NOTE: Following UI fields are not supported by UC API:[/yellow]")
             for field in unsupported_fields:
-                console.print(f"  [dim]• {field} (will be ignored)[/dim]")
+                console.print(f"  [dim]- {field} (will be ignored)[/dim]")
             console.print()
         
         console.print(f"[cyan]Found {len(terms)} term(s) in CSV file[/cyan]")
@@ -1662,11 +1662,11 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug):
                                 update_result = client.update_term(update_args)
                                 
                                 if update_result and not (isinstance(update_result, dict) and "error" in update_result):
-                                    console.print(f"[green]  ✓ Custom attributes added[/green]")
+                                    console.print(f"[green]  OK Custom attributes added[/green]")
                                 else:
-                                    console.print(f"[yellow]  ⚠ Custom attributes may not have been added[/yellow]")
+                                    console.print(f"[yellow]  WARNING: Custom attributes may not have been added[/yellow]")
                             except Exception as e:
-                                console.print(f"[yellow]  ⚠ Failed to add custom attributes: {str(e)}[/yellow]")
+                                console.print(f"[yellow]  WARNING: Failed to add custom attributes: {str(e)}[/yellow]")
                         
                         success_count += 1
                     elif result and not (isinstance(result, dict) and "error" in result):
@@ -1696,7 +1696,7 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug):
         if failed_terms:
             console.print("\n[red]Failed Terms:[/red]")
             for ft in failed_terms:
-                console.print(f"  • {ft['name']}: {ft['error']}")
+                console.print(f"  - {ft['name']}: {ft['error']}")
         
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
@@ -1809,7 +1809,7 @@ def import_terms_from_json(json_file, dry_run):
         if failed_terms:
             console.print("\n[red]Failed Terms:[/red]")
             for ft in failed_terms:
-                console.print(f"  • {ft['name']}: {ft['error']}")
+                console.print(f"  - {ft['name']}: {ft['error']}")
         
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
@@ -2007,7 +2007,7 @@ def update_terms_from_csv(csv_file, dry_run, debug):
         if failed_terms:
             console.print("\n[red]Failed Updates:[/red]")
             for ft in failed_terms:
-                console.print(f"  • {ft['name']}: {ft['error']}")
+                console.print(f"  - {ft['name']}: {ft['error']}")
         
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
@@ -2130,7 +2130,7 @@ def update_terms_from_json(json_file, dry_run):
         if failed_terms:
             console.print("\n[red]Failed Updates:[/red]")
             for ft in failed_terms:
-                console.print(f"  • {ft['name']}: {ft['error']}")
+                console.print(f"  - {ft['name']}: {ft['error']}")
         
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
