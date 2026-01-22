@@ -1,0 +1,47 @@
+{
+  "businessMetadataDefs": [
+    {
+      "category": "BUSINESS_METADATA",
+      "name": "Glossaire",
+      "description": "Sample business metadata for glossary attributes",
+      "typeVersion": "1.0",
+      "options": {
+        "isPurviewDataGovernanceDefinition": "true",
+        "dataGovernanceOptions": "{\"applicableConstructs\":[\"domain:<YOUR_DOMAIN_ID>\",\"businessConcepts:all\",\"dataProductType:all\"]}"
+      },
+      "attributeDefs": [
+        {
+          "name": "SecteursActivite",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 0,
+          "valuesMaxCount": 1,
+          "isIndexable": true,
+          "includeInNotification": false,
+          "options": {
+            "isDisabled": "false",
+            "isPurviewDataGovernanceDefinition": "true",
+            "dataGovernanceOptions": "{\"inheritApplicableConstructsFromGroup\":true,\"applicableConstructs\":[]}"
+          }
+        },
+        {
+          "name": "Secteur",
+          "typeName": "string",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 0,
+          "valuesMaxCount": 1,
+          "isIndexable": true,
+          "includeInNotification": false,
+          "options": {
+            "maxStrLength": 32000,
+            "isDisabled": "false",
+            "isPurviewDataGovernanceDefinition": "true",
+            "dataGovernanceOptions": "{\"inheritApplicableConstructsFromGroup\":true,\"applicableConstructs\":[]}"
+          }
+        }
+      ]
+    }
+  ]
+}
