@@ -4985,7 +4985,7 @@ Use Cases:
         
         name = args.get("--name", [""])[0].strip()
         description = args.get("--description", [""])[0].strip()
-        data_type = args.get("--type", ["string"])[0].strip()
+        data_type = args.get("--data-type", ["string"])[0].strip()
         required = args.get("--required", ["false"])[0].lower() == "true"
         
         payload = {
@@ -5070,7 +5070,7 @@ Use Cases:
         
         name = args.get("--name", [""])[0].strip()
         description = args.get("--description", [""])[0].strip()
-        data_type = args.get("--type", ["string"])[0].strip()
+        data_type = args.get("--data-type", ["string"])[0].strip()
         required = args.get("--required", ["false"])[0].lower() == "true"
         
         payload = {
