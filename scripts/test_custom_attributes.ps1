@@ -15,7 +15,7 @@ foreach ($type in $types) {
     Write-Host "`nCreating: $($type.name) [Type: $($type.dataType)]" -ForegroundColor Yellow
     
     try {
-        $output = & .venv\Scripts\python.exe -m purviewcli uc attribute create `
+        $output = & pvw uc attribute create `
             --name $type.name `
             --data-type $type.dataType `
             --description $type.desc 2>&1
@@ -51,7 +51,7 @@ foreach ($type in $types) {
 
 # List all created attributes
 Write-Host "`n=== Listing All Custom Attributes ===" -ForegroundColor Cyan
-& .venv\Scripts\python.exe -m purviewcli uc attribute list
+& pvw uc attribute list
 
 # Summary
 Write-Host "`n=== Test Summary ===" -ForegroundColor Cyan

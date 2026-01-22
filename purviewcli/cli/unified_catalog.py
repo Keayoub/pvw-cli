@@ -3939,15 +3939,23 @@ def attribute():
 
 @attribute.command(name="list")
 @click.option("--output", type=click.Choice(["table", "json"]), default="table", help="Output format")
-def list_custom_attributes(output):
-    """List all custom attribute definitions."""
+@click.option("--debug", is_flag=True, help="Show raw response for troubleshooting")
+def list_custom_attributes(output, debug):
+    """List all custom attribute definitions.
+
+    Note: If the tenant/region does not expose the datagovernance catalog attributes endpoint, this will return empty. Use Atlas business metadata via `pvw types readTypeDefs --type businessMetadata` to inspect definitions.
+    """
     client = UnifiedCatalogClient()
     response = client.list_custom_attributes({})
-    
+
+    if debug:
+        console.print_json(json.dumps(response))
+        return
+
     if output == "json":
         console.print_json(json.dumps(response))
     else:
-        if "value" in response and response["value"]:
+        if isinstance(response, dict) and response.get("value"):
             table = Table(title="[bold cyan]Custom Attribute Definitions[/bold cyan]", show_header=True)
             table.add_column("ID", style="cyan")
             table.add_column("Name", style="green")
@@ -3965,7 +3973,7 @@ def list_custom_attributes(output):
                 )
             console.print(table)
         else:
-            console.print("[yellow]No custom attributes found[/yellow]")
+            console.print("[yellow]No custom attributes found (endpoint may not be enabled; try 'pvw types readTypeDefs --type businessMetadata').[/yellow]")
 
 
 @attribute.command(name="get")
@@ -3994,17 +4002,33 @@ def get_custom_attribute(attribute_id, output):
 @click.option("--data-type", required=True, help="Data type (string, number, boolean, date)")
 @click.option("--description", default="", help="Attribute description")
 @click.option("--required", is_flag=True, help="Is this attribute required?")
-def create_custom_attribute(name, data_type, description, required):
-    """Create a new custom attribute definition."""
+@click.option("--debug", is_flag=True, help="Show raw response for troubleshooting")
+def create_custom_attribute(name, data_type, description, required, debug):
+    """Create a new custom attribute definition.
+
+    Note: This uses the datagovernance catalog attributes endpoint. Some tenants/regions do not expose it and will return HTTP 405. In that case use Atlas business metadata instead via `pvw types putTypeDefs` with `businessMetadataDefs`.
+    """
     client = UnifiedCatalogClient()
     args = {
         "--name": [name],
         "--data-type": [data_type],
         "--description": [description],
-        "--required": ["true" if required else "false"]
+        "--required": ["true" if required else "false"],
+        "--debug": [True] if debug else []
     }
     response = client.create_custom_attribute(args)
-    
+
+    if debug:
+        console.print_json(json.dumps(response))
+
+    if isinstance(response, dict) and (response.get("status") == "error" or response.get("status_code", 200) >= 400):
+        console.print("[red]FAILED:[/red] Custom attribute not created")
+        if response.get("status_code") == 405:
+            console.print("[yellow]This endpoint is not enabled for this tenant/region. Use Atlas business metadata via 'pvw types putTypeDefs' with businessMetadataDefs instead.[/yellow]")
+        if not debug:
+            _format_json_output(response)
+        return
+
     console.print(f"[green]SUCCESS:[/green] Custom attribute created")
     _format_json_output(response)
 
