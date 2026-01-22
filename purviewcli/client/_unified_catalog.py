@@ -297,13 +297,13 @@ class UnifiedCatalogClient(Endpoint):
         payload = get_json(args, "--payloadFile")
         if not payload:
             payload = {
-                "name": args.get("--name", [""])[0],
-                "description": args.get("--description", [""])[0],
-                "type": args.get("--type", ["FunctionalUnit"])[0],
-                "status": args.get("--status", ["Draft"])[0],
+                "name": args.get("--name", [""])[0].strip(),
+                "description": args.get("--description", [""])[0].strip(),
+                "type": args.get("--type", ["FunctionalUnit"])[0].strip(),
+                "status": args.get("--status", ["Draft"])[0].strip(),
             }
             # Support parent domain ID passed via CLI as --parent-domain-id
-            parent_id = args.get("--parent-domain-id", [""])[0]
+            parent_id = args.get("--parent-domain-id", [""])[0].strip()
             if parent_id:
                 payload["parentId"] = parent_id
 
@@ -406,13 +406,13 @@ class UnifiedCatalogClient(Endpoint):
             - delete_governance_domain: Remove domain
             - get_governance_domain_by_id: View current domain details
         """
-        domain_id = args.get("--domain-id", [""])[0]
+        domain_id = args.get("--domain-id", [""])[0].strip()
         self.method = "PUT"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_domain"].format(domainId=domain_id)
         self.payload = get_json(args, "--payloadFile") or {
-            "name": args.get("--name", [""])[0],
-            "description": args.get("--description", [""])[0],
-            "type": args.get("--type", [""])[0],
+            "name": args.get("--name", [""])[0].strip(),
+            "description": args.get("--description", [""])[0].strip(),
+            "type": args.get("--type", [""])[0].strip(),
             "status": args.get("--status", [""])[0],
         }
 
@@ -708,14 +708,14 @@ Use Cases:
         self.endpoint = ENDPOINTS["unified_catalog"]["list_data_products"]
         
         # Get domain ID
-        domain_id = args.get("--governance-domain-id", [""])[0] or args.get("--domain-id", [""])[0]
-        name = args.get("--name", [""])[0]
-        description = args.get("--description", [""])[0]
-        business_use = args.get("--business-use", [""])[0]
-        status = args.get("--status", ["Draft"])[0]
+        domain_id = (args.get("--governance-domain-id", [""])[0] or args.get("--domain-id", [""])[0]).strip()
+        name = args.get("--name", [""])[0].strip()
+        description = args.get("--description", [""])[0].strip()
+        business_use = args.get("--business-use", [""])[0].strip()
+        status = args.get("--status", ["Draft"])[0].strip()
         
         # Type mapping for data products
-        dp_type = args.get("--type", ["Dataset"])[0]
+        dp_type = args.get("--type", ["Dataset"])[0].strip()
         
         # Build contacts field
         owner_ids = args.get("--owner-id", [])
@@ -1642,10 +1642,10 @@ Use Cases:
         self.endpoint = ENDPOINTS["unified_catalog"]["list_terms"]
 
         # Build Unified Catalog term payload
-        domain_id = args.get("--governance-domain-id", [""])[0]
-        name = args.get("--name", [""])[0]
-        description = args.get("--description", [""])[0]
-        status = args.get("--status", ["Draft"])[0]
+        domain_id = args.get("--governance-domain-id", [""])[0].strip()
+        name = args.get("--name", [""])[0].strip()
+        description = args.get("--description", [""])[0].strip()
+        status = args.get("--status", ["Draft"])[0].strip()
         
         # Get owner IDs if provided
         owner_ids = args.get("--owner-id", [])
@@ -1791,7 +1791,7 @@ Use Cases:
     """
         from purviewcli.client.endpoint import get_data
         
-        term_id = args.get("--term-id", [""])[0]
+        term_id = args.get("--term-id", [""])[0].strip()
         
         # First, fetch the existing term to get current values
         fetch_client = UnifiedCatalogClient()
@@ -1904,7 +1904,12 @@ Use Cases:
                             flatten_attributes(value, f"{parent_key}.{key}" if parent_key else key)
                         else:
                             attr_name = f"{parent_key}.{key}" if parent_key else key
-                            managed_attrs.append({"name": attr_name, "value": str(value)})
+                            # Serialize lists/dicts as JSON strings, keep primitives as-is
+                            if isinstance(value, (list, dict)):
+                                value_str = _json.dumps(value)
+                            else:
+                                value_str = str(value)
+                            managed_attrs.append({"name": attr_name, "value": value_str})
                 
                 flatten_attributes(provided)
                 
@@ -4978,9 +4983,9 @@ Use Cases:
         self.method = "POST"
         self.endpoint = ENDPOINTS["unified_catalog"]["list_custom_attributes"]
         
-        name = args.get("--name", [""])[0]
-        description = args.get("--description", [""])[0]
-        data_type = args.get("--type", ["string"])[0]
+        name = args.get("--name", [""])[0].strip()
+        description = args.get("--description", [""])[0].strip()
+        data_type = args.get("--type", ["string"])[0].strip()
         required = args.get("--required", ["false"])[0].lower() == "true"
         
         payload = {
@@ -5059,13 +5064,13 @@ Use Cases:
         - Ownership Changes: Reassign data ownership
         - Classification: Apply or modify data classifications
     """
-        attribute_id = args.get("--attribute-id", [""])[0]
+        attribute_id = args.get("--attribute-id", [""])[0].strip()
         self.method = "PUT"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_custom_attribute"].format(attributeId=attribute_id)
         
-        name = args.get("--name", [""])[0]
-        description = args.get("--description", [""])[0]
-        data_type = args.get("--type", ["string"])[0]
+        name = args.get("--name", [""])[0].strip()
+        description = args.get("--description", [""])[0].strip()
+        data_type = args.get("--type", ["string"])[0].strip()
         required = args.get("--required", ["false"])[0].lower() == "true"
         
         payload = {

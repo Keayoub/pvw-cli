@@ -1160,13 +1160,16 @@ def create(name, description, domain_id, parent_id, status, acronym, owner_id, r
     default="table",
     help="Output format: table (default, formatted), json (plain, parseable), jsonc (colored JSON)"
 )
-def list_terms(domain_id, output):
+@click.option("--show-attributes", is_flag=True, help="Fetch and display custom attributes for each term (slower)")
+def list_terms(domain_id, output, show_attributes):
     """List all Unified Catalog terms in a governance domain.
     
     Output formats:
     - table: Formatted table output with Rich (default)
     - json: Plain JSON for scripting (use with PowerShell ConvertFrom-Json)
     - jsonc: Colored JSON with syntax highlighting for viewing
+    
+    Use --show-attributes to include managedAttributes (requires individual API call per term).
     """
     try:
         client = UnifiedCatalogClient()
@@ -1192,6 +1195,24 @@ def list_terms(domain_id, output):
             console.print("[yellow]No terms found.[/yellow]")
             return
 
+        # Fetch detailed attributes if requested
+        if show_attributes:
+            enriched_terms = []
+            for term in all_terms:
+                term_id = term.get("id")
+                if term_id:
+                    try:
+                        detailed = client.get_term_by_id({"--term-id": [term_id]})
+                        if detailed:
+                            enriched_terms.append(detailed)
+                        else:
+                            enriched_terms.append(term)
+                    except:
+                        enriched_terms.append(term)
+                else:
+                    enriched_terms.append(term)
+            all_terms = enriched_terms
+
         # Handle output format
         if output == "json":
             # Plain JSON for scripting (PowerShell compatible)
@@ -1207,6 +1228,8 @@ def list_terms(domain_id, output):
         table.add_column("Name", style="green")
         table.add_column("Status", style="yellow")
         table.add_column("Description", style="white")
+        if show_attributes:
+            table.add_column("Custom Attributes", style="magenta")
 
         for term in all_terms:
             description = term.get("description", "")
@@ -1217,12 +1240,24 @@ def list_terms(domain_id, output):
             if len(description) > 50:
                 description = description[:50] + "..."
             
-            table.add_row(
+            row = [
                 term.get("id", "N/A"),
                 term.get("name", "N/A"),
                 term.get("status", "N/A"),
                 description.strip(),
-            )
+            ]
+            
+            if show_attributes:
+                managed_attrs = term.get("managedAttributes", [])
+                if managed_attrs:
+                    attr_str = ", ".join([f"{ma['name']}={ma['value']}" for ma in managed_attrs[:3]])
+                    if len(managed_attrs) > 3:
+                        attr_str += f" (+{len(managed_attrs)-3} more)"
+                    row.append(attr_str)
+                else:
+                    row.append("-")
+            
+            table.add_row(*row)
 
         console.print(table)
         console.print(f"\n[dim]Found {len(all_terms)} term(s)[/dim]")
@@ -1507,8 +1542,17 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug):
                     if k and k.startswith('customAttributes.') and v and str(v).strip():
                         # Extract path after 'customAttributes.'
                         path = k.split('.', 1)[1]  # e.g., "Glossaire.Reference" or "DataQuality.Score"
-                        parts = path.split('.')     # e.g., ["Glossaire", "Reference"]
-                        value = str(v).strip()
+                        parts = [p.strip() for p in path.split('.')]  # Strip whitespace from parts
+                        value_str = str(v).strip()
+                        
+                        # Try to parse JSON values (arrays, objects)
+                        value = value_str
+                        if value_str.startswith('[') or value_str.startswith('{'):
+                            try:
+                                value = json.loads(value_str)
+                            except json.JSONDecodeError:
+                                # If JSON parse fails, keep as string
+                                value = value_str
                         
                         # Build nested dictionary structure
                         current = term["custom_attributes"]

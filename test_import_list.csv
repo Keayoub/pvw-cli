@@ -1,0 +1,3 @@
+name,description,status,customAttributes.Glossaire.SecteursActivite
+TEST-debug-01,Terme de test avec liste de secteurs,Draft,"[""Banque"",""Assurance"",""Finance""]"
+TEST-debug-02,Terme avec secteurs IT,Draft,"[""Cloud"",""Data"",""Infrastructure""]"
