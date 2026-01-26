@@ -5,13 +5,64 @@ Synchronous Purview Client for CLI compatibility
 import requests
 import os
 import json
+import subprocess
 from typing import Dict, Optional
 from azure.identity import DefaultAzureCredential, ClientSecretCredential
+from azure.core.credentials import AccessToken
 from azure.core.exceptions import ClientAuthenticationError
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 import ssl
 import urllib3
+
+
+class AzureCliCredentialFixed:
+    """Custom Azure CLI credential that properly handles Purview scope"""
+    
+    def get_token(self, *scopes, **kwargs):
+        """Get token using az account get-access-token with correct scope"""
+        try:
+            # Extract the resource from scope (e.g., "https://purview.azure.net/.default" -> "https://purview.azure.net")
+            scope = scopes[0] if scopes else ""
+            resource = scope.replace("/.default", "")
+            
+            # Use az account get-access-token with the correct resource
+            # Try 'az' and 'az.cmd' (Windows)
+            for az_cmd in ["az", "az.cmd"]:
+                try:
+                    result = subprocess.run(
+                        [az_cmd, "account", "get-access-token", "--resource", resource, "--output", "json"],
+                        capture_output=True,
+                        text=True,
+                        check=True,
+                        shell=True  # Use shell on Windows
+                    )
+                    break
+                except (FileNotFoundError, subprocess.CalledProcessError):
+                    continue
+            else:
+                raise FileNotFoundError("Azure CLI (az) not found")
+            
+            token_data = json.loads(result.stdout)
+            # Return AccessToken with token and expiration
+            from datetime import datetime
+            
+            # Parse expiresOn - can be either timestamp or datetime string
+            expires_on_str = str(token_data.get("expiresOn", "0"))
+            try:
+                # Try as timestamp first
+                expires_on = int(expires_on_str)
+            except ValueError:
+                # Try parsing as datetime string (e.g., "2026-01-26 10:59:31.000000")
+                try:
+                    dt = datetime.strptime(expires_on_str.split('.')[0], "%Y-%m-%d %H:%M:%S")
+                    expires_on = int(dt.timestamp())
+                except:
+                    expires_on = 0
+            
+            return AccessToken(token=token_data["accessToken"], expires_on=expires_on)
+        except Exception as e:
+            raise ClientAuthenticationError(f"Azure CLI authentication failed: {str(e)}")
 
 
 class SyncPurviewConfig:
@@ -39,7 +90,7 @@ class SyncPurviewClient:
         else:
             self.base_url = f"https://{config.account_name}.purview.azure.com"
             # Allow override via environment variable for special tenants using legacy service principal
-            self.auth_scope = os.environ.get("PURVIEW_AUTH_SCOPE", "https://purview.azure.com/.default")
+            self.auth_scope = os.environ.get("PURVIEW_AUTH_SCOPE", "https://purview.azure.net/.default")
 
         # Set up Unified Catalog endpoint using Purview account ID format
         self.account_id = config.account_id or self._get_purview_account_id()
@@ -124,8 +175,12 @@ class SyncPurviewClient:
                     tenant_id=tenant_id, client_id=client_id, client_secret=client_secret
                 )
             else:
-                # 2. Use default credential (managed identity, VS Code, CLI, etc.)
-                self._credential = DefaultAzureCredential()
+                # 2. Try Azure CLI first (with fixed scope handling)
+                try:
+                    self._credential = AzureCliCredentialFixed()
+                except Exception:
+                    # 3. Fall back to default credential (managed identity, VS Code, etc.)
+                    self._credential = DefaultAzureCredential()
 
             # Get the appropriate token based on the API type
             if for_unified_catalog:
