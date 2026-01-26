@@ -1160,13 +1160,16 @@ def create(name, description, domain_id, parent_id, status, acronym, owner_id, r
     default="table",
     help="Output format: table (default, formatted), json (plain, parseable), jsonc (colored JSON)"
 )
-def list_terms(domain_id, output):
+@click.option("--show-attributes", is_flag=True, help="Fetch and display custom attributes for each term (slower)")
+def list_terms(domain_id, output, show_attributes):
     """List all Unified Catalog terms in a governance domain.
     
     Output formats:
     - table: Formatted table output with Rich (default)
     - json: Plain JSON for scripting (use with PowerShell ConvertFrom-Json)
     - jsonc: Colored JSON with syntax highlighting for viewing
+    
+    Use --show-attributes to include managedAttributes (requires individual API call per term).
     """
     try:
         client = UnifiedCatalogClient()
@@ -1192,6 +1195,24 @@ def list_terms(domain_id, output):
             console.print("[yellow]No terms found.[/yellow]")
             return
 
+        # Fetch detailed attributes if requested
+        if show_attributes:
+            enriched_terms = []
+            for term in all_terms:
+                term_id = term.get("id")
+                if term_id:
+                    try:
+                        detailed = client.get_term_by_id({"--term-id": [term_id]})
+                        if detailed:
+                            enriched_terms.append(detailed)
+                        else:
+                            enriched_terms.append(term)
+                    except:
+                        enriched_terms.append(term)
+                else:
+                    enriched_terms.append(term)
+            all_terms = enriched_terms
+
         # Handle output format
         if output == "json":
             # Plain JSON for scripting (PowerShell compatible)
@@ -1207,6 +1228,8 @@ def list_terms(domain_id, output):
         table.add_column("Name", style="green")
         table.add_column("Status", style="yellow")
         table.add_column("Description", style="white")
+        if show_attributes:
+            table.add_column("Custom Attributes", style="magenta")
 
         for term in all_terms:
             description = term.get("description", "")
@@ -1217,12 +1240,24 @@ def list_terms(domain_id, output):
             if len(description) > 50:
                 description = description[:50] + "..."
             
-            table.add_row(
+            row = [
                 term.get("id", "N/A"),
                 term.get("name", "N/A"),
                 term.get("status", "N/A"),
                 description.strip(),
-            )
+            ]
+            
+            if show_attributes:
+                managed_attrs = term.get("managedAttributes", [])
+                if managed_attrs:
+                    attr_str = ", ".join([f"{ma['name']}={ma['value']}" for ma in managed_attrs[:3]])
+                    if len(managed_attrs) > 3:
+                        attr_str += f" (+{len(managed_attrs)-3} more)"
+                    row.append(attr_str)
+                else:
+                    row.append("-")
+            
+            table.add_row(*row)
 
         console.print(table)
         console.print(f"\n[dim]Found {len(all_terms)} term(s)[/dim]")
@@ -1507,8 +1542,17 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug):
                     if k and k.startswith('customAttributes.') and v and str(v).strip():
                         # Extract path after 'customAttributes.'
                         path = k.split('.', 1)[1]  # e.g., "Glossaire.Reference" or "DataQuality.Score"
-                        parts = path.split('.')     # e.g., ["Glossaire", "Reference"]
-                        value = str(v).strip()
+                        parts = [p.strip() for p in path.split('.')]  # Strip whitespace from parts
+                        value_str = str(v).strip()
+                        
+                        # Try to parse JSON values (arrays, objects)
+                        value = value_str
+                        if value_str.startswith('[') or value_str.startswith('{'):
+                            try:
+                                value = json.loads(value_str)
+                            except json.JSONDecodeError:
+                                # If JSON parse fails, keep as string
+                                value = value_str
                         
                         # Build nested dictionary structure
                         current = term["custom_attributes"]
@@ -3895,15 +3939,23 @@ def attribute():
 
 @attribute.command(name="list")
 @click.option("--output", type=click.Choice(["table", "json"]), default="table", help="Output format")
-def list_custom_attributes(output):
-    """List all custom attribute definitions."""
+@click.option("--debug", is_flag=True, help="Show raw response for troubleshooting")
+def list_custom_attributes(output, debug):
+    """List all custom attribute definitions.
+
+    Note: If the tenant/region does not expose the datagovernance catalog attributes endpoint, this will return empty. Use Atlas business metadata via `pvw types readTypeDefs --type businessMetadata` to inspect definitions.
+    """
     client = UnifiedCatalogClient()
     response = client.list_custom_attributes({})
-    
+
+    if debug:
+        console.print_json(json.dumps(response))
+        return
+
     if output == "json":
         console.print_json(json.dumps(response))
     else:
-        if "value" in response and response["value"]:
+        if isinstance(response, dict) and response.get("value"):
             table = Table(title="[bold cyan]Custom Attribute Definitions[/bold cyan]", show_header=True)
             table.add_column("ID", style="cyan")
             table.add_column("Name", style="green")
@@ -3921,7 +3973,7 @@ def list_custom_attributes(output):
                 )
             console.print(table)
         else:
-            console.print("[yellow]No custom attributes found[/yellow]")
+            console.print("[yellow]No custom attributes found (endpoint may not be enabled; try 'pvw types readTypeDefs --type businessMetadata').[/yellow]")
 
 
 @attribute.command(name="get")
@@ -3950,17 +4002,33 @@ def get_custom_attribute(attribute_id, output):
 @click.option("--data-type", required=True, help="Data type (string, number, boolean, date)")
 @click.option("--description", default="", help="Attribute description")
 @click.option("--required", is_flag=True, help="Is this attribute required?")
-def create_custom_attribute(name, data_type, description, required):
-    """Create a new custom attribute definition."""
+@click.option("--debug", is_flag=True, help="Show raw response for troubleshooting")
+def create_custom_attribute(name, data_type, description, required, debug):
+    """Create a new custom attribute definition.
+
+    Note: This uses the datagovernance catalog attributes endpoint. Some tenants/regions do not expose it and will return HTTP 405. In that case use Atlas business metadata instead via `pvw types putTypeDefs` with `businessMetadataDefs`.
+    """
     client = UnifiedCatalogClient()
     args = {
         "--name": [name],
         "--data-type": [data_type],
         "--description": [description],
-        "--required": ["true" if required else "false"]
+        "--required": ["true" if required else "false"],
+        "--debug": [True] if debug else []
     }
     response = client.create_custom_attribute(args)
-    
+
+    if debug:
+        console.print_json(json.dumps(response))
+
+    if isinstance(response, dict) and (response.get("status") == "error" or response.get("status_code", 200) >= 400):
+        console.print("[red]FAILED:[/red] Custom attribute not created")
+        if response.get("status_code") == 405:
+            console.print("[yellow]This endpoint is not enabled for this tenant/region. Use Atlas business metadata via 'pvw types putTypeDefs' with businessMetadataDefs instead.[/yellow]")
+        if not debug:
+            _format_json_output(response)
+        return
+
     console.print(f"[green]SUCCESS:[/green] Custom attribute created")
     _format_json_output(response)
 

@@ -13,7 +13,7 @@ The Unified Catalog (`uc`) command group provides comprehensive management of Mi
 - **✅ Critical Data Elements (CDEs)** - Important data element definitions with data types
 - **✅ Health Management** - Automated governance health monitoring and recommendations (NEW)
 - **✅ Workflow Management** - Approval workflows and business process automation (NEW)
-- **🚧 Custom Attributes** - User-defined metadata attributes (coming soon)
+- **ℹ️ Custom Attributes / Business Metadata** - User-defined metadata attributes. If the `datagovernance/catalog/attributes` endpoint is unavailable (HTTP 405), use Atlas business metadata via `pvw types putTypeDefs` with `businessMetadataDefs`.
 - **🚧 Access Requests** - Data access workflow management (coming soon)
 
 ## 🚀 Quick Start
@@ -219,11 +219,50 @@ pvw uc cde list --domain-id "abc-123"
 # Create CDE with data type
 pvw uc cde create --name "Social Security Number" 
                  --description "US SSN for identity verification"
+
+### 🧩 Custom Attributes / Business Metadata
+
+- The `pvw uc attribute create/list` commands call the `datagovernance/catalog/attributes` endpoint. Many tenants/regions return HTTP 405 (not enabled).
+- When you hit 405 or get empty results, use Atlas **businessMetadataDefs** instead:
+
+```bash
+# Upsert business metadata (sample payload provided below)
                  --domain-id "abc-123" --data-type "String"
                  --status "Published"
 
 # Create with validation rules  
 pvw uc cde create --name "Email Address" --domain-id "abc-123"
+
+Sample payload (simplified):
+
+```json
+{
+   "businessMetadataDefs": [
+      {
+         "category": "BUSINESS_METADATA",
+         "name": "Glossaire",
+         "description": "Glossaire attributes",
+         "typeVersion": "1.0",
+         "attributeDefs": [
+            {
+               "name": "SecteursActivite",
+               "typeName": "array<string>",
+               "isOptional": true,
+               "cardinality": "SINGLE"
+            },
+            {
+               "name": "Secteur",
+               "typeName": "string",
+               "isOptional": true,
+               "cardinality": "SINGLE"
+            }
+         ]
+      }
+   ]
+}
+```
+
+Une fois définis, les attributs peuvent être renseignés sur les termes via `customAttributes` / `managedAttributes` (déjà supporté par `pvw uc term import-csv` et `pvw uc term update`).
                  --data-type "String" --format "email"
                  --required --sensitive
 
