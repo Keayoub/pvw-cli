@@ -341,20 +341,30 @@ class SyncPurviewClient:
             # Get the appropriate authentication token and base URL
             if is_unified_catalog:
                 if not self._uc_token:
-                    self._get_authentication_token(for_unified_catalog=True)
+                    self._uc_token = self._get_authentication_token(for_unified_catalog=True)
                 token = self._uc_token
                 base_url = self.uc_base_url
             else:
                 if not self._token:
-                    self._get_authentication_token(for_unified_catalog=False)
+                    self._token = self._get_authentication_token(for_unified_catalog=False)
                 token = self._token
                 base_url = self.base_url
+            
+            # Verify we got a token
+            if not token:
+                api_type = "Unified Catalog" if is_unified_catalog else "Purview"
+                logger.error(f"Failed to get authentication token for {api_type} API")
+                return {
+                    "status": "error",
+                    "message": f"Failed to authenticate to {api_type} API. Token is None.",
+                    "status_code": 401,
+                }
             
             # Prepare the request
             url = f"{base_url}{endpoint}"
             headers = {
                 "Authorization": f"Bearer {token}",
-                "User-Agent": "purviewcli/1.5.9",
+                "User-Agent": "purviewcli/1.6.0",
             }
             
             # Handle file uploads vs JSON payload
@@ -368,6 +378,8 @@ class SyncPurviewClient:
                 headers.update(custom_headers)
 
             logger.debug(f"Making {method.upper()} request to {url}")
+            logger.debug(f"Using {'Unified Catalog' if is_unified_catalog else 'Purview'} API")
+            logger.debug(f"Token (first 20 chars): {token[:20]}...")
             
             # Make the actual HTTP request using session with retries
             response = self._session.request(
@@ -393,20 +405,27 @@ class SyncPurviewClient:
                     }
             elif response.status_code == 401:
                 # Unauthorized - token expired or insufficient permissions
-                logger.debug("Received 401 Unauthorized, attempting to refresh token")
+                logger.warning(f"Received 401 Unauthorized: {response.text}")
+                logger.debug(f"Attempting to refresh token for {'Unified Catalog' if is_unified_catalog else 'Purview'} API")
                 try:
                     if is_unified_catalog:
                         self._uc_token = None
-                        self._get_authentication_token(for_unified_catalog=True)
+                        self._credential = None  # Force re-authentication
+                        self._uc_token = self._get_authentication_token(for_unified_catalog=True)
                         token = self._uc_token
+                        logger.debug("Unified Catalog token refreshed")
                     else:
                         self._token = None
-                        self._get_authentication_token(for_unified_catalog=False)
+                        self._credential = None  # Force re-authentication
+                        self._token = self._get_authentication_token(for_unified_catalog=False)
                         token = self._token
+                        logger.debug("Purview token refreshed")
                         
                     headers["Authorization"] = f"Bearer {token}"
+                    logger.debug(f"New token (first 20 chars): {token[:20] if token else 'None'}...")
 
                     # Retry the request with session
+                    logger.debug(f"Retrying request to {url} with refreshed token")
                     response = self._session.request(
                         method=method.upper(),
                         url=url,
@@ -418,6 +437,7 @@ class SyncPurviewClient:
                     )
 
                     if response.status_code in [200, 201]:
+                        logger.info(f"Request succeeded after token refresh: {response.status_code}")
                         try:
                             data = response.json()
                             return {
