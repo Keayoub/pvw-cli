@@ -249,7 +249,7 @@ def get_details(ctx, collection_name, include_assets, include_data_sources, incl
         # Get collection information
         console.print(f"[blue][INFO] Retrieving details for collection: {collection_name}[/blue]")
         
-        collection_info = collections_client.collectionsRead({"--name": collection_name})
+        collection_info = collections_client.collectionsRead({"--collectionName": collection_name})
         if not collection_info:
             console.print(f"[red][X] Collection '{collection_name}' not found[/red]")
             return
@@ -447,8 +447,8 @@ def _display_collection_info(collection_info):
         ("Name", collection_info.get("name", "")),
         ("Display Name", collection_info.get("friendlyName", "")),
         ("Description", collection_info.get("description", "")),
-        ("Collection ID", collection_info.get("collectionId", "")),
-        ("Parent Collection", collection_info.get("parentCollection", {}).get("referenceName", ""))
+        ("Provisioning State", collection_info.get("collectionProvisioningState", "")),
+        ("Parent Collection", collection_info.get("parentCollection", {}).get("referenceName", "") or collection_info.get("parentCollection", {}).get("name", ""))
     ]
     
     for field, value in info_fields:
