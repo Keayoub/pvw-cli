@@ -31,7 +31,7 @@ class Collections(Endpoint):
         """
 Retrieve collection information.
     
-    Retrieves detailed information about the specified collection.
+    Retrieves detailed information about the specified collection (or lists all if not specified).
     Returns complete collection metadata and properties.
     
 Args:
@@ -40,13 +40,19 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing collection information:
+        If specific collection: Dictionary containing collection:
             {
-                'guid': str,          # Unique identifier
-                'name': str,          # Resource name
-                'attributes': dict,   # Resource attributes
-                'status': str,        # Resource status
-                'updateTime': int     # Last update timestamp
+                'name': str,                    # Unique identifier
+                'friendlyName': str,            # Display name
+                'description': str,             # Collection description
+                'parentCollection': dict,       # Parent collection reference
+                'collectionProvisioningState': str  # Provisioning state (Succeeded, etc.)
+            }
+        If listing all: Dictionary with paginated results:
+            {
+                'count': int,
+                'nextLink': str,
+                'value': [collection...]
             }
     
 Raises:
@@ -88,7 +94,7 @@ Use Cases:
         else:
             self.endpoint = ENDPOINTS["collections"]["list"]
         self.params = {
-            **get_api_version_params("account"),
+            **get_api_version_params("collections"),
             "includeInactive": str(args.get("--includeInactive", False)).lower(),
             "limit": args.get("--limit"),
             "offset": args.get("--offset"),
@@ -110,11 +116,11 @@ Args:
 Returns:
         Dictionary containing created collection:
             {
-                'guid': str,         # Unique identifier
-                'name': str,         # Resource name
-                'status': str,       # Creation status
-                'attributes': dict,  # Resource attributes
-                'createTime': int    # Creation timestamp
+                'name': str,                    # Unique identifier
+                'friendlyName': str,            # Display name
+                'description': str,             # Collection description
+                'parentCollection': dict,       # Parent collection reference
+                'collectionProvisioningState': str  # Provisioning state (Succeeded, etc.)
             }
     
 Raises:
@@ -157,7 +163,7 @@ Example:
         }
         
         result = client.collectionsCreate(data)
-        print(f"Created/Updated: {result['guid']}")
+        print(f"Created/Updated: {result['name']}")
     
 Use Cases:
         - Data Onboarding: Register new data sources in catalog
@@ -166,7 +172,7 @@ Use Cases:
     """
         self.method = "PUT"
         self.endpoint = ENDPOINTS["collections"]["create_or_update"].format(collectionName=args["--collectionName"])
-        self.params = get_api_version_params("account")
+        self.params = get_api_version_params("collections")
         self.payload = get_json(args, "--payloadFile")
 
     @decorator
@@ -185,9 +191,11 @@ Args:
 Returns:
         Dictionary containing updated collection:
             {
-                'guid': str,          # Unique identifier
-                'attributes': dict,   # Updated attributes
-                'updateTime': int     # Update timestamp
+                'name': str,                    # Unique identifier
+                'friendlyName': str,            # Display name
+                'description': str,             # Collection description
+                'parentCollection': dict,       # Parent collection reference
+                'collectionProvisioningState': str  # Provisioning state (Succeeded, etc.)
             }
     
 Raises:
@@ -229,7 +237,7 @@ Example:
         }
         
         result = client.collectionsUpdate(data)
-        print(f"Created/Updated: {result['guid']}")
+        print(f"Created/Updated: {result['name']}")
     
 Use Cases:
         - Metadata Enrichment: Update descriptions and tags
@@ -252,11 +260,10 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary with deletion status:
+        Success on deletion (typically returns empty dict or 204 status):
             {
-                'guid': str,       # Deleted resource ID
-                'status': str,     # Deletion status
-                'message': str     # Confirmation message
+                # Empty dict on successful deletion
+                # API returns 204 No Content
             }
     
 Raises:
@@ -294,17 +301,16 @@ Use Cases:
     """
         self.method = "DELETE"
         self.endpoint = ENDPOINTS["collections"]["delete"].format(collectionName=args["--collectionName"])
-        self.params = get_api_version_params("account")
+        self.params = get_api_version_params("collections")
 
     # === COLLECTION PATH OPERATIONS ===
 
     @decorator
     def collectionsReadPath(self, args):
         """
-Retrieve collection information.
+Get collection hierarchy path.
     
-    Retrieves detailed information about the specified collection.
-    Returns complete collection metadata and properties.
+    Gets the parent name and parent friendly name chains that represent the collection path.
     
 Args:
         args: Dictionary of operation arguments.
@@ -312,13 +318,10 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing collection information:
+        Dictionary containing collection path information:
             {
-                'guid': str,          # Unique identifier
-                'name': str,          # Resource name
-                'attributes': dict,   # Resource attributes
-                'status': str,        # Resource status
-                'updateTime': int     # Last update timestamp
+                'parentNameChain': list,                # List of parent collection names from root to immediate parent
+                'parentFriendlyNameChain': list         # List of parent collection friendly names from root to immediate parent
             }
     
 Raises:
@@ -356,15 +359,14 @@ Use Cases:
     """
         self.method = "POST"
         self.endpoint = ENDPOINTS["collections"]["get_collection_path"].format(collectionName=args["--collectionName"])
-        self.params = get_api_version_params("account")
+        self.params = get_api_version_params("collections")
 
     @decorator
     def collectionsReadChildNames(self, args):
         """
-Retrieve collection information.
+List child collection names.
     
-    Retrieves detailed information about the specified collection.
-    Returns complete collection metadata and properties.
+    Lists the child collections names in the collection.
     
 Args:
         args: Dictionary of operation arguments.
@@ -372,13 +374,17 @@ Args:
                See method implementation for details.
     
 Returns:
-        Dictionary containing collection information:
+        Dictionary containing paginated list of child collections:
             {
-                'guid': str,          # Unique identifier
-                'name': str,          # Resource name
-                'attributes': dict,   # Resource attributes
-                'status': str,        # Resource status
-                'updateTime': int     # Last update timestamp
+                'count': int,                           # Total number of child collections
+                'nextLink': str,                        # Link to next page of results (optional)
+                'value': list[dict]                     # List of child collection objects
+                    [
+                        {
+                            'name': str,                # Collection name
+                            'friendlyName': str         # Collection display name
+                        }
+                    ]
             }
     
 Raises:
@@ -416,7 +422,7 @@ Use Cases:
     """
         self.method = "POST"
         self.endpoint = ENDPOINTS["collections"]["get_child_collection_names"].format(collectionName=args["--collectionName"])
-        self.params = get_api_version_params("account")
+        self.params = get_api_version_params("collections")
 
     # === ADVANCED COLLECTION OPERATIONS (NEW FOR 100% COVERAGE) ===
 
@@ -471,7 +477,7 @@ Use Cases:
     """
         self.method = "POST"
         self.endpoint = ENDPOINTS["collections"]["move_collection"].format(collectionName=args["--collectionName"])
-        self.params = get_api_version_params("account")
+        self.params = get_api_version_params("collections")
         move_request = {
             "parentCollectionName": args["--parentCollectionName"],
             "newName": args.get("--newName"),
@@ -482,25 +488,18 @@ Use Cases:
     @decorator
     def collectionsReadPermissions(self, args):
         """
-Retrieve collection information.
+Retrieve collection permissions.
     
-    Retrieves detailed information about the specified collection.
-    Returns complete collection metadata and properties.
+    Gets the permissions assigned to a collection, including inherited permissions if requested.
     
 Args:
         args: Dictionary of operation arguments.
-               Contains operation-specific parameters.
-               See method implementation for details.
+               --collectionName: The collection name (required)
+               --includeInherited: Include inherited permissions (default: true)
     
 Returns:
-        Dictionary containing collection information:
-            {
-                'guid': str,          # Unique identifier
-                'name': str,          # Resource name
-                'attributes': dict,   # Resource attributes
-                'status': str,        # Resource status
-                'updateTime': int     # Last update timestamp
-            }
+        Dictionary containing collection permissions (structure depends on your RBAC system)
+    
     
 Raises:
         ValueError: When required parameters are missing or invalid:
@@ -538,30 +537,25 @@ Use Cases:
         self.method = "GET"
         self.endpoint = ENDPOINTS["collections"]["get_collection_permissions"].format(collectionName=args["--collectionName"])
         self.params = {
-            **get_api_version_params("account"),
+            **get_api_version_params("collections"),
             "includeInherited": str(args.get("--includeInherited", True)).lower(),
         }
 
     @decorator
     def collectionsUpdatePermissions(self, args):
         """
-Update an existing collection.
+Update collection permissions.
     
-    Updates an existing collection with new values.
-    Only specified fields are modified; others remain unchanged.
+    Updates the permissions for a collection. Requires proper authorization.
     
 Args:
         args: Dictionary of operation arguments.
-               Contains operation-specific parameters.
-               See method implementation for details.
+               --collectionName: The collection name (required)
+               --payloadFile: JSON file with permission updates (required)
     
 Returns:
-        Dictionary containing updated collection:
-            {
-                'guid': str,          # Unique identifier
-                'attributes': dict,   # Updated attributes
-                'updateTime': int     # Update timestamp
-            }
+        Dictionary with update status
+    
     
 Raises:
         ValueError: When required parameters are missing or invalid:
@@ -611,31 +605,27 @@ Use Cases:
     """
         self.method = "PUT"
         self.endpoint = ENDPOINTS["collections"]["update_collection_permissions"].format(collectionName=args["--collectionName"])
-        self.params = get_api_version_params("account")
+        self.params = get_api_version_params("collections")
         self.payload = get_json(args, "--payloadFile")
 
     @decorator
     def collectionsReadAnalytics(self, args):
         """
-Retrieve collection information.
+Retrieve collection analytics.
     
-    Retrieves detailed information about the specified collection.
-    Returns complete collection metadata and properties.
+    Gets analytics and metrics for a collection, including asset counts and activity data.
     
 Args:
         args: Dictionary of operation arguments.
-               Contains operation-specific parameters.
-               See method implementation for details.
+               --collectionName: The collection name (required)
+               --startTime: Start time for analytics (optional)
+               --endTime: End time for analytics (optional)
+               --metrics: Metrics to include (default: all)
+               --aggregation: Aggregation period (default: daily)
     
 Returns:
-        Dictionary containing collection information:
-            {
-                'guid': str,          # Unique identifier
-                'name': str,          # Resource name
-                'attributes': dict,   # Resource attributes
-                'status': str,        # Resource status
-                'updateTime': int     # Last update timestamp
-            }
+        Dictionary containing analytics data with collection metrics
+    
     
 Raises:
         ValueError: When required parameters are missing or invalid:
@@ -673,7 +663,7 @@ Use Cases:
         self.method = "GET"
         self.endpoint = ENDPOINTS["collections"]["get_collection_analytics"].format(collectionName=args["--collectionName"])
         self.params = {
-            **get_api_version_params("account"),
+            **get_api_version_params("collections"),
             "startTime": args.get("--startTime"),
             "endTime": args.get("--endTime"),
             "metrics": args.get("--metrics", "all"),
@@ -738,7 +728,7 @@ Use Cases:
         self.method = "POST"
         self.endpoint = ENDPOINTS["collections"]["export_collection"].format(collectionName=args["--collectionName"])
         self.params = {
-            **get_api_version_params("account"),
+            **get_api_version_params("collections"),
             "format": args.get("--format", "json"),
             "includeChildren": str(args.get("--includeChildren", False)).lower(),
             "includePermissions": str(args.get("--includePermissions", True)).lower(),
@@ -749,25 +739,19 @@ Use Cases:
     @decorator
     def collectionsReadHierarchy(self, args):
         """
-Retrieve collection information.
+Retrieve collection hierarchy.
     
-    Retrieves detailed information about the specified collection.
-    Returns complete collection metadata and properties.
+    Retrieves the complete collection hierarchy structure with metadata.
     
 Args:
         args: Dictionary of operation arguments.
-               Contains operation-specific parameters.
-               See method implementation for details.
+               --rootCollection: Starting point for hierarchy (optional)
+               --depth: Maximum depth to retrieve (default: 5)
+               --includeMetadata: Include full metadata (default: true)
     
 Returns:
-        Dictionary containing collection information:
-            {
-                'guid': str,          # Unique identifier
-                'name': str,          # Resource name
-                'attributes': dict,   # Resource attributes
-                'status': str,        # Resource status
-                'updateTime': int     # Last update timestamp
-            }
+        Dictionary containing hierarchical collection structure with children
+    
     
 Raises:
         ValueError: When required parameters are missing or invalid:
@@ -805,7 +789,7 @@ Use Cases:
         self.method = "GET"
         self.endpoint = f"{ENDPOINTS['collections']['list']}/hierarchy"
         self.params = {
-            **get_api_version_params("account"),
+            **get_api_version_params("collections"),
             "rootCollection": args.get("--rootCollection"),
             "depth": args.get("--depth", 5),
             "includeMetadata": str(args.get("--includeMetadata", True)).lower(),
@@ -814,25 +798,20 @@ Use Cases:
     @decorator
     def collectionsReadTree(self, args):
         """
-Retrieve collection information.
+Retrieve collection tree structure.
     
-    Retrieves detailed information about the specified collection.
-    Returns complete collection metadata and properties.
+    Retrieves the collection tree with parent and child relationships.
     
 Args:
         args: Dictionary of operation arguments.
-               Contains operation-specific parameters.
-               See method implementation for details.
+               --collectionName: The collection name (required)
+               --includeChildren: Include child collections (default: true)
+               --includeParents: Include parent collections (default: true)
+               --maxDepth: Maximum tree depth (default: 10)
     
 Returns:
-        Dictionary containing collection information:
-            {
-                'guid': str,          # Unique identifier
-                'name': str,          # Resource name
-                'attributes': dict,   # Resource attributes
-                'status': str,        # Resource status
-                'updateTime': int     # Last update timestamp
-            }
+        Dictionary containing collection tree with parent/child relationships
+    
     
 Raises:
         ValueError: When required parameters are missing or invalid:
@@ -870,7 +849,7 @@ Use Cases:
         self.method = "GET"
         self.endpoint = f"{ENDPOINTS['collections']['get'].format(collectionName=args['--collectionName'])}/tree"
         self.params = {
-            **get_api_version_params("account"),
+            **get_api_version_params("collections"),
             "includeChildren": str(args.get("--includeChildren", True)).lower(),
             "includeParents": str(args.get("--includeParents", True)).lower(),
             "maxDepth": args.get("--maxDepth", 10),
@@ -935,7 +914,7 @@ Use Cases:
         self.method = "GET"
         self.endpoint = f"{ENDPOINTS['collections']['list']}/search"
         self.params = {
-            **get_api_version_params("account"),
+            **get_api_version_params("collections"),
             "query": args.get("--query"),
             "filter": args.get("--filter"),
             "includeInactive": str(args.get("--includeInactive", False)).lower(),
@@ -1002,7 +981,7 @@ Use Cases:
         self.method = "GET"
         self.endpoint = f"{ENDPOINTS['collections']['list']}/entity/{args['--entityGuid']}"
         self.params = {
-            **get_api_version_params("account"),
+            **get_api_version_params("collections"),
             "includeParents": str(args.get("--includeParents", True)).lower(),
         }
 
@@ -1065,7 +1044,7 @@ Use Cases:
     """
         self.method = "POST"
         self.endpoint = f"{ENDPOINTS['collections']['list']}/bulk/move"
-        self.params = get_api_version_params("account")
+        self.params = get_api_version_params("collections")
         self.payload = get_json(args, "--payloadFile")
 
     @decorator
@@ -1137,7 +1116,7 @@ Use Cases:
     """
         self.method = "PUT"
         self.endpoint = f"{ENDPOINTS['collections']['list']}/bulk"
-        self.params = get_api_version_params("account")
+        self.params = get_api_version_params("collections")
         self.payload = get_json(args, "--payloadFile")
 
     @decorator
@@ -1196,7 +1175,7 @@ Use Cases:
     """
         self.method = "DELETE"
         self.endpoint = f"{ENDPOINTS['collections']['list']}/bulk"
-        self.params = get_api_version_params("account")
+        self.params = get_api_version_params("collections")
         self.payload = get_json(args, "--payloadFile")
 
     # === COLLECTION IMPORT OPERATIONS ===
@@ -1259,7 +1238,7 @@ Use Cases:
         self.method = "POST"
         self.endpoint = f"{ENDPOINTS['collections']['list']}/import"
         self.params = {
-            **get_api_version_params("account"),
+            **get_api_version_params("collections"),
             "validateOnly": str(args.get("--validateOnly", False)).lower(),
             "overwriteExisting": str(args.get("--overwriteExisting", False)).lower(),
         }
@@ -1316,7 +1295,7 @@ Use Cases:
     """
         self.method = "POST"
         self.endpoint = f"{ENDPOINTS['collections']['list']}/validate"
-        self.params = get_api_version_params("account")
+        self.params = get_api_version_params("collections")
         self.payload = get_json(args, "--payloadFile")
 
     # === COLLECTION STATISTICS AND REPORTING ===
@@ -1380,7 +1359,7 @@ Use Cases:
         self.method = "GET"
         self.endpoint = f"{ENDPOINTS['collections']['get'].format(collectionName=args['--collectionName'])}/statistics"
         self.params = {
-            **get_api_version_params("account"),
+            **get_api_version_params("collections"),
             "includeChildren": str(args.get("--includeChildren", False)).lower(),
             "metrics": args.get("--metrics", "all"),
         }
@@ -1437,7 +1416,7 @@ Use Cases:
         self.method = "POST"
         self.endpoint = f"{ENDPOINTS['collections']['get'].format(collectionName=args['--collectionName'])}/report"
         self.params = {
-            **get_api_version_params("account"),
+            **get_api_version_params("collections"),
             "reportType": args.get("--reportType", "summary"),
             "format": args.get("--format", "json"),
         }
@@ -1508,7 +1487,7 @@ Example:
         }
         
         result = client.collectionsCreateOrUpdate(data)
-        print(f"Created/Updated: {result['guid']}")
+        print(f"Created/Updated: {result['name']}")
     
 Use Cases:
         - Data Onboarding: Register new data sources in catalog

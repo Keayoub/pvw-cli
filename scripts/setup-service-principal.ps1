@@ -1,12 +1,12 @@
-# Configure Service Principal for Purview CLI
+.# Configure Service Principal for Purview CLI
 # Usage: .\setup-service-principal.ps1
 
 param(
     [string]$ClientId,
     [string]$ClientSecret,
     [string]$TenantId,
-    [string]$PurviewName = "ccq-pview-prod-01",
-    [string]$AccountId = "d4ce282d-e2e1-4c5b-b4b7-f0ab030e4446",
+    [string]$PurviewName = "pview-prod-01",
+    [string]$AccountId = "your-tenant-purview-account-id",
     [string]$ResourceGroup = "rg-purview-prod01"
 )
 
