@@ -1,35 +1,34 @@
-# PURVIEW CLI v1.6.1 - Microsoft Purview Automation & Data Governance
+# PURVIEW CLI v1.6.2 - Microsoft Purview Automation & Data Governance
 
-[![Version](https://img.shields.io/badge/version-1.5.5-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.6.1)
+[![Version](https://img.shields.io/badge/version-1.6.2-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.6.2)
 [![API Coverage](https://img.shields.io/badge/UC%20API%20Coverage-86%25-green.svg)](https://github.com/Keayoub/pvw-cli)
 [![Lineage](https://img.shields.io/badge/Lineage-Enhanced-green.svg)](https://github.com/Keayoub/pvw-cli)
 [![Status](https://img.shields.io/badge/status-stable-success.svg)](https://github.com/Keayoub/pvw-cli)
 
-> **LATEST UPDATE v1.6.1 (January 20, 2026):**
+> **LATEST UPDATE v1.6.2 (January 27, 2026):**
+>
+> **Collections API Conformance**
+>
+> - **[FIXED]** Complete alignment with Microsoft Purview Collections API specification
+> - **[IMPROVED]** All 10+ collection methods have accurate response documentation
+> - **[UPDATED]** Collections docstrings reflect actual API response structures
+> - **[VERIFIED]** All endpoints match official Microsoft specification
+> - **[ENHANCED]** Developer experience with accurate IDE autocomplete
+>
+> **Previous Update v1.6.1 (January 20, 2026):**
 >
 > **CSV Import Reliability**
 >
-> - **[FIXED]** CSV import no longer fails when header cells are empty (guards None keys)
-> - **[IMPROVED]** Custom attribute parsing handles list values in CSV without crashing
-> - **[UPDATED]** Sample CSVs for custom attributes with arrays
-> - **[TESTED]** CSV import confirmed working on Windows
+> - **[FIXED]** CSV import no longer fails when header cells are empty
+> - **[IMPROVED]** Custom attribute parsing handles list values without crashing
 >
-> **Previous Update v1.5.3 (January 13, 2026):**
->
-> **🔐 Legacy Tenant Authentication Support**
->
-> - **[NEW]** Support for legacy Azure tenants using `https://purview.azure.net` service principal
-> - **[NEW]** `PURVIEW_AUTH_SCOPE` environment variable for custom authentication scope
-> - **[NEW]** Comprehensive tenant detection and configuration guide
-> - **[FIXED]** Authentication errors (AADSTS500011) for legacy tenants
->
-> **[Full Release Notes v1.6.1](releases/v1.6.1.md)** | **[v1.5.4 Release Notes](releases/v1.5.4.md)** | **[v1.5.3 Release Notes](releases/v1.5.3.md)**
+> **[Full Release Notes v1.6.2](releases/v1.6.2.md)** | **[v1.6.1 Release Notes](releases/v1.6.1.md)** | **[Archive](releases/)**
 
 ---
 
 ## What is PVW CLI?
 
-**PVW CLI v1.5.4** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* with **86% Unified Catalog API coverage** (45 of 52 operations).
+**PVW CLI v1.6.2** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* with **86% Unified Catalog API coverage** (45 of 52 operations).
 
 ### Key Capabilities
 
@@ -46,6 +45,12 @@
 - Advanced search and discovery with fixed suggest/autocomplete
 - Business metadata with proper scope configuration
 
+**Collections Management - 100% Spec Compliant**
+- Full collection CRUD operations with proper API conformance
+- Hierarchy and tree operations for collection navigation
+- Permission management for collection access control
+- Analytics for collection usage and asset tracking
+
 **Automation & Scripting**
 - Bulk Operations - Import/export from CSV/JSON with dry-run support
 - Scriptable Output - Multiple formats (table, json, jsonc) for PowerShell/bash
@@ -53,8 +58,8 @@
 - PowerShell integration with ConvertFrom-Json support
 
 **Legacy API Support**
-- Collection and account management
-- Data product management (legacy compatibility)
+- Account management with full API compatibility
+- Data product management (legacy operations)
 - Classification, label, and status management
 
 The CLI is designed for data engineers, stewards, architects, and platform teams to automate, scale, and enhance their Microsoft Purview experience.
@@ -70,49 +75,12 @@ The CLI is designed for data engineers, stewards, architects, and platform teams
 
 ---
 
-## What's New in Recent Releases
+## Release Information
 
-### v1.4.2 (November 3, 2025) - Advanced Lineage Features
+For detailed information about previous releases, see the **[Full Release Archive](releases/)**.
 
-**Column-Level Lineage & Direct Relationships:**
-- Column-level lineage with multi-target support (1→N)
-- Direct lineage creation (UI-style, no visible Process)
-- Dual-mode CSV import with automatic type detection
-- Column mapping in direct relationships
-- Enhanced error handling with SSL retry strategies
-
-**New Commands:**
-```bash
-pvw lineage create-column   # Column lineage (Process-based)
-pvw lineage create-direct   # Direct lineage (UI-style)
-pvw lineage list-column     # List column lineages
-pvw lineage delete-column   # Delete lineage
-```
-
-**CSV Import Examples:**
-```csv
-# Direct lineage with column mapping
-source_entity_guid,target_entity_guid,relationship_type,column_mapping
-guid1,guid2,direct_lineage_dataset_dataset,"[{""Source"":""ID"",""Sink"":""ID""}]"
-```
-
-**[Full v1.4.2 Release Notes](releases/v1.4.2.md)**
-
----
-
-### v1.2.5 (October 30, 2025) - 86% UC API Coverage
-
-Version 1.2.5 achieves **86% coverage** of the Microsoft Purview Unified Catalog API with **35 new operations**:
-
-| Resource Type | Coverage | Operations | Status |
-|--------------|----------|------------|---------|
-| **Business Domains** | 100% | 5/5 | ✅ Complete |
-| **Data Products** | 90% | 9/10 | ⚠️ 1 missing (Facets) |
-| **Glossary Terms** | 73% | 8/11 | ⚠️ 3 missing |
-| **Objectives & Key Results** | 92% | 11/12 | ⚠️ 1 missing |
-| **Critical Data Elements** | 90% | 9/10 | ⚠️ 1 missing |
-| **Policies** | 100% | 5/5 | ✅ Complete |
-| **Relationships** | 100% | 6/6 | ✅ Complete |
+**Latest Stable Release:** [v1.6.2](releases/v1.6.2.md) (January 27, 2026)  
+**Previous Release:** [v1.6.1](releases/v1.6.1.md) (January 20, 2026)
 | **Query** | 100% | 4/4 | ✅ Complete |
 | **Custom Metadata** | 100% | 5/5 | ✅ Complete |
 | **Custom Attributes** | 100% | 5/5 | ✅ Complete |
@@ -139,43 +107,6 @@ Version 1.2.5 achieves **86% coverage** of the Microsoft Purview Unified Catalog
    ```
 
 3. **Policy Management (5 operations)**
-   ```bash
-   # Complete policy CRUD
-   pvw uc policy list
-   pvw uc policy create --payload-file policy.json
-   pvw uc policy update --id <policy-id> --payload-file updated.json
-   ```
-
-4. **Custom Metadata (5 operations)**
-   ```bash
-   # Business metadata via Atlas API
-   pvw uc custom-metadata import --file metadata.csv
-   pvw uc custom-metadata add --guid <entity-guid> --name "BusinessConcept"
-   ```
-
-5. **Custom Attributes (5 operations)**
-   ```bash
-   # Extensible attribute definitions
-   pvw uc custom-attribute create --name "Department" --type String
-   pvw uc custom-attribute list
-   ```
-
-### 🔧 Major Fixes & Improvements
-
-- **Lineage Management Overhaul** - Complete rewrite with interactive PowerShell script, real entity support, and proper Process entities
-- **Search API Fixed** - Resolved HTTP 400 errors in suggest and autocomplete endpoints
-- **Business Metadata Scope** - Fixed Business Concept attributes on Glossary Terms with proper applicableEntityTypes
-- **Architecture Refactoring** - Unified endpoints dictionary, zero hardcoded URLs, complete consistency
-
-### 📚 Documentation (3,500+ lines)
-
-- 15+ new guides including relationships, query APIs, lineage creation, business metadata
-- 80+ usage examples across all new features
-- Complete API coverage gap analysis
-- Roadmap to 100% with implementation plans
-
-**[View Full Release Notes](releases/v1.4.2.md)**
-
 ---
 
 ## Getting Started
@@ -301,36 +232,48 @@ For more advanced usage, see the documentation in `doc/` or the project docs: <h
 
 ## Quick Start Examples
 
-### v1.4.2 - Column-Level Lineage
+### Collections Management (v1.6.2+)
 
 ```bash
-# Create column-level lineage (Process-based)
+# Create a new collection
+pvw collections create \
+  --name "Data Engineering" \
+  --friendly-name "Data Engineering Team" \
+  --description "Collection for DE team assets"
+
+# List collection hierarchy
+pvw collections read-hierarchy --collection-name "Data Engineering"
+
+# Update collection
+pvw collections update \
+  --name "Data Engineering" \
+  --friendly-name "Data Engineering (Updated)"
+
+# Manage collection permissions
+pvw collections read-permissions --collection-name "Data Engineering"
+```
+
+### Lineage Management
+
+```bash
+# Create column-level lineage
 pvw lineage create-column \
   --process-name "ETL_Sales_Transform" \
   --source-table-guid "9ebbd583-4987-4d1b-b4f5-d8f6f6f60000" \
   --target-table-guids "c88126ba-5fb5-4d33-bbe2-5ff6f6f60000" \
   --column-mapping "ProductID:ProductID,Name:Name"
 
-# Create direct lineage (UI-style, no visible Process)
-pvw lineage create-direct \
-  --source-guid "9ebbd583-4987-4d1b-b4f5-d8f6f6f60000" \
-  --target-guid "c88126ba-5fb5-4d33-bbe2-5ff6f6f60000" \
-  --column-mapping "ProductID:ProductID,Name:Name,Amount:TotalAmount"
-
-# Import lineage from CSV (automatic type detection)
+# Import lineage from CSV
 pvw lineage import samples/csv/lineage_with_columns.csv
 
 # List column lineages
 pvw lineage list-column --format table
-
-# Delete column lineage
-pvw lineage delete-column --process-guid <guid> --force
 ```
 
-### v1.2.5 - Relationships API
+### Governance & Relationships
 
 ```bash
-# Link data product to SQL table
+# Link data product to entity
 pvw uc dataproduct link-entity \
   --id "dp-sales-2024" \
   --entity-id "4fae348b-e960-42f7-834c-38f6f6f60000" \
@@ -342,40 +285,20 @@ pvw uc cde link-entity \
   --entity-id "ea3412c3-7387-4bc1-9923-11f6f6f60000" \
   --column-qualified-name "mssql://server/db/schema/table#EmailAddress"
 
-# List all linked entities
-pvw uc dataproduct list-entities --id "dp-sales-2024"
-```
-
-### v1.2.5 - Query APIs
-
-```bash
-# Query terms by domain and status
+# Query terms by domain
 pvw uc term query --domain-ids "finance,sales" --status Approved --top 50
-
-# Query data products with keywords
-pvw uc dataproduct query --keywords "customer,revenue" --skip 0 --top 25
-
-# Query CDEs by domain with pagination
-pvw uc cde query --domain-ids "compliance" --orderby "name" --top 100
 ```
 
-### v1.2.5 - Policy Management
+### Policy & Metadata
 
 ```bash
 # List all policies
 pvw uc policy list
 
-# Create new policy
+# Create policy
 pvw uc policy create --payload-file policy-rbac.json
 
-# Update existing policy
-pvw uc policy update --id "policy-001" --payload-file updated.json
-```
-
-### v1.2.5 - Custom Metadata
-
-```bash
-# Import business metadata from CSV
+# Import business metadata
 pvw uc custom-metadata import --file business_concept.csv
 
 # Add metadata to entity
@@ -383,23 +306,7 @@ pvw uc custom-metadata add \
   --guid "4fae348b-e960-42f7-834c-38f6f6f60000" \
   --name "BusinessConcept" \
   --attributes '{"Department":"Sales"}'
-
-# Create custom attribute
-pvw uc custom-attribute create --name "Department" --type String
 ```
-
----
-
-## Overview
-
-**PVW CLI v1.4.2** is a modern command-line interface and Python library for Microsoft Purview, enabling:
-
-- **MCP Server** - Natural language interface for AI assistants (Claude, Cline)
-- Advanced data catalog search and discovery
-- Bulk import/export of entities, glossary terms, and lineage
-- Real-time monitoring and analytics
-- Automated governance and compliance
-- Extensible plugin system
 
 ---
 
@@ -757,10 +664,11 @@ The PVW CLI provides advanced search using the latest Microsoft Purview Discover
 - Use autocomplete and suggestion endpoints
 - Perform faceted, time-based, and entity-type-specific queries
 
-**v1.4.2 Improvements:**
+**v1.6.2 Enhancements:**
 
-- Fixed `suggest` and `autocomplete` API payload format (removed empty filter causing HTTP 400 errors)
-- Enhanced collection display with robust type checking and fallback logic
+- Collections API now 100% conformant with Microsoft Purview specification
+- Improved search result caching and performance
+- Enhanced error handling and diagnostics
 - All search commands validated and working correctly (query, browse, suggest, find-table)
 
 ### CLI Usage Examples
@@ -1521,23 +1429,31 @@ PVW CLI includes comprehensive sample files and scripts for bulk operations:
 - Success/failure tracking per term
 - Rate limiting (200ms delay)
 
-### Critical Fixes (v1.4.2)
+### Key Improvements (v1.6.2)
 
-- **Search API Suggest/Autocomplete:** Fixed HTTP 400 errors by removing empty filter objects from payload
-- **Collection Display:** Enhanced collection name detection with proper fallback logic (isinstance checks)
-- **Owner ID Format:** Must use Entra ID Object IDs (GUIDs), not email addresses
-- **Domain Status:** Terms cannot be "Published" in unpublished domains - use "Draft"
-- **Error Validation:** Enhanced error handling shows actual API responses
-- **Windows Console Compatibility:** All emoji removed for CP-1252 encoding support
+- **Collections API Conformance:** 100% alignment with Microsoft Purview specification - all endpoints verified and docstrings updated
+- **Docstring Accuracy:** All collection methods now document correct request/response structures with actual field mappings
+- **Developer Experience:** Enhanced IDE autocomplete with accurate parameter and response documentation
+- **CSV Import Reliability:** Fixed issues with empty header cells in custom attribute parsing (v1.6.1)
+- **Search Performance:** Optimized query execution with improved result caching
+- **Windows Console Compatibility:** All output formats compatible with Windows terminal and PowerShell
 
 ---
 
 ## Key Features Summary
 
-### **Unified Catalog (UC) - Complete Management**
+### **Collections Management (100% Conformant)**
+
+- Full CRUD operations for collection lifecycle management
+- Hierarchy and tree navigation APIs
+- Permission management and access control
+- Analytics and usage tracking per collection
+
+### **Unified Catalog (UC) - 86% Complete**
 
 - Governance domains, glossary terms, data products
 - Objectives & Key Results (OKRs), Critical Data Elements (CDEs)
+- Relationships API for linking data assets
 - Health monitoring and workflow automation
 - Full CRUD operations with smart partial updates
 
@@ -1559,6 +1475,7 @@ PVW CLI includes comprehensive sample files and scripts for bulk operations:
 - Azure CLI, Service Principal, Managed Identity auth
 - Works in local development, CI/CD, and production
 - Compatible with PowerShell, bash, Python, jq
+- MCP Server for AI-powered automation
 
 ### **Comprehensive Documentation**
 
@@ -1584,13 +1501,13 @@ See [LICENSE](LICENSE) file for details.
 
 ---
 
-**PVW CLI v1.4.2 empowers data engineers, stewards, and architects to automate, scale, and enhance their Microsoft Purview experience with powerful command-line and programmatic capabilities.**
+**PVW CLI v1.6.2 empowers data engineers, stewards, and architects to automate, scale, and enhance their Microsoft Purview experience with powerful command-line and programmatic capabilities.**
 
-**Latest in v1.4.2:**
+**Latest in v1.6.2:**
 
-- Fixed Search API suggest/autocomplete (HTTP 400 errors resolved)
-- Enhanced collection display with robust fallback logic
-- Comprehensive search command validation
-- Bulk term import/export with dry-run support
-- PowerShell integration with plain JSON output
-- Multiple output formats and beautiful progress tracking
+- Collections API 100% conformant with Microsoft Purview specification
+- Accurate docstrings reflecting actual API response structures
+- Complete field mapping documentation for all collection operations
+- Enhanced IDE autocomplete and developer experience
+- CSV import reliability improvements from v1.6.1
+- Bulk operations with comprehensive error handling
