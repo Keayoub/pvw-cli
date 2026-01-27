@@ -1,11 +1,21 @@
-# PURVIEW CLI v1.6.2 - Microsoft Purview Automation & Data Governance
+# PURVIEW CLI v1.6.3 - Microsoft Purview Automation & Data Governance
 
-[![Version](https://img.shields.io/badge/version-1.6.2-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.6.2)
+[![Version](https://img.shields.io/badge/version-1.6.3-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.6.3)
 [![API Coverage](https://img.shields.io/badge/UC%20API%20Coverage-86%25-green.svg)](https://github.com/Keayoub/pvw-cli)
 [![Lineage](https://img.shields.io/badge/Lineage-Enhanced-green.svg)](https://github.com/Keayoub/pvw-cli)
 [![Status](https://img.shields.io/badge/status-stable-success.svg)](https://github.com/Keayoub/pvw-cli)
 
-> **LATEST UPDATE v1.6.2 (January 27, 2026):**
+> **LATEST UPDATE v1.6.3 (January 27, 2026):**
+>
+> **Collections Permissions Documentation & Diagnostics**
+>
+> - **[NEW]** Comprehensive permissions guides (English & French)
+> - **[NEW]** Automated diagnostic tools (PowerShell & Python)
+> - **[FIXED]** Collections get-details command parameter mappings
+> - **[ADDED]** HTTP 403 troubleshooting documentation
+> - **[ADDED]** Permission setup scripts (PowerShell & Bash)
+>
+> **Previous Update v1.6.2 (January 27, 2026):**
 >
 > **Collections API Conformance**
 >
@@ -13,22 +23,14 @@
 > - **[IMPROVED]** All 10+ collection methods have accurate response documentation
 > - **[UPDATED]** Collections docstrings reflect actual API response structures
 > - **[VERIFIED]** All endpoints match official Microsoft specification
-> - **[ENHANCED]** Developer experience with accurate IDE autocomplete
 >
-> **Previous Update v1.6.1 (January 20, 2026):**
->
-> **CSV Import Reliability**
->
-> - **[FIXED]** CSV import no longer fails when header cells are empty
-> - **[IMPROVED]** Custom attribute parsing handles list values without crashing
->
-> **[Full Release Notes v1.6.2](releases/v1.6.2.md)** | **[v1.6.1 Release Notes](releases/v1.6.1.md)** | **[Archive](releases/)**
+> **[Full Release Notes v1.6.3](releases/v1.6.3.md)** | **[v1.6.2 Release Notes](releases/v1.6.2.md)** | **[Archive](releases/)**
 
 ---
 
 ## What is PVW CLI?
 
-**PVW CLI v1.6.2** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* with **86% Unified Catalog API coverage** (45 of 52 operations).
+**PVW CLI v1.6.3** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* with **86% Unified Catalog API coverage** (45 of 52 operations).
 
 ### Key Capabilities
 
