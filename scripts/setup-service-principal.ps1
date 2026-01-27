@@ -6,7 +6,7 @@ param(
     [string]$ClientSecret,
     [string]$TenantId,
     [string]$PurviewName = "pview-prod-01",
-    [string]$AccountId = "d4ce282d-e2e1-4c5b-b4b7-f0ab030e4446",
+    [string]$AccountId = "your-tenant-purview-account-id",
     [string]$ResourceGroup = "rg-purview-prod01"
 )
 
