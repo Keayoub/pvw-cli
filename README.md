@@ -89,34 +89,84 @@ The CLI is designed for data engineers, stewards, architects, and platform teams
 
 For detailed information about previous releases, see the **[Full Release Archive](releases/)**.
 
-**Latest Stable Release:** [v1.6.2](releases/v1.6.2.md) (January 27, 2026)  
-**Previous Release:** [v1.6.1](releases/v1.6.1.md) (January 20, 2026)
-| **Query** | 100% | 4/4 | ✅ Complete |
-| **Custom Metadata** | 100% | 5/5 | ✅ Complete |
-| **Custom Attributes** | 100% | 5/5 | ✅ Complete |
-| **TOTAL** | **86%** | **45/52** | 🎯 **A- Grade** |
+**Latest Release:** [v1.7.0](releases/v1.7.0.md) (January 28, 2026)  
+**Previous Release:** [v1.6.2](releases/v1.6.2.md) (January 27, 2026)
 
-### 🚀 New APIs Implemented
+---
 
-1. **Relationships API (6 operations)**
+## 📊 API Coverage Summary
+
+### Unified Catalog (UC) - 96% Complete ⭐
+
+| Category | Coverage | Count | Status |
+|----------|----------|-------|--------|
+| **Glossary Terms** | 100% | 9/9 | ✅ Complete |
+| **Domains** | 100% | 5/5 | ✅ Complete |
+| **Data Products** | 100% | 8/8 | ✅ Complete |
+| **Critical Data Elements (CDE)** | 100% | 8/8 | ✅ Complete |
+| **Objectives (OKRs)** | 100% | 6/6 | ✅ Complete |
+| **Key Results** | 100% | 5/5 | ✅ Complete |
+| **Policies** | 100% | 4/4 | ✅ Complete |
+| **Facets & Analytics** | 100% | 4/4 | ✅ Complete |
+| **Relationships** | 100% | 3/3 | ✅ Complete |
+| **Hierarchy** | 100% | 1/1 | ✅ Complete |
+| **TOTAL UC** | **96%** | **46/48** | 🎯 **Production Ready** |
+
+### 🎯 New in v1.7.0 - Six Advanced UC APIs
+
+1. **List Hierarchy Terms (NEW)**
    ```bash
-   # Link data product to entity
-   pvw uc dataproduct link-entity --id <dp-id> --entity-id <guid>
+   # Interactive tree view of glossary hierarchy
+   pvw uc term hierarchy --output tree
    
-   # Link CDE to column
-   pvw uc cde link-entity --id <cde-id> --entity-id <guid> --column-qualified-name "..."
+   # Filter by domain with max depth control
+   pvw uc term hierarchy --domain-id <domain-guid> --max-depth 3 --output table
    ```
 
-2. **Query APIs (4 operations)**
+2. **Get Term Facets (NEW)**
    ```bash
-   # Advanced OData filtering
-   pvw uc term query --domain-ids "finance" --status Approved --top 50
+   # Statistics and filters for glossary terms
+   pvw uc term facets --output table
    
-   # Multi-criteria search with pagination
-   pvw uc dataproduct query --keywords "customer,revenue" --skip 10 --top 25
+   # JSON export for automation
+   pvw uc term facets --output json
    ```
 
-3. **Policy Management (5 operations)**
+3. **Get CDE Facets (NEW)**
+   ```bash
+   # Compliance dashboards (GDPR, HIPAA, SOC2)
+   pvw uc cde facets --domain-id <domain-guid> --output table
+   
+   # See color-coded compliance summary
+   pvw uc cde facets --facet-fields "criticality,compliance_status"
+   ```
+
+4. **Get Data Product Facets (NEW)**
+   ```bash
+   # Analytics for data product portfolios
+   pvw uc dataproduct facets --output table
+   
+   # Filter by domain
+   pvw uc dataproduct facets --domain-id <domain-guid> --output json
+   ```
+
+5. **Get Objective Facets (NEW)**
+   ```bash
+   # OKR dashboards with health metrics
+   pvw uc objective facets --output table
+   
+   # JSON export for dashboards
+   pvw uc objective facets --output json
+   ```
+
+6. **List Related Entities (NEW)**
+   ```bash
+   # Complete relationship exploration for terms
+   pvw uc term relationships --term-id <term-guid> --output table
+   
+   # Filter by relationship type (Synonym, Related, Parent)
+   pvw uc term relationships --term-id <term-guid> --relationship-type "Synonym"
+   ```
 ---
 
 ## Getting Started
@@ -1459,11 +1509,14 @@ PVW CLI includes comprehensive sample files and scripts for bulk operations:
 - Permission management and access control
 - Analytics and usage tracking per collection
 
-### **Unified Catalog (UC) - 86% Complete**
+### **Unified Catalog (UC) - 96% Complete ⭐ NEW in v1.7.0**
 
 - Governance domains, glossary terms, data products
 - Objectives & Key Results (OKRs), Critical Data Elements (CDEs)
 - Relationships API for linking data assets
+- **[NEW] Hierarchy visualization** - Interactive tree views of glossary structure
+- **[NEW] Facets & Analytics** - Statistics for terms, CDEs, data products, objectives
+- **[NEW] Impact Analysis** - Complete relationship exploration
 - Health monitoring and workflow automation
 - Full CRUD operations with smart partial updates
 
@@ -1499,6 +1552,8 @@ PVW CLI includes comprehensive sample files and scripts for bulk operations:
 ## Contributing & Support
 
 - **Documentation:** [Full Documentation](https://github.com/Keayoub/Purview_cli/blob/main/doc/README.md)
+- **New APIs Guide:** [UC New APIs v1.7.0](doc/guides/UC_NEW_APIS_GUIDE.md)
+- **API Coverage Analysis:** [Complete Coverage Report](doc/UC_API_COVERAGE_ANALYSIS.md)
 - **Issue Tracker:** [GitHub Issues](https://github.com/Keayoub/Purview_cli/issues)
 - **Email Support:** [keayoub@msn.com](mailto:keayoub@msn.com)
 - **Repository:** [GitHub - Keayoub/Purview_cli](https://github.com/Keayoub/Purview_cli)
@@ -1511,13 +1566,15 @@ See [LICENSE](LICENSE) file for details.
 
 ---
 
-**PVW CLI v1.6.2 empowers data engineers, stewards, and architects to automate, scale, and enhance their Microsoft Purview experience with powerful command-line and programmatic capabilities.**
+**PVW CLI v1.7.0 empowers data engineers, stewards, and architects to automate, scale, and enhance their Microsoft Purview experience with powerful command-line and programmatic capabilities.**
 
-**Latest in v1.6.2:**
+**Latest in v1.7.0:**
 
-- Collections API 100% conformant with Microsoft Purview specification
-- Accurate docstrings reflecting actual API response structures
-- Complete field mapping documentation for all collection operations
-- Enhanced IDE autocomplete and developer experience
+- Six new Unified Catalog APIs for analytics and hierarchy visualization
+- 96% UC API coverage (46 of 48 operations)
+- Rich UI with interactive trees and color-coded tables
+- Advanced facets for dashboards and compliance reporting
+- Complete relationship exploration for data governance
+- Comprehensive documentation and usage guides
 - CSV import reliability improvements from v1.6.1
 - Bulk operations with comprehensive error handling

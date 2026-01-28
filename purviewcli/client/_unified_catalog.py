@@ -2497,6 +2497,142 @@ Use Cases:
             self.params["facetFields"] = ",".join(args["--facet-fields"])
 
     @decorator
+    def get_data_product_facets(self, args):
+        """
+        Get facets (aggregated filters) for Data Products.
+        
+        Retrieves aggregated statistics about data products grouped by various attributes
+        like status, domain, number of assets, ownership. Useful for dashboards and search filters.
+        
+        Args:
+            args: Dictionary of operation arguments:
+                --domain-id (str, optional): Filter facets by domain ID
+                --facet-fields (list, optional): Specific facet fields to retrieve
+                    (e.g., 'status', 'domain', 'assetCount', 'owner')
+        
+        Returns:
+            Dictionary containing facet counts:
+                {
+                    'facets': {
+                        'status': {
+                            'Draft': 12,
+                            'Published': 34,
+                            'Archived': 5
+                        },
+                        'domain': {
+                            'Customer Data': 15,
+                            'Financial Data': 20
+                        },
+                        'assetCount': {
+                            '1-5': 10,
+                            '6-10': 15,
+                            '11+': 9
+                        }
+                    },
+                    'totalCount': 34
+                }
+        
+        Raises:
+            AuthenticationError: When Azure credentials are invalid
+            HTTPError: When Purview API returns error
+            NetworkError: When network connectivity fails
+        
+        Example:
+            # Get all data product facets
+            client = UnifiedCatalogClient()
+            args = {}
+            facets = client.get_data_product_facets(args)
+            
+            # Analyze by status
+            for status, count in facets['facets']['status'].items():
+                print(f"{status}: {count} products")
+        
+        Use Cases:
+            - Product Dashboards: Show data product distribution
+            - Search Filters: Build product discovery interfaces
+            - Governance Reports: Track product catalog composition
+            - Asset Planning: Analyze products by asset count
+        """
+        self.method = "GET"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_data_product_facets"]
+        self.params = get_api_version_params("2025-09-15-preview")
+        
+        if "--domain-id" in args:
+            self.params["domainId"] = args["--domain-id"][0]
+        if "--facet-fields" in args:
+            self.params["facetFields"] = ",".join(args["--facet-fields"])
+
+    @decorator
+    def get_objective_facets(self, args):
+        """
+        Get facets (aggregated filters) for Objectives (OKRs).
+        
+        Retrieves aggregated statistics about objectives grouped by status, period,
+        progress percentage, and other attributes. Essential for OKR dashboards and reporting.
+        
+        Args:
+            args: Dictionary of operation arguments:
+                --domain-id (str, optional): Filter facets by domain ID
+                --facet-fields (list, optional): Specific facet fields to retrieve
+                    (e.g., 'status', 'period', 'progressPercentage', 'owner')
+        
+        Returns:
+            Dictionary containing facet counts:
+                {
+                    'facets': {
+                        'status': {
+                            'Not Started': 12,
+                            'In Progress': 23,
+                            'Completed': 45,
+                            'At Risk': 8
+                        },
+                        'period': {
+                            'Q1 2026': 34,
+                            'Q2 2026': 23,
+                            'Q3 2026': 31
+                        },
+                        'progressPercentage': {
+                            '0-25': 15,
+                            '26-50': 20,
+                            '51-75': 18,
+                            '76-100': 35
+                        }
+                    },
+                    'totalCount': 88
+                }
+        
+        Raises:
+            AuthenticationError: When Azure credentials are invalid
+            HTTPError: When Purview API returns error
+            NetworkError: When network connectivity fails
+        
+        Example:
+            # Get OKR facets
+            client = UnifiedCatalogClient()
+            args = {}
+            facets = client.get_objective_facets(args)
+            
+            # Check progress distribution
+            progress = facets['facets']['progressPercentage']
+            completed = progress.get('76-100', 0)
+            print(f"High progress objectives: {completed}")
+        
+        Use Cases:
+            - OKR Dashboards: Track objective progress and status
+            - Executive Reporting: Show completion rates by period
+            - Risk Management: Identify at-risk objectives
+            - Planning: Analyze objectives by quarter and progress
+        """
+        self.method = "GET"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_objective_facets"]
+        self.params = get_api_version_params("2025-09-15-preview")
+        
+        if "--domain-id" in args:
+            self.params["domainId"] = args["--domain-id"][0]
+        if "--facet-fields" in args:
+            self.params["facetFields"] = ",".join(args["--facet-fields"])
+
+    @decorator
     def list_related_entities(self, args):
         """
         List all entities related to a specific term.
