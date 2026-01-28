@@ -405,6 +405,9 @@ ENDPOINTS = {
         "get_term": "/datagovernance/catalog/terms/{termId}",
         "update_term": "/datagovernance/catalog/terms/{termId}",
         "delete_term": "/datagovernance/catalog/terms/{termId}",
+        # Term relationships (synonyms, related terms)
+        "add_term_relationship": "/datagovernance/catalog/terms/{termId}/relationships",
+        "delete_term_relationship": "/datagovernance/catalog/terms/{termId}/relationships/{entityId}",
         # Terms query
         "query_terms": "/datagovernance/catalog/terms/query",
         # Objectives

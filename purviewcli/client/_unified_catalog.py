@@ -2117,6 +2117,120 @@ Use Cases:
         self.params = {}
         self.payload = payload
 
+    @decorator
+    def add_term_relationship(self, args):
+        """
+Add a relationship between two terms (synonym, related, or parent).
+
+Adds a relationship between the source term and target entity.
+Supports Synonym, Related, and Parent relationship types.
+
+Args:
+        args: Dictionary of operation arguments.
+               --term-id: Source term ID (required)
+               --entity-id: Target entity ID (required)
+               --relationship-type: Type of relationship (Synonym, Related, Parent)
+               --description: Optional description
+               --entity-type: Entity type filter (default: TERM)
+
+Returns:
+        Dictionary with relationship information:
+            {
+                'entityId': str,              # Target entity ID
+                'relationshipType': str,      # Relationship type
+                'description': str,           # Description
+                'systemData': {...}          # System metadata
+            }
+
+Raises:
+        ValueError: When required parameters are missing or invalid
+        HTTPError: When Purview API returns error
+
+Example:
+        # Add synonym relationship
+        client = UnifiedCatalogClient()
+        result = client.add_term_relationship({
+            "--term-id": ["source-term-id"],
+            "--entity-id": ["target-term-id"],
+            "--relationship-type": ["Synonym"],
+            "--description": ["Alternative term"]
+        })
+
+Use Cases:
+        - Add synonyms to terms
+        - Link related terms
+        - Establish parent-child relationships
+        """
+        term_id = args.get("--term-id", [""])[0]
+        
+        # Build payload
+        payload = {
+            "entityId": args.get("--entity-id", [""])[0]
+        }
+        
+        # Add optional fields
+        if args.get("--relationship-type"):
+            payload["relationshipType"] = args["--relationship-type"][0]
+        else:
+            # Default to Related
+            payload["relationshipType"] = "Related"
+        
+        if args.get("--description"):
+            payload["description"] = args["--description"][0]
+        
+        self.method = "POST"
+        self.endpoint = ENDPOINTS["unified_catalog"]["add_term_relationship"].format(termId=term_id)
+        self.params = {
+            "api-version": "2025-09-15-preview"
+        }
+        
+        # Add entity type filter if provided
+        if args.get("--entity-type"):
+            self.params["entityType"] = args["--entity-type"][0]
+        else:
+            self.params["entityType"] = "TERM"
+        
+        self.payload = payload
+
+    @decorator
+    def delete_term_relationship(self, args):
+        """
+Delete a relationship between two terms.
+
+Removes a relationship between the source term and target entity.
+
+Args:
+        args: Dictionary of operation arguments.
+               --term-id: Source term ID (required)
+               --entity-id: Target entity ID to unlink (required)
+
+Returns:
+        Success response or error details
+
+Raises:
+        ValueError: When required parameters are missing
+        HTTPError: When Purview API returns error
+
+Example:
+        # Remove synonym relationship
+        client = UnifiedCatalogClient()
+        result = client.delete_term_relationship({
+            "--term-id": ["source-term-id"],
+            "--entity-id": ["target-term-id"]
+        })
+        """
+        term_id = args.get("--term-id", [""])[0]
+        entity_id = args.get("--entity-id", [""])[0]
+        
+        self.method = "DELETE"
+        self.endpoint = ENDPOINTS["unified_catalog"]["delete_term_relationship"].format(
+            termId=term_id,
+            entityId=entity_id
+        )
+        self.params = {
+            "api-version": "2025-09-15-preview"
+        }
+
     def _get_or_create_glossary_for_domain(self, domain_id):
         """Get or create a default glossary for the domain."""
         # Improved implementation:

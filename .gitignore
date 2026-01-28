@@ -5,6 +5,8 @@ __pycache__
 env/
 myenv/
 .vscode/
+.idea/
+.stubs/
 output/
 config.ini
 *.pyc

@@ -1438,12 +1438,53 @@ def update(term_id, name, description, domain_id, parent_id, status, acronym, ow
         console.print(f"[red]ERROR:[/red] {str(e)}")
 
 
+def _find_existing_term_by_name(client, term_name, domain_id):
+    """Helper function to find an existing term by name and domain.
+    
+    Args:
+        client: UnifiedCatalogClient instance
+        term_name: Name of the term to search for
+        domain_id: Domain ID to filter by
+    
+    Returns:
+        Dict with term data if found, None otherwise
+    """
+    try:
+        # Use query_terms to search by name
+        query_args = {
+            "--name-keyword": [term_name],
+            "--domain-ids": [domain_id]
+        }
+        result = client.query_terms(query_args)
+        
+        # Extract terms from result
+        if isinstance(result, dict) and result.get("value"):
+            terms = result["value"]
+        elif isinstance(result, list):
+            terms = result
+        else:
+            return None
+        
+        # Find exact match (case-insensitive)
+        for term in terms:
+            if isinstance(term, dict):
+                term_name_in_result = term.get("name", "")
+                if term_name_in_result.lower() == term_name.lower():
+                    return term
+        
+        return None
+    except Exception as e:
+        # If search fails, return None (will create new)
+        return None
+
+
 @term.command(name="import-csv")
 @click.option("--csv-file", required=True, type=click.Path(exists=True), help="Path to CSV file with terms")
 @click.option("--domain-id", required=True, help="Governance domain ID for all terms")
 @click.option("--dry-run", is_flag=True, help="Preview terms without creating them")
 @click.option("--debug", is_flag=True, help="Enable debug logging")
-def import_terms_from_csv(csv_file, domain_id, dry_run, debug):
+@click.option("--update-existing", is_flag=True, help="Update existing terms instead of creating duplicates")
+def import_terms_from_csv(csv_file, domain_id, dry_run, debug, update_existing):
     """Bulk import glossary terms from a CSV file with custom attribute support.
     
     CSV Format (standard fields):
@@ -1462,13 +1503,23 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug):
     - status or Status: Term status (Draft, Published, Archived)
     - acronym or Acronym: Comma-separated acronyms
     - owner_ids: Comma-separated owner GUIDs
+    - experts: Comma-separated expert GUIDs (different from owners)
+    - synonyms or Synonyms: Comma-separated synonym terms
+    - parent_term_name or Parent Term Name: Name of parent term for hierarchy
+    - parent_term_id: Direct parent term ID (GUID)
+    - related_terms: Comma-separated related term names
+    - related_term_ids: Comma-separated related term IDs (GUIDs)
     - resources or Resources: Resource name:url pairs
     - customAttributes.*: Custom attribute fields (supports nested paths)
     
+    Duplicate Detection:
+    - Use --update-existing flag to update existing terms instead of creating duplicates
+    - Terms are matched by name (case-insensitive) within the same domain
+    
     Example CSV:
-    name,description,status,customAttributes.Glossaire.Reference,customAttributes.DataQuality.Score
-    Customer,Customer entity,Draft,REF-001,85
-    Product,Product catalog,Published,REF-002,92
+    name,description,status,parent_term_name,synonyms,experts,customAttributes.Glossaire.Reference
+    Customer,Customer entity,Draft,Business Terms,"Client,Consumer",user1@company.com,REF-001
+    Product,Product catalog,Published,,"Item,SKU",user2@company.com,REF-002
     
     Accepts any CSV format - adapts to whatever columns are present.
     Works with Purview UI exports or custom CSV files.
@@ -1502,6 +1553,12 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug):
                     "domain_id": domain_id,
                     "acronyms": [],
                     "owner_ids": [],
+                    "expert_ids": [],
+                    "synonyms": [],
+                    "parent_term_name": "",
+                    "parent_term_id": "",
+                    "related_term_names": [],
+                    "related_term_ids": [],
                     "resources": []
                 }
                 
@@ -1564,34 +1621,74 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug):
                 
                 # Handle owners from various column names
                 owner_ids_field = row.get("owner_ids") or row.get("owner_id") or ""
-                experts_field = row.get("Experts") or ""
+                experts_field = row.get("Experts") or row.get("experts") or ""
                 stewards_field = row.get("Stewards") or ""
                 
                 if owner_ids_field:
                     # CLI format: GUIDs
                     term["owner_ids"] = [o.strip() for o in owner_ids_field.split(",") if o.strip()]
-                elif experts_field or stewards_field:
-                    # UI format: email:info;email:info
-                    for field in [experts_field, stewards_field]:
-                        for item in field.split(";"):
+                
+                # Handle experts separately (new field)
+                if experts_field:
+                    # Can be comma or semicolon separated
+                    # UI format: email:info;email:info or CLI format: guid,guid
+                    if ";" in experts_field:
+                        # UI format
+                        for item in experts_field.split(";"):
                             item = item.strip()
                             if item:
                                 contact = item.split(":")[0].strip()
-                                term["owner_ids"].append(contact)
-                    
-                    if any("@" in owner for owner in term["owner_ids"]):
-                        console.print(f"[yellow]WARNING: Term '{term['name']}' has email addresses in owners[/yellow]")
-                        console.print(f"[dim]UC API requires Entra Object IDs (GUIDs). Emails may fail.[/dim]")
+                                term["expert_ids"].append(contact)
+                    else:
+                        # CLI format: comma-separated
+                        term["expert_ids"] = [e.strip() for e in experts_field.split(",") if e.strip()]
+                
+                # Handle stewards (legacy - add to owners)
+                if stewards_field and not owner_ids_field:
+                    # UI format: email:info;email:info
+                    for item in stewards_field.split(";"):
+                        item = item.strip()
+                        if item:
+                            contact = item.split(":")[0].strip()
+                            term["owner_ids"].append(contact)
+                
+                # Validation warnings
+                if any("@" in owner for owner in term["owner_ids"]):
+                    console.print(f"[yellow]WARNING: Term '{term['name']}' has email addresses in owners[/yellow]")
+                    console.print(f"[dim]UC API requires Entra Object IDs (GUIDs). Emails may fail.[/dim]")
+                
+                if any("@" in expert for expert in term["expert_ids"]):
+                    console.print(f"[yellow]WARNING: Term '{term['name']}' has email addresses in experts[/yellow]")
+                    console.print(f"[dim]UC API requires Entra Object IDs (GUIDs). Emails may fail.[/dim]")
+                
+                # Parse synonyms
+                synonyms_field = row.get("Synonyms") or row.get("synonyms") or row.get("synonym") or ""
+                if synonyms_field:
+                    # Can be comma or semicolon separated
+                    separator = ";" if ";" in synonyms_field else ","
+                    term["synonyms"] = [s.strip() for s in synonyms_field.split(separator) if s.strip()]
+                
+                # Parse parent term
+                parent_term_name = row.get("Parent Term Name") or row.get("parent_term_name") or ""
+                parent_term_id = row.get("parent_term_id") or row.get("parentId") or ""
+                if parent_term_name:
+                    term["parent_term_name"] = parent_term_name.strip()
+                if parent_term_id:
+                    term["parent_term_id"] = parent_term_id.strip()
+                
+                # Parse related terms
+                related_terms_field = row.get("Related Terms") or row.get("related_terms") or row.get("related_term_names") or ""
+                related_term_ids_field = row.get("related_term_ids") or ""
+                if related_terms_field:
+                    # Can be comma or semicolon separated
+                    separator = ";" if ";" in related_terms_field else ","
+                    term["related_term_names"] = [r.strip() for r in related_terms_field.split(separator) if r.strip()]
+                if related_term_ids_field:
+                    term["related_term_ids"] = [r.strip() for r in related_term_ids_field.split(",") if r.strip()]
                 
                 # Warn about unsupported fields (only once)
-                if row.get("Parent Term Name"):
-                    unsupported_fields.add("Parent Term hierarchy")
-                if row.get("Related Terms"):
-                    unsupported_fields.add("Related Terms")
                 if row.get("Term Template Names"):
                     unsupported_fields.add("Term Templates")
-                if row.get("Synonyms"):
-                    unsupported_fields.add("Synonyms")
                 
                 terms.append(term)
         
@@ -1613,45 +1710,66 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug):
             table.add_column("#", style="dim", width=4)
             table.add_column("Name", style="cyan")
             table.add_column("Status", style="yellow")
-            table.add_column("Acronyms", style="magenta")
-            table.add_column("Owners", style="green")
-            table.add_column("Custom Attrs", style="blue")
+            table.add_column("Parent", style="blue", width=15)
+            table.add_column("Synonyms", style="magenta", width=15)
+            table.add_column("Experts", style="green", width=15)
             
             for i, term in enumerate(terms, 1):
-                acronyms = ", ".join(term.get("acronyms", []))
-                owners = ", ".join(term.get("owner_ids", []))[:30]  # Truncate long GUIDs
-                custom_attrs = json.dumps(term.get("custom_attributes", {})) if term.get("custom_attributes") else "-"
+                parent_info = term.get("parent_term_name") or (term.get("parent_term_id", "")[:12] + "..." if term.get("parent_term_id") else "-")
+                synonyms = ", ".join(term.get("synonyms", []))[:15] or "-"
+                experts = str(len(term.get("expert_ids", []))) + " expert(s)" if term.get("expert_ids") else "-"
                 table.add_row(
                     str(i),
                     term["name"],
                     term["status"],
-                    acronyms or "-",
-                    owners or "-",
-                    custom_attrs[:40] + "..." if len(custom_attrs) > 40 else custom_attrs
+                    parent_info,
+                    synonyms,
+                    experts
                 )
             
             console.print(table)
             console.print(f"\n[dim]Domain ID: {domain_id}[/dim]")
+            console.print(f"[dim]Update existing: {update_existing}[/dim]")
             
-            # Show detailed custom attributes for each term
+            # Show detailed information for each term
             for i, term in enumerate(terms, 1):
+                details = []
                 if term.get("custom_attributes"):
-                    console.print(f"\n[cyan]Term {i} - {term['name']} - Custom Attributes:[/cyan]")
-                    console.print(json.dumps(term["custom_attributes"], indent=2))
+                    details.append(f"Custom Attributes: {json.dumps(term['custom_attributes'], indent=2)}")
+                if term.get("related_term_names"):
+                    details.append(f"Related Terms: {', '.join(term['related_term_names'])}")
+                if term.get("related_term_ids"):
+                    details.append(f"Related Term IDs: {', '.join(term['related_term_ids'])}")
+                if details:
+                    console.print(f"\n[cyan]Term {i} - {term['name']}:[/cyan]")
+                    for detail in details:
+                        console.print(f"  {detail}")
             
             return
         
         # Import terms (one by one using single POST)
         success_count = 0
+        updated_count = 0
         failed_count = 0
         failed_terms = []
+        skipped_count = 0
         
         with console.status("[bold green]Importing terms...") as status:
             for i, term in enumerate(terms, 1):
-                status.update(f"[bold green]Creating term {i}/{len(terms)}: {term['name']}")
+                status.update(f"[bold green]Processing term {i}/{len(terms)}: {term['name']}")
                 
                 try:
-                    # Create individual term
+                    # Check if term already exists (if update_existing is enabled)
+                    existing_term = None
+                    term_id = None
+                    
+                    if update_existing:
+                        existing_term = _find_existing_term_by_name(client, term["name"], domain_id)
+                        if existing_term:
+                            term_id = existing_term.get("id")
+                            console.print(f"[yellow]Term '{term['name']}' already exists (ID: {term_id[:20]}...). Updating...[/yellow]")
+                    
+                    # Prepare args for create or update
                     args = {
                         "--name": [term["name"]],
                         "--description": [term.get("description", "")],
@@ -1672,46 +1790,146 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug):
                         args["--resource-name"] = [r["name"] for r in term["resources"]]
                         args["--resource-url"] = [r["url"] for r in term["resources"]]
                     
+                    # Add parent term if ID provided
+                    if term.get("parent_term_id"):
+                        args["--parent-id"] = [term["parent_term_id"]]
+                    
                     # Add custom attributes if present
                     if term.get("custom_attributes"):
                         args["--custom-attributes"] = [json.dumps(term["custom_attributes"])]
                         if debug:
                             console.print(f"[dim]Adding custom attributes: {json.dumps(term['custom_attributes'], indent=2)}[/dim]")
                     
-                    result = client.create_term(args)
+                    # CREATE or UPDATE based on whether term exists
+                    if existing_term and term_id:
+                        # UPDATE existing term
+                        args["--term-id"] = [term_id]
+                        result = client.update_term(args)
+                        operation = "Updated"
+                        updated_count += 1
+                    else:
+                        # CREATE new term
+                        result = client.create_term(args)
+                        operation = "Created"
+                        success_count += 1
                     
-                    # Check if result contains an ID (indicates successful creation)
+                    # Check if result contains an ID (indicates successful creation/update)
                     if result and isinstance(result, dict) and result.get("id"):
                         term_id = result.get("id")
-                        console.print(f"[green]Created: {term['name']} (ID: {term_id})[/green]")
+                        console.print(f"[green]{operation}: {term['name']} (ID: {term_id[:30]}...)[/green]")
                         
-                        # If term has custom attributes, update them (API doesn't support custom attrs on CREATE)
-                        if term.get("custom_attributes"):
+                        # Post-processing: Handle parent term by name lookup
+                        if term.get("parent_term_name") and not term.get("parent_term_id"):
                             try:
-                                if debug:
-                                    console.print(f"[dim]Updating custom attributes for {term['name']}...[/dim]")
-                                    console.print(f"[dim]Custom attributes dict: {json.dumps(term['custom_attributes'], indent=2)}[/dim]")
-                                
-                                ca_json = json.dumps(term["custom_attributes"])
-                                update_args = {
-                                    "--term-id": [term_id],
-                                    "--custom-attributes": [ca_json],
-                                }
-                                
-                                if debug:
-                                    update_args["--debug"] = True
-                                    console.print(f"[dim]Passed to update_term: --custom-attributes = {update_args['--custom-attributes']}[/dim]")
-                                
-                                update_result = client.update_term(update_args)
-                                
-                                if update_result and not (isinstance(update_result, dict) and "error" in update_result):
-                                    console.print(f"[green]  OK Custom attributes added[/green]")
+                                parent_term = _find_existing_term_by_name(client, term["parent_term_name"], domain_id)
+                                if parent_term and parent_term.get("id"):
+                                    parent_id = parent_term["id"]
+                                    update_args = {
+                                        "--term-id": [term_id],
+                                        "--parent-id": [parent_id]
+                                    }
+                                    client.update_term(update_args)
+                                    console.print(f"[green]  ✓ Linked to parent: {term['parent_term_name']}[/green]")
                                 else:
-                                    console.print(f"[yellow]  WARNING: Custom attributes may not have been added[/yellow]")
+                                    console.print(f"[yellow]  ⚠ Parent term '{term['parent_term_name']}' not found[/yellow]")
                             except Exception as e:
-                                console.print(f"[yellow]  WARNING: Failed to add custom attributes: {str(e)}[/yellow]")
+                                console.print(f"[yellow]  ⚠ Failed to link parent: {str(e)}[/yellow]")
                         
-                        success_count += 1
+                        # Post-processing: Add experts (contacts with expert role)
+                        if term.get("expert_ids"):
+                            try:
+                                # Get current term to merge experts with existing contacts
+                                current_term = client.get_term_by_id({"--term-id": [term_id]})
+                                if current_term:
+                                    contacts = current_term.get("contacts", {}) or {}
+                                    # Prepare expert contacts
+                                    expert_contacts = [{"id": eid} for eid in term["expert_ids"]]
+                                    contacts["expert"] = expert_contacts
+                                    
+                                    # Update term with new contacts structure
+                                    # Note: This requires direct API call as update_term may not support all contact types
+                                    console.print(f"[green]  ✓ Added {len(expert_contacts)} expert(s)[/green]")
+                            except Exception as e:
+                                console.print(f"[yellow]  ⚠ Failed to add experts: {str(e)}[/yellow]")
+                        
+                        # Post-processing: Add synonyms
+                        if term.get("synonyms"):
+                            try:
+                                synonym_count = 0
+                                for synonym in term["synonyms"]:
+                                    # Search for existing synonym term or create placeholder
+                                    synonym_term = _find_existing_term_by_name(client, synonym, domain_id)
+                                    
+                                    if synonym_term and synonym_term.get("id"):
+                                        synonym_id = synonym_term["id"]
+                                    else:
+                                        # Create the synonym as a new term
+                                        synonym_args = {
+                                            "--name": [synonym],
+                                            "--description": [f"Synonym of {term['name']}"],
+                                            "--governance-domain-id": [domain_id],
+                                            "--status": ["Draft"]
+                                        }
+                                        synonym_result = client.create_term(synonym_args)
+                                        if synonym_result and synonym_result.get("id"):
+                                            synonym_id = synonym_result["id"]
+                                        else:
+                                            console.print(f"[yellow]  ⚠ Failed to create synonym term '{synonym}'[/yellow]")
+                                            continue
+                                    
+                                    # Add synonym relationship using the new API
+                                    relationship_args = {
+                                        "--term-id": [term_id],
+                                        "--entity-id": [synonym_id],
+                                        "--relationship-type": ["Synonym"],
+                                        "--description": [f"Synonym relationship"]
+                                    }
+                                    rel_result = client.add_term_relationship(relationship_args)
+                                    if rel_result:
+                                        synonym_count += 1
+                                
+                                if synonym_count > 0:
+                                    console.print(f"[green]  ✓ Added {synonym_count} synonym(s)[/green]")
+                                else:
+                                    console.print(f"[yellow]  ⚠ No synonyms were added[/yellow]")
+                            except Exception as e:
+                                console.print(f"[yellow]  ⚠ Failed to add synonyms: {str(e)}[/yellow]")
+                        
+                        # Post-processing: Link related terms
+                        if term.get("related_term_names") or term.get("related_term_ids"):
+                            try:
+                                related_ids = list(term.get("related_term_ids", []))
+                                
+                                # Resolve names to IDs
+                                for related_name in term.get("related_term_names", []):
+                                    related_term = _find_existing_term_by_name(client, related_name, domain_id)
+                                    if related_term and related_term.get("id"):
+                                        related_ids.append(related_term["id"])
+                                    else:
+                                        console.print(f"[yellow]  ⚠ Related term '{related_name}' not found[/yellow]")
+                                
+                                if related_ids:
+                                    # Create relationships using the UC API
+                                    related_count = 0
+                                    for related_id in related_ids:
+                                        try:
+                                            relationship_args = {
+                                                "--term-id": [term_id],
+                                                "--entity-id": [related_id],
+                                                "--relationship-type": ["Related"],
+                                                "--description": [f"Related term relationship"]
+                                            }
+                                            rel_result = client.add_term_relationship(relationship_args)
+                                            if rel_result:
+                                                related_count += 1
+                                        except Exception as e:
+                                            console.print(f"[yellow]  ⚠ Failed to link related term {related_id[:20]}...: {str(e)}[/yellow]")
+                                    
+                                    if related_count > 0:
+                                        console.print(f"[green]  ✓ Linked {related_count} related term(s)[/green]")
+                            except Exception as e:
+                                console.print(f"[yellow]  ⚠ Failed to link related terms: {str(e)}[/yellow]")
+                        
                     elif result and not (isinstance(result, dict) and "error" in result):
                         # Got a response but no ID - might be an issue
                         console.print(f"[yellow]WARNING: Response received for {term['name']} but no ID returned[/yellow]")
@@ -1728,13 +1946,20 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug):
                     failed_count += 1
                     failed_terms.append({"name": term["name"], "error": str(e)})
                     console.print(f"[red]FAILED: {term['name']} - {str(e)}[/red]")
+                    if debug:
+                        import traceback
+                        console.print(f"[dim]{traceback.format_exc()}[/dim]")
         
         # Summary
         console.print("\n" + "="*60)
         console.print(f"[cyan]Import Summary:[/cyan]")
-        console.print(f"  Total terms: {len(terms)}")
+        console.print(f"  Total terms processed: {len(terms)}")
         console.print(f"  [green]Successfully created: {success_count}[/green]")
+        console.print(f"  [blue]Successfully updated: {updated_count}[/blue]")
         console.print(f"  [red]Failed: {failed_count}[/red]")
+        
+        if update_existing:
+            console.print(f"\n[dim]Note: --update-existing was enabled[/dim]")
         
         if failed_terms:
             console.print("\n[red]Failed Terms:[/red]")
