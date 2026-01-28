@@ -21,7 +21,7 @@
 >
 > **[Full Release Notes v1.7.0](releases/v1.7.0.md)** | **[New APIs Guide](doc/guides/UC_NEW_APIS_GUIDE.md)** | **[API Coverage Analysis](doc/UC_API_COVERAGE_ANALYSIS.md)**
 >
-> **Previous Update v1.6.3 (January 27, 2026):**
+> **Previous Update v1.7.0 (January 27, 2026):**
 >
 > **Collections Permissions Documentation & Diagnostics**
 >
