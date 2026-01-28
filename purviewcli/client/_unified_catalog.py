@@ -1151,6 +1151,175 @@ Use Cases:
         }
 
     @decorator
+    def get_data_product_facets(self, args):
+        """
+        Get facets (aggregated filters) for Data Products.
+        
+        Retrieves aggregated statistics about data products grouped by various attributes
+        like status, domain, asset count, owner. Essential for building dashboards and
+        search filters for data product discovery.
+        
+        Args:
+            args: Dictionary of operation arguments:
+                --domain-id (str, optional): Filter facets by domain ID
+                --facet-fields (list, optional): Specific facet fields to retrieve
+                    (e.g., 'status', 'domain', 'owner', 'dataAssetCount')
+        
+        Returns:
+            Dictionary containing facet counts:
+                {
+                    'facets': {
+                        'status': {
+                            'Draft': 12,
+                            'Published': 34,
+                            'Archived': 5
+                        },
+                        'domain': {
+                            'Customer Data': 15,
+                            'Financial Data': 20,
+                            'Marketing Data': 16
+                        },
+                        'dataAssetCount': {
+                            '1-5': 10,
+                            '6-10': 15,
+                            '11-20': 12,
+                            '21+': 14
+                        },
+                        'owner': {
+                            'user1@contoso.com': 18,
+                            'user2@contoso.com': 23
+                        }
+                    },
+                    'totalCount': 51
+                }
+        
+        Raises:
+            AuthenticationError: When Azure credentials are invalid
+            HTTPError: When Purview API returns error
+            NetworkError: When network connectivity fails
+        
+        Example:
+            # Get all data product facets
+            client = UnifiedCatalogClient()
+            args = {}
+            facets = client.get_data_product_facets(args)
+            
+            # Analyze distribution by status
+            for status, count in facets['facets']['status'].items():
+                print(f"{status}: {count} data products")
+            
+            # Check domain distribution
+            domain_facets = facets['facets']['domain']
+            top_domain = max(domain_facets.items(), key=lambda x: x[1])
+            print(f"Top domain: {top_domain[0]} with {top_domain[1]} products")
+            
+            # Filter by specific domain
+            domain_args = {"--domain-id": ["<domain-guid>"]}
+            domain_facets = client.get_data_product_facets(domain_args)
+        
+        Use Cases:
+            - Product Dashboards: Show data product distribution charts
+            - Search Filters: Build faceted search for data product discovery
+            - Analytics: Analyze product portfolio composition
+            - Governance Metrics: Track published vs draft products
+        """
+        self.method = "GET"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_data_product_facets"]
+        self.params = get_api_version_params("2025-09-15-preview")
+        
+        if "--domain-id" in args:
+            self.params["domainId"] = args["--domain-id"][0]
+        if "--facet-fields" in args:
+            self.params["facetFields"] = ",".join(args["--facet-fields"])
+
+    @decorator
+    def get_objective_facets(self, args):
+        """
+        Get facets (aggregated filters) for Objectives (OKRs).
+        
+        Retrieves aggregated statistics about objectives grouped by status, period,
+        progress percentage, and owner. Essential for OKR dashboards and tracking.
+        
+        Args:
+            args: Dictionary of operation arguments:
+                --domain-id (str, optional): Filter facets by domain ID
+                --facet-fields (list, optional): Specific facet fields to retrieve
+                    (e.g., 'status', 'period', 'progressPercentage', 'owner')
+        
+        Returns:
+            Dictionary containing facet counts:
+                {
+                    'facets': {
+                        'status': {
+                            'Not Started': 12,
+                            'In Progress': 23,
+                            'Completed': 45,
+                            'At Risk': 8,
+                            'Blocked': 3
+                        },
+                        'period': {
+                            'Q1 2026': 34,
+                            'Q2 2026': 23,
+                            'H1 2026': 18,
+                            '2026': 16
+                        },
+                        'progressPercentage': {
+                            '0-25%': 15,
+                            '26-50%': 20,
+                            '51-75%': 18,
+                            '76-100%': 35
+                        },
+                        'owner': {
+                            'user1@contoso.com': 28,
+                            'user2@contoso.com': 35
+                        }
+                    },
+                    'totalCount': 88
+                }
+        
+        Raises:
+            AuthenticationError: When Azure credentials are invalid
+            HTTPError: When Purview API returns error
+            NetworkError: When network connectivity fails
+        
+        Example:
+            # Get all objective facets
+            client = UnifiedCatalogClient()
+            args = {}
+            facets = client.get_objective_facets(args)
+            
+            # Calculate completion rate
+            total = facets['totalCount']
+            completed = facets['facets']['status'].get('Completed', 0)
+            completion_rate = (completed / total * 100) if total > 0 else 0
+            print(f"OKR Completion Rate: {completion_rate:.1f}%")
+            
+            # Find at-risk objectives
+            at_risk = facets['facets']['status'].get('At Risk', 0)
+            if at_risk > 0:
+                print(f"⚠️ {at_risk} objectives at risk!")
+            
+            # Analyze progress distribution
+            progress_facets = facets['facets']['progressPercentage']
+            for range_val, count in progress_facets.items():
+                print(f"{range_val}: {count} objectives")
+        
+        Use Cases:
+            - OKR Dashboards: Visualize objective progress and status
+            - Performance Tracking: Monitor completion rates and trends
+            - Risk Management: Identify blocked or at-risk objectives
+            - Period Analysis: Compare objectives across quarters/years
+        """
+        self.method = "GET"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_objective_facets"]
+        self.params = get_api_version_params("2025-09-15-preview")
+        
+        if "--domain-id" in args:
+            self.params["domainId"] = args["--domain-id"][0]
+        if "--facet-fields" in args:
+            self.params["facetFields"] = ",".join(args["--facet-fields"])
+
+    @decorator
     def query_data_products(self, args):
         """
 Search for resources.
@@ -2116,6 +2285,298 @@ Use Cases:
         self.endpoint = ENDPOINTS["unified_catalog"]["query_terms"]
         self.params = {}
         self.payload = payload
+
+    @decorator
+    def get_terms_hierarchy(self, args):
+        """
+        Get the complete hierarchical structure of glossary terms.
+        
+        Retrieves all terms organized in a tree structure showing parent-child
+        relationships. Useful for visualizing the complete glossary taxonomy.
+        
+        Args:
+            args: Dictionary of operation arguments:
+                --domain-id (str, optional): Filter by domain ID
+                --max-depth (int, optional): Maximum depth level to retrieve
+                --include-draft (bool, optional): Include draft terms in hierarchy
+        
+        Returns:
+            Dictionary containing:
+                {
+                    'hierarchyTerms': [  # List of root-level terms
+                        {
+                            'id': str,
+                            'name': str,
+                            'status': str,
+                            'level': int,
+                            'children': [...]  # Nested child terms
+                        },
+                        ...
+                    ],
+                    'totalCount': int,  # Total number of terms in hierarchy
+                    'maxDepth': int     # Maximum depth in hierarchy
+                }
+        
+        Raises:
+            AuthenticationError: When Azure credentials are invalid or expired
+            
+            HTTPError: When Purview API returns error:
+                - 401: Unauthorized (authentication failed)
+                - 403: Forbidden (requires Catalog Reader role)
+                - 404: Domain not found
+                - 429: Rate limit exceeded
+                - 500: Purview internal server error
+            
+            NetworkError: When network connectivity fails
+        
+        Example:
+            # Get hierarchy for a specific domain
+            client = UnifiedCatalogClient()
+            args = {"--domain-id": ["domain-guid"]}
+            hierarchy = client.get_terms_hierarchy(args)
+            
+            # Display tree structure
+            for term in hierarchy.get('hierarchyTerms', []):
+                print(f"Root: {term['name']}")
+                for child in term.get('children', []):
+                    print(f"  - {child['name']}")
+        
+        Use Cases:
+            - Glossary Navigation: Build interactive tree views
+            - Taxonomy Export: Extract complete term structure
+            - Documentation: Generate hierarchical glossary reports
+            - Validation: Verify parent-child relationships
+        """
+        self.method = "GET"
+        self.endpoint = ENDPOINTS["unified_catalog"]["list_hierarchy_terms"]
+        self.params = get_api_version_params("2025-09-15-preview")
+        
+        if "--domain-id" in args:
+            self.params["domainId"] = args["--domain-id"][0]
+        if "--max-depth" in args:
+            self.params["maxDepth"] = args["--max-depth"][0]
+        if "--include-draft" in args and args["--include-draft"][0].lower() == "true":
+            self.params["includeDraft"] = "true"
+
+    @decorator
+    def get_term_facets(self, args):
+        """
+        Get facets (aggregated filters) for glossary terms.
+        
+        Retrieves aggregated statistics about terms grouped by various attributes
+        like status, domain, owner. Useful for building search filters and dashboards.
+        
+        Args:
+            args: Dictionary of operation arguments:
+                --domain-id (str, optional): Filter facets by domain ID
+                --facet-fields (list, optional): Specific facet fields to retrieve
+                    (e.g., 'status', 'domain', 'owner', 'acronyms')
+        
+        Returns:
+            Dictionary containing facet counts:
+                {
+                    'facets': {
+                        'status': {
+                            'Draft': 45,
+                            'Active': 123,
+                            'Deprecated': 12
+                        },
+                        'domain': {
+                            'Finance': 34,
+                            'Marketing': 56
+                        },
+                        'owner': {
+                            'user1@contoso.com': 23
+                        }
+                    },
+                    'totalCount': 180
+                }
+        
+        Raises:
+            AuthenticationError: When Azure credentials are invalid
+            HTTPError: When Purview API returns error
+            NetworkError: When network connectivity fails
+        
+        Example:
+            # Get all facets
+            client = UnifiedCatalogClient()
+            args = {}
+            facets = client.get_term_facets(args)
+            
+            # Display status distribution
+            for status, count in facets['facets']['status'].items():
+                print(f"{status}: {count} terms")
+        
+        Use Cases:
+            - Search Filters: Show available filter options with counts
+            - Dashboard Metrics: Display term distribution charts
+            - Governance Reports: Analyze glossary composition
+        """
+        self.method = "GET"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_term_facets"]
+        self.params = get_api_version_params("2025-09-15-preview")
+        
+        if "--domain-id" in args:
+            self.params["domainId"] = args["--domain-id"][0]
+        if "--facet-fields" in args:
+            self.params["facetFields"] = ",".join(args["--facet-fields"])
+
+    @decorator
+    def get_cde_facets(self, args):
+        """
+        Get facets (aggregated filters) for Critical Data Elements.
+        
+        Retrieves aggregated statistics about CDEs grouped by criticality level,
+        compliance framework, domain, and other attributes. Essential for
+        governance and compliance reporting.
+        
+        Args:
+            args: Dictionary of operation arguments:
+                --domain-id (str, optional): Filter facets by domain ID
+                --facet-fields (list, optional): Specific facet fields to retrieve
+                    (e.g., 'criticalityLevel', 'complianceFramework', 'status')
+        
+        Returns:
+            Dictionary containing facet counts:
+                {
+                    'facets': {
+                        'criticalityLevel': {
+                            'High': 45,
+                            'Medium': 67,
+                            'Low': 23
+                        },
+                        'complianceFramework': {
+                            'GDPR': 34,
+                            'HIPAA': 12,
+                            'SOC2': 23
+                        },
+                        'status': {
+                            'Active': 89,
+                            'Draft': 12
+                        },
+                        'domain': {
+                            'Healthcare': 23,
+                            'Finance': 45
+                        }
+                    },
+                    'totalCount': 135
+                }
+        
+        Raises:
+            AuthenticationError: When Azure credentials are invalid
+            HTTPError: When Purview API returns error
+            NetworkError: When network connectivity fails
+        
+        Example:
+            # Get CDE distribution by criticality
+            client = UnifiedCatalogClient()
+            args = {}
+            facets = client.get_cde_facets(args)
+            
+            # Analyze critical data
+            high_critical = facets['facets']['criticalityLevel']['High']
+            print(f"High criticality CDEs: {high_critical}")
+            
+            # Check GDPR compliance coverage
+            gdpr_count = facets['facets']['complianceFramework'].get('GDPR', 0)
+            print(f"GDPR-related CDEs: {gdpr_count}")
+        
+        Use Cases:
+            - Compliance Dashboards: Show GDPR/HIPAA coverage metrics
+            - Risk Assessment: Analyze distribution of critical data
+            - Governance Reports: Generate regulatory compliance reports
+            - Search Filters: Build CDE search interfaces
+        """
+        self.method = "GET"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_cde_facets"]
+        self.params = get_api_version_params("2025-09-15-preview")
+        
+        if "--domain-id" in args:
+            self.params["domainId"] = args["--domain-id"][0]
+        if "--facet-fields" in args:
+            self.params["facetFields"] = ",".join(args["--facet-fields"])
+
+    @decorator
+    def list_related_entities(self, args):
+        """
+        List all entities related to a specific term.
+        
+        Retrieves all relationships for a term including synonyms, related terms,
+        parent terms, and other associated entities. Provides complete visibility
+        into term connections.
+        
+        Args:
+            args: Dictionary of operation arguments:
+                --term-id (str, required): ID of the term to get relationships for
+                --relationship-type (str, optional): Filter by relationship type
+                    ('Synonym', 'Related', 'Parent')
+                --entity-type (str, optional): Filter by entity type
+                    ('TERM', 'DOMAIN', 'DATAPRODUCT', etc.)
+        
+        Returns:
+            Dictionary containing:
+                {
+                    'relationships': [
+                        {
+                            'entityId': str,
+                            'entityType': str,
+                            'relationshipType': str,
+                            'description': str,
+                            'createdAt': str,
+                            'createdBy': str
+                        },
+                        ...
+                    ],
+                    'count': int
+                }
+        
+        Raises:
+            ValueError: When --term-id is missing
+            AuthenticationError: When Azure credentials are invalid
+            HTTPError: When Purview API returns error:
+                - 404: Term not found
+                - 403: Forbidden
+            NetworkError: When network connectivity fails
+        
+        Example:
+            # Get all relationships for a term
+            client = UnifiedCatalogClient()
+            args = {"--term-id": ["term-guid"]}
+            result = client.list_related_entities(args)
+            
+            # Display relationships by type
+            for rel in result.get('relationships', []):
+                print(f"{rel['relationshipType']}: {rel['entityId']}")
+            
+            # Filter only synonyms
+            args = {
+                "--term-id": ["term-guid"],
+                "--relationship-type": ["Synonym"]
+            }
+            synonyms = client.list_related_entities(args)
+        
+        Use Cases:
+            - Relationship Visualization: Build graph views of term connections
+            - Impact Analysis: Identify affected entities before deletion
+            - Glossary Navigation: Show all related terms for exploration
+            - Audit: Track all relationships for a term
+        """
+        if "--term-id" not in args:
+            raise ValueError("--term-id is required")
+        
+        term_id = args["--term-id"][0]
+        
+        self.method = "GET"
+        self.endpoint = ENDPOINTS["unified_catalog"]["list_related_entities"].format(
+            termId=term_id
+        )
+        self.params = get_api_version_params("2025-09-15-preview")
+        self.params["entityType"] = "TERM"  # Default to TERM entity type
+        
+        if "--relationship-type" in args:
+            self.params["relationshipType"] = args["--relationship-type"][0]
+        if "--entity-type" in args:
+            self.params["entityType"] = args["--entity-type"][0]
 
     @decorator
     def add_term_relationship(self, args):

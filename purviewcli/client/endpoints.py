@@ -408,8 +408,19 @@ ENDPOINTS = {
         # Term relationships (synonyms, related terms)
         "add_term_relationship": "/datagovernance/catalog/terms/{termId}/relationships",
         "delete_term_relationship": "/datagovernance/catalog/terms/{termId}/relationships/{entityId}",
+        "list_related_entities": "/datagovernance/catalog/terms/{termId}/relationships",
         # Terms query
         "query_terms": "/datagovernance/catalog/terms/query",
+        # Terms hierarchy
+        "list_hierarchy_terms": "/datagovernance/catalog/terms/hierarchy",
+        # Terms facets
+        "get_term_facets": "/datagovernance/catalog/terms/facets",
+        # CDE facets
+        "get_cde_facets": "/datagovernance/catalog/criticalDataElements/facets",
+        # Data Products facets
+        "get_data_product_facets": "/datagovernance/catalog/dataProducts/facets",
+        # Objectives facets
+        "get_objective_facets": "/datagovernance/catalog/objectives/facets",
         # Objectives
         "list_objectives": "/datagovernance/catalog/objectives",
         "create_objective": "/datagovernance/catalog/objectives",

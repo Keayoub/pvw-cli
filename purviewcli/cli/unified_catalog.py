@@ -780,6 +780,137 @@ def query_data_products(ids, domain_ids, name_keyword, owners, status, multi_sta
         console.print(f"[red]ERROR:[/red] {str(e)}")
 
 
+@dataproduct.command(name="facets")
+@click.option("--domain-id", help="Filter by domain ID", required=False)
+@click.option("--facet-fields", multiple=True, help="Specific facet fields to retrieve (status, domain, owner, dataAssetCount)")
+@click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
+def get_data_product_facets(domain_id, facet_fields, output):
+    """Get facets (aggregated statistics) for Data Products.
+    
+    Shows distribution of data products by status, domain, asset count, and owner.
+    Useful for analytics, dashboards, and building search filters.
+    
+    Examples:
+        # Get all data product facets
+        pvw uc dataproduct facets
+        
+        # Get facets for specific domain
+        pvw uc dataproduct facets --domain-id <domain-guid>
+        
+        # Get specific facet fields only
+        pvw uc dataproduct facets --facet-fields status --facet-fields domain
+        
+        # Export as JSON
+        pvw uc dataproduct facets --output json
+    """
+    try:
+        client = UnifiedCatalogClient()
+        args = {}
+        
+        if domain_id:
+            args["--domain-id"] = [domain_id]
+        if facet_fields:
+            args["--facet-fields"] = list(facet_fields)
+        
+        result = client.get_data_product_facets(args)
+        
+        if output == "json":
+            console.print_json(data=result)
+            return
+        
+        facets = result.get("facets", {})
+        total_count = result.get("totalCount", 0)
+        
+        if not facets:
+            console.print("[yellow]No facets data available.[/yellow]")
+            return
+        
+        console.print(f"\n[bold]📦 Data Products Facets[/bold] (Total: {total_count} products)\n")
+        
+        # Define facet display order and styling
+        facet_order = ["status", "domain", "dataAssetCount", "owner"]
+        facet_icons = {
+            "status": "📊",
+            "domain": "🏢",
+            "dataAssetCount": "💾",
+            "owner": "👤"
+        }
+        
+        for facet_name in facet_order:
+            if facet_name not in facets:
+                continue
+                
+            facet_values = facets[facet_name]
+            icon = facet_icons.get(facet_name, "📌")
+            
+            table = Table(title=f"{icon} {facet_name.capitalize()} Distribution", show_header=True)
+            table.add_column("Value", style="cyan")
+            table.add_column("Count", style="green", justify="right")
+            table.add_column("Percentage", style="yellow", justify="right")
+            
+            # Sort by count descending
+            sorted_values = sorted(facet_values.items(), key=lambda x: x[1], reverse=True)
+            
+            for value, count in sorted_values:
+                percentage = (count / total_count * 100) if total_count > 0 else 0
+                
+                # Add color coding for status
+                if facet_name == "status":
+                    if value.lower() == "published":
+                        value_display = f"[green bold]{value}[/green bold]"
+                    elif value.lower() == "draft":
+                        value_display = f"[yellow]{value}[/yellow]"
+                    elif value.lower() == "archived":
+                        value_display = f"[dim]{value}[/dim]"
+                    else:
+                        value_display = str(value)
+                else:
+                    value_display = str(value)
+                
+                table.add_row(
+                    value_display,
+                    str(count),
+                    f"{percentage:.1f}%"
+                )
+            
+            console.print(table)
+            console.print()  # Blank line between tables
+        
+        # Display any remaining facets not in the predefined order
+        for facet_name, facet_values in facets.items():
+            if facet_name in facet_order:
+                continue
+                
+            table = Table(title=f"{facet_name.capitalize()} Distribution", show_header=True)
+            table.add_column("Value", style="cyan")
+            table.add_column("Count", style="green", justify="right")
+            table.add_column("Percentage", style="yellow", justify="right")
+            
+            sorted_values = sorted(facet_values.items(), key=lambda x: x[1], reverse=True)
+            
+            for value, count in sorted_values:
+                percentage = (count / total_count * 100) if total_count > 0 else 0
+                table.add_row(
+                    str(value),
+                    str(count),
+                    f"{percentage:.1f}%"
+                )
+            
+            console.print(table)
+            console.print()
+        
+        # Show summary metrics
+        if "status" in facets:
+            published = facets["status"].get("Published", 0)
+            draft = facets["status"].get("Draft", 0)
+            console.print("[bold]✅ Product Readiness:[/bold]")
+            console.print(f"  • Published: {published} ({published/total_count*100:.1f}%)")
+            console.print(f"  • Draft: {draft} ({draft/total_count*100:.1f}%)")
+        
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
 # ========================================
 # GLOSSARIES
 # ========================================
@@ -2518,6 +2649,275 @@ def query_terms(ids, domain_ids, name_keyword, acronyms, owners, status, multi_s
         console.print(f"[red]ERROR:[/red] {str(e)}")
 
 
+@term.command(name="hierarchy")
+@click.option("--domain-id", help="Filter by domain ID", required=False)
+@click.option("--max-depth", type=int, help="Maximum depth level to retrieve", required=False)
+@click.option("--include-draft", is_flag=True, help="Include draft terms in hierarchy")
+@click.option("--output", default="tree", type=click.Choice(["json", "tree", "table"]), help="Output format")
+def get_terms_hierarchy(domain_id, max_depth, include_draft, output):
+    """Display glossary terms in hierarchical tree structure.
+    
+    Shows the complete parent-child relationship structure of glossary terms.
+    Useful for visualizing taxonomy and navigating the glossary organization.
+    
+    Examples:
+        # Get full hierarchy as tree view
+        pvw uc term hierarchy
+        
+        # Get hierarchy for specific domain
+        pvw uc term hierarchy --domain-id <domain-guid>
+        
+        # Limit depth to 3 levels
+        pvw uc term hierarchy --max-depth 3
+        
+        # Include draft terms
+        pvw uc term hierarchy --include-draft
+        
+        # Export as JSON
+        pvw uc term hierarchy --output json
+    """
+    try:
+        from rich.tree import Tree
+        
+        client = UnifiedCatalogClient()
+        args = {}
+        
+        if domain_id:
+            args["--domain-id"] = [domain_id]
+        if max_depth:
+            args["--max-depth"] = [str(max_depth)]
+        if include_draft:
+            args["--include-draft"] = ["true"]
+        
+        result = client.get_terms_hierarchy(args)
+        
+        if output == "json":
+            console.print_json(data=result)
+            return
+        
+        hierarchy_terms = result.get("hierarchyTerms", [])
+        
+        if not hierarchy_terms:
+            console.print("[yellow]No terms found in hierarchy.[/yellow]")
+            return
+        
+        total_count = result.get("totalCount", len(hierarchy_terms))
+        max_depth_found = result.get("maxDepth", "N/A")
+        
+        if output == "tree":
+            # Rich tree visualization
+            tree = Tree(f"📚 [bold]Glossary Hierarchy[/bold] ({total_count} terms, max depth: {max_depth_found})")
+            
+            def add_terms_to_tree(terms, parent_tree, level=0):
+                for term in terms:
+                    status_color = {
+                        "PUBLISHED": "green",
+                        "DRAFT": "yellow",
+                        "EXPIRED": "red"
+                    }.get(term.get("status", "").upper(), "white")
+                    
+                    node_label = f"[bold]{term.get('name', 'Unknown')}[/bold]"
+                    node_label += f" [{status_color}]({term.get('status', 'N/A')})[/{status_color}]"
+                    node_label += f" [dim]- ID: {term.get('id', 'N/A')[:8]}...[/dim]"
+                    
+                    node = parent_tree.add(node_label)
+                    
+                    if term.get("children"):
+                        add_terms_to_tree(term["children"], node, level + 1)
+            
+            add_terms_to_tree(hierarchy_terms, tree)
+            console.print(tree)
+            
+        else:  # table output
+            table = Table(title=f"Glossary Hierarchy ({total_count} terms)", show_header=True)
+            table.add_column("Level", style="dim", width=6)
+            table.add_column("Name", style="cyan")
+            table.add_column("ID", style="dim", no_wrap=True)
+            table.add_column("Status", style="white")
+            table.add_column("Children", style="magenta")
+            
+            def add_terms_to_table(terms, level=0):
+                for term in terms:
+                    indent = "  " * level + ("└─ " if level > 0 else "")
+                    children_count = len(term.get("children", []))
+                    
+                    table.add_row(
+                        str(level),
+                        indent + term.get("name", "N/A"),
+                        term.get("id", "N/A")[:13] + "...",
+                        term.get("status", "N/A"),
+                        str(children_count) if children_count > 0 else "-"
+                    )
+                    
+                    if term.get("children"):
+                        add_terms_to_table(term["children"], level + 1)
+            
+            add_terms_to_table(hierarchy_terms)
+            console.print(table)
+        
+        console.print(f"\n[dim]Total terms: {total_count} | Max depth: {max_depth_found}[/dim]")
+        
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@term.command(name="facets")
+@click.option("--domain-id", help="Filter by domain ID", required=False)
+@click.option("--facet-fields", multiple=True, help="Specific facet fields to retrieve (status, domain, owner, acronyms)")
+@click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
+def get_term_facets(domain_id, facet_fields, output):
+    """Get facets (aggregated statistics) for glossary terms.
+    
+    Shows distribution of terms by various attributes like status, domain, owner.
+    Useful for analytics, dashboards, and building search filters.
+    
+    Examples:
+        # Get all facets
+        pvw uc term facets
+        
+        # Get facets for specific domain
+        pvw uc term facets --domain-id <domain-guid>
+        
+        # Get specific facet fields only
+        pvw uc term facets --facet-fields status --facet-fields domain
+        
+        # Export as JSON
+        pvw uc term facets --output json
+    """
+    try:
+        client = UnifiedCatalogClient()
+        args = {}
+        
+        if domain_id:
+            args["--domain-id"] = [domain_id]
+        if facet_fields:
+            args["--facet-fields"] = list(facet_fields)
+        
+        result = client.get_term_facets(args)
+        
+        if output == "json":
+            console.print_json(data=result)
+            return
+        
+        facets = result.get("facets", {})
+        total_count = result.get("totalCount", 0)
+        
+        if not facets:
+            console.print("[yellow]No facets data available.[/yellow]")
+            return
+        
+        console.print(f"\n[bold]📊 Glossary Terms Facets[/bold] (Total: {total_count} terms)\n")
+        
+        for facet_name, facet_values in facets.items():
+            table = Table(title=f"{facet_name.capitalize()} Distribution", show_header=True)
+            table.add_column("Value", style="cyan")
+            table.add_column("Count", style="green", justify="right")
+            table.add_column("Percentage", style="yellow", justify="right")
+            
+            # Sort by count descending
+            sorted_values = sorted(facet_values.items(), key=lambda x: x[1], reverse=True)
+            
+            for value, count in sorted_values:
+                percentage = (count / total_count * 100) if total_count > 0 else 0
+                table.add_row(
+                    str(value),
+                    str(count),
+                    f"{percentage:.1f}%"
+                )
+            
+            console.print(table)
+            console.print()  # Blank line between tables
+        
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@term.command(name="relationships")
+@click.option("--term-id", required=True, help="ID of the term to get relationships for")
+@click.option("--relationship-type", 
+              type=click.Choice(["Synonym", "Related", "Parent"], case_sensitive=False),
+              help="Filter by relationship type")
+@click.option("--entity-type", help="Filter by entity type (TERM, DOMAIN, DATAPRODUCT, etc.)")
+@click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
+def list_related_entities(term_id, relationship_type, entity_type, output):
+    """List all entities related to a specific term.
+    
+    Shows all relationships including synonyms, related terms, parents, and other
+    associated entities. Useful for understanding term connections and dependencies.
+    
+    Examples:
+        # Get all relationships for a term
+        pvw uc term relationships --term-id <term-guid>
+        
+        # Filter only synonyms
+        pvw uc term relationships --term-id <term-guid> --relationship-type Synonym
+        
+        # Filter only related terms
+        pvw uc term relationships --term-id <term-guid> --relationship-type Related
+        
+        # Export as JSON
+        pvw uc term relationships --term-id <term-guid> --output json
+    """
+    try:
+        client = UnifiedCatalogClient()
+        args = {"--term-id": [term_id]}
+        
+        if relationship_type:
+            args["--relationship-type"] = [relationship_type]
+        if entity_type:
+            args["--entity-type"] = [entity_type]
+        
+        result = client.list_related_entities(args)
+        
+        if output == "json":
+            console.print_json(data=result)
+            return
+        
+        relationships = result.get("relationships", [])
+        count = result.get("count", len(relationships))
+        
+        if not relationships:
+            console.print("[yellow]No relationships found for this term.[/yellow]")
+            return
+        
+        console.print(f"\n[bold]🔗 Relationships for Term[/bold] (Total: {count})\n")
+        
+        table = Table(show_header=True)
+        table.add_column("Relationship Type", style="cyan")
+        table.add_column("Entity ID", style="yellow", no_wrap=True)
+        table.add_column("Entity Type", style="green")
+        table.add_column("Description", style="white")
+        table.add_column("Created", style="dim")
+        
+        for rel in relationships:
+            created_at = rel.get("createdAt", "N/A")
+            if created_at != "N/A" and "T" in created_at:
+                created_at = created_at.split("T")[0]  # Just show date
+            
+            table.add_row(
+                rel.get("relationshipType", "N/A"),
+                rel.get("entityId", "N/A")[:20] + ("..." if len(rel.get("entityId", "")) > 20 else ""),
+                rel.get("entityType", "N/A"),
+                rel.get("description", "N/A")[:40] + ("..." if len(rel.get("description", "")) > 40 else ""),
+                created_at
+            )
+        
+        console.print(table)
+        
+        # Show summary by type
+        type_counts = {}
+        for rel in relationships:
+            rel_type = rel.get("relationshipType", "Unknown")
+            type_counts[rel_type] = type_counts.get(rel_type, 0) + 1
+        
+        console.print("\n[bold]Summary by Type:[/bold]")
+        for rel_type, count in sorted(type_counts.items()):
+            console.print(f"  • {rel_type}: {count}")
+        
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
 @term.command(name="sync-classic")
 @click.option("--domain-id", required=False, help="Governance domain ID to sync terms from (if not provided, syncs all domains)")
 @click.option("--glossary-guid", required=False, help="Target classic glossary GUID (if not provided, creates/uses glossary with domain name)")
@@ -2930,6 +3330,161 @@ def show(objective_id):
 
         console.print(json.dumps(result, indent=2))
 
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@objective.command(name="facets")
+@click.option("--domain-id", help="Filter by domain ID", required=False)
+@click.option("--facet-fields", multiple=True, help="Specific facet fields to retrieve (status, period, progressPercentage, owner)")
+@click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
+def get_objective_facets(domain_id, facet_fields, output):
+    """Get facets (aggregated statistics) for Objectives (OKRs).
+    
+    Shows distribution of objectives by status, period, progress, and owner.
+    Essential for OKR dashboards, performance tracking, and risk management.
+    
+    Examples:
+        # Get all objective facets
+        pvw uc objective facets
+        
+        # Get facets for specific domain
+        pvw uc objective facets --domain-id <domain-guid>
+        
+        # Get specific facet fields only
+        pvw uc objective facets --facet-fields status --facet-fields period
+        
+        # Export as JSON
+        pvw uc objective facets --output json
+    """
+    try:
+        client = UnifiedCatalogClient()
+        args = {}
+        
+        if domain_id:
+            args["--domain-id"] = [domain_id]
+        if facet_fields:
+            args["--facet-fields"] = list(facet_fields)
+        
+        result = client.get_objective_facets(args)
+        
+        if output == "json":
+            console.print_json(data=result)
+            return
+        
+        facets = result.get("facets", {})
+        total_count = result.get("totalCount", 0)
+        
+        if not facets:
+            console.print("[yellow]No facets data available.[/yellow]")
+            return
+        
+        console.print(f"\n[bold]🎯 Objectives (OKRs) Facets[/bold] (Total: {total_count} objectives)\n")
+        
+        # Define facet display order and styling
+        facet_order = ["status", "period", "progressPercentage", "owner"]
+        facet_icons = {
+            "status": "📊",
+            "period": "📅",
+            "progressPercentage": "📊",
+            "owner": "👤"
+        }
+        
+        for facet_name in facet_order:
+            if facet_name not in facets:
+                continue
+                
+            facet_values = facets[facet_name]
+            icon = facet_icons.get(facet_name, "📌")
+            
+            table = Table(title=f"{icon} {facet_name.capitalize()} Distribution", show_header=True)
+            table.add_column("Value", style="cyan")
+            table.add_column("Count", style="green", justify="right")
+            table.add_column("Percentage", style="yellow", justify="right")
+            
+            # Sort by count descending
+            sorted_values = sorted(facet_values.items(), key=lambda x: x[1], reverse=True)
+            
+            for value, count in sorted_values:
+                percentage = (count / total_count * 100) if total_count > 0 else 0
+                
+                # Add color coding for status
+                if facet_name == "status":
+                    value_lower = str(value).lower()
+                    if value_lower == "completed":
+                        value_display = f"[green bold]{value}[/green bold]"
+                    elif value_lower == "in progress":
+                        value_display = f"[blue]{value}[/blue]"
+                    elif value_lower == "at risk":
+                        value_display = f"[yellow bold]{value}[/yellow bold]"
+                    elif value_lower == "blocked":
+                        value_display = f"[red bold]{value}[/red bold]"
+                    elif value_lower == "not started":
+                        value_display = f"[dim]{value}[/dim]"
+                    else:
+                        value_display = str(value)
+                # Color code progress percentages
+                elif facet_name == "progressPercentage":
+                    if "76-100" in str(value) or "100" in str(value):
+                        value_display = f"[green]{value}[/green]"
+                    elif "51-75" in str(value):
+                        value_display = f"[blue]{value}[/blue]"
+                    elif "26-50" in str(value):
+                        value_display = f"[yellow]{value}[/yellow]"
+                    else:
+                        value_display = f"[red]{value}[/red]"
+                else:
+                    value_display = str(value)
+                
+                table.add_row(
+                    value_display,
+                    str(count),
+                    f"{percentage:.1f}%"
+                )
+            
+            console.print(table)
+            console.print()  # Blank line between tables
+        
+        # Display any remaining facets not in the predefined order
+        for facet_name, facet_values in facets.items():
+            if facet_name in facet_order:
+                continue
+                
+            table = Table(title=f"{facet_name.capitalize()} Distribution", show_header=True)
+            table.add_column("Value", style="cyan")
+            table.add_column("Count", style="green", justify="right")
+            table.add_column("Percentage", style="yellow", justify="right")
+            
+            sorted_values = sorted(facet_values.items(), key=lambda x: x[1], reverse=True)
+            
+            for value, count in sorted_values:
+                percentage = (count / total_count * 100) if total_count > 0 else 0
+                table.add_row(
+                    str(value),
+                    str(count),
+                    f"{percentage:.1f}%"
+                )
+            
+            console.print(table)
+            console.print()
+        
+        # Show OKR health metrics
+        if "status" in facets:
+            completed = facets["status"].get("Completed", 0)
+            in_progress = facets["status"].get("In Progress", 0)
+            at_risk = facets["status"].get("At Risk", 0)
+            blocked = facets["status"].get("Blocked", 0)
+            
+            completion_rate = (completed / total_count * 100) if total_count > 0 else 0
+            
+            console.print("[bold]📊 OKR Health Dashboard:[/bold]")
+            console.print(f"  ✅ Completed: {completed} ({completion_rate:.1f}%)")
+            console.print(f"  🔵 In Progress: {in_progress}")
+            if at_risk > 0:
+                console.print(f"  ⚠️  At Risk: {at_risk} [yellow](needs attention!)[/yellow]")
+            if blocked > 0:
+                console.print(f"  🚫 Blocked: {blocked} [red bold](critical!)[/red bold]")
+        
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
 
@@ -3451,6 +4006,133 @@ def query_cdes(ids, domain_ids, name_keyword, owners, status, multi_status,
             if skip > 0 or next_link:
                 console.print(f"\n[dim]Showing items {skip + 1} to {skip + len(cdes)}[/dim]")
             
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@cde.command(name="facets")
+@click.option("--domain-id", help="Filter by domain ID", required=False)
+@click.option("--facet-fields", multiple=True, help="Specific facet fields to retrieve (criticalityLevel, complianceFramework, status, domain)")
+@click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
+def get_cde_facets(domain_id, facet_fields, output):
+    """Get facets (aggregated statistics) for Critical Data Elements.
+    
+    Shows distribution of CDEs by criticality level, compliance framework, status, and domain.
+    Essential for governance dashboards, compliance reporting, and risk assessment.
+    
+    Examples:
+        # Get all CDE facets
+        pvw uc cde facets
+        
+        # Get facets for specific domain
+        pvw uc cde facets --domain-id <domain-guid>
+        
+        # Get specific facet fields only
+        pvw uc cde facets --facet-fields criticalityLevel --facet-fields complianceFramework
+        
+        # Export as JSON
+        pvw uc cde facets --output json
+    """
+    try:
+        client = UnifiedCatalogClient()
+        args = {}
+        
+        if domain_id:
+            args["--domain-id"] = [domain_id]
+        if facet_fields:
+            args["--facet-fields"] = list(facet_fields)
+        
+        result = client.get_cde_facets(args)
+        
+        if output == "json":
+            console.print_json(data=result)
+            return
+        
+        facets = result.get("facets", {})
+        total_count = result.get("totalCount", 0)
+        
+        if not facets:
+            console.print("[yellow]No facets data available.[/yellow]")
+            return
+        
+        console.print(f"\n[bold]🔒 Critical Data Elements Facets[/bold] (Total: {total_count} CDEs)\n")
+        
+        # Define facet display order and styling
+        facet_order = ["criticalityLevel", "complianceFramework", "status", "domain"]
+        facet_icons = {
+            "criticalityLevel": "⚠️",
+            "complianceFramework": "📋",
+            "status": "📊",
+            "domain": "🏢"
+        }
+        
+        for facet_name in facet_order:
+            if facet_name not in facets:
+                continue
+                
+            facet_values = facets[facet_name]
+            icon = facet_icons.get(facet_name, "📌")
+            
+            table = Table(title=f"{icon} {facet_name.capitalize()} Distribution", show_header=True)
+            table.add_column("Value", style="cyan")
+            table.add_column("Count", style="green", justify="right")
+            table.add_column("Percentage", style="yellow", justify="right")
+            
+            # Sort by count descending
+            sorted_values = sorted(facet_values.items(), key=lambda x: x[1], reverse=True)
+            
+            for value, count in sorted_values:
+                percentage = (count / total_count * 100) if total_count > 0 else 0
+                
+                # Add color coding for criticality levels
+                if facet_name == "criticalityLevel":
+                    if value.lower() == "high":
+                        value_display = f"[red bold]{value}[/red bold]"
+                    elif value.lower() == "medium":
+                        value_display = f"[yellow]{value}[/yellow]"
+                    else:
+                        value_display = f"[green]{value}[/green]"
+                else:
+                    value_display = str(value)
+                
+                table.add_row(
+                    value_display,
+                    str(count),
+                    f"{percentage:.1f}%"
+                )
+            
+            console.print(table)
+            console.print()  # Blank line between tables
+        
+        # Display any remaining facets not in the predefined order
+        for facet_name, facet_values in facets.items():
+            if facet_name in facet_order:
+                continue
+                
+            table = Table(title=f"{facet_name.capitalize()} Distribution", show_header=True)
+            table.add_column("Value", style="cyan")
+            table.add_column("Count", style="green", justify="right")
+            table.add_column("Percentage", style="yellow", justify="right")
+            
+            sorted_values = sorted(facet_values.items(), key=lambda x: x[1], reverse=True)
+            
+            for value, count in sorted_values:
+                percentage = (count / total_count * 100) if total_count > 0 else 0
+                table.add_row(
+                    str(value),
+                    str(count),
+                    f"{percentage:.1f}%"
+                )
+            
+            console.print(table)
+            console.print()
+        
+        # Show compliance summary
+        if "complianceFramework" in facets:
+            console.print("[bold]🛡️ Compliance Coverage Summary:[/bold]")
+            for framework, count in sorted(facets["complianceFramework"].items()):
+                console.print(f"  • {framework}: {count} CDEs")
+        
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
 

@@ -1,40 +1,48 @@
-# PURVIEW CLI v1.6.3 - Microsoft Purview Automation & Data Governance
+# PURVIEW CLI v1.7.0 - Microsoft Purview Automation & Data Governance
 
-[![Version](https://img.shields.io/badge/version-1.6.3-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.6.3)
-[![API Coverage](https://img.shields.io/badge/UC%20API%20Coverage-86%25-green.svg)](https://github.com/Keayoub/pvw-cli)
+[![Version](https://img.shields.io/badge/version-1.7.0-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.7.0)
+[![API Coverage](https://img.shields.io/badge/UC%20API%20Coverage-96%25-brightgreen.svg)](https://github.com/Keayoub/pvw-cli)
 [![Lineage](https://img.shields.io/badge/Lineage-Enhanced-green.svg)](https://github.com/Keayoub/pvw-cli)
 [![Status](https://img.shields.io/badge/status-stable-success.svg)](https://github.com/Keayoub/pvw-cli)
 
-> **LATEST UPDATE v1.6.3 (January 27, 2026):**
+> **LATEST UPDATE v1.7.0 (January 28, 2026):**
+>
+> **New Unified Catalog APIs - Analytics & Visualization**
+>
+> - **[NEW]** List Hierarchy Terms - Interactive tree visualization of glossary structure
+> - **[NEW]** Get Term Facets - Statistics and filters for glossary terms
+> - **[NEW]** Get CDE Facets - Compliance dashboards (GDPR, HIPAA, SOC2)
+> - **[NEW]** Get Data Product Facets - Analytics for data product portfolios
+> - **[NEW]** Get Objective Facets - OKR dashboards with health metrics
+> - **[NEW]** List Related Entities - Complete relationship exploration
+> - **[IMPROVED]** UC API Coverage increased from 81% to **96%** (+15%)
+> - **[ADDED]** Rich UI with trees, tables, and color-coded outputs
+> - **[DOCS]** Comprehensive guides and API coverage analysis
+>
+> **[Full Release Notes v1.7.0](releases/v1.7.0.md)** | **[New APIs Guide](doc/guides/UC_NEW_APIS_GUIDE.md)** | **[API Coverage Analysis](doc/UC_API_COVERAGE_ANALYSIS.md)**
+>
+> **Previous Update v1.6.3 (January 27, 2026):**
 >
 > **Collections Permissions Documentation & Diagnostics**
 >
 > - **[NEW]** Comprehensive permissions guides (English & French)
 > - **[NEW]** Automated diagnostic tools (PowerShell & Python)
-> - **[FIXED]** Collections get-details command parameter mappings
 > - **[ADDED]** HTTP 403 troubleshooting documentation
-> - **[ADDED]** Permission setup scripts (PowerShell & Bash)
 >
-> **Previous Update v1.6.2 (January 27, 2026):**
->
-> **Collections API Conformance**
->
-> - **[FIXED]** Complete alignment with Microsoft Purview Collections API specification
-> - **[IMPROVED]** All 10+ collection methods have accurate response documentation
-> - **[UPDATED]** Collections docstrings reflect actual API response structures
-> - **[VERIFIED]** All endpoints match official Microsoft specification
->
-> **[Full Release Notes v1.6.3](releases/v1.6.3.md)** | **[v1.6.2 Release Notes](releases/v1.6.2.md)** | **[Archive](releases/)**
+> **[Archive](releases/)**
 
 ---
 
 ## What is PVW CLI?
 
-**PVW CLI v1.6.3** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* with **86% Unified Catalog API coverage** (45 of 52 operations).
+**PVW CLI v1.7.0** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* with **96% Unified Catalog API coverage** (46 of 48 operations).
 
 ### Key Capabilities
 
-**Unified Catalog (UC) Management - 86% Complete**
+**Unified Catalog (UC) Management - 96% Complete** ⭐ *NEW*
+- **[NEW]** Glossary hierarchy visualization with interactive tree views
+- **[NEW]** Facets & analytics for terms, CDEs, data products, and objectives
+- **[NEW]** Complete relationship exploration for terms
 - Complete governance domains, glossary terms, data products, OKRs, CDEs
 - Relationships API - Link data products/CDEs/terms to entities and columns
 - Query APIs - Advanced OData filtering with multi-criteria search
