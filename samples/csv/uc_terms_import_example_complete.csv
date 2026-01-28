@@ -1,0 +1,9 @@
+name,description,status,acronyms,owner_ids,experts,synonyms,parent_term_name,related_terms,customAttributes.DataGovernance.Classification,customAttributes.DataGovernance.Sensitivity
+Client,Entité représentant un client de l'entreprise,Published,CLT,user-owner-guid-1,user-expert-guid-1;user-expert-guid-2,"Customer,Consumer",,Partie Prenante,PII,HIGH
+Produit,Catalogue des produits vendus,Draft,PRD,user-owner-guid-2,user-expert-guid-3,"Item,SKU,Article",,Client,NON_PII,LOW
+Commande,Transaction d'achat effectuée par un client,Published,CMD,user-owner-guid-1,user-expert-guid-1,"Order,Purchase",Transaction,Client;Produit,TRANSACTIONAL,MEDIUM
+Transaction,Transaction financière générique,Draft,TXN,user-owner-guid-3,user-expert-guid-2,"Payment,Settlement",,,FINANCIAL,HIGH
+Partie Prenante,Toute entité impliquée dans le processus métier,Published,STK,user-owner-guid-1,user-expert-guid-3,"Stakeholder,Actor",,,ORGANIZATIONAL,LOW
+Facture,Document de facturation client,Draft,INV,user-owner-guid-2,user-expert-guid-1,"Bill,Invoice",Transaction,Commande;Client,FINANCIAL,MEDIUM
+Paiement,Enregistrement de paiement reçu,Published,PAY,user-owner-guid-3,user-expert-guid-2,"Payment,Receipt",Transaction,Facture,FINANCIAL,HIGH
+Adresse Client,Adresse postale du client,Draft,ADR,user-owner-guid-1,user-expert-guid-3,"Address,Location",Client,,PII,HIGH

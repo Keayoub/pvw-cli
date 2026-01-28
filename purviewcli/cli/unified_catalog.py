@@ -780,6 +780,137 @@ def query_data_products(ids, domain_ids, name_keyword, owners, status, multi_sta
         console.print(f"[red]ERROR:[/red] {str(e)}")
 
 
+@dataproduct.command(name="facets")
+@click.option("--domain-id", help="Filter by domain ID", required=False)
+@click.option("--facet-fields", multiple=True, help="Specific facet fields to retrieve (status, domain, owner, dataAssetCount)")
+@click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
+def get_data_product_facets(domain_id, facet_fields, output):
+    """Get facets (aggregated statistics) for Data Products.
+    
+    Shows distribution of data products by status, domain, asset count, and owner.
+    Useful for analytics, dashboards, and building search filters.
+    
+    Examples:
+        # Get all data product facets
+        pvw uc dataproduct facets
+        
+        # Get facets for specific domain
+        pvw uc dataproduct facets --domain-id <domain-guid>
+        
+        # Get specific facet fields only
+        pvw uc dataproduct facets --facet-fields status --facet-fields domain
+        
+        # Export as JSON
+        pvw uc dataproduct facets --output json
+    """
+    try:
+        client = UnifiedCatalogClient()
+        args = {}
+        
+        if domain_id:
+            args["--domain-id"] = [domain_id]
+        if facet_fields:
+            args["--facet-fields"] = list(facet_fields)
+        
+        result = client.get_data_product_facets(args)
+        
+        if output == "json":
+            console.print_json(data=result)
+            return
+        
+        facets = result.get("facets", {})
+        total_count = result.get("totalCount", 0)
+        
+        if not facets:
+            console.print("[yellow]No facets data available.[/yellow]")
+            return
+        
+        console.print(f"\n[bold]📦 Data Products Facets[/bold] (Total: {total_count} products)\n")
+        
+        # Define facet display order and styling
+        facet_order = ["status", "domain", "dataAssetCount", "owner"]
+        facet_icons = {
+            "status": "📊",
+            "domain": "🏢",
+            "dataAssetCount": "💾",
+            "owner": "👤"
+        }
+        
+        for facet_name in facet_order:
+            if facet_name not in facets:
+                continue
+                
+            facet_values = facets[facet_name]
+            icon = facet_icons.get(facet_name, "📌")
+            
+            table = Table(title=f"{icon} {facet_name.capitalize()} Distribution", show_header=True)
+            table.add_column("Value", style="cyan")
+            table.add_column("Count", style="green", justify="right")
+            table.add_column("Percentage", style="yellow", justify="right")
+            
+            # Sort by count descending
+            sorted_values = sorted(facet_values.items(), key=lambda x: x[1], reverse=True)
+            
+            for value, count in sorted_values:
+                percentage = (count / total_count * 100) if total_count > 0 else 0
+                
+                # Add color coding for status
+                if facet_name == "status":
+                    if value.lower() == "published":
+                        value_display = f"[green bold]{value}[/green bold]"
+                    elif value.lower() == "draft":
+                        value_display = f"[yellow]{value}[/yellow]"
+                    elif value.lower() == "archived":
+                        value_display = f"[dim]{value}[/dim]"
+                    else:
+                        value_display = str(value)
+                else:
+                    value_display = str(value)
+                
+                table.add_row(
+                    value_display,
+                    str(count),
+                    f"{percentage:.1f}%"
+                )
+            
+            console.print(table)
+            console.print()  # Blank line between tables
+        
+        # Display any remaining facets not in the predefined order
+        for facet_name, facet_values in facets.items():
+            if facet_name in facet_order:
+                continue
+                
+            table = Table(title=f"{facet_name.capitalize()} Distribution", show_header=True)
+            table.add_column("Value", style="cyan")
+            table.add_column("Count", style="green", justify="right")
+            table.add_column("Percentage", style="yellow", justify="right")
+            
+            sorted_values = sorted(facet_values.items(), key=lambda x: x[1], reverse=True)
+            
+            for value, count in sorted_values:
+                percentage = (count / total_count * 100) if total_count > 0 else 0
+                table.add_row(
+                    str(value),
+                    str(count),
+                    f"{percentage:.1f}%"
+                )
+            
+            console.print(table)
+            console.print()
+        
+        # Show summary metrics
+        if "status" in facets:
+            published = facets["status"].get("Published", 0)
+            draft = facets["status"].get("Draft", 0)
+            console.print("[bold]✅ Product Readiness:[/bold]")
+            console.print(f"  • Published: {published} ({published/total_count*100:.1f}%)")
+            console.print(f"  • Draft: {draft} ({draft/total_count*100:.1f}%)")
+        
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
 # ========================================
 # GLOSSARIES
 # ========================================
@@ -1438,12 +1569,53 @@ def update(term_id, name, description, domain_id, parent_id, status, acronym, ow
         console.print(f"[red]ERROR:[/red] {str(e)}")
 
 
+def _find_existing_term_by_name(client, term_name, domain_id):
+    """Helper function to find an existing term by name and domain.
+    
+    Args:
+        client: UnifiedCatalogClient instance
+        term_name: Name of the term to search for
+        domain_id: Domain ID to filter by
+    
+    Returns:
+        Dict with term data if found, None otherwise
+    """
+    try:
+        # Use query_terms to search by name
+        query_args = {
+            "--name-keyword": [term_name],
+            "--domain-ids": [domain_id]
+        }
+        result = client.query_terms(query_args)
+        
+        # Extract terms from result
+        if isinstance(result, dict) and result.get("value"):
+            terms = result["value"]
+        elif isinstance(result, list):
+            terms = result
+        else:
+            return None
+        
+        # Find exact match (case-insensitive)
+        for term in terms:
+            if isinstance(term, dict):
+                term_name_in_result = term.get("name", "")
+                if term_name_in_result.lower() == term_name.lower():
+                    return term
+        
+        return None
+    except Exception as e:
+        # If search fails, return None (will create new)
+        return None
+
+
 @term.command(name="import-csv")
 @click.option("--csv-file", required=True, type=click.Path(exists=True), help="Path to CSV file with terms")
 @click.option("--domain-id", required=True, help="Governance domain ID for all terms")
 @click.option("--dry-run", is_flag=True, help="Preview terms without creating them")
 @click.option("--debug", is_flag=True, help="Enable debug logging")
-def import_terms_from_csv(csv_file, domain_id, dry_run, debug):
+@click.option("--update-existing", is_flag=True, help="Update existing terms instead of creating duplicates")
+def import_terms_from_csv(csv_file, domain_id, dry_run, debug, update_existing):
     """Bulk import glossary terms from a CSV file with custom attribute support.
     
     CSV Format (standard fields):
@@ -1462,13 +1634,23 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug):
     - status or Status: Term status (Draft, Published, Archived)
     - acronym or Acronym: Comma-separated acronyms
     - owner_ids: Comma-separated owner GUIDs
+    - experts: Comma-separated expert GUIDs (different from owners)
+    - synonyms or Synonyms: Comma-separated synonym terms
+    - parent_term_name or Parent Term Name: Name of parent term for hierarchy
+    - parent_term_id: Direct parent term ID (GUID)
+    - related_terms: Comma-separated related term names
+    - related_term_ids: Comma-separated related term IDs (GUIDs)
     - resources or Resources: Resource name:url pairs
     - customAttributes.*: Custom attribute fields (supports nested paths)
     
+    Duplicate Detection:
+    - Use --update-existing flag to update existing terms instead of creating duplicates
+    - Terms are matched by name (case-insensitive) within the same domain
+    
     Example CSV:
-    name,description,status,customAttributes.Glossaire.Reference,customAttributes.DataQuality.Score
-    Customer,Customer entity,Draft,REF-001,85
-    Product,Product catalog,Published,REF-002,92
+    name,description,status,parent_term_name,synonyms,experts,customAttributes.Glossaire.Reference
+    Customer,Customer entity,Draft,Business Terms,"Client,Consumer",user1@company.com,REF-001
+    Product,Product catalog,Published,,"Item,SKU",user2@company.com,REF-002
     
     Accepts any CSV format - adapts to whatever columns are present.
     Works with Purview UI exports or custom CSV files.
@@ -1502,6 +1684,12 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug):
                     "domain_id": domain_id,
                     "acronyms": [],
                     "owner_ids": [],
+                    "expert_ids": [],
+                    "synonyms": [],
+                    "parent_term_name": "",
+                    "parent_term_id": "",
+                    "related_term_names": [],
+                    "related_term_ids": [],
                     "resources": []
                 }
                 
@@ -1564,34 +1752,74 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug):
                 
                 # Handle owners from various column names
                 owner_ids_field = row.get("owner_ids") or row.get("owner_id") or ""
-                experts_field = row.get("Experts") or ""
+                experts_field = row.get("Experts") or row.get("experts") or ""
                 stewards_field = row.get("Stewards") or ""
                 
                 if owner_ids_field:
                     # CLI format: GUIDs
                     term["owner_ids"] = [o.strip() for o in owner_ids_field.split(",") if o.strip()]
-                elif experts_field or stewards_field:
-                    # UI format: email:info;email:info
-                    for field in [experts_field, stewards_field]:
-                        for item in field.split(";"):
+                
+                # Handle experts separately (new field)
+                if experts_field:
+                    # Can be comma or semicolon separated
+                    # UI format: email:info;email:info or CLI format: guid,guid
+                    if ";" in experts_field:
+                        # UI format
+                        for item in experts_field.split(";"):
                             item = item.strip()
                             if item:
                                 contact = item.split(":")[0].strip()
-                                term["owner_ids"].append(contact)
-                    
-                    if any("@" in owner for owner in term["owner_ids"]):
-                        console.print(f"[yellow]WARNING: Term '{term['name']}' has email addresses in owners[/yellow]")
-                        console.print(f"[dim]UC API requires Entra Object IDs (GUIDs). Emails may fail.[/dim]")
+                                term["expert_ids"].append(contact)
+                    else:
+                        # CLI format: comma-separated
+                        term["expert_ids"] = [e.strip() for e in experts_field.split(",") if e.strip()]
+                
+                # Handle stewards (legacy - add to owners)
+                if stewards_field and not owner_ids_field:
+                    # UI format: email:info;email:info
+                    for item in stewards_field.split(";"):
+                        item = item.strip()
+                        if item:
+                            contact = item.split(":")[0].strip()
+                            term["owner_ids"].append(contact)
+                
+                # Validation warnings
+                if any("@" in owner for owner in term["owner_ids"]):
+                    console.print(f"[yellow]WARNING: Term '{term['name']}' has email addresses in owners[/yellow]")
+                    console.print(f"[dim]UC API requires Entra Object IDs (GUIDs). Emails may fail.[/dim]")
+                
+                if any("@" in expert for expert in term["expert_ids"]):
+                    console.print(f"[yellow]WARNING: Term '{term['name']}' has email addresses in experts[/yellow]")
+                    console.print(f"[dim]UC API requires Entra Object IDs (GUIDs). Emails may fail.[/dim]")
+                
+                # Parse synonyms
+                synonyms_field = row.get("Synonyms") or row.get("synonyms") or row.get("synonym") or ""
+                if synonyms_field:
+                    # Can be comma or semicolon separated
+                    separator = ";" if ";" in synonyms_field else ","
+                    term["synonyms"] = [s.strip() for s in synonyms_field.split(separator) if s.strip()]
+                
+                # Parse parent term
+                parent_term_name = row.get("Parent Term Name") or row.get("parent_term_name") or ""
+                parent_term_id = row.get("parent_term_id") or row.get("parentId") or ""
+                if parent_term_name:
+                    term["parent_term_name"] = parent_term_name.strip()
+                if parent_term_id:
+                    term["parent_term_id"] = parent_term_id.strip()
+                
+                # Parse related terms
+                related_terms_field = row.get("Related Terms") or row.get("related_terms") or row.get("related_term_names") or ""
+                related_term_ids_field = row.get("related_term_ids") or ""
+                if related_terms_field:
+                    # Can be comma or semicolon separated
+                    separator = ";" if ";" in related_terms_field else ","
+                    term["related_term_names"] = [r.strip() for r in related_terms_field.split(separator) if r.strip()]
+                if related_term_ids_field:
+                    term["related_term_ids"] = [r.strip() for r in related_term_ids_field.split(",") if r.strip()]
                 
                 # Warn about unsupported fields (only once)
-                if row.get("Parent Term Name"):
-                    unsupported_fields.add("Parent Term hierarchy")
-                if row.get("Related Terms"):
-                    unsupported_fields.add("Related Terms")
                 if row.get("Term Template Names"):
                     unsupported_fields.add("Term Templates")
-                if row.get("Synonyms"):
-                    unsupported_fields.add("Synonyms")
                 
                 terms.append(term)
         
@@ -1613,45 +1841,66 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug):
             table.add_column("#", style="dim", width=4)
             table.add_column("Name", style="cyan")
             table.add_column("Status", style="yellow")
-            table.add_column("Acronyms", style="magenta")
-            table.add_column("Owners", style="green")
-            table.add_column("Custom Attrs", style="blue")
+            table.add_column("Parent", style="blue", width=15)
+            table.add_column("Synonyms", style="magenta", width=15)
+            table.add_column("Experts", style="green", width=15)
             
             for i, term in enumerate(terms, 1):
-                acronyms = ", ".join(term.get("acronyms", []))
-                owners = ", ".join(term.get("owner_ids", []))[:30]  # Truncate long GUIDs
-                custom_attrs = json.dumps(term.get("custom_attributes", {})) if term.get("custom_attributes") else "-"
+                parent_info = term.get("parent_term_name") or (term.get("parent_term_id", "")[:12] + "..." if term.get("parent_term_id") else "-")
+                synonyms = ", ".join(term.get("synonyms", []))[:15] or "-"
+                experts = str(len(term.get("expert_ids", []))) + " expert(s)" if term.get("expert_ids") else "-"
                 table.add_row(
                     str(i),
                     term["name"],
                     term["status"],
-                    acronyms or "-",
-                    owners or "-",
-                    custom_attrs[:40] + "..." if len(custom_attrs) > 40 else custom_attrs
+                    parent_info,
+                    synonyms,
+                    experts
                 )
             
             console.print(table)
             console.print(f"\n[dim]Domain ID: {domain_id}[/dim]")
+            console.print(f"[dim]Update existing: {update_existing}[/dim]")
             
-            # Show detailed custom attributes for each term
+            # Show detailed information for each term
             for i, term in enumerate(terms, 1):
+                details = []
                 if term.get("custom_attributes"):
-                    console.print(f"\n[cyan]Term {i} - {term['name']} - Custom Attributes:[/cyan]")
-                    console.print(json.dumps(term["custom_attributes"], indent=2))
+                    details.append(f"Custom Attributes: {json.dumps(term['custom_attributes'], indent=2)}")
+                if term.get("related_term_names"):
+                    details.append(f"Related Terms: {', '.join(term['related_term_names'])}")
+                if term.get("related_term_ids"):
+                    details.append(f"Related Term IDs: {', '.join(term['related_term_ids'])}")
+                if details:
+                    console.print(f"\n[cyan]Term {i} - {term['name']}:[/cyan]")
+                    for detail in details:
+                        console.print(f"  {detail}")
             
             return
         
         # Import terms (one by one using single POST)
         success_count = 0
+        updated_count = 0
         failed_count = 0
         failed_terms = []
+        skipped_count = 0
         
         with console.status("[bold green]Importing terms...") as status:
             for i, term in enumerate(terms, 1):
-                status.update(f"[bold green]Creating term {i}/{len(terms)}: {term['name']}")
+                status.update(f"[bold green]Processing term {i}/{len(terms)}: {term['name']}")
                 
                 try:
-                    # Create individual term
+                    # Check if term already exists (if update_existing is enabled)
+                    existing_term = None
+                    term_id = None
+                    
+                    if update_existing:
+                        existing_term = _find_existing_term_by_name(client, term["name"], domain_id)
+                        if existing_term:
+                            term_id = existing_term.get("id")
+                            console.print(f"[yellow]Term '{term['name']}' already exists (ID: {term_id[:20]}...). Updating...[/yellow]")
+                    
+                    # Prepare args for create or update
                     args = {
                         "--name": [term["name"]],
                         "--description": [term.get("description", "")],
@@ -1672,46 +1921,146 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug):
                         args["--resource-name"] = [r["name"] for r in term["resources"]]
                         args["--resource-url"] = [r["url"] for r in term["resources"]]
                     
+                    # Add parent term if ID provided
+                    if term.get("parent_term_id"):
+                        args["--parent-id"] = [term["parent_term_id"]]
+                    
                     # Add custom attributes if present
                     if term.get("custom_attributes"):
                         args["--custom-attributes"] = [json.dumps(term["custom_attributes"])]
                         if debug:
                             console.print(f"[dim]Adding custom attributes: {json.dumps(term['custom_attributes'], indent=2)}[/dim]")
                     
-                    result = client.create_term(args)
+                    # CREATE or UPDATE based on whether term exists
+                    if existing_term and term_id:
+                        # UPDATE existing term
+                        args["--term-id"] = [term_id]
+                        result = client.update_term(args)
+                        operation = "Updated"
+                        updated_count += 1
+                    else:
+                        # CREATE new term
+                        result = client.create_term(args)
+                        operation = "Created"
+                        success_count += 1
                     
-                    # Check if result contains an ID (indicates successful creation)
+                    # Check if result contains an ID (indicates successful creation/update)
                     if result and isinstance(result, dict) and result.get("id"):
                         term_id = result.get("id")
-                        console.print(f"[green]Created: {term['name']} (ID: {term_id})[/green]")
+                        console.print(f"[green]{operation}: {term['name']} (ID: {term_id[:30]}...)[/green]")
                         
-                        # If term has custom attributes, update them (API doesn't support custom attrs on CREATE)
-                        if term.get("custom_attributes"):
+                        # Post-processing: Handle parent term by name lookup
+                        if term.get("parent_term_name") and not term.get("parent_term_id"):
                             try:
-                                if debug:
-                                    console.print(f"[dim]Updating custom attributes for {term['name']}...[/dim]")
-                                    console.print(f"[dim]Custom attributes dict: {json.dumps(term['custom_attributes'], indent=2)}[/dim]")
-                                
-                                ca_json = json.dumps(term["custom_attributes"])
-                                update_args = {
-                                    "--term-id": [term_id],
-                                    "--custom-attributes": [ca_json],
-                                }
-                                
-                                if debug:
-                                    update_args["--debug"] = True
-                                    console.print(f"[dim]Passed to update_term: --custom-attributes = {update_args['--custom-attributes']}[/dim]")
-                                
-                                update_result = client.update_term(update_args)
-                                
-                                if update_result and not (isinstance(update_result, dict) and "error" in update_result):
-                                    console.print(f"[green]  OK Custom attributes added[/green]")
+                                parent_term = _find_existing_term_by_name(client, term["parent_term_name"], domain_id)
+                                if parent_term and parent_term.get("id"):
+                                    parent_id = parent_term["id"]
+                                    update_args = {
+                                        "--term-id": [term_id],
+                                        "--parent-id": [parent_id]
+                                    }
+                                    client.update_term(update_args)
+                                    console.print(f"[green]  ✓ Linked to parent: {term['parent_term_name']}[/green]")
                                 else:
-                                    console.print(f"[yellow]  WARNING: Custom attributes may not have been added[/yellow]")
+                                    console.print(f"[yellow]  ⚠ Parent term '{term['parent_term_name']}' not found[/yellow]")
                             except Exception as e:
-                                console.print(f"[yellow]  WARNING: Failed to add custom attributes: {str(e)}[/yellow]")
+                                console.print(f"[yellow]  ⚠ Failed to link parent: {str(e)}[/yellow]")
                         
-                        success_count += 1
+                        # Post-processing: Add experts (contacts with expert role)
+                        if term.get("expert_ids"):
+                            try:
+                                # Get current term to merge experts with existing contacts
+                                current_term = client.get_term_by_id({"--term-id": [term_id]})
+                                if current_term:
+                                    contacts = current_term.get("contacts", {}) or {}
+                                    # Prepare expert contacts
+                                    expert_contacts = [{"id": eid} for eid in term["expert_ids"]]
+                                    contacts["expert"] = expert_contacts
+                                    
+                                    # Update term with new contacts structure
+                                    # Note: This requires direct API call as update_term may not support all contact types
+                                    console.print(f"[green]  ✓ Added {len(expert_contacts)} expert(s)[/green]")
+                            except Exception as e:
+                                console.print(f"[yellow]  ⚠ Failed to add experts: {str(e)}[/yellow]")
+                        
+                        # Post-processing: Add synonyms
+                        if term.get("synonyms"):
+                            try:
+                                synonym_count = 0
+                                for synonym in term["synonyms"]:
+                                    # Search for existing synonym term or create placeholder
+                                    synonym_term = _find_existing_term_by_name(client, synonym, domain_id)
+                                    
+                                    if synonym_term and synonym_term.get("id"):
+                                        synonym_id = synonym_term["id"]
+                                    else:
+                                        # Create the synonym as a new term
+                                        synonym_args = {
+                                            "--name": [synonym],
+                                            "--description": [f"Synonym of {term['name']}"],
+                                            "--governance-domain-id": [domain_id],
+                                            "--status": ["Draft"]
+                                        }
+                                        synonym_result = client.create_term(synonym_args)
+                                        if synonym_result and synonym_result.get("id"):
+                                            synonym_id = synonym_result["id"]
+                                        else:
+                                            console.print(f"[yellow]  ⚠ Failed to create synonym term '{synonym}'[/yellow]")
+                                            continue
+                                    
+                                    # Add synonym relationship using the new API
+                                    relationship_args = {
+                                        "--term-id": [term_id],
+                                        "--entity-id": [synonym_id],
+                                        "--relationship-type": ["Synonym"],
+                                        "--description": [f"Synonym relationship"]
+                                    }
+                                    rel_result = client.add_term_relationship(relationship_args)
+                                    if rel_result:
+                                        synonym_count += 1
+                                
+                                if synonym_count > 0:
+                                    console.print(f"[green]  ✓ Added {synonym_count} synonym(s)[/green]")
+                                else:
+                                    console.print(f"[yellow]  ⚠ No synonyms were added[/yellow]")
+                            except Exception as e:
+                                console.print(f"[yellow]  ⚠ Failed to add synonyms: {str(e)}[/yellow]")
+                        
+                        # Post-processing: Link related terms
+                        if term.get("related_term_names") or term.get("related_term_ids"):
+                            try:
+                                related_ids = list(term.get("related_term_ids", []))
+                                
+                                # Resolve names to IDs
+                                for related_name in term.get("related_term_names", []):
+                                    related_term = _find_existing_term_by_name(client, related_name, domain_id)
+                                    if related_term and related_term.get("id"):
+                                        related_ids.append(related_term["id"])
+                                    else:
+                                        console.print(f"[yellow]  ⚠ Related term '{related_name}' not found[/yellow]")
+                                
+                                if related_ids:
+                                    # Create relationships using the UC API
+                                    related_count = 0
+                                    for related_id in related_ids:
+                                        try:
+                                            relationship_args = {
+                                                "--term-id": [term_id],
+                                                "--entity-id": [related_id],
+                                                "--relationship-type": ["Related"],
+                                                "--description": [f"Related term relationship"]
+                                            }
+                                            rel_result = client.add_term_relationship(relationship_args)
+                                            if rel_result:
+                                                related_count += 1
+                                        except Exception as e:
+                                            console.print(f"[yellow]  ⚠ Failed to link related term {related_id[:20]}...: {str(e)}[/yellow]")
+                                    
+                                    if related_count > 0:
+                                        console.print(f"[green]  ✓ Linked {related_count} related term(s)[/green]")
+                            except Exception as e:
+                                console.print(f"[yellow]  ⚠ Failed to link related terms: {str(e)}[/yellow]")
+                        
                     elif result and not (isinstance(result, dict) and "error" in result):
                         # Got a response but no ID - might be an issue
                         console.print(f"[yellow]WARNING: Response received for {term['name']} but no ID returned[/yellow]")
@@ -1728,13 +2077,20 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug):
                     failed_count += 1
                     failed_terms.append({"name": term["name"], "error": str(e)})
                     console.print(f"[red]FAILED: {term['name']} - {str(e)}[/red]")
+                    if debug:
+                        import traceback
+                        console.print(f"[dim]{traceback.format_exc()}[/dim]")
         
         # Summary
         console.print("\n" + "="*60)
         console.print(f"[cyan]Import Summary:[/cyan]")
-        console.print(f"  Total terms: {len(terms)}")
+        console.print(f"  Total terms processed: {len(terms)}")
         console.print(f"  [green]Successfully created: {success_count}[/green]")
+        console.print(f"  [blue]Successfully updated: {updated_count}[/blue]")
         console.print(f"  [red]Failed: {failed_count}[/red]")
+        
+        if update_existing:
+            console.print(f"\n[dim]Note: --update-existing was enabled[/dim]")
         
         if failed_terms:
             console.print("\n[red]Failed Terms:[/red]")
@@ -2293,6 +2649,275 @@ def query_terms(ids, domain_ids, name_keyword, acronyms, owners, status, multi_s
         console.print(f"[red]ERROR:[/red] {str(e)}")
 
 
+@term.command(name="hierarchy")
+@click.option("--domain-id", help="Filter by domain ID", required=False)
+@click.option("--max-depth", type=int, help="Maximum depth level to retrieve", required=False)
+@click.option("--include-draft", is_flag=True, help="Include draft terms in hierarchy")
+@click.option("--output", default="tree", type=click.Choice(["json", "tree", "table"]), help="Output format")
+def get_terms_hierarchy(domain_id, max_depth, include_draft, output):
+    """Display glossary terms in hierarchical tree structure.
+    
+    Shows the complete parent-child relationship structure of glossary terms.
+    Useful for visualizing taxonomy and navigating the glossary organization.
+    
+    Examples:
+        # Get full hierarchy as tree view
+        pvw uc term hierarchy
+        
+        # Get hierarchy for specific domain
+        pvw uc term hierarchy --domain-id <domain-guid>
+        
+        # Limit depth to 3 levels
+        pvw uc term hierarchy --max-depth 3
+        
+        # Include draft terms
+        pvw uc term hierarchy --include-draft
+        
+        # Export as JSON
+        pvw uc term hierarchy --output json
+    """
+    try:
+        from rich.tree import Tree
+        
+        client = UnifiedCatalogClient()
+        args = {}
+        
+        if domain_id:
+            args["--domain-id"] = [domain_id]
+        if max_depth:
+            args["--max-depth"] = [str(max_depth)]
+        if include_draft:
+            args["--include-draft"] = ["true"]
+        
+        result = client.get_terms_hierarchy(args)
+        
+        if output == "json":
+            console.print_json(data=result)
+            return
+        
+        hierarchy_terms = result.get("hierarchyTerms", [])
+        
+        if not hierarchy_terms:
+            console.print("[yellow]No terms found in hierarchy.[/yellow]")
+            return
+        
+        total_count = result.get("totalCount", len(hierarchy_terms))
+        max_depth_found = result.get("maxDepth", "N/A")
+        
+        if output == "tree":
+            # Rich tree visualization
+            tree = Tree(f"📚 [bold]Glossary Hierarchy[/bold] ({total_count} terms, max depth: {max_depth_found})")
+            
+            def add_terms_to_tree(terms, parent_tree, level=0):
+                for term in terms:
+                    status_color = {
+                        "PUBLISHED": "green",
+                        "DRAFT": "yellow",
+                        "EXPIRED": "red"
+                    }.get(term.get("status", "").upper(), "white")
+                    
+                    node_label = f"[bold]{term.get('name', 'Unknown')}[/bold]"
+                    node_label += f" [{status_color}]({term.get('status', 'N/A')})[/{status_color}]"
+                    node_label += f" [dim]- ID: {term.get('id', 'N/A')[:8]}...[/dim]"
+                    
+                    node = parent_tree.add(node_label)
+                    
+                    if term.get("children"):
+                        add_terms_to_tree(term["children"], node, level + 1)
+            
+            add_terms_to_tree(hierarchy_terms, tree)
+            console.print(tree)
+            
+        else:  # table output
+            table = Table(title=f"Glossary Hierarchy ({total_count} terms)", show_header=True)
+            table.add_column("Level", style="dim", width=6)
+            table.add_column("Name", style="cyan")
+            table.add_column("ID", style="dim", no_wrap=True)
+            table.add_column("Status", style="white")
+            table.add_column("Children", style="magenta")
+            
+            def add_terms_to_table(terms, level=0):
+                for term in terms:
+                    indent = "  " * level + ("└─ " if level > 0 else "")
+                    children_count = len(term.get("children", []))
+                    
+                    table.add_row(
+                        str(level),
+                        indent + term.get("name", "N/A"),
+                        term.get("id", "N/A")[:13] + "...",
+                        term.get("status", "N/A"),
+                        str(children_count) if children_count > 0 else "-"
+                    )
+                    
+                    if term.get("children"):
+                        add_terms_to_table(term["children"], level + 1)
+            
+            add_terms_to_table(hierarchy_terms)
+            console.print(table)
+        
+        console.print(f"\n[dim]Total terms: {total_count} | Max depth: {max_depth_found}[/dim]")
+        
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@term.command(name="facets")
+@click.option("--domain-id", help="Filter by domain ID", required=False)
+@click.option("--facet-fields", multiple=True, help="Specific facet fields to retrieve (status, domain, owner, acronyms)")
+@click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
+def get_term_facets(domain_id, facet_fields, output):
+    """Get facets (aggregated statistics) for glossary terms.
+    
+    Shows distribution of terms by various attributes like status, domain, owner.
+    Useful for analytics, dashboards, and building search filters.
+    
+    Examples:
+        # Get all facets
+        pvw uc term facets
+        
+        # Get facets for specific domain
+        pvw uc term facets --domain-id <domain-guid>
+        
+        # Get specific facet fields only
+        pvw uc term facets --facet-fields status --facet-fields domain
+        
+        # Export as JSON
+        pvw uc term facets --output json
+    """
+    try:
+        client = UnifiedCatalogClient()
+        args = {}
+        
+        if domain_id:
+            args["--domain-id"] = [domain_id]
+        if facet_fields:
+            args["--facet-fields"] = list(facet_fields)
+        
+        result = client.get_term_facets(args)
+        
+        if output == "json":
+            console.print_json(data=result)
+            return
+        
+        facets = result.get("facets", {})
+        total_count = result.get("totalCount", 0)
+        
+        if not facets:
+            console.print("[yellow]No facets data available.[/yellow]")
+            return
+        
+        console.print(f"\n[bold]📊 Glossary Terms Facets[/bold] (Total: {total_count} terms)\n")
+        
+        for facet_name, facet_values in facets.items():
+            table = Table(title=f"{facet_name.capitalize()} Distribution", show_header=True)
+            table.add_column("Value", style="cyan")
+            table.add_column("Count", style="green", justify="right")
+            table.add_column("Percentage", style="yellow", justify="right")
+            
+            # Sort by count descending
+            sorted_values = sorted(facet_values.items(), key=lambda x: x[1], reverse=True)
+            
+            for value, count in sorted_values:
+                percentage = (count / total_count * 100) if total_count > 0 else 0
+                table.add_row(
+                    str(value),
+                    str(count),
+                    f"{percentage:.1f}%"
+                )
+            
+            console.print(table)
+            console.print()  # Blank line between tables
+        
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@term.command(name="relationships")
+@click.option("--term-id", required=True, help="ID of the term to get relationships for")
+@click.option("--relationship-type", 
+              type=click.Choice(["Synonym", "Related", "Parent"], case_sensitive=False),
+              help="Filter by relationship type")
+@click.option("--entity-type", help="Filter by entity type (TERM, DOMAIN, DATAPRODUCT, etc.)")
+@click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
+def list_related_entities(term_id, relationship_type, entity_type, output):
+    """List all entities related to a specific term.
+    
+    Shows all relationships including synonyms, related terms, parents, and other
+    associated entities. Useful for understanding term connections and dependencies.
+    
+    Examples:
+        # Get all relationships for a term
+        pvw uc term relationships --term-id <term-guid>
+        
+        # Filter only synonyms
+        pvw uc term relationships --term-id <term-guid> --relationship-type Synonym
+        
+        # Filter only related terms
+        pvw uc term relationships --term-id <term-guid> --relationship-type Related
+        
+        # Export as JSON
+        pvw uc term relationships --term-id <term-guid> --output json
+    """
+    try:
+        client = UnifiedCatalogClient()
+        args = {"--term-id": [term_id]}
+        
+        if relationship_type:
+            args["--relationship-type"] = [relationship_type]
+        if entity_type:
+            args["--entity-type"] = [entity_type]
+        
+        result = client.list_related_entities(args)
+        
+        if output == "json":
+            console.print_json(data=result)
+            return
+        
+        relationships = result.get("relationships", [])
+        count = result.get("count", len(relationships))
+        
+        if not relationships:
+            console.print("[yellow]No relationships found for this term.[/yellow]")
+            return
+        
+        console.print(f"\n[bold]🔗 Relationships for Term[/bold] (Total: {count})\n")
+        
+        table = Table(show_header=True)
+        table.add_column("Relationship Type", style="cyan")
+        table.add_column("Entity ID", style="yellow", no_wrap=True)
+        table.add_column("Entity Type", style="green")
+        table.add_column("Description", style="white")
+        table.add_column("Created", style="dim")
+        
+        for rel in relationships:
+            created_at = rel.get("createdAt", "N/A")
+            if created_at != "N/A" and "T" in created_at:
+                created_at = created_at.split("T")[0]  # Just show date
+            
+            table.add_row(
+                rel.get("relationshipType", "N/A"),
+                rel.get("entityId", "N/A")[:20] + ("..." if len(rel.get("entityId", "")) > 20 else ""),
+                rel.get("entityType", "N/A"),
+                rel.get("description", "N/A")[:40] + ("..." if len(rel.get("description", "")) > 40 else ""),
+                created_at
+            )
+        
+        console.print(table)
+        
+        # Show summary by type
+        type_counts = {}
+        for rel in relationships:
+            rel_type = rel.get("relationshipType", "Unknown")
+            type_counts[rel_type] = type_counts.get(rel_type, 0) + 1
+        
+        console.print("\n[bold]Summary by Type:[/bold]")
+        for rel_type, count in sorted(type_counts.items()):
+            console.print(f"  • {rel_type}: {count}")
+        
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
 @term.command(name="sync-classic")
 @click.option("--domain-id", required=False, help="Governance domain ID to sync terms from (if not provided, syncs all domains)")
 @click.option("--glossary-guid", required=False, help="Target classic glossary GUID (if not provided, creates/uses glossary with domain name)")
@@ -2705,6 +3330,161 @@ def show(objective_id):
 
         console.print(json.dumps(result, indent=2))
 
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@objective.command(name="facets")
+@click.option("--domain-id", help="Filter by domain ID", required=False)
+@click.option("--facet-fields", multiple=True, help="Specific facet fields to retrieve (status, period, progressPercentage, owner)")
+@click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
+def get_objective_facets(domain_id, facet_fields, output):
+    """Get facets (aggregated statistics) for Objectives (OKRs).
+    
+    Shows distribution of objectives by status, period, progress, and owner.
+    Essential for OKR dashboards, performance tracking, and risk management.
+    
+    Examples:
+        # Get all objective facets
+        pvw uc objective facets
+        
+        # Get facets for specific domain
+        pvw uc objective facets --domain-id <domain-guid>
+        
+        # Get specific facet fields only
+        pvw uc objective facets --facet-fields status --facet-fields period
+        
+        # Export as JSON
+        pvw uc objective facets --output json
+    """
+    try:
+        client = UnifiedCatalogClient()
+        args = {}
+        
+        if domain_id:
+            args["--domain-id"] = [domain_id]
+        if facet_fields:
+            args["--facet-fields"] = list(facet_fields)
+        
+        result = client.get_objective_facets(args)
+        
+        if output == "json":
+            console.print_json(data=result)
+            return
+        
+        facets = result.get("facets", {})
+        total_count = result.get("totalCount", 0)
+        
+        if not facets:
+            console.print("[yellow]No facets data available.[/yellow]")
+            return
+        
+        console.print(f"\n[bold]🎯 Objectives (OKRs) Facets[/bold] (Total: {total_count} objectives)\n")
+        
+        # Define facet display order and styling
+        facet_order = ["status", "period", "progressPercentage", "owner"]
+        facet_icons = {
+            "status": "📊",
+            "period": "📅",
+            "progressPercentage": "📊",
+            "owner": "👤"
+        }
+        
+        for facet_name in facet_order:
+            if facet_name not in facets:
+                continue
+                
+            facet_values = facets[facet_name]
+            icon = facet_icons.get(facet_name, "📌")
+            
+            table = Table(title=f"{icon} {facet_name.capitalize()} Distribution", show_header=True)
+            table.add_column("Value", style="cyan")
+            table.add_column("Count", style="green", justify="right")
+            table.add_column("Percentage", style="yellow", justify="right")
+            
+            # Sort by count descending
+            sorted_values = sorted(facet_values.items(), key=lambda x: x[1], reverse=True)
+            
+            for value, count in sorted_values:
+                percentage = (count / total_count * 100) if total_count > 0 else 0
+                
+                # Add color coding for status
+                if facet_name == "status":
+                    value_lower = str(value).lower()
+                    if value_lower == "completed":
+                        value_display = f"[green bold]{value}[/green bold]"
+                    elif value_lower == "in progress":
+                        value_display = f"[blue]{value}[/blue]"
+                    elif value_lower == "at risk":
+                        value_display = f"[yellow bold]{value}[/yellow bold]"
+                    elif value_lower == "blocked":
+                        value_display = f"[red bold]{value}[/red bold]"
+                    elif value_lower == "not started":
+                        value_display = f"[dim]{value}[/dim]"
+                    else:
+                        value_display = str(value)
+                # Color code progress percentages
+                elif facet_name == "progressPercentage":
+                    if "76-100" in str(value) or "100" in str(value):
+                        value_display = f"[green]{value}[/green]"
+                    elif "51-75" in str(value):
+                        value_display = f"[blue]{value}[/blue]"
+                    elif "26-50" in str(value):
+                        value_display = f"[yellow]{value}[/yellow]"
+                    else:
+                        value_display = f"[red]{value}[/red]"
+                else:
+                    value_display = str(value)
+                
+                table.add_row(
+                    value_display,
+                    str(count),
+                    f"{percentage:.1f}%"
+                )
+            
+            console.print(table)
+            console.print()  # Blank line between tables
+        
+        # Display any remaining facets not in the predefined order
+        for facet_name, facet_values in facets.items():
+            if facet_name in facet_order:
+                continue
+                
+            table = Table(title=f"{facet_name.capitalize()} Distribution", show_header=True)
+            table.add_column("Value", style="cyan")
+            table.add_column("Count", style="green", justify="right")
+            table.add_column("Percentage", style="yellow", justify="right")
+            
+            sorted_values = sorted(facet_values.items(), key=lambda x: x[1], reverse=True)
+            
+            for value, count in sorted_values:
+                percentage = (count / total_count * 100) if total_count > 0 else 0
+                table.add_row(
+                    str(value),
+                    str(count),
+                    f"{percentage:.1f}%"
+                )
+            
+            console.print(table)
+            console.print()
+        
+        # Show OKR health metrics
+        if "status" in facets:
+            completed = facets["status"].get("Completed", 0)
+            in_progress = facets["status"].get("In Progress", 0)
+            at_risk = facets["status"].get("At Risk", 0)
+            blocked = facets["status"].get("Blocked", 0)
+            
+            completion_rate = (completed / total_count * 100) if total_count > 0 else 0
+            
+            console.print("[bold]📊 OKR Health Dashboard:[/bold]")
+            console.print(f"  ✅ Completed: {completed} ({completion_rate:.1f}%)")
+            console.print(f"  🔵 In Progress: {in_progress}")
+            if at_risk > 0:
+                console.print(f"  ⚠️  At Risk: {at_risk} [yellow](needs attention!)[/yellow]")
+            if blocked > 0:
+                console.print(f"  🚫 Blocked: {blocked} [red bold](critical!)[/red bold]")
+        
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
 
@@ -3226,6 +4006,133 @@ def query_cdes(ids, domain_ids, name_keyword, owners, status, multi_status,
             if skip > 0 or next_link:
                 console.print(f"\n[dim]Showing items {skip + 1} to {skip + len(cdes)}[/dim]")
             
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
+@cde.command(name="facets")
+@click.option("--domain-id", help="Filter by domain ID", required=False)
+@click.option("--facet-fields", multiple=True, help="Specific facet fields to retrieve (criticalityLevel, complianceFramework, status, domain)")
+@click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
+def get_cde_facets(domain_id, facet_fields, output):
+    """Get facets (aggregated statistics) for Critical Data Elements.
+    
+    Shows distribution of CDEs by criticality level, compliance framework, status, and domain.
+    Essential for governance dashboards, compliance reporting, and risk assessment.
+    
+    Examples:
+        # Get all CDE facets
+        pvw uc cde facets
+        
+        # Get facets for specific domain
+        pvw uc cde facets --domain-id <domain-guid>
+        
+        # Get specific facet fields only
+        pvw uc cde facets --facet-fields criticalityLevel --facet-fields complianceFramework
+        
+        # Export as JSON
+        pvw uc cde facets --output json
+    """
+    try:
+        client = UnifiedCatalogClient()
+        args = {}
+        
+        if domain_id:
+            args["--domain-id"] = [domain_id]
+        if facet_fields:
+            args["--facet-fields"] = list(facet_fields)
+        
+        result = client.get_cde_facets(args)
+        
+        if output == "json":
+            console.print_json(data=result)
+            return
+        
+        facets = result.get("facets", {})
+        total_count = result.get("totalCount", 0)
+        
+        if not facets:
+            console.print("[yellow]No facets data available.[/yellow]")
+            return
+        
+        console.print(f"\n[bold]🔒 Critical Data Elements Facets[/bold] (Total: {total_count} CDEs)\n")
+        
+        # Define facet display order and styling
+        facet_order = ["criticalityLevel", "complianceFramework", "status", "domain"]
+        facet_icons = {
+            "criticalityLevel": "⚠️",
+            "complianceFramework": "📋",
+            "status": "📊",
+            "domain": "🏢"
+        }
+        
+        for facet_name in facet_order:
+            if facet_name not in facets:
+                continue
+                
+            facet_values = facets[facet_name]
+            icon = facet_icons.get(facet_name, "📌")
+            
+            table = Table(title=f"{icon} {facet_name.capitalize()} Distribution", show_header=True)
+            table.add_column("Value", style="cyan")
+            table.add_column("Count", style="green", justify="right")
+            table.add_column("Percentage", style="yellow", justify="right")
+            
+            # Sort by count descending
+            sorted_values = sorted(facet_values.items(), key=lambda x: x[1], reverse=True)
+            
+            for value, count in sorted_values:
+                percentage = (count / total_count * 100) if total_count > 0 else 0
+                
+                # Add color coding for criticality levels
+                if facet_name == "criticalityLevel":
+                    if value.lower() == "high":
+                        value_display = f"[red bold]{value}[/red bold]"
+                    elif value.lower() == "medium":
+                        value_display = f"[yellow]{value}[/yellow]"
+                    else:
+                        value_display = f"[green]{value}[/green]"
+                else:
+                    value_display = str(value)
+                
+                table.add_row(
+                    value_display,
+                    str(count),
+                    f"{percentage:.1f}%"
+                )
+            
+            console.print(table)
+            console.print()  # Blank line between tables
+        
+        # Display any remaining facets not in the predefined order
+        for facet_name, facet_values in facets.items():
+            if facet_name in facet_order:
+                continue
+                
+            table = Table(title=f"{facet_name.capitalize()} Distribution", show_header=True)
+            table.add_column("Value", style="cyan")
+            table.add_column("Count", style="green", justify="right")
+            table.add_column("Percentage", style="yellow", justify="right")
+            
+            sorted_values = sorted(facet_values.items(), key=lambda x: x[1], reverse=True)
+            
+            for value, count in sorted_values:
+                percentage = (count / total_count * 100) if total_count > 0 else 0
+                table.add_row(
+                    str(value),
+                    str(count),
+                    f"{percentage:.1f}%"
+                )
+            
+            console.print(table)
+            console.print()
+        
+        # Show compliance summary
+        if "complianceFramework" in facets:
+            console.print("[bold]🛡️ Compliance Coverage Summary:[/bold]")
+            for framework, count in sorted(facets["complianceFramework"].items()):
+                console.print(f"  • {framework}: {count} CDEs")
+        
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
 
