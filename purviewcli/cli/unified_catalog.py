@@ -1630,6 +1630,7 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug, update_existing):
     - domain_id: Specified via --domain-id option
     
     Optional:
+    - term_id, id, ID, or Term ID: Unique term identifier for idempotent updates
     - description or Definition: Term description
     - status or Status: Term status (Draft, Published, Archived)
     - acronym or Acronym: Comma-separated acronyms
@@ -1643,11 +1644,23 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug, update_existing):
     - resources or Resources: Resource name:url pairs
     - customAttributes.*: Custom attribute fields (supports nested paths)
     
-    Duplicate Detection:
-    - Use --update-existing flag to update existing terms instead of creating duplicates
+    Idempotent Updates (Duplicate Prevention):
+    - Provide term_id column for reliable deduplication on re-import
+    - On re-import with same term_id: existing term is UPDATED (not duplicated)
+    - If term_id not in CSV: use --update-existing flag to match by name
     - Terms are matched by name (case-insensitive) within the same domain
     
+    Custom Attributes Notes:
+    - Custom attributes are set via term UPDATE (2-step process: CREATE then UPDATE)
+    - If providing term_id: custom attributes applied automatically
+    - If using --update-existing: custom attributes applied automatically
+    - Without idempotence: custom attributes still applied but creates duplicate term first
+    
     Example CSV:
+    term_id,name,description,status,owner_ids,customAttributes.Glossaire.Reference
+    #DEMO_01#NA#Client#,Client,Customer entity,Draft,uuid-owner,REF-001
+    
+    Example CSV (without term_id - name-based dedup):
     name,description,status,parent_term_name,synonyms,experts,customAttributes.Glossaire.Reference
     Customer,Customer entity,Draft,Business Terms,"Client,Consumer",user1@company.com,REF-001
     Product,Product catalog,Published,,"Item,SKU",user2@company.com,REF-002
@@ -1677,11 +1690,15 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug, update_existing):
                 if not name.strip():
                     continue
                 
+                # Check for term_id (for idempotent updates on re-import)
+                term_id = row.get("term_id") or row.get("id") or row.get("ID") or row.get("Term ID") or row.get("TermId") or ""
+                
                 term = {
                     "name": name.strip(),
                     "description": (row.get("Definition") or row.get("description") or "").strip(),
                     "status": (row.get("Status") or row.get("status") or "Draft").strip(),
                     "domain_id": domain_id,
+                    "term_id": term_id.strip() if term_id else "",
                     "acronyms": [],
                     "owner_ids": [],
                     "expert_ids": [],
@@ -1890,11 +1907,31 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug, update_existing):
                 status.update(f"[bold green]Processing term {i}/{len(terms)}: {term['name']}")
                 
                 try:
-                    # Check if term already exists (if update_existing is enabled)
+                    # Check if term already exists
+                    # Priority: term_id from CSV > update_existing flag with name search
                     existing_term = None
                     term_id = None
                     
-                    if update_existing:
+                    # If term_id is provided in CSV, use it directly (most reliable)
+                    if term.get("term_id"):
+                        term_id = term["term_id"]
+                        try:
+                            existing_term = client.get_term_by_id({"--term-id": [term_id]})
+                            if existing_term and not existing_term.get("error"):
+                                console.print(f"[yellow]Term ID '{term_id}' already exists (Name: {existing_term.get('name', 'Unknown')}). Updating...[/yellow]")
+                            else:
+                                # term_id not found, treat as new
+                                existing_term = None
+                                term_id = None
+                        except Exception as e:
+                            # If lookup fails, treat as new term
+                            if debug:
+                                console.print(f"[dim]Could not lookup term_id {term_id}: {str(e)}[/dim]")
+                            existing_term = None
+                            term_id = None
+                    
+                    # Fallback: if update_existing flag is set and no term_id from CSV, search by name
+                    elif update_existing and not term_id:
                         existing_term = _find_existing_term_by_name(client, term["name"], domain_id)
                         if existing_term:
                             term_id = existing_term.get("id")
