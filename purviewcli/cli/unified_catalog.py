@@ -1746,8 +1746,14 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug, update_existing):
                 for k, v in row.items():
                     if k and k.startswith('customAttributes.') and v and str(v).strip():
                         # Extract path after 'customAttributes.'
-                        path = k.split('.', 1)[1]  # e.g., "Glossaire.Reference" or "DataQuality.Score"
-                        parts = [p.strip() for p in path.split('.')]  # Strip whitespace from parts
+                        path = k.split('.', 1)[1]  # e.g., "Glossaire.Reference" or "Glossaire.Termes a favoriser"
+                        # Split on dots, but only strip trailing whitespace to preserve meaningful spaces
+                        parts = [p.rstrip() for p in path.split('.')]  # Only remove trailing whitespace
+                        parts = [p for p in parts if p]  # Remove empty parts
+                        
+                        if not parts:
+                            continue
+                        
                         value_str = str(v).strip()
                         
                         # Try to parse JSON values (arrays, objects)
@@ -1766,6 +1772,9 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug, update_existing):
                                 current[part] = {}
                             current = current[part]
                         current[parts[-1]] = value
+                        
+                        if debug:
+                            console.print(f"[dim]Parsed custom attribute: {'.'.join(parts)} = {value_str}[/dim]")
                 
                 # Handle owners from various column names
                 owner_ids_field = row.get("owner_ids") or row.get("owner_id") or ""

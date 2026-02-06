@@ -1857,7 +1857,7 @@ Use Cases:
         if resources:
             payload["resources"] = resources
         
-        # Handle custom attributes
+        # Handle custom attributes - convert to managedAttributes for UC API
         try:
             provided_ca = args.get("--custom-attributes")
             if provided_ca:
@@ -1874,10 +1874,41 @@ Use Cases:
                                 print(f"[DEBUG] Failed to parse custom attribute JSON: {item}, error: {e}")
                     elif isinstance(item, dict):
                         custom_attrs.update(item)
+                
                 if custom_attrs:
-                    payload["customAttributes"] = custom_attrs
                     if args.get("--debug"):
-                        print(f"[DEBUG] Custom attributes added to payload: {_json.dumps(custom_attrs, indent=2)}")
+                        print(f"[DEBUG] Raw custom attributes parsed: {_json.dumps(custom_attrs, indent=2)}")
+                    
+                    # Convert nested custom attributes to managedAttributes format
+                    # This ensures all attributes are properly created, especially those with spaces in names
+                    managed_attrs = []
+                    
+                    def flatten_attributes(obj, parent_key=''):
+                        for key, value in obj.items():
+                            if isinstance(value, dict):
+                                # Recursively flatten nested dicts
+                                flatten_attributes(value, f"{parent_key}.{key}" if parent_key else key)
+                            else:
+                                # Create managedAttribute for leaf values
+                                attr_name = f"{parent_key}.{key}" if parent_key else key
+                                # Serialize lists/dicts as JSON strings, keep primitives as-is
+                                if isinstance(value, (list, dict)):
+                                    value_str = _json.dumps(value)
+                                else:
+                                    value_str = str(value)
+                                managed_attrs.append({"name": attr_name, "value": value_str})
+                    
+                    flatten_attributes(custom_attrs)
+                    
+                    if managed_attrs:
+                        payload["managedAttributes"] = managed_attrs
+                        if args.get("--debug"):
+                            print(f"[DEBUG] Converted to managedAttributes: {_json.dumps(managed_attrs, indent=2)}")
+                    else:
+                        # Fallback: if no nested attrs, use customAttributes
+                        payload["customAttributes"] = custom_attrs
+                        if args.get("--debug"):
+                            print(f"[DEBUG] Using customAttributes (no nesting): {_json.dumps(custom_attrs, indent=2)}")
         except Exception as e:
             # Non-fatal if parsing custom attributes fails
             if args.get("--debug"):
