@@ -1,33 +1,32 @@
-# PURVIEW CLI v1.8.1 - Microsoft Purview Automation & Data Governance
+# PURVIEW CLI v1.8.3 - Microsoft Purview Automation & Data Governance
 
-[![Version](https://img.shields.io/badge/version-1.7.0-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.8.1)
+[![Version](https://img.shields.io/badge/version-1.8.3-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.8.3)
 [![API Coverage](https://img.shields.io/badge/UC%20API%20Coverage-96%25-brightgreen.svg)](https://github.com/Keayoub/pvw-cli)
 [![Lineage](https://img.shields.io/badge/Lineage-Enhanced-green.svg)](https://github.com/Keayoub/pvw-cli)
 [![Status](https://img.shields.io/badge/status-stable-success.svg)](https://github.com/Keayoub/pvw-cli)
 
-> **LATEST UPDATE v1.8.1 (January 28, 2026):**
+> **LATEST UPDATE v1.8.3 (February 6, 2026):**
 >
-> **New Unified Catalog APIs - Analytics & Visualization**
+> **CSV Term Import - Multi-Value Separator Standardization & Enhanced Dry-Run**
 >
-> - **[NEW]** List Hierarchy Terms - Interactive tree visualization of glossary structure
-> - **[NEW]** Get Term Facets - Statistics and filters for glossary terms
-> - **[NEW]** Get CDE Facets - Compliance dashboards (GDPR, HIPAA, SOC2)
-> - **[NEW]** Get Data Product Facets - Analytics for data product portfolios
-> - **[NEW]** Get Objective Facets - OKR dashboards with health metrics
-> - **[NEW]** List Related Entities - Complete relationship exploration
-> - **[IMPROVED]** UC API Coverage increased from 81% to **96%** (+15%)
-> - **[ADDED]** Rich UI with trees, tables, and color-coded outputs
-> - **[DOCS]** Comprehensive guides and API coverage analysis
+> - **[FIXED]** CSV separator conflicts - all multi-value fields now use semicolon (`;`) exclusively
+> - **[IMPROVED]** Dry-run output with visual indicators showing post-processing operations
+> - **[ADDED]** Comprehensive CSV column reference documentation
+> - **[ADDED]** Enhanced validation for separator usage
+> - **[UPDATED]** Sample CSVs with proper semicolon separators
+> - **[BREAKING]** Multi-value fields must use semicolon, not comma
 >
-> **[Full Release Notes v1.8.1](releases/v1.8.1.md)** | **[New APIs Guide](doc/guides/UC_NEW_APIS_GUIDE.md)** | **[API Coverage Analysis](doc/UC_API_COVERAGE_ANALYSIS.md)**
+> **[Full Release Notes v1.8.3](releases/v1.8.3.md)** | **[CSV Column Reference](samples/csv/UC_TERMS_CSV_COLUMNS_REFERENCE.md)** | **[CSV Examples](samples/csv/)**
 >
-> **Previous Update v1.8.1 (January 27, 2026):**
+> **Previous Update v1.8.1 (January 28, 2026):**
 >
-> **Collections Permissions Documentation & Diagnostics**
+> **Unified Catalog APIs - Analytics & Visualization**
 >
-> - **[NEW]** Comprehensive permissions guides (English & French)
-> - **[NEW]** Automated diagnostic tools (PowerShell & Python)
-> - **[ADDED]** HTTP 403 troubleshooting documentation
+> - List Hierarchy Terms with interactive tree visualization
+> - Get Term Facets for statistics and filters
+> - Get CDE, Data Product, and Objective Facets
+> - List Related Entities for relationship exploration
+> - UC API Coverage increased to **96%** (+15%)
 >
 > **[Archive](releases/)**
 
@@ -35,7 +34,7 @@
 
 ## What is PVW CLI?
 
-**PVW CLI v1.8.1** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* with **96% Unified Catalog API coverage** (46 of 48 operations).
+**PVW CLI v1.8.3** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* with **96% Unified Catalog API coverage** (46 of 48 operations).
 
 ### Key Capabilities
 
