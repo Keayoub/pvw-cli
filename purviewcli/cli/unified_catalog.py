@@ -1713,7 +1713,7 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug, update_existing):
                 # Parse acronyms from either column name
                 acronym_field = row.get("Acronym") or row.get("acronym") or row.get("acronyms") or ""
                 if acronym_field:
-                    term["acronyms"] = [a.strip() for a in acronym_field.split(",") if a.strip()]
+                    term["acronyms"] = [a.strip() for a in acronym_field.split(";") if a.strip()]
                 
                 # Parse resources
                 resources_field = row.get("Resources") or ""
@@ -1782,23 +1782,20 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug, update_existing):
                 stewards_field = row.get("Stewards") or ""
                 
                 if owner_ids_field:
-                    # CLI format: GUIDs
-                    term["owner_ids"] = [o.strip() for o in owner_ids_field.split(",") if o.strip()]
+                    # CLI format: GUIDs separated by semicolon
+                    term["owner_ids"] = [o.strip() for o in owner_ids_field.split(";") if o.strip()]
                 
                 # Handle experts separately (new field)
                 if experts_field:
-                    # Can be comma or semicolon separated
-                    # UI format: email:info;email:info or CLI format: guid,guid
-                    if ";" in experts_field:
-                        # UI format
-                        for item in experts_field.split(";"):
-                            item = item.strip()
-                            if item:
-                                contact = item.split(":")[0].strip()
+                    # Semicolon separated: guid;guid;guid
+                    # Also handle UI format: email:info;email:info
+                    for item in experts_field.split(";"):
+                        item = item.strip()
+                        if item:
+                            # Extract contact ID (before colon if UI format)
+                            contact = item.split(":")[0].strip()
+                            if contact:
                                 term["expert_ids"].append(contact)
-                    else:
-                        # CLI format: comma-separated
-                        term["expert_ids"] = [e.strip() for e in experts_field.split(",") if e.strip()]
                 
                 # Handle stewards (legacy - add to owners)
                 if stewards_field and not owner_ids_field:
@@ -1821,9 +1818,8 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug, update_existing):
                 # Parse synonyms
                 synonyms_field = row.get("Synonyms") or row.get("synonyms") or row.get("synonym") or ""
                 if synonyms_field:
-                    # Can be comma or semicolon separated
-                    separator = ";" if ";" in synonyms_field else ","
-                    term["synonyms"] = [s.strip() for s in synonyms_field.split(separator) if s.strip()]
+                    # Semicolon separated only
+                    term["synonyms"] = [s.strip() for s in synonyms_field.split(";") if s.strip()]
                 
                 # Parse parent term
                 parent_term_name = row.get("Parent Term Name") or row.get("parent_term_name") or ""
@@ -1837,11 +1833,11 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug, update_existing):
                 related_terms_field = row.get("Related Terms") or row.get("related_terms") or row.get("related_term_names") or ""
                 related_term_ids_field = row.get("related_term_ids") or ""
                 if related_terms_field:
-                    # Can be comma or semicolon separated
-                    separator = ";" if ";" in related_terms_field else ","
-                    term["related_term_names"] = [r.strip() for r in related_terms_field.split(separator) if r.strip()]
+                    # Semicolon separated only
+                    term["related_term_names"] = [r.strip() for r in related_terms_field.split(";") if r.strip()]
                 if related_term_ids_field:
-                    term["related_term_ids"] = [r.strip() for r in related_term_ids_field.split(",") if r.strip()]
+                    # Semicolon separated only
+                    term["related_term_ids"] = [r.strip() for r in related_term_ids_field.split(";") if r.strip()]
                 
                 # Warn about unsupported fields (only once)
                 if row.get("Term Template Names"):
@@ -1891,16 +1887,51 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug, update_existing):
             # Show detailed information for each term
             for i, term in enumerate(terms, 1):
                 details = []
-                if term.get("custom_attributes"):
-                    details.append(f"Custom Attributes: {json.dumps(term['custom_attributes'], indent=2)}")
+                
+                # Show what will happen during import
+                console.print(f"\n[cyan]Term {i} - {term['name']}:[/cyan]")
+                
+                # Basic fields
+                if term.get("acronyms"):
+                    console.print(f"  [dim]Acronyms: {', '.join(term['acronyms'])}[/dim]")
+                if term.get("owner_ids"):
+                    console.print(f"  [dim]Owners: {len(term['owner_ids'])} owner(s)[/dim]")
+                
+                # POST-PROCESSING operations that will occur
+                if term.get("parent_term_name"):
+                    console.print(f"  [yellow]→ Will search for parent '{term['parent_term_name']}' and link after creation[/yellow]")
+                elif term.get("parent_term_id"):
+                    console.print(f"  [green]→ Will link to parent ID: {term['parent_term_id'][:20]}...[/green]")
+                
+                if term.get("expert_ids"):
+                    console.print(f"  [yellow]→ Will add {len(term['expert_ids'])} expert(s) after creation[/yellow]")
+                    if debug:
+                        for expert in term["expert_ids"]:
+                            console.print(f"    - {expert}")
+                
+                if term.get("synonyms"):
+                    console.print(f"  [yellow]→ Will create/link {len(term['synonyms'])} synonym(s) after creation[/yellow]")
+                    if debug:
+                        for syn in term["synonyms"]:
+                            console.print(f"    - {syn}")
+                
                 if term.get("related_term_names"):
-                    details.append(f"Related Terms: {', '.join(term['related_term_names'])}")
+                    console.print(f"  [yellow]→ Will search and link {len(term['related_term_names'])} related term(s)[/yellow]")
+                    if debug:
+                        console.print(f"    {', '.join(term['related_term_names'])}")
+                
                 if term.get("related_term_ids"):
-                    details.append(f"Related Term IDs: {', '.join(term['related_term_ids'])}")
-                if details:
-                    console.print(f"\n[cyan]Term {i} - {term['name']}:[/cyan]")
-                    for detail in details:
-                        console.print(f"  {detail}")
+                    console.print(f"  [yellow]→ Will link {len(term['related_term_ids'])} related term(s) by ID[/yellow]")
+                
+                if term.get("resources"):
+                    console.print(f"  [dim]Resources: {len(term['resources'])} resource(s)[/dim]")
+                    if debug:
+                        for res in term["resources"]:
+                            console.print(f"    - {res['name']}: {res['url']}")
+                
+                if term.get("custom_attributes"):
+                    console.print(f"  [dim]Custom Attributes:[/dim]")
+                    console.print(f"[dim]{json.dumps(term['custom_attributes'], indent=4)}[/dim]")
             
             return
         

@@ -7,3 +7,7 @@ Partie Prenante,Toute entité impliquée dans le processus métier,Published,STK
 Facture,Document de facturation client,Draft,INV,user-owner-guid-2,user-expert-guid-1,"Bill,Invoice",Transaction,Commande;Client,FINANCIAL,MEDIUM
 Paiement,Enregistrement de paiement reçu,Published,PAY,user-owner-guid-3,user-expert-guid-2,"Payment,Receipt",Transaction,Facture,FINANCIAL,HIGH
 Adresse Client,Adresse postale du client,Draft,ADR,user-owner-guid-1,user-expert-guid-3,"Address,Location",Client,,PII,HIGH
+Remboursement,Opération de remboursement au client,Draft,RBT,user-owner-guid-3,user-expert-guid-2,"Refund,Reimbursement",Paiement,Facture,FINANCIAL,MEDIUM
+Contact Client,Informations de contact du client,Draft,CTT,user-owner-guid-1,user-expert-guid-1,"Client Contact,Customer Contact",Client,Adresse Client,PII,HIGH
+Catégorie Produit,Classification des produits par catégorie,Published,CAT,user-owner-guid-2,user-expert-guid-3,"Product Category,Category",Produit,,NON_PII,LOW
+Prix Produit,Tarification des produits,Draft,PRX,user-owner-guid-2,user-expert-guid-3,"Product Price,Pricing",Produit,Commande,FINANCIAL,MEDIUM
