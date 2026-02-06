@@ -1747,9 +1747,9 @@ def import_terms_from_csv(csv_file, domain_id, dry_run, debug, update_existing):
                     if k and k.startswith('customAttributes.') and v and str(v).strip():
                         # Extract path after 'customAttributes.'
                         path = k.split('.', 1)[1]  # e.g., "Glossaire.Reference" or "Glossaire.Termes a favoriser"
-                        # Split on dots, but only strip trailing whitespace to preserve meaningful spaces
-                        parts = [p.rstrip() for p in path.split('.')]  # Only remove trailing whitespace
-                        parts = [p for p in parts if p]  # Remove empty parts
+                        # Split on dots, preserve intentional spaces (only strip leading/trailing whitespace from empty parts)
+                        parts = [p for p in path.split('.')]  # Keep all parts as-is (preserve spaces)
+                        parts = [p for p in parts if p.strip()]  # Remove parts that are empty or whitespace-only
                         
                         if not parts:
                             continue
