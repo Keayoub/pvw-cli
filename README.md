@@ -1,11 +1,11 @@
-# PURVIEW CLI v1.7.2 - Microsoft Purview Automation & Data Governance
+# PURVIEW CLI v1.8.0 - Microsoft Purview Automation & Data Governance
 
-[![Version](https://img.shields.io/badge/version-1.7.0-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.7.2)
+[![Version](https://img.shields.io/badge/version-1.7.0-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.8.0)
 [![API Coverage](https://img.shields.io/badge/UC%20API%20Coverage-96%25-brightgreen.svg)](https://github.com/Keayoub/pvw-cli)
 [![Lineage](https://img.shields.io/badge/Lineage-Enhanced-green.svg)](https://github.com/Keayoub/pvw-cli)
 [![Status](https://img.shields.io/badge/status-stable-success.svg)](https://github.com/Keayoub/pvw-cli)
 
-> **LATEST UPDATE v1.7.2 (January 28, 2026):**
+> **LATEST UPDATE v1.8.0 (January 28, 2026):**
 >
 > **New Unified Catalog APIs - Analytics & Visualization**
 >
@@ -19,9 +19,9 @@
 > - **[ADDED]** Rich UI with trees, tables, and color-coded outputs
 > - **[DOCS]** Comprehensive guides and API coverage analysis
 >
-> **[Full Release Notes v1.7.2](releases/v1.7.2.md)** | **[New APIs Guide](doc/guides/UC_NEW_APIS_GUIDE.md)** | **[API Coverage Analysis](doc/UC_API_COVERAGE_ANALYSIS.md)**
+> **[Full Release Notes v1.8.0](releases/v1.8.0.md)** | **[New APIs Guide](doc/guides/UC_NEW_APIS_GUIDE.md)** | **[API Coverage Analysis](doc/UC_API_COVERAGE_ANALYSIS.md)**
 >
-> **Previous Update v1.7.2 (January 27, 2026):**
+> **Previous Update v1.8.0 (January 27, 2026):**
 >
 > **Collections Permissions Documentation & Diagnostics**
 >
@@ -35,7 +35,7 @@
 
 ## What is PVW CLI?
 
-**PVW CLI v1.7.2** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* with **96% Unified Catalog API coverage** (46 of 48 operations).
+**PVW CLI v1.8.0** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* with **96% Unified Catalog API coverage** (46 of 48 operations).
 
 ### Key Capabilities
 
@@ -89,7 +89,7 @@ The CLI is designed for data engineers, stewards, architects, and platform teams
 
 For detailed information about previous releases, see the **[Full Release Archive](releases/)**.
 
-**Latest Release:** [v1.7.2](releases/v1.7.2.md) (January 28, 2026)  
+**Latest Release:** [v1.8.0](releases/v1.8.0.md) (January 28, 2026)  
 **Previous Release:** [v1.6.2](releases/v1.6.2.md) (January 27, 2026)
 
 ---
@@ -112,7 +112,7 @@ For detailed information about previous releases, see the **[Full Release Archiv
 | **Hierarchy** | 100% | 1/1 | ✅ Complete |
 | **TOTAL UC** | **96%** | **46/48** | 🎯 **Production Ready** |
 
-### 🎯 New in v1.7.2 - Six Advanced UC APIs
+### 🎯 New in v1.8.0 - Six Advanced UC APIs
 
 1. **List Hierarchy Terms (NEW)**
    ```bash
@@ -1509,7 +1509,7 @@ PVW CLI includes comprehensive sample files and scripts for bulk operations:
 - Permission management and access control
 - Analytics and usage tracking per collection
 
-### **Unified Catalog (UC) - 96% Complete ⭐ NEW in v1.7.2**
+### **Unified Catalog (UC) - 96% Complete ⭐ NEW in v1.8.0**
 
 - Governance domains, glossary terms, data products
 - Objectives & Key Results (OKRs), Critical Data Elements (CDEs)
@@ -1552,7 +1552,7 @@ PVW CLI includes comprehensive sample files and scripts for bulk operations:
 ## Contributing & Support
 
 - **Documentation:** [Full Documentation](https://github.com/Keayoub/Purview_cli/blob/main/doc/README.md)
-- **New APIs Guide:** [UC New APIs v1.7.2](doc/guides/UC_NEW_APIS_GUIDE.md)
+- **New APIs Guide:** [UC New APIs v1.8.0](doc/guides/UC_NEW_APIS_GUIDE.md)
 - **API Coverage Analysis:** [Complete Coverage Report](doc/UC_API_COVERAGE_ANALYSIS.md)
 - **Issue Tracker:** [GitHub Issues](https://github.com/Keayoub/Purview_cli/issues)
 - **Email Support:** [keayoub@msn.com](mailto:keayoub@msn.com)
@@ -1566,9 +1566,9 @@ See [LICENSE](LICENSE) file for details.
 
 ---
 
-**PVW CLI v1.7.2 empowers data engineers, stewards, and architects to automate, scale, and enhance their Microsoft Purview experience with powerful command-line and programmatic capabilities.**
+**PVW CLI v1.8.0 empowers data engineers, stewards, and architects to automate, scale, and enhance their Microsoft Purview experience with powerful command-line and programmatic capabilities.**
 
-**Latest in v1.7.2:**
+**Latest in v1.8.0:**
 
 - Six new Unified Catalog APIs for analytics and hierarchy visualization
 - 96% UC API coverage (46 of 48 operations)
