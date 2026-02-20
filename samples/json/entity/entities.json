@@ -1,33 +1,76 @@
 {
-    "entities": [{
-            "status": "ACTIVE",
-            "attributes": {
-                "description": "Table01 is a custom entity.",
-                "name": "Table01",
-                "objectType": "U ",
-                "qualifiedName": "mssql://sqlsvr.database.windows.net/sqldb/Schema/Table01"
-            },
-            "typeName": "azure_sql_table"
-        },
-        {
-            "status": "ACTIVE",
-            "attributes": {
-                "description": "Table02 is a custom entity.",
-                "name": "Table02",
-                "objectType": "U ",
-                "qualifiedName": "mssql://sqlsvr.database.windows.net/sqldb/Schema/Table02"
-            },
-            "typeName": "azure_sql_table"
-        },
-        {
-            "status": "ACTIVE",
-            "attributes": {
-                "description": "Table03 is a custom entity.",
-                "name": "Table03",
-                "objectType": "U ",
-                "qualifiedName": "mssql://sqlsvr.database.windows.net/sqldb/Schema/Table03"
-            },
-            "typeName": "azure_sql_table"
-        }
-    ]
+  "entities": [
+    {
+      "typeName": "azure_sql_table",
+      "status": "ACTIVE",
+      "attributes": {
+        "qualifiedName": "mssql://sqlsvr.database.windows.net/sqldb/Schema/Table01",
+        "name": "Table01",
+        "description": "Table01 is a custom entity.",
+        "objectType": "U ",
+        "owner": "DataTeam",
+        "createTime": 0,
+        "modifiedTime": 0
+      },
+      "contacts": {
+        "Owner": [
+          {
+            "id": "30435ff9-9b96-44af-a5a9-e05c8b1ae2df",
+            "info": "Data Owner Contact"
+          }
+        ],
+        "Expert": [
+          {
+            "id": "30435ff9-9b96-44af-a5a9-e05c8b1ae2df",
+            "info": "Technical Expert Contact"
+          }
+        ]
+      },
+      "labels": ["Production", "Sensitive"],
+      "createdBy": "admin@example.com",
+      "updatedBy": "admin@example.com",
+      "version": 0
+    },
+    {
+      "typeName": "azure_sql_table",
+      "status": "ACTIVE",
+      "attributes": {
+        "qualifiedName": "mssql://sqlsvr.database.windows.net/sqldb/Schema/Table02",
+        "name": "Table02",
+        "description": "Table02 is a custom entity.",
+        "objectType": "U ",
+        "owner": "DataTeam",
+        "createTime": 0,
+        "modifiedTime": 0
+      },
+      "contacts": {
+        "Owner": [
+          {
+            "id": "30435ff9-9b96-44af-a5a9-e05c8b1ae2df",
+            "info": "Data Owner Contact"
+          }
+        ]
+      },
+      "labels": ["Development"],
+      "createdBy": "admin@example.com",
+      "updatedBy": "admin@example.com",
+      "version": 0
+    },
+    {
+      "typeName": "azure_sql_table",
+      "status": "ACTIVE",
+      "attributes": {
+        "qualifiedName": "mssql://sqlsvr.database.windows.net/sqldb/Schema/Table03",
+        "name": "Table03",
+        "description": "Table03 is a custom entity.",
+        "objectType": "U ",
+        "owner": "DataTeam",
+        "createTime": 0,
+        "modifiedTime": 0
+      },
+      "createdBy": "admin@example.com",
+      "updatedBy": "admin@example.com",
+      "version": 0
+    }
+  ]
 }

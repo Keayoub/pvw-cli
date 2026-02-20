@@ -196,6 +196,8 @@ Use Cases:
         self.method = "POST"
         self.endpoint = ENDPOINTS["entity"]["create_or_update"]
         self.params = get_api_version_params("datamap")
+        if "--collectionId" in args:
+            self.params["collectionId"] = args["--collectionId"]
         self.payload = get_json(args, "--payloadFile")
 
     @decorator
@@ -686,6 +688,8 @@ Use Cases:
         self.method = "POST"
         self.endpoint = ENDPOINTS["entity"]["bulk_create_or_update"]
         self.params = get_api_version_params("datamap")
+        if "--collectionId" in args:
+            self.params["collectionId"] = args["--collectionId"]
         self.payload = get_json(args, "--payloadFile")
 
     @decorator

@@ -1,12 +1,33 @@
 {
     "entity": {
+        "typeName": "azure_sql_table",
         "status": "ACTIVE",
         "attributes": {
-            "description": "Hello World is a custom entity.",
+            "qualifiedName": "mssql://sqlsvr.database.windows.net/sqldb/Schema/Table",
             "name": "Hello World",
+            "description": "Hello World is a custom entity.",
             "objectType": "U ",
-            "qualifiedName": "mssql://sqlsvr.database.windows.net/sqldb/Schema/Table"
+            "owner": "DataTeam",
+            "createTime": 0,
+            "modifiedTime": 0
         },
-        "typeName": "azure_sql_table"
+        "contacts": {
+            "Owner": [
+                {
+                    "id": "30435ff9-9b96-44af-a5a9-e05c8b1ae2df",
+                    "info": "Data Owner Contact"
+                }
+            ],
+            "Expert": [
+                {
+                    "id": "30435ff9-9b96-44af-a5a9-e05c8b1ae2df",
+                    "info": "Technical Expert Contact"
+                }
+            ]
+        },
+        "labels": ["Example", "Demo"],
+        "createdBy": "admin@example.com",
+        "updatedBy": "admin@example.com",
+        "version": 0
     }
 }

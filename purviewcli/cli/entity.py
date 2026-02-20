@@ -96,17 +96,26 @@ def read(ctx, guid, ignore_relationships, min_ext_info, json_output):
     type=click.Path(exists=True),
     help="File path to a valid JSON document containing entity data",
 )
+@click.option(
+    "--collection-id",
+    required=False,
+    help="Collection ID to assign the entity to (e.g., 'yfwy2c')",
+)
 @click.pass_context
-def create(ctx, payload_file):
+def create(ctx, payload_file, collection_id):
     """Create a new entity"""
     try:
         if ctx.obj.get("mock"):
             console.print("[yellow][MOCK] entity create command[/yellow]")
             console.print(f"[dim]Payload File: {payload_file}[/dim]")
+            if collection_id:
+                console.print(f"[dim]Collection ID: {collection_id}[/dim]")
             console.print("[green][OK] Mock entity create completed successfully[/green]")
             return
 
         args = {"--payloadFile": payload_file}
+        if collection_id:
+            args["--collectionId"] = collection_id
 
         from purviewcli.client._entity import Entity
 
@@ -159,17 +168,26 @@ def delete(ctx, guid):
     type=click.Path(exists=True),
     help="File path to a valid JSON document containing bulk entity data",
 )
+@click.option(
+    "--collection-id",
+    required=False,
+    help="Collection ID to assign all entities to (e.g., 'yfwy2c')",
+)
 @click.pass_context
-def bulk_create(ctx, payload_file):
+def bulk_create(ctx, payload_file, collection_id):
     """Create multiple entities in bulk"""
     try:
         if ctx.obj.get("mock"):
             console.print("[yellow][MOCK] entity bulk-create command[/yellow]")
             console.print(f"[dim]Payload File: {payload_file}[/dim]")
+            if collection_id:
+                console.print(f"[dim]Collection ID: {collection_id}[/dim]")
             console.print("[green][OK] Mock entity bulk-create completed successfully[/green]")
             return
 
         args = {"--payloadFile": payload_file}
+        if collection_id:
+            args["--collectionId"] = collection_id
 
         from purviewcli.client._entity import Entity
 
