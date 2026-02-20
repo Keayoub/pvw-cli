@@ -1508,7 +1508,7 @@ def move_to_collection(ctx, payload_file):
         from purviewcli.client._entity import Entity
 
         entity_client = Entity()
-        result = entity_client.entityMoveEntitiesToCollection(args)
+        result = entity_client.entityMoveToCollection(args)
 
         if result:
             console.print("[green][OK] Entity move-to-collection completed successfully[/green]")
