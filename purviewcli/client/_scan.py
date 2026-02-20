@@ -675,7 +675,7 @@ Use Cases:
         - [TODO: Include business context]
         - [TODO: Explain when to use this method]
     """
-        self.method = "PUT"
+        self.method = "POST"
         self.endpoint = ENDPOINTS["scanning"]["run_scan"].format(
             dataSourceName=args["--dataSourceName"], scanName=args["--scanName"]
         )
@@ -688,6 +688,9 @@ Use Cases:
         scan_level = args.get("--scanLevel")
         if scan_level:
             self.params["scanLevel"] = scan_level
+        
+        # API requires an empty JSON body
+        self.payload = {}
 
     @decorator
     def scanReadResult(self, args):
