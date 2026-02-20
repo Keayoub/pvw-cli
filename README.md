@@ -1,4 +1,4 @@
-# PURVIEW CLI v1.8.4 - Microsoft Purview Automation & Data Governance
+# PURVIEW CLI v1.8.5 - Microsoft Purview Automation & Data Governance
 
 [![Version](https://img.shields.io/badge/version-1.8.3-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.8.4)
 [![API Coverage](https://img.shields.io/badge/UC%20API%20Coverage-96%25-brightgreen.svg)](https://github.com/Keayoub/pvw-cli)
