@@ -394,7 +394,6 @@ def _copy_relationships(
 def _move_to_collection(entity_client: Entity, target_guid: str, collection_id: str, dry_run: bool) -> None:
     payload = {
         "entityGuids": [target_guid],
-        "collectionId": collection_id,
     }
     if dry_run:
         print(f"DRY RUN: Would move {target_guid} to collection {collection_id}")
@@ -402,7 +401,10 @@ def _move_to_collection(entity_client: Entity, target_guid: str, collection_id: 
 
     payload_file = _write_payload(payload)
     try:
-        entity_client.entityMoveToCollection({"--payloadFile": payload_file})
+        entity_client.entityMoveToCollection({
+            "--collectionId": collection_id,
+            "--payloadFile": payload_file
+        })
     finally:
         _cleanup_temp(payload_file)
 

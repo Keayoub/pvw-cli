@@ -1506,22 +1506,48 @@ def get_business_metadata_template(ctx):
 
 @entity.command()
 @click.option(
-    "--payload-file",
+    "--collection-id",
     required=True,
+    help="Target collection ID where entities will be moved (e.g., 'yfwy2c')",
+)
+@click.option(
+    "--guids",
+    required=False,
+    help="Comma-separated list of entity GUIDs to move (e.g., 'guid1,guid2,guid3')",
+)
+@click.option(
+    "--payload-file",
+    required=False,
     type=click.Path(exists=True),
-    help="File path to a valid JSON document containing entities to move and target collection",
+    help="File path to JSON with entityGuids array (alternative to --guids)",
 )
 @click.pass_context
-def move_to_collection(ctx, payload_file):
+def move_to_collection(ctx, collection_id, guids, payload_file):
     """Move entities to a target collection"""
     try:
+        if not guids and not payload_file:
+            console.print("[red][X] Error: Either --guids or --payload-file must be provided[/red]")
+            return
+
+        if guids and payload_file:
+            console.print("[red][X] Error: Provide either --guids or --payload-file, not both[/red]")
+            return
+
         if ctx.obj.get("mock"):
             console.print("[yellow][MOCK] entity move-to-collection command[/yellow]")
-            console.print(f"[dim]Payload File: {payload_file}[/dim]")
+            console.print(f"[dim]Collection ID: {collection_id}[/dim]")
+            if guids:
+                console.print(f"[dim]GUIDs: {guids}[/dim]")
+            if payload_file:
+                console.print(f"[dim]Payload File: {payload_file}[/dim]")
             console.print("[green][OK] Mock entity move-to-collection completed successfully[/green]")
             return
 
-        args = {"--payloadFile": payload_file}
+        args = {"--collectionId": collection_id}
+        if guids:
+            args["--guids"] = guids
+        if payload_file:
+            args["--payloadFile"] = payload_file
 
         from purviewcli.client._entity import Entity
 

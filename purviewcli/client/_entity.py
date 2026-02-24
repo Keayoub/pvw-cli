@@ -3002,7 +3002,21 @@ Use Cases:
         self.method = "POST"
         self.endpoint = ENDPOINTS["entity"]["move_entities_to_collection"]
         self.params = get_api_version_params("datamap")
-        self.payload = get_json(args, "--payloadFile")
+        
+        # collectionId is REQUIRED as query parameter per Microsoft API spec
+        if "--collectionId" not in args:
+            raise ValueError("--collectionId is required for move-to-collection operation")
+        self.params["collectionId"] = args["--collectionId"]
+        
+        # Payload can come from file or be constructed from guids
+        if "--payloadFile" in args:
+            self.payload = get_json(args, "--payloadFile")
+        elif "--guids" in args:
+            # Construct payload from comma-separated guids
+            guid_list = [g.strip() for g in args["--guids"].split(",") if g.strip()]
+            self.payload = {"entityGuids": guid_list}
+        else:
+            raise ValueError("Either --payloadFile or --guids must be provided")
 
     # === ADVANCED ENTITY OPERATIONS (NEW FOR 100% COVERAGE) ===
 
