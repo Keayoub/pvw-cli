@@ -149,7 +149,7 @@ def _maybe_get(result: Dict[str, Any], *keys: str) -> Optional[Any]:
 
 
 def _copy_classifications(entity_client: Entity, source_guid: str, target_guid: str, dry_run: bool) -> None:
-    data = entity_client.entityReadClassifications({"--guid": source_guid})
+    data = entity_client.entityReadClassifications({"--guid": [source_guid]})
     classifications = _maybe_get(data, "classifications")
     if not classifications:
         return
@@ -161,7 +161,7 @@ def _copy_classifications(entity_client: Entity, source_guid: str, target_guid: 
 
     payload_file = _write_payload(payload)
     try:
-        entity_client.entityAddClassifications({"--guid": [target_guid], "--payloadFile": payload_file})
+        entity_client.entityCreateClassifications({"--guid": [target_guid], "--payloadFile": payload_file})
     finally:
         _cleanup_temp(payload_file)
 
@@ -178,7 +178,7 @@ def _copy_labels(entity_obj: Dict[str, Any], entity_client: Entity, target_guid:
 
     payload_file = _write_payload(payload)
     try:
-        entity_client.entitySetLabels({"--guid": [target_guid], "--payloadFile": payload_file})
+        entity_client.entityCreateLabels({"--guid": [target_guid], "--payloadFile": payload_file})
     finally:
         _cleanup_temp(payload_file)
 
