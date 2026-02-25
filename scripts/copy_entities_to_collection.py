@@ -1,6 +1,10 @@
 """
 Copy Purview entities to a target collection by creating new entities
 and reapplying classifications, business metadata, labels, and relationships.
+
+Supported entity types (all handled transparently via the type handler registry):
+  - Any Atlas entity  (default behaviour)
+  - DataProduct       (also copies contacts: Expert / Owner)
 """
 
 import argparse
@@ -57,6 +61,27 @@ def _extract_entity_object(result: Dict[str, Any]) -> Dict[str, Any]:
     return result
 
 
+# ---------------------------------------------------------------------------
+# Type-specific extra fields
+# ---------------------------------------------------------------------------
+
+# Registry: typeName -> list of top-level entity keys to copy into the payload.
+# Extend here to support new entity types without touching any other function.
+_TYPE_EXTRA_KEYS: Dict[str, List[str]] = {
+    "DataProduct": ["contacts"],
+}
+
+
+def _get_type_extra_fields(entity_obj: Dict[str, Any]) -> Dict[str, Any]:
+    """Return type-specific top-level fields (e.g. contacts for DataProduct)."""
+    type_name = entity_obj.get("typeName", "")
+    keys = _TYPE_EXTRA_KEYS.get(type_name, [])
+    return {k: entity_obj[k] for k in keys if entity_obj.get(k)}
+
+
+# ---------------------------------------------------------------------------
+
+
 def _build_new_entity_payload(
     entity_obj: Dict[str, Any],
     qn_suffix: str,
@@ -65,6 +90,7 @@ def _build_new_entity_payload(
     use_suffix_if_no_map: bool = True,
     name_prefix_map: Optional[Dict[str, str]] = None,
     map_name_suffix_if_no_map: bool = True,
+    extra_entity_fields: Optional[Dict[str, Any]] = None,
 ) -> Tuple[Dict[str, Any], str]:
     type_name = entity_obj.get("typeName")
     attributes = dict(entity_obj.get("attributes", {}))
@@ -117,6 +143,10 @@ def _build_new_entity_payload(
         "attributes": attributes,
         "status": entity_obj.get("status", "ACTIVE"),
     }
+
+    # Merge type-specific top-level fields (e.g. contacts for DataProduct)
+    if extra_entity_fields:
+        payload_entity.update(extra_entity_fields)
 
     return {"entity": payload_entity}, attributes["qualifiedName"]
 
@@ -226,13 +256,21 @@ def _clone_entity(
     use_suffix_if_no_map: bool = True,
     name_prefix_map: Optional[Dict[str, str]] = None,
     map_name_suffix_if_no_map: bool = True,
+    prefetched_entity: Optional[Dict[str, Any]] = None,
 ) -> Tuple[str, Dict[str, Any], str]:
-    result = entity_client.entityRead({
-        "--guid": source_guid,
-        "--ignoreRelationships": True,
-        "--minExtInfo": True,
-    })
-    entity_obj = _extract_entity_object(result)
+    if prefetched_entity is not None:
+        entity_obj = prefetched_entity
+    else:
+        result = entity_client.entityRead({
+            "--guid": source_guid,
+            "--ignoreRelationships": True,
+            "--minExtInfo": True,
+        })
+        entity_obj = _extract_entity_object(result)
+
+    extra_fields = _get_type_extra_fields(entity_obj)
+    if extra_fields:
+        print(f"INFO: Including type-specific fields for {entity_obj.get('typeName')}: {list(extra_fields.keys())}")
 
     payload, target_qualified_name = _build_new_entity_payload(
         entity_obj,
@@ -242,6 +280,7 @@ def _clone_entity(
         use_suffix_if_no_map=use_suffix_if_no_map,
         name_prefix_map=name_prefix_map,
         map_name_suffix_if_no_map=map_name_suffix_if_no_map,
+        extra_entity_fields=extra_fields or None,
     )
     if dry_run:
         print(f"DRY RUN: Would create new entity for {source_guid}")
@@ -419,9 +458,24 @@ def copy_entities(args: argparse.Namespace) -> int:
         return 1
 
     errors = 0
+    type_filter: Optional[Set[str]] = set(args.type_filter) if getattr(args, "type_filter", None) else None
+
     for source_guid in guids:
         print(f"INFO: Copying entity {source_guid}")
         try:
+            # --- type filter: peek at typeName before doing any write ---
+            if type_filter:
+                peek = entity_client.entityRead({
+                    "--guid": source_guid,
+                    "--ignoreRelationships": True,
+                    "--minExtInfo": True,
+                })
+                peek_obj = _extract_entity_object(peek)
+                entity_type = peek_obj.get("typeName", "")
+                if entity_type not in type_filter:
+                    print(f"SKIP: {source_guid} is '{entity_type}' (not in filter {sorted(type_filter)})")
+                    continue
+            # -------------------------------------------------------------
             new_guid, entity_obj, target_table_qualified_name = _clone_entity(
                 entity_client,
                 source_guid,
@@ -531,6 +585,13 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--skip-business-metadata", action="store_true", help="Skip business metadata")
     parser.add_argument("--skip-labels", action="store_true", help="Skip labels")
     parser.add_argument("--skip-relationships", action="store_true", help="Skip relationships")
+
+    parser.add_argument(
+        "--type-filter",
+        nargs="+",
+        metavar="TYPE",
+        help="Only copy entities whose typeName matches one of the given values (e.g. --type-filter DataProduct Process)",
+    )
 
     return parser
 
