@@ -1,6 +1,6 @@
 # PURVIEW CLI v1.8.5 - Microsoft Purview Automation & Data Governance
 
-[![Version](https://img.shields.io/badge/version-1.8.3-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.8.5)
+[![Version](https://img.shields.io/badge/version-1.8.5-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.8.5)
 [![API Coverage](https://img.shields.io/badge/UC%20API%20Coverage-96%25-brightgreen.svg)](https://github.com/Keayoub/pvw-cli)
 [![Lineage](https://img.shields.io/badge/Lineage-Enhanced-green.svg)](https://github.com/Keayoub/pvw-cli)
 [![Status](https://img.shields.io/badge/status-stable-success.svg)](https://github.com/Keayoub/pvw-cli)
@@ -38,10 +38,10 @@
 
 ### Key Capabilities
 
-**Unified Catalog (UC) Management - 96% Complete** ⭐ *NEW*
-- **[NEW]** Glossary hierarchy visualization with interactive tree views
-- **[NEW]** Facets & analytics for terms, CDEs, data products, and objectives
-- **[NEW]** Complete relationship exploration for terms
+**Unified Catalog (UC) Management - 96% Complete**
+- Glossary hierarchy visualization with interactive tree views
+- Facets & analytics for terms, CDEs, data products, and objectives
+- Complete relationship exploration for terms
 - Complete governance domains, glossary terms, data products, OKRs, CDEs
 - Relationships API - Link data products/CDEs/terms to entities and columns
 - Query APIs - Advanced OData filtering with multi-criteria search
@@ -73,45 +73,17 @@
 
 The CLI is designed for data engineers, stewards, architects, and platform teams to automate, scale, and enhance their Microsoft Purview experience.
 
-### NEW: MCP Server for AI Assistants
-
-**[NEW]** Model Context Protocol (MCP) server enables LLM-powered data governance workflows! 
-
-- Natural language interface to Purview catalog
-- 20+ tools for AI assistants (Claude, Cline, etc.)
-- Automate complex multi-step operations
-- See `mcp/README.md` for setup instructions
-
 ---
 
 ## Release Information
 
 For detailed information about previous releases, see the **[Full Release Archive](releases/)**.
 
-**Latest Release:** [v1.8.1](releases/v1.8.1.md) (January 28, 2026)  
-**Previous Release:** [v1.6.2](releases/v1.6.2.md) (January 27, 2026)
+**Latest Release:** [v1.8.5](releases/v1.8.5.md) (February 6, 2026)  
+**Previous Release:** [v1.8.1](releases/v1.8.1.md) (January 28, 2026)
 
 ---
-
-## 📊 API Coverage Summary
-
-### Unified Catalog (UC) - 96% Complete ⭐
-
-| Category | Coverage | Count | Status |
-|----------|----------|-------|--------|
-| **Glossary Terms** | 100% | 9/9 | ✅ Complete |
-| **Domains** | 100% | 5/5 | ✅ Complete |
-| **Data Products** | 100% | 8/8 | ✅ Complete |
-| **Critical Data Elements (CDE)** | 100% | 8/8 | ✅ Complete |
-| **Objectives (OKRs)** | 100% | 6/6 | ✅ Complete |
-| **Key Results** | 100% | 5/5 | ✅ Complete |
-| **Policies** | 100% | 4/4 | ✅ Complete |
-| **Facets & Analytics** | 100% | 4/4 | ✅ Complete |
-| **Relationships** | 100% | 3/3 | ✅ Complete |
-| **Hierarchy** | 100% | 1/1 | ✅ Complete |
-| **TOTAL UC** | **96%** | **46/48** | 🎯 **Production Ready** |
-
-### 🎯 New in v1.8.1 - Six Advanced UC APIs
+### Unified Catalog APIs
 
 1. **List Hierarchy Terms (NEW)**
    ```bash
@@ -291,7 +263,7 @@ For more advanced usage, see the documentation in `doc/` or the project docs: <h
 
 ## Quick Start Examples
 
-### Collections Management (v1.6.2+)
+### Collections Management
 
 ```bash
 # Create a new collection
@@ -401,46 +373,6 @@ pip install -e .
 - Python 3.8+
 - Azure CLI (`az login`) or Service Principal credentials
 - Microsoft Purview account
-
----
-
-## Getting Started
-
-1. **Install**
-
-   ```bash
-   pip install pvw-cli
-   ```
-
-2. **Set Required Environment Variables**
-
-   ```bash
-   # Required for Purview API access
-   set PURVIEW_ACCOUNT_NAME=your-purview-account
-   set PURVIEW_ACCOUNT_ID=your-purview-account-id-guid
-   set PURVIEW_RESOURCE_GROUP=your-resource-group-name
-   
-   # Optional
-   set AZURE_REGION=  # (optional, e.g. 'china', 'usgov')
-   ```
-
-3. **Authenticate**
-
-   - Azure CLI: `az login`
-
-   - Or set Service Principal credentials as environment variables
-
-4. **Run a Command**
-
-   ```bash
-   pvw search query --keywords="customer" --limit=5
-   ```
-
-5. **See All Commands**
-
-   ```bash
-   pvw --help
-   ```
 
 ---
 
@@ -569,21 +501,6 @@ pvw uc term list --domain-id "abc-123" --output jsonc   # Colored for viewing
 
 # Data Products
 pvw uc dataproduct list --domain-id "abc-123" --output json
-```
-
-### Migration from Old --json Flag
-
-**Old (deprecated):**
-
-```bash
-pvw uc term list --domain-id "abc-123" --json
-```
-
-**New (recommended):**
-
-```bash
-pvw uc term list --domain-id "abc-123" --output json    # Plain JSON for scripting
-pvw uc term list --domain-id "abc-123" --output jsonc   # Colored JSON (old behavior)
 ```
 
 ---
@@ -723,13 +640,6 @@ The PVW CLI provides advanced search using the latest Microsoft Purview Discover
 - Use autocomplete and suggestion endpoints
 - Perform faceted, time-based, and entity-type-specific queries
 
-**v1.6.2 Enhancements:**
-
-- Collections API now 100% conformant with Microsoft Purview specification
-- Improved search result caching and performance
-- Enhanced error handling and diagnostics
-- All search commands validated and working correctly (query, browse, suggest, find-table)
-
 ### CLI Usage Examples
 
 #### **Multiple Output Formats**
@@ -801,7 +711,7 @@ pvw search query --keywords="finance" --entityTypes="Files,Tables" --limit=2
 
 - **Daily browsing**: Use default table format for quick scans
 - **Understanding assets**: Use `--detailed` for rich information panels  
-- **Technical work**: Use `--json` for complete API data access
+- **Technical work**: Use `--output json` for complete API data access
 - **Entity operations**: Use `--show-ids` to get GUIDs for updates
 
 ### Python Usage Example
@@ -815,24 +725,11 @@ search.searchQuery(args)
 print(search.payload)  # Shows the constructed search payload
 ```
 
-### Test Examples
-
-See `tests/test_search_examples.py` for ready-to-run pytest examples covering all search scenarios:
-
-- Basic query
-- Advanced filter
-- Autocomplete
-- Suggest
-- Faceted search
-- Browse
-- Time-based search
-- Entity type search
-
 ---
 
-## Unified Catalog Management (NEW)
+## Unified Catalog Management
 
-PVW CLI now includes comprehensive **Microsoft Purview Unified Catalog (UC)** support with the new `uc` command group. This provides complete management of modern data governance features including governance domains, glossary terms, data products, objectives (OKRs), and critical data elements.
+PVW CLI includes comprehensive **Microsoft Purview Unified Catalog (UC)** support with the new `uc` command group. This provides complete management of modern data governance features including governance domains, glossary terms, data products, objectives (OKRs), and critical data elements.
 
 **🎯 Feature Parity**: Full compatibility with [UnifiedCatalogPy](https://github.com/olafwrieden/unifiedcatalogpy) functionality.
 
@@ -1463,42 +1360,6 @@ PVW CLI includes comprehensive sample files and scripts for bulk operations:
 
 ---
 
-## Recent Updates (October 2025)
-
-### Bulk Term Import/Export
-
-- Import multiple terms from CSV or JSON files
-- Dry-run mode for validation before import
-- Support for owners (Entra ID GUIDs), acronyms, resources
-- Progress tracking and detailed error reporting
-- 100% success rate in testing (8/8 terms)
-
-### PowerShell & Scripting Integration
-
-- New `--output` parameter with table/json/jsonc formats
-- Plain JSON works with PowerShell's `ConvertFrom-Json`
-- Compatible with jq, Python json module, and other tools
-- Migration from deprecated `--json` flag
-
-### Bulk Delete Scripts
-
-- PowerShell script with interactive confirmation ("DELETE" to confirm)
-- Python script with Rich progress bars
-- Beautiful UI with colored output
-- Success/failure tracking per term
-- Rate limiting (200ms delay)
-
-### Key Improvements (v1.6.2)
-
-- **Collections API Conformance:** 100% alignment with Microsoft Purview specification - all endpoints verified and docstrings updated
-- **Docstring Accuracy:** All collection methods now document correct request/response structures with actual field mappings
-- **Developer Experience:** Enhanced IDE autocomplete with accurate parameter and response documentation
-- **CSV Import Reliability:** Fixed issues with empty header cells in custom attribute parsing (v1.6.1)
-- **Search Performance:** Optimized query execution with improved result caching
-- **Windows Console Compatibility:** All output formats compatible with Windows terminal and PowerShell
-
----
-
 ## Key Features Summary
 
 ### **Collections Management (100% Conformant)**
@@ -1508,14 +1369,14 @@ PVW CLI includes comprehensive sample files and scripts for bulk operations:
 - Permission management and access control
 - Analytics and usage tracking per collection
 
-### **Unified Catalog (UC) - 96% Complete ⭐ NEW in v1.8.1**
+### **Unified Catalog (UC) - 96% Complete**
 
 - Governance domains, glossary terms, data products
 - Objectives & Key Results (OKRs), Critical Data Elements (CDEs)
 - Relationships API for linking data assets
-- **[NEW] Hierarchy visualization** - Interactive tree views of glossary structure
-- **[NEW] Facets & Analytics** - Statistics for terms, CDEs, data products, objectives
-- **[NEW] Impact Analysis** - Complete relationship exploration
+- Hierarchy visualization - Interactive tree views of glossary structure
+- Facets & Analytics - Statistics for terms, CDEs, data products, objectives
+- Impact Analysis - Complete relationship exploration
 - Health monitoring and workflow automation
 - Full CRUD operations with smart partial updates
 
@@ -1537,7 +1398,6 @@ PVW CLI includes comprehensive sample files and scripts for bulk operations:
 - Azure CLI, Service Principal, Managed Identity auth
 - Works in local development, CI/CD, and production
 - Compatible with PowerShell, bash, Python, jq
-- MCP Server for AI-powered automation
 
 ### **Comprehensive Documentation**
 
@@ -1551,7 +1411,7 @@ PVW CLI includes comprehensive sample files and scripts for bulk operations:
 ## Contributing & Support
 
 - **Documentation:** [Full Documentation](https://github.com/Keayoub/Purview_cli/blob/main/doc/README.md)
-- **New APIs Guide:** [UC New APIs v1.8.1](doc/guides/UC_NEW_APIS_GUIDE.md)
+- **UC APIs Guide:** [UC New APIs Guide](doc/guides/UC_NEW_APIS_GUIDE.md)
 - **API Coverage Analysis:** [Complete Coverage Report](doc/UC_API_COVERAGE_ANALYSIS.md)
 - **Issue Tracker:** [GitHub Issues](https://github.com/Keayoub/Purview_cli/issues)
 - **Email Support:** [keayoub@msn.com](mailto:keayoub@msn.com)
@@ -1565,15 +1425,4 @@ See [LICENSE](LICENSE) file for details.
 
 ---
 
-**PVW CLI v1.8.1 empowers data engineers, stewards, and architects to automate, scale, and enhance their Microsoft Purview experience with powerful command-line and programmatic capabilities.**
-
-**Latest in v1.8.1:**
-
-- Six new Unified Catalog APIs for analytics and hierarchy visualization
-- 96% UC API coverage (46 of 48 operations)
-- Rich UI with interactive trees and color-coded tables
-- Advanced facets for dashboards and compliance reporting
-- Complete relationship exploration for data governance
-- Comprehensive documentation and usage guides
-- CSV import reliability improvements from v1.6.1
-- Bulk operations with comprehensive error handling
+**PVW CLI v1.8.5 empowers data engineers, stewards, and architects to automate, scale, and enhance their Microsoft Purview experience with powerful command-line and programmatic capabilities.**
