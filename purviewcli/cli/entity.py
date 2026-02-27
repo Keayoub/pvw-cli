@@ -620,15 +620,731 @@ def read_classifications(ctx, guid):
 
 
 @entity.command()
-@click.option("--guid", required=True, help="The globally unique identifier of the entity")
 @click.option(
-    "--payload-file",
+    "--guid",
     required=True,
-    type=click.Path(exists=True),
-    help="File path to a valid JSON document containing classification data",
+    help="GUID of the parent entity (table, dataset, etc.)",
+)
+@click.option(
+    "--output",
+    type=click.Choice(["table", "json"], case_sensitive=False),
+    default="table",
+    help="Output format: table (default) or json",
 )
 @click.pass_context
-def add_classifications(ctx, guid, payload_file):
+def read_schema_classifications(ctx, guid, output):
+    """Read classifications applied on all columns of a table (schema-level)
+
+    \b
+    This command retrieves the 'Classifications de schéma' visible in the
+    Purview UI — i.e. classifications that are stored on each column entity,
+    not on the table itself.
+
+    Steps performed automatically:
+      1. Fetch the parent entity to extract column GUIDs
+      2. Call read-classifications on each column
+      3. Display a consolidated colonne → classifications report
+    """
+    try:
+        if ctx.obj.get("mock"):
+            console.print("[yellow][MOCK] entity read-schema-classifications command[/yellow]")
+            console.print(f"[dim]GUID: {guid}[/dim]")
+            console.print(
+                "[green][OK] Mock entity read-schema-classifications completed successfully[/green]"
+            )
+            return
+
+        from purviewcli.client._entity import Entity
+        from rich.table import Table
+
+        entity_client = Entity()
+
+        # Step 1 — fetch the parent entity (table/dataset)
+        console.print(f"[dim]Fetching parent entity {guid}...[/dim]")
+        parent_args = {
+            "--guid": guid,
+            "--ignoreRelationships": False,
+            "--minExtInfo": False,
+        }
+        parent = entity_client.entityRead(parent_args)
+
+        if not parent:
+            console.print("[red][X] Entity not found[/red]")
+            return
+
+        # Step 2 — extract column references from relationshipAttributes.columns
+        entity_body = parent.get("entity", parent)
+        rel_attrs = entity_body.get("relationshipAttributes", {})
+        columns_refs = rel_attrs.get("columns", [])
+
+        if not columns_refs:
+            # Fallback: inspect referredEntities for column-typed entries
+            referred = parent.get("referredEntities", {})
+            columns_refs = [
+                {
+                    "guid": g,
+                    "displayText": v.get("attributes", {}).get("name", g),
+                }
+                for g, v in referred.items()
+                if v.get("typeName", "").lower().endswith("_column")
+                or v.get("typeName", "").lower() == "column"
+            ]
+
+        if not columns_refs:
+            console.print("[yellow][!] No columns found on this entity[/yellow]")
+            return
+
+        console.print(
+            f"[dim]Found {len(columns_refs)} column(s). Fetching classifications...[/dim]"
+        )
+
+        # Step 3 — fetch classifications for each column
+        results = []
+        for col_ref in columns_refs:
+            col_guid = col_ref.get("guid")
+            col_name = col_ref.get("displayText") or col_guid
+            if not col_guid:
+                continue
+            try:
+                col_classifs = entity_client.entityReadClassifications({"--guid": [col_guid]})
+                classif_list = []
+                if col_classifs:
+                    items = col_classifs.get(
+                        "list",
+                        col_classifs if isinstance(col_classifs, list) else [],
+                    )
+                    classif_list = [c.get("typeName", str(c)) for c in items]
+                results.append(
+                    {
+                        "column": col_name,
+                        "column_guid": col_guid,
+                        "classifications": classif_list,
+                    }
+                )
+            except Exception as col_err:
+                results.append(
+                    {
+                        "column": col_name,
+                        "column_guid": col_guid,
+                        "classifications": [],
+                        "error": str(col_err),
+                    }
+                )
+
+        # Step 4 — output
+        if output == "json":
+            print(json.dumps(results, indent=2, ensure_ascii=False))
+            return
+
+        table = Table(
+            title=f"Schema-level classifications  —  table {guid}",
+            show_lines=True,
+        )
+        table.add_column("Column", style="cyan", min_width=20)
+        table.add_column("Column GUID", style="dim", min_width=36)
+        table.add_column("Classifications", style="magenta")
+
+        total_classified = 0
+        for row in results:
+            if row.get("error"):
+                classif_cell = f"[red]Error: {row['error']}[/red]"
+            elif row["classifications"]:
+                classif_cell = "\n".join(row["classifications"])
+                total_classified += 1
+            else:
+                classif_cell = "[dim]—[/dim]"
+            table.add_row(row["column"], row["column_guid"], classif_cell)
+
+        console.print(table)
+        console.print(
+            f"[green][OK] {total_classified}/{len(results)} column(s) have "
+            f"schema-level classifications[/green]"
+        )
+
+    except Exception as e:
+        console.print(
+            f"[red][X] Error executing entity read-schema-classifications: {str(e)}[/red]"
+        )
+
+
+@entity.command()
+@click.option(
+    "--guid",
+    default=None,
+    help="GUID of the parent table entity (required unless --column-guid is used)",
+)
+@click.option(
+    "--column-guid",
+    default=None,
+    help="GUID of a specific column (bypasses table lookup)",
+)
+@click.option(
+    "--column-name",
+    default=None,
+    help="Name of the column to target (resolved from --guid table). "
+    "Supports partial/case-insensitive match. Use '*' or omit with --all-columns to target all.",
+)
+@click.option(
+    "--classification-name",
+    "classification_names",
+    required=True,
+    multiple=True,
+    help="Classification typeName to add (repeatable, e.g. --classification-name 'MICROSOFT.PERSONAL.EMAIL')",
+)
+@click.option(
+    "--all-columns",
+    is_flag=True,
+    default=False,
+    help="Apply classification(s) to every column of the table (requires --guid)",
+)
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    default=False,
+    help="Preview targeted columns and classifications without calling the API",
+)
+@click.option(
+    "--output",
+    type=click.Choice(["table", "json"], case_sensitive=False),
+    default="table",
+    help="Output format for the result report",
+)
+@click.pass_context
+def add_schema_classification(
+    ctx, guid, column_guid, column_name, classification_names, all_columns, dry_run, output
+):
+    """Add classification(s) on column(s) of a table (schema-level)
+
+    \b
+    Three targeting modes:
+
+      1. Direct — supply --column-guid  (no table lookup needed):
+           pvw entity add-schema-classification \\
+               --column-guid <col-guid> \\
+               --classification-name "MICROSOFT.PERSONAL.EMAIL"
+
+      2. By column name — resolve from parent table:
+           pvw entity add-schema-classification \\
+               --guid <table-guid> \\
+               --column-name "Email" \\
+               --classification-name "MICROSOFT.PERSONAL.EMAIL"
+
+      3. All columns — apply to every column of the table:
+           pvw entity add-schema-classification \\
+               --guid <table-guid> \\
+               --all-columns \\
+               --classification-name "Disponibilité élevé"
+
+    Use --dry-run to preview targets before applying.
+    Repeat --classification-name to add multiple classifications at once.
+    """
+    try:
+        # ── Validate arguments ─────────────────────────────────────────────
+        if not column_guid and not guid:
+            console.print(
+                "[red][X] Either --guid (with --column-name or --all-columns) "
+                "or --column-guid is required.[/red]"
+            )
+            return
+
+        if column_guid and (guid or column_name or all_columns):
+            console.print(
+                "[red][X] --column-guid is exclusive with --guid / --column-name / --all-columns.[/red]"
+            )
+            return
+
+        if guid and not column_name and not all_columns:
+            console.print(
+                "[red][X] When using --guid, provide --column-name <name> "
+                "or --all-columns.[/red]"
+            )
+            return
+
+        if ctx.obj.get("mock"):
+            console.print("[yellow][MOCK] entity add-schema-classification command[/yellow]")
+            console.print(
+                f"[dim]Table GUID: {guid}  Column GUID: {column_guid}  "
+                f"Column name: {column_name}  All columns: {all_columns}[/dim]"
+            )
+            console.print(
+                f"[dim]Classifications: {', '.join(classification_names)}  Dry-run: {dry_run}[/dim]"
+            )
+            console.print(
+                "[green][OK] Mock entity add-schema-classification completed successfully[/green]"
+            )
+            return
+
+        from purviewcli.client._entity import Entity
+        from rich.table import Table as RichTable
+
+        entity_client = Entity()
+
+        # ── Build the list of target columns ──────────────────────────────
+        targets = []  # list of {"column": name, "column_guid": guid}
+
+        if column_guid:
+            # Direct mode — no table lookup
+            targets = [{"column": column_guid, "column_guid": column_guid}]
+        else:
+            # Resolve columns from the parent table
+            console.print(f"[dim]Fetching parent entity {guid}...[/dim]")
+            parent = entity_client.entityRead({
+                "--guid": guid,
+                "--ignoreRelationships": False,
+                "--minExtInfo": False,
+            })
+
+            if not parent:
+                console.print("[red][X] Parent entity not found.[/red]")
+                return
+
+            entity_body = parent.get("entity", parent)
+            rel_attrs = entity_body.get("relationshipAttributes", {})
+            columns_refs = rel_attrs.get("columns", [])
+
+            if not columns_refs:
+                referred = parent.get("referredEntities", {})
+                columns_refs = [
+                    {
+                        "guid": g,
+                        "displayText": v.get("attributes", {}).get("name", g),
+                    }
+                    for g, v in referred.items()
+                    if v.get("typeName", "").lower().endswith("_column")
+                    or v.get("typeName", "").lower() == "column"
+                ]
+
+            if not columns_refs:
+                console.print("[yellow][!] No columns found on this entity.[/yellow]")
+                return
+
+            if all_columns:
+                targets = [
+                    {
+                        "column": c.get("displayText") or c.get("guid"),
+                        "column_guid": c.get("guid"),
+                    }
+                    for c in columns_refs
+                    if c.get("guid")
+                ]
+            else:
+                # Match by column name (case-insensitive, partial match)
+                search = column_name.lower()
+                matches = [
+                    c
+                    for c in columns_refs
+                    if search in (c.get("displayText") or "").lower()
+                ]
+                if not matches:
+                    console.print(
+                        f"[red][X] No column matching '{column_name}' found on this entity.[/red]"
+                    )
+                    available = [c.get("displayText", c.get("guid")) for c in columns_refs]
+                    console.print(
+                        f"[dim]Available columns: {', '.join(available)}[/dim]"
+                    )
+                    return
+                if len(matches) > 1:
+                    names = [m.get("displayText") for m in matches]
+                    console.print(
+                        f"[yellow][!] '{column_name}' matches {len(matches)} columns: "
+                        f"{', '.join(names)}. Refine --column-name or use --all-columns.[/yellow]"
+                    )
+                    return
+                targets = [
+                    {
+                        "column": matches[0].get("displayText") or matches[0].get("guid"),
+                        "column_guid": matches[0].get("guid"),
+                    }
+                ]
+
+        # Build the Atlas classification payload: [{"typeName": "..."}]
+        payload = [{"typeName": cn} for cn in classification_names]
+
+        if dry_run:
+            console.print("[bold yellow][DRY-RUN] No API calls will be made.[/bold yellow]")
+
+        # ── Apply (or preview) classifications on each target ─────────────
+        results = []
+        for t in targets:
+            col_name = t["column"]
+            col_guid = t["column_guid"]
+
+            if dry_run:
+                results.append(
+                    {
+                        "column": col_name,
+                        "column_guid": col_guid,
+                        "classifications": list(classification_names),
+                        "status": "dry-run",
+                    }
+                )
+                continue
+
+            try:
+                entity_client.entityCreateClassifications({
+                    "--guid": [col_guid],
+                    "--payloadFile": payload,
+                })
+                results.append(
+                    {
+                        "column": col_name,
+                        "column_guid": col_guid,
+                        "classifications": list(classification_names),
+                        "status": "ok",
+                    }
+                )
+            except Exception as col_err:
+                results.append(
+                    {
+                        "column": col_name,
+                        "column_guid": col_guid,
+                        "classifications": list(classification_names),
+                        "status": "error",
+                        "error": str(col_err),
+                    }
+                )
+
+        # ── Output ─────────────────────────────────────────────────────────
+        if output == "json":
+            print(json.dumps(results, indent=2, ensure_ascii=False))
+            return
+
+        title = (
+            "[yellow]DRY-RUN[/yellow] — add-schema-classification"
+            if dry_run
+            else "add-schema-classification result"
+        )
+        tbl = RichTable(title=title, show_lines=True)
+        tbl.add_column("Column", style="cyan", min_width=20)
+        tbl.add_column("Column GUID", style="dim", min_width=36)
+        tbl.add_column("Classifications added", style="magenta")
+        tbl.add_column("Status", min_width=8)
+
+        ok = sum(1 for r in results if r["status"] in ("ok", "dry-run"))
+        for r in results:
+            status_cell = {
+                "ok": "[green]OK[/green]",
+                "dry-run": "[yellow]dry-run[/yellow]",
+                "error": f"[red]ERROR: {r.get('error', '')}[/red]",
+            }.get(r["status"], r["status"])
+
+            tbl.add_row(
+                r["column"],
+                r["column_guid"],
+                "\n".join(r["classifications"]),
+                status_cell,
+            )
+
+        console.print(tbl)
+
+        if dry_run:
+            console.print(
+                f"[yellow][DRY-RUN] Would add classification(s) to "
+                f"{ok}/{len(results)} column(s). Re-run without --dry-run to apply.[/yellow]"
+            )
+        else:
+            console.print(
+                f"[green][OK] Classifications added to {ok}/{len(results)} column(s).[/green]"
+            )
+
+    except Exception as e:
+        console.print(
+            f"[red][X] Error executing entity add-schema-classification: {str(e)}[/red]"
+        )
+
+
+@entity.command()
+@click.option(
+    "--guid",
+    default=None,
+    help="GUID of the parent table entity (required unless --column-guid is used)",
+)
+@click.option(
+    "--column-guid",
+    default=None,
+    help="GUID of a specific column (bypasses table lookup)",
+)
+@click.option(
+    "--column-name",
+    default=None,
+    help="Name of the column to target (resolved from --guid table). "
+    "Supports partial/case-insensitive match.",
+)
+@click.option(
+    "--classification-name",
+    "classification_names",
+    required=True,
+    multiple=True,
+    help="Classification typeName to remove (repeatable)",
+)
+@click.option(
+    "--all-columns",
+    is_flag=True,
+    default=False,
+    help="Remove classification(s) from every column of the table (requires --guid)",
+)
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    default=False,
+    help="Preview which columns/classifications would be removed without calling the API",
+)
+@click.option(
+    "--output",
+    type=click.Choice(["table", "json"], case_sensitive=False),
+    default="table",
+    help="Output format for the result report",
+)
+@click.pass_context
+def remove_schema_classification(
+    ctx, guid, column_guid, column_name, classification_names, all_columns, dry_run, output
+):
+    """Remove classification(s) from column(s) of a table (schema-level)
+
+    \b
+    Three targeting modes:
+
+      1. Direct — supply --column-guid  (no table lookup needed):
+           pvw entity remove-schema-classification \\
+               --column-guid <col-guid> \\
+               --classification-name "Disponibilit\u00e9 \u00e9lev\u00e9"
+
+      2. By column name — resolve from parent table:
+           pvw entity remove-schema-classification \\
+               --guid <table-guid> \\
+               --column-name "NAS" \\
+               --classification-name "Canada Social Insurance Number"
+
+      3. All columns — remove from every column of the table:
+           pvw entity remove-schema-classification \\
+               --guid <table-guid> \\
+               --all-columns \\
+               --classification-name "Disponibilit\u00e9 \u00e9lev\u00e9"
+
+    Use --dry-run to preview targets before applying.
+    Repeat --classification-name to remove multiple classifications at once.
+    Only classifications that actually exist on a column will be removed;
+    others are skipped gracefully.
+    """
+    try:
+        # ── Validate arguments ─────────────────────────────────────────────
+        if not column_guid and not guid:
+            console.print(
+                "[red][X] Either --guid (with --column-name or --all-columns) "
+                "or --column-guid is required.[/red]"
+            )
+            return
+
+        if column_guid and (guid or column_name or all_columns):
+            console.print(
+                "[red][X] --column-guid is exclusive with --guid / --column-name / --all-columns.[/red]"
+            )
+            return
+
+        if guid and not column_name and not all_columns:
+            console.print(
+                "[red][X] When using --guid, provide --column-name <name> "
+                "or --all-columns.[/red]"
+            )
+            return
+
+        if ctx.obj.get("mock"):
+            console.print("[yellow][MOCK] entity remove-schema-classification command[/yellow]")
+            console.print(
+                f"[dim]Table GUID: {guid}  Column GUID: {column_guid}  "
+                f"Column name: {column_name}  All columns: {all_columns}[/dim]"
+            )
+            console.print(
+                f"[dim]Classifications: {', '.join(classification_names)}  Dry-run: {dry_run}[/dim]"
+            )
+            console.print(
+                "[green][OK] Mock entity remove-schema-classification completed successfully[/green]"
+            )
+            return
+
+        from purviewcli.client._entity import Entity
+        from rich.table import Table as RichTable
+
+        entity_client = Entity()
+
+        # ── Build the list of target columns ──────────────────────────────
+        targets = []
+
+        if column_guid:
+            targets = [{"column": column_guid, "column_guid": column_guid}]
+        else:
+            console.print(f"[dim]Fetching parent entity {guid}...[/dim]")
+            parent = entity_client.entityRead({
+                "--guid": guid,
+                "--ignoreRelationships": False,
+                "--minExtInfo": False,
+            })
+
+            if not parent:
+                console.print("[red][X] Parent entity not found.[/red]")
+                return
+
+            entity_body = parent.get("entity", parent)
+            rel_attrs = entity_body.get("relationshipAttributes", {})
+            columns_refs = rel_attrs.get("columns", [])
+
+            if not columns_refs:
+                referred = parent.get("referredEntities", {})
+                columns_refs = [
+                    {
+                        "guid": g,
+                        "displayText": v.get("attributes", {}).get("name", g),
+                    }
+                    for g, v in referred.items()
+                    if v.get("typeName", "").lower().endswith("_column")
+                    or v.get("typeName", "").lower() == "column"
+                ]
+
+            if not columns_refs:
+                console.print("[yellow][!] No columns found on this entity.[/yellow]")
+                return
+
+            if all_columns:
+                targets = [
+                    {
+                        "column": c.get("displayText") or c.get("guid"),
+                        "column_guid": c.get("guid"),
+                    }
+                    for c in columns_refs
+                    if c.get("guid")
+                ]
+            else:
+                search = column_name.lower()
+                matches = [
+                    c
+                    for c in columns_refs
+                    if search in (c.get("displayText") or "").lower()
+                ]
+                if not matches:
+                    console.print(
+                        f"[red][X] No column matching '{column_name}' found on this entity.[/red]"
+                    )
+                    available = [c.get("displayText", c.get("guid")) for c in columns_refs]
+                    console.print(f"[dim]Available columns: {', '.join(available)}[/dim]")
+                    return
+                if len(matches) > 1:
+                    names = [m.get("displayText") for m in matches]
+                    console.print(
+                        f"[yellow][!] '{column_name}' matches {len(matches)} columns: "
+                        f"{', '.join(names)}. Refine --column-name or use --all-columns.[/yellow]"
+                    )
+                    return
+                targets = [
+                    {
+                        "column": matches[0].get("displayText") or matches[0].get("guid"),
+                        "column_guid": matches[0].get("guid"),
+                    }
+                ]
+
+        if dry_run:
+            console.print("[bold yellow][DRY-RUN] No API calls will be made.[/bold yellow]")
+
+        # ── Remove (or preview) per column × per classification ───────────
+        results = []
+        for t in targets:
+            col_name = t["column"]
+            col_guid = t["column_guid"]
+            col_results = []
+
+            if dry_run:
+                for cn in classification_names:
+                    col_results.append({"typeName": cn, "status": "dry-run"})
+            else:
+                # First fetch existing classifications on this column to skip missing ones
+                try:
+                    existing_resp = entity_client.entityReadClassifications({"--guid": [col_guid]})
+                    existing = set()
+                    if existing_resp:
+                        items = existing_resp.get(
+                            "list",
+                            existing_resp if isinstance(existing_resp, list) else [],
+                        )
+                        existing = {c.get("typeName") for c in items}
+                except Exception:
+                    existing = None  # unknown — attempt removal anyway
+
+                for cn in classification_names:
+                    if existing is not None and cn not in existing:
+                        col_results.append({"typeName": cn, "status": "skipped (not present)"})
+                        continue
+                    try:
+                        entity_client.entityDeleteClassification({
+                            "--guid": [col_guid],
+                            "--classificationName": cn,
+                        })
+                        col_results.append({"typeName": cn, "status": "ok"})
+                    except Exception as del_err:
+                        col_results.append({"typeName": cn, "status": f"error: {del_err}"})
+
+            results.append(
+                {
+                    "column": col_name,
+                    "column_guid": col_guid,
+                    "details": col_results,
+                }
+            )
+
+        # ── Output ─────────────────────────────────────────────────────────
+        if output == "json":
+            print(json.dumps(results, indent=2, ensure_ascii=False))
+            return
+
+        title = (
+            "[yellow]DRY-RUN[/yellow] — remove-schema-classification"
+            if dry_run
+            else "remove-schema-classification result"
+        )
+        tbl = RichTable(title=title, show_lines=True)
+        tbl.add_column("Column", style="cyan", min_width=20)
+        tbl.add_column("Column GUID", style="dim", min_width=36)
+        tbl.add_column("Classification", style="magenta")
+        tbl.add_column("Status", min_width=20)
+
+        ok_count = 0
+        for r in results:
+            first = True
+            for d in r["details"]:
+                col_cell = r["column"] if first else ""
+                guid_cell = r["column_guid"] if first else ""
+                first = False
+                s = d["status"]
+                if s == "ok":
+                    status_cell = "[green]OK[/green]"
+                    ok_count += 1
+                elif s == "dry-run":
+                    status_cell = "[yellow]dry-run[/yellow]"
+                    ok_count += 1
+                elif s.startswith("skipped"):
+                    status_cell = f"[dim]{s}[/dim]"
+                else:
+                    status_cell = f"[red]{s}[/red]"
+                tbl.add_row(col_cell, guid_cell, d["typeName"], status_cell)
+
+        console.print(tbl)
+
+        total_ops = sum(len(r["details"]) for r in results)
+        if dry_run:
+            console.print(
+                f"[yellow][DRY-RUN] Would remove {ok_count}/{total_ops} classification-column "
+                f"pairs. Re-run without --dry-run to apply.[/yellow]"
+            )
+        else:
+            console.print(
+                f"[green][OK] Removed {ok_count}/{total_ops} classification-column pairs.[/green]"
+            )
+
+    except Exception as e:
+        console.print(
+            f"[red][X] Error executing entity remove-schema-classification: {str(e)}[/red]"
+        )
+
+
     """Add classifications to an entity"""
     try:
         if ctx.obj.get("mock"):
@@ -645,7 +1361,7 @@ def add_classifications(ctx, guid, payload_file):
         from purviewcli.client._entity import Entity
 
         entity_client = Entity()
-        result = entity_client.entityAddClassifications(args)
+        result = entity_client.entityCreateClassifications(args)
 
         if result:
             console.print("[green][OK] Entity add-classifications completed successfully[/green]")
