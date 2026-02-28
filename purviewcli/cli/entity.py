@@ -16,6 +16,9 @@ import json
 import click
 from .console_utils import get_console
 
+# Save reference to Python builtin list before it is shadowed by the @entity.command() named 'list'
+_builtin_list = list
+
 console = get_console()
 
 
@@ -711,7 +714,7 @@ def read_schema_classifications(ctx, guid, output):
                 if col_classifs:
                     items = col_classifs.get(
                         "list",
-                        col_classifs if isinstance(col_classifs, list) else [],
+                        col_classifs if isinstance(col_classifs, _builtin_list) else [],
                     )
                     classif_list = [c.get("typeName", str(c)) for c in items]
                 results.append(
@@ -975,7 +978,7 @@ def add_schema_classification(
                     {
                         "column": col_name,
                         "column_guid": col_guid,
-                        "classifications": list(classification_names),
+                        "classifications": [*classification_names],
                         "status": "dry-run",
                     }
                 )
@@ -990,7 +993,7 @@ def add_schema_classification(
                     {
                         "column": col_name,
                         "column_guid": col_guid,
-                        "classifications": list(classification_names),
+                        "classifications": [*classification_names],
                         "status": "ok",
                     }
                 )
@@ -999,7 +1002,7 @@ def add_schema_classification(
                     {
                         "column": col_name,
                         "column_guid": col_guid,
-                        "classifications": list(classification_names),
+                        "classifications": [*classification_names],
                         "status": "error",
                         "error": str(col_err),
                     }
@@ -1263,7 +1266,7 @@ def remove_schema_classification(
                     if existing_resp:
                         items = existing_resp.get(
                             "list",
-                            existing_resp if isinstance(existing_resp, list) else [],
+                            existing_resp if isinstance(existing_resp, _builtin_list) else [],
                         )
                         existing = {c.get("typeName") for c in items}
                 except Exception:
@@ -1345,6 +1348,16 @@ def remove_schema_classification(
         )
 
 
+@entity.command()
+@click.option("--guid", required=True, help="The globally unique identifier of the entity")
+@click.option(
+    "--payload-file",
+    required=True,
+    type=click.Path(exists=True),
+    help="File path to a valid JSON document containing classification data",
+)
+@click.pass_context
+def add_classifications(ctx, guid, payload_file):
     """Add classifications to an entity"""
     try:
         if ctx.obj.get("mock"):
