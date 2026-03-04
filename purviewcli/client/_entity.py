@@ -2725,6 +2725,123 @@ Use Cases:
         self.params = get_api_version_params("datamap")
         self.payload = get_json(args, "--payloadFile")
 
+    @decorator
+    def entityAddLabels(self, args):
+        """
+Add labels to an entity (append operation).
+    
+    Appends one or more labels to an existing entity.
+    Existing labels are preserved; new labels are added.
+    
+Args:
+        args: Dictionary of operation arguments containing:
+            --guid: The globally unique identifier of the entity
+            --payloadFile: Path to JSON file with array of label strings
+    
+Returns:
+        Dictionary with operation status (204 No Content returns empty dict)
+    
+Raises:
+        ValueError: When required parameters are missing
+        AuthenticationError: When Azure credentials are invalid
+        HTTPError: When Purview API returns error
+    
+Example:
+        client = Entity()
+        args = {
+            "--guid": ["entity-guid"],
+            "--payloadFile": "labels.json"
+        }
+        result = client.entityAddLabels(args)
+    
+Use Cases:
+        - Add tags to data assets
+        - Append sensitivity labels
+        - Enrich entity metadata with labels
+    """
+        self.method = "PUT"
+        self.endpoint = ENDPOINTS["entity"]["add_label"].format(guid=args["--guid"][0])
+        self.params = get_api_version_params("datamap")
+        self.payload = get_json(args, "--payloadFile")
+
+    @decorator
+    def entitySetLabels(self, args):
+        """
+Set labels on an entity (overwrite operation).
+    
+    Replaces all existing labels on an entity with new labels.
+    All previous labels are removed and replaced with specified labels.
+    
+Args:
+        args: Dictionary of operation arguments containing:
+            --guid: The globally unique identifier of the entity
+            --payloadFile: Path to JSON file with array of label strings
+    
+Returns:
+        Dictionary with operation status (204 No Content returns empty dict)
+    
+Raises:
+        ValueError: When required parameters are missing
+        AuthenticationError: When Azure credentials are invalid
+        HTTPError: When Purview API returns error
+    
+Example:
+        client = Entity()
+        args = {
+            "--guid": ["entity-guid"],
+            "--payloadFile": "labels.json"
+        }
+        result = client.entitySetLabels(args)
+    
+Use Cases:
+        - Replace all labels with new set
+        - Reset entity classification labels
+        - Update complete label set
+    """
+        self.method = "POST"
+        self.endpoint = ENDPOINTS["entity"]["set_labels"].format(guid=args["--guid"][0])
+        self.params = get_api_version_params("datamap")
+        self.payload = get_json(args, "--payloadFile")
+
+    @decorator
+    def entityRemoveLabels(self, args):
+        """
+Remove labels from an entity.
+    
+    Removes specified labels from an entity.
+    Other labels remain unchanged.
+    
+Args:
+        args: Dictionary of operation arguments containing:
+            --guid: The globally unique identifier of the entity
+            --payloadFile: Path to JSON file with array of label strings to remove
+    
+Returns:
+        Dictionary with operation status (204 No Content returns empty dict)
+    
+Raises:
+        ValueError: When required parameters are missing
+        AuthenticationError: When Azure credentials are invalid
+        HTTPError: When Purview API returns error
+    
+Example:
+        client = Entity()
+        args = {
+            "--guid": ["entity-guid"],
+            "--payloadFile": "labels.json"
+        }
+        result = client.entityRemoveLabels(args)
+    
+Use Cases:
+        - Remove deprecated labels
+        - Clean up classification labels
+        - Detagging data assets
+    """
+        self.method = "DELETE"
+        self.endpoint = ENDPOINTS["entity"]["remove_labels"].format(guid=args["--guid"][0])
+        self.params = get_api_version_params("datamap")
+        self.payload = get_json(args, "--payloadFile")
+
     # === UNIQUE ATTRIBUTE LABEL OPERATIONS ===
 
     @decorator
