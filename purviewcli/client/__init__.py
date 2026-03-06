@@ -7,6 +7,8 @@ from ._lineage import Lineage
 from ._search import Search
 from ._types import Types
 from ._relationship import Relationship
+from .client_cache import get_cached_client, clear_client_cache, cache_stats
+from .query_cache import get_read_query_cache, ReadQueryCache
 
 __all__ = [
     "PurviewClient",
@@ -18,4 +20,9 @@ __all__ = [
     "Search",
     "Types",
     "Relationship",
+    "get_cached_client",
+    "clear_client_cache",
+    "cache_stats",
+    "get_read_query_cache",
+    "ReadQueryCache",
 ]

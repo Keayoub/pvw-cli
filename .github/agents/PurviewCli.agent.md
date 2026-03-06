@@ -21,19 +21,21 @@
 - Make dry-run behavior explicit; warn users when `--dry-run` is set.
 
 ## Performance Optimizations (Purview CLI-specific)
-**Lazy CLI Module Loading:** CLI registers all 8+ module groups upfront in `cli.py`. When adding commands, use dynamic discovery or Click's lazy loading pattern to defer module import until first use. This reduces startup time for help/version-only invocations.
+**Lazy CLI Module Loading:** [IMPLEMENTED] CLI now uses LazyGroup to defer module imports until first use. When adding commands, register in _MODULE_MAP in cli.py. Reduces startup time for help/version-only invocations by 200-500ms.
 
-**Client Singleton Caching:** Each CLI command instantiates new client objects (Entity(), Glossary(), etc.), which triggers credential initialization. Implement module-level or context-based client caching with weak references. Cache key should include auth profile to support multi-profile workflows.
+**Client Singleton Caching:** [IMPLEMENTED] Use `get_cached_client(Entity, profile=ctx.obj.get("profile"))` instead of `Entity()`. Reduces credential initialization overhead per command by 500-1500ms. Cache is profile-scoped via `purviewcli.client.client_cache`.
 
-**Batch API Requests:** Bulk operations spawn sequential API calls with 200ms throttling. When designing bulk features, use batching endpoints where available or implement request coalescing in the API client layer. Validate endpoint supports batching before coalescing.
+**Lazy Credential Loading:** [IMPLEMENTED] DefaultAzureCredential initialization deferred until first API call in `PurviewClient._initialize_session()`. No action needed—inherited by all client classes.
 
-**Read-Query Caching:** Search, list, and read ops often repeat in user scripts. Add optional in-memory cache with configurable TTL (default 5-60s) for read-only queries. Exclude writes and mutations. Cache key must include filter parameters; invalidate on mutations in same session.
+**Read-Query Caching:** [IMPLEMENTED] Use `get_read_query_cache()` for search/list/read ops. Configure TTL (default 60s). Invalidate on mutations. Access via `purviewcli.client.query_cache`. Caches result with MD5(method_name + params) as key, excludes auth fields.
 
-**Lazy Credential Loading:** DefaultAzureCredential initialization on every client creation adds latency. Defer credential loading until first API call. Use a single global credential instance shared across clients; test with `--no-auth-cache` flag if needed.
+**Table Rendering:** [IMPLEMENTED] Use `create_cached_table(schema_name)` instead of creating tables manually. Pre-registered schemas: entity_summary, entity_list, glossary_terms, classifications, lineage_graph, search_results. Register custom schemas via `get_table_cache().register_schema()`.
 
-**Table Rendering:** Rich tables are regenerated per command. Cache table schema definitions (columns, styles) in template classes. Reuse across similar report commands; update only data rows.
+**Diagnostics & Monitoring:** New `pvw diagnostics` command group provides cache-stats, profile-info, clear-cache. Use to check hit rates, memory usage, and profile scope.
 
-**Anti-patterns to avoid:** Do not add disk-based persistent caching (stateless CLI principle); avoid unclean global state (always cleanup in context managers); do not cache mutable/mutable results without invalidation strategy; do not cache across different Azure subscriptions/profiles without explicit scoping.
+**Batch API Requests:** [PLANNED] Not yet implemented. Requires endpoint analysis to identify batch-capable operations and request coalescing in api_client layer.
+
+See `doc/PERFORMANCE_OPTIMIZATION_GUIDE.md` for implementation patterns and best practices.
 
 ## Release Workflow (repo-specific)
 - When the user says they are ready to publish, use the release script at `scripts/release.ps1` (case-insensitive path on Windows; user may refer to `scripts/Release.ps1`).

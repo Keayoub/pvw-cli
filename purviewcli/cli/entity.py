@@ -68,9 +68,11 @@ def read(ctx, guid, ignore_relationships, min_ext_info, json_output):
             "--minExtInfo": min_ext_info,
         }
 
+        # Use client singleton cache to reduce credential/connection overhead
         from purviewcli.client._entity import Entity
+        from purviewcli.client.client_cache import get_cached_client
 
-        entity_client = Entity()
+        entity_client = get_cached_client(Entity, profile=ctx.obj.get("profile", "default"))
         result = entity_client.entityRead(args)
 
         if result:
