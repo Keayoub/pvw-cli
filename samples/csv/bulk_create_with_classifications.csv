@@ -1,0 +1,5 @@
+typeName,qualifiedName,displayName,description,classification
+azure_datalake_gen2_path,//storageaccount/container/sales/customers.parquet,Customer Data,Customer master data with contact info,PII;CONFIDENTIAL
+azure_datalake_gen2_path,//storageaccount/container/sales/orders.parquet,Orders Data,Sales orders history,CONFIDENTIAL
+azure_datalake_gen2_path,//storageaccount/container/public/analytics.csv,Analytics Data,Public website analytics,PUBLIC
+azure_datalake_gen2_path,//storageaccount/container/internal/reports.xlsx,Internal Reports,Internal business reports,INTERNAL

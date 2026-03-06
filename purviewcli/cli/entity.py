@@ -639,14 +639,14 @@ def read_schema_classifications(ctx, guid, output):
     """Read classifications applied on all columns of a table (schema-level)
 
     \b
-    This command retrieves the 'Classifications de schéma' visible in the
-    Purview UI — i.e. classifications that are stored on each column entity,
-    not on the table itself.
+    This command retrieves schema classifications visible in the Purview UI
+    i.e. classifications that are stored on each column entity, not on the
+    table itself.
 
     Steps performed automatically:
       1. Fetch the parent entity to extract column GUIDs
       2. Call read-classifications on each column
-      3. Display a consolidated colonne → classifications report
+    3. Display a consolidated column -> classifications report
     """
     try:
         if ctx.obj.get("mock"):
@@ -662,7 +662,7 @@ def read_schema_classifications(ctx, guid, output):
 
         entity_client = Entity()
 
-        # Step 1 — fetch the parent entity (table/dataset)
+        # Step 1 - fetch the parent entity (table/dataset)
         console.print(f"[dim]Fetching parent entity {guid}...[/dim]")
         parent_args = {
             "--guid": guid,
@@ -675,7 +675,7 @@ def read_schema_classifications(ctx, guid, output):
             console.print("[red][X] Entity not found[/red]")
             return
 
-        # Step 2 — extract column references from relationshipAttributes.columns
+        # Step 2 - extract column references from relationshipAttributes.columns
         entity_body = parent.get("entity", parent)
         rel_attrs = entity_body.get("relationshipAttributes", {})
         columns_refs = rel_attrs.get("columns", [])
@@ -701,7 +701,7 @@ def read_schema_classifications(ctx, guid, output):
             f"[dim]Found {len(columns_refs)} column(s). Fetching classifications...[/dim]"
         )
 
-        # Step 3 — fetch classifications for each column
+        # Step 3 - fetch classifications for each column
         results = []
         for col_ref in columns_refs:
             col_guid = col_ref.get("guid")
@@ -734,13 +734,13 @@ def read_schema_classifications(ctx, guid, output):
                     }
                 )
 
-        # Step 4 — output
+        # Step 4 - output
         if output == "json":
             print(json.dumps(results, indent=2, ensure_ascii=False))
             return
 
         table = Table(
-            title=f"Schema-level classifications  —  table {guid}",
+            title=f"Schema-level classifications - table {guid}",
             show_lines=True,
         )
         table.add_column("Column", style="cyan", min_width=20)
@@ -755,7 +755,7 @@ def read_schema_classifications(ctx, guid, output):
                 classif_cell = "\n".join(row["classifications"])
                 total_classified += 1
             else:
-                classif_cell = "[dim]—[/dim]"
+                classif_cell = "[dim]-[/dim]"
             table.add_row(row["column"], row["column_guid"], classif_cell)
 
         console.print(table)
@@ -821,22 +821,19 @@ def add_schema_classification(
     \b
     Three targeting modes:
 
-      1. Direct — supply --column-guid  (no table lookup needed):
-           pvw entity add-schema-classification \\
-               --column-guid <col-guid> \\
-               --classification-name "MICROSOFT.PERSONAL.EMAIL"
+        1) Direct - supply --column-guid (no table lookup needed):
+             pvw entity add-schema-classification --column-guid <col-guid> \\
+                 --classification-name "MICROSOFT.PERSONAL.EMAIL"
 
-      2. By column name — resolve from parent table:
-           pvw entity add-schema-classification \\
-               --guid <table-guid> \\
-               --column-name "Email" \\
-               --classification-name "MICROSOFT.PERSONAL.EMAIL"
+        2) By column name - resolve from parent table:
+             pvw entity add-schema-classification --guid <table-guid> \\
+                 --column-name "Email" \\
+                 --classification-name "MICROSOFT.PERSONAL.EMAIL"
 
-      3. All columns — apply to every column of the table:
-           pvw entity add-schema-classification \\
-               --guid <table-guid> \\
-               --all-columns \\
-               --classification-name "Disponibilité élevé"
+        3) All columns - apply to every column of the table:
+             pvw entity add-schema-classification --guid <table-guid> \\
+                 --all-columns \\
+                 --classification-name "Availability High"
 
     Use --dry-run to preview targets before applying.
     Repeat --classification-name to add multiple classifications at once.
@@ -886,7 +883,7 @@ def add_schema_classification(
         targets = []  # list of {"column": name, "column_guid": guid}
 
         if column_guid:
-            # Direct mode — no table lookup
+            # Direct mode - no table lookup
             targets = [{"column": column_guid, "column_guid": column_guid}]
         else:
             # Resolve columns from the parent table
@@ -1014,7 +1011,7 @@ def add_schema_classification(
             return
 
         title = (
-            "[yellow]DRY-RUN[/yellow] — add-schema-classification"
+            "[yellow]DRY-RUN[/yellow] - add-schema-classification"
             if dry_run
             else "add-schema-classification result"
         )
@@ -1106,24 +1103,21 @@ def remove_schema_classification(
     """Remove classification(s) from column(s) of a table (schema-level)
 
     \b
-    Three targeting modes:
+        Three targeting modes:
 
-      1. Direct — supply --column-guid  (no table lookup needed):
-           pvw entity remove-schema-classification \\
-               --column-guid <col-guid> \\
-               --classification-name "Disponibilit\u00e9 \u00e9lev\u00e9"
+        1) Direct - supply --column-guid (no table lookup needed):
+          pvw entity remove-schema-classification --column-guid <col-guid> \\
+            --classification-name "Availability High"
 
-      2. By column name — resolve from parent table:
-           pvw entity remove-schema-classification \\
-               --guid <table-guid> \\
-               --column-name "NAS" \\
-               --classification-name "Canada Social Insurance Number"
+        2) By column name - resolve from parent table:
+          pvw entity remove-schema-classification --guid <table-guid> \\
+            --column-name "NAS" \\
+            --classification-name "Canada Social Insurance Number"
 
-      3. All columns — remove from every column of the table:
-           pvw entity remove-schema-classification \\
-               --guid <table-guid> \\
-               --all-columns \\
-               --classification-name "Disponibilit\u00e9 \u00e9lev\u00e9"
+        3) All columns - remove from every column of the table:
+          pvw entity remove-schema-classification --guid <table-guid> \\
+            --all-columns \\
+            --classification-name "Availability High"
 
     Use --dry-run to preview targets before applying.
     Repeat --classification-name to remove multiple classifications at once.
@@ -1270,7 +1264,7 @@ def remove_schema_classification(
                         )
                         existing = {c.get("typeName") for c in items}
                 except Exception:
-                    existing = None  # unknown — attempt removal anyway
+                    existing = None  # unknown - attempt removal anyway
 
                 for cn in classification_names:
                     if existing is not None and cn not in existing:
@@ -1299,7 +1293,7 @@ def remove_schema_classification(
             return
 
         title = (
-            "[yellow]DRY-RUN[/yellow] — remove-schema-classification"
+            "[yellow]DRY-RUN[/yellow] - remove-schema-classification"
             if dry_run
             else "remove-schema-classification result"
         )
@@ -2399,16 +2393,17 @@ def bulk_classify_csv(ctx, csv_file, batch_size):
 @click.option("--debug", is_flag=True, help="Enable debug mode for detailed logging")
 @click.pass_context
 def bulk_create_csv(ctx, csv_file, batch_size, dry_run, error_csv, debug):
-    """Bulk create entities from a CSV file with support for custom attributes via dot notation.
+    """Bulk create entities from a CSV file with support for custom attributes and classifications.
     
-    Supports dot notation for nested attributes:
-    - businessMetadata.fieldName: Creates nested businessMetadata structure
-    - customAttributes.fieldName: Creates nested customAttributes structure
+    Supports:
+    - Dot notation for nested attributes (businessMetadata.fieldName, customAttributes.fieldName)
+    - Optional classification or classificationName column (multi-value with ; or , separator)
     - Simple field names: Added to root attributes
     
-    Example CSV:
-    typeName,qualifiedName,displayName,businessMetadata.department,customAttributes.classification
-    DataSet,my-data-asset,My Asset,Sales,PII
+    Example CSV with classifications:
+    typeName,qualifiedName,displayName,classification,businessMetadata.department
+    DataSet,my-data-asset,My Asset,PII;CONFIDENTIAL,Sales
+    azure_datalake_gen2_path,//myaccount/container/path,My Path,INTERNAL,Engineering
     """
     import pandas as pd
     import tempfile
@@ -2425,14 +2420,26 @@ def bulk_create_csv(ctx, csv_file, batch_size, dry_run, error_csv, debug):
 
         df = pd.read_csv(csv_file)
         
+        # Detect classification columns
+        classification_columns = [
+            col for col in ["classification", "classificationName"] if col in df.columns
+        ]
+        
         # Debug: Show CSV structure
         if debug:
             console.print("[cyan][DEBUG] CSV Structure:[/cyan]")
-            console.print(f"  Columns: {list(df.columns)}")
-            console.print(f"  Total rows: {len(df)}")
-            console.print("\n[cyan][DEBUG] First row data:[/cyan]")
-            if len(df) > 0:
-                console.print(df.iloc[0].to_dict())
+            try:
+                console.print(f"  Columns: {__builtins__['list'](df.columns)}")
+                console.print(f"  Total rows: {len(df)}")
+                if classification_columns:
+                    console.print(
+                        f"  Classification columns: {classification_columns}"
+                    )
+                console.print("\n[cyan][DEBUG] First row data:[/cyan]")
+                if len(df) > 0:
+                    console.print(df.iloc[0].to_dict())
+            except Exception as e:
+                console.print(f"[red][DEBUG ERROR: {e}][/red]")
         
         if "typeName" not in df.columns or "qualifiedName" not in df.columns:
             console.print("[red][X] CSV must contain at least 'typeName' and 'qualifiedName' columns[/red]")
@@ -2564,10 +2571,17 @@ def bulk_update_csv(ctx, csv_file, batch_size, dry_run, error_csv, debug):
         # - Else if CSV has 'guid' -> build guid-based payloads (preferred for partial attribute updates)
         has_type_qn = ("typeName" in df.columns and "qualifiedName" in df.columns)
         has_guid = "guid" in df.columns
+        classification_columns = [
+            col for col in ["classification", "classificationName"] if col in df.columns
+        ]
         
         if debug:
             console.print(f"[cyan][DEBUG] has_type_qn: {has_type_qn}[/cyan]")
             console.print(f"[cyan][DEBUG] has_guid: {has_guid}[/cyan]")
+            if classification_columns:
+                console.print(
+                    f"[cyan][DEBUG] Classification columns: {classification_columns}[/cyan]"
+                )
 
         for i in range(0, total, batch_size):
             batch = df.iloc[i : i + batch_size]
@@ -2638,8 +2652,45 @@ def bulk_update_csv(ctx, csv_file, batch_size, dry_run, error_csv, debug):
                             failed += 1
                             failed_rows.append(r)
                             continue
+                        classification_value = None
+                        for col in classification_columns:
+                            if col in r and pd.notnull(r.get(col)):
+                                classification_value = r.get(col)
+                                break
+
+                        if classification_value is not None:
+                            if isinstance(classification_value, str):
+                                raw_items = [
+                                    v.strip()
+                                    for v in classification_value.replace(",", ";").split(";")
+                                ]
+                                classification_names = [v for v in raw_items if v]
+                            else:
+                                classification_names = [str(classification_value).strip()]
+
+                            if classification_names:
+                                if dry_run:
+                                    console.print(
+                                        f"[blue]DRY RUN: Would add classifications to GUID {guid}: {', '.join(classification_names)}[/blue]"
+                                    )
+                                else:
+                                    try:
+                                        payload = [{"typeName": name} for name in classification_names]
+                                        entity_client.entityCreateClassifications(
+                                            {"--guid": [guid], "--payloadFile": payload}
+                                        )
+                                    except Exception as e:
+                                        failed += 1
+                                        errors.append(
+                                            f"GUID {guid} classifications: {str(e)}"
+                                        )
+                                        failed_rows.append(r)
+                                        continue
+
                         if dry_run:
-                            console.print(f"[blue]DRY RUN: Would update GUID {guid} set {attr_name}={attr_value}[/blue]")
+                            console.print(
+                                f"[blue]DRY RUN: Would update GUID {guid} set {attr_name}={attr_value}[/blue]"
+                            )
                             success += 1
                             continue
                         try:
@@ -2667,12 +2718,52 @@ def bulk_update_csv(ctx, csv_file, batch_size, dry_run, error_csv, debug):
                             continue
                         
                         guid = str(guid)
+
+                        # Optional: apply classifications first (skip row on error)
+                        classification_value = None
+                        for col in classification_columns:
+                            if col in r and pd.notnull(r.get(col)):
+                                classification_value = r.get(col)
+                                break
+
+                        if classification_value is not None:
+                            if isinstance(classification_value, str):
+                                raw_items = [
+                                    v.strip()
+                                    for v in classification_value.replace(",", ";").split(";")
+                                ]
+                                classification_names = [v for v in raw_items if v]
+                            else:
+                                classification_names = [str(classification_value).strip()]
+
+                            if classification_names:
+                                if dry_run:
+                                    console.print(
+                                        f"[blue]DRY RUN: Would add classifications to GUID {guid}: {', '.join(classification_names)}[/blue]"
+                                    )
+                                else:
+                                    try:
+                                        payload = [{"typeName": name} for name in classification_names]
+                                        entity_client.entityCreateClassifications(
+                                            {"--guid": [guid], "--payloadFile": payload}
+                                        )
+                                    except Exception as e:
+                                        failed += 1
+                                        errors.append(
+                                            f"GUID {guid} classifications: {str(e)}"
+                                        )
+                                        failed_rows.append(r)
+                                        continue
                         
                         # Map CSV column names to Purview attribute names
                         column_mapping = {
                             "DisplayName": "displayName",
                             "Description": "description",
                         }
+
+                        skip_columns = set(column_mapping.keys()) | {"guid"} | set(
+                            classification_columns
+                        )
                         
                         # Update each attribute individually
                         for csv_col, purview_attr in column_mapping.items():
@@ -2701,7 +2792,7 @@ def bulk_update_csv(ctx, csv_file, batch_size, dry_run, error_csv, debug):
                         
                         # Handle any other custom attributes
                         for k, v in r.items():
-                            if pd.notnull(v) and k not in column_mapping and k != "guid":
+                            if pd.notnull(v) and k not in skip_columns:
                                 if dry_run:
                                     console.print(f"[blue]DRY RUN: Would update GUID {guid} set {k}={v}[/blue]")
                                     continue

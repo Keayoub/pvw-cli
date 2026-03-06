@@ -1,0 +1,4 @@
+guid,description,classification
+00000000-0000-0000-0000-000000000001,Updated customer column,PII;CONFIDENTIAL
+00000000-0000-0000-0000-000000000002,Updated order column,INTERNAL
+00000000-0000-0000-0000-000000000003,Updated analytics table,PUBLIC

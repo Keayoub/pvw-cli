@@ -1,0 +1,5 @@
+guid,description,classification
+00000000-0000-0000-0000-000000000001,Updated description for column 1,PII;CONFIDENTIAL
+00000000-0000-0000-0000-000000000002,Updated description for column 2,INTERNAL
+00000000-0000-0000-0000-000000000003,Updated description for table,CONFIDENTIAL
+00000000-0000-0000-0000-000000000004,Public data column,PUBLIC

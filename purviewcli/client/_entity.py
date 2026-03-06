@@ -30,13 +30,14 @@ def map_flat_entity_to_purview_entity(row, debug=False):
     - Custom attributes (any column name)
     - Nested attributes using dot notation (e.g., 'businessMetadata.attribute' -> {'businessMetadata': {'attribute': value}})
     - Special handling for custom attributes that should be in 'customAttributes' section
+    - Classifications via 'classification' or 'classificationName' column (multi-value with ; or , separator)
     
     Args:
         row: pandas Series or dict with entity data
         debug: Enable debug output (default: False)
     
     Returns:
-        dict: Purview entity structure with typeName and attributes
+        dict: Purview entity structure with typeName, attributes, and optionally classifications
     """
     try:
         data = row.to_dict()
@@ -48,6 +49,13 @@ def map_flat_entity_to_purview_entity(row, debug=False):
     
     # pop guid if present (it should not be in attributes)
     guid = data.pop("guid", None)
+
+    # pop and process classifications (classification or classificationName column)
+    classification_value = None
+    for col_name in ["classification", "classificationName"]:
+        if col_name in data:
+            classification_value = data.pop(col_name)
+            break
 
     # build attributes, skipping null-like values
     attrs = {}
@@ -110,6 +118,23 @@ def map_flat_entity_to_purview_entity(row, debug=False):
         result["guid"] = str(guid)
         if debug:
             print(f"[DEBUG] Added guid = {guid}")
+    
+    # Add classifications if present
+    if classification_value is not None:
+        try:
+            if not isinstance(classification_value, float) or not isnan(classification_value):
+                if isinstance(classification_value, str):
+                    raw_items = [v.strip() for v in classification_value.replace(",", ";").split(";")]
+                    classification_names = [v for v in raw_items if v]
+                else:
+                    classification_names = [str(classification_value).strip()]
+                
+                if classification_names:
+                    result["classifications"] = [{"typeName": name} for name in classification_names]
+                    if debug:
+                        print(f"[DEBUG] Added classifications = {classification_names}")
+        except Exception:
+            pass
     
     return result
 
