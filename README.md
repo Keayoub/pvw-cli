@@ -1,32 +1,30 @@
 # PURVIEW CLI v1.10.0 - Microsoft Purview Automation & Data Governance
 
-[![Version](https://img.shields.io/badge/version-1.8.5-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.10.0)
+[![Version](https://img.shields.io/badge/version-1.10.0-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.10.0)
 [![API Coverage](https://img.shields.io/badge/UC%20API%20Coverage-96%25-brightgreen.svg)](https://github.com/Keayoub/pvw-cli)
 [![Lineage](https://img.shields.io/badge/Lineage-Enhanced-green.svg)](https://github.com/Keayoub/pvw-cli)
 [![Status](https://img.shields.io/badge/status-stable-success.svg)](https://github.com/Keayoub/pvw-cli)
 
-> **LATEST UPDATE v1.10.0 (February 6, 2026):**
+> **LATEST UPDATE v1.10.0 (March 6, 2026):**
 >
-> **CSV Term Import - Multi-Value Separator Standardization & Enhanced Dry-Run**
+> **Performance Optimizations & Diagnostics**
 >
-> - **[FIXED]** CSV separator conflicts - all multi-value fields now use semicolon (`;`) exclusively
-> - **[IMPROVED]** Dry-run output with visual indicators showing post-processing operations
-> - **[ADDED]** Comprehensive CSV column reference documentation
-> - **[ADDED]** Enhanced validation for separator usage
-> - **[UPDATED]** Sample CSVs with proper semicolon separators
-> - **[BREAKING]** Multi-value fields must use semicolon, not comma
+> - **[NEW]** Lazy CLI module loading - 200-500ms faster startup for help/version commands
+> - **[NEW]** Client singleton caching - 500-1500ms saved per command
+> - **[NEW]** Read query caching with TTL - Up to 90% reduction in redundant API calls
+> - **[NEW]** Rich table schema caching - Pre-compiled table templates for instant reports
+> - **[NEW]** `pvw diagnostics` command group - Monitor cache performance and system health
+> - **[IMPROVED]** Lazy credential loading - Deferred authentication initialization
 >
-> **[Full Release Notes v1.10.0](releases/v1.10.0.md)** | **[CSV Column Reference](samples/csv/UC_TERMS_CSV_COLUMNS_REFERENCE.md)** | **[CSV Examples](samples/csv/)**
+> **[Full Release Notes v1.10.0](releases/v1.10.0.md)** | **[Performance Guide](doc/PERFORMANCE_OPTIMIZATION_GUIDE.md)**
 >
-> **Previous Update v1.8.1 (January 28, 2026):**
+> **Previous Update v1.9.1 (March 4, 2026):**
 >
-> **Unified Catalog APIs - Analytics & Visualization**
+> **Version Bump & Documentation Refresh**
 >
-> - List Hierarchy Terms with interactive tree visualization
-> - Get Term Facets for statistics and filters
-> - Get CDE, Data Product, and Objective Facets
-> - List Related Entities for relationship exploration
-> - UC API Coverage increased to **96%** (+15%)
+> - Updated package version to 1.9.1
+> - Refreshed README and project metadata
+> - No breaking changes
 >
 > **[Archive](releases/)**
 
@@ -79,8 +77,8 @@ The CLI is designed for data engineers, stewards, architects, and platform teams
 
 For detailed information about previous releases, see the **[Full Release Archive](releases/)**.
 
-**Latest Release:** [v1.10.0](releases/v1.10.0.md) (February 6, 2026)  
-**Previous Release:** [v1.8.1](releases/v1.8.1.md) (January 28, 2026)
+**Latest Release:** [v1.10.0](releases/v1.10.0.md) (March 6, 2026)  
+**Previous Release:** [v1.9.1](releases/v1.9.1.md) (March 4, 2026)
 
 ---
 ### Unified Catalog APIs
@@ -338,6 +336,29 @@ pvw uc custom-metadata add \
   --name "BusinessConcept" \
   --attributes '{"Department":"Sales"}'
 ```
+
+### Performance Diagnostics & Monitoring (NEW in v1.10.0)
+
+```bash
+# View cache performance statistics
+pvw diagnostics cache-stats
+
+# Check active profile configuration
+pvw diagnostics profile-info
+
+# Clear all performance caches
+pvw diagnostics clear-cache
+
+# Clear caches without confirmation prompt
+pvw diagnostics clear-cache --force
+```
+
+The diagnostics commands help monitor and troubleshoot CLI performance, displaying statistics for:
+- Client singleton cache (credential reuse)
+- Read query cache (API call reduction)
+- Rich table schema cache (report generation)
+
+For more details, see the [Performance Optimization Guide](doc/PERFORMANCE_OPTIMIZATION_GUIDE.md).
 
 ---
 
