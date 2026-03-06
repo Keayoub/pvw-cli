@@ -1,11 +1,11 @@
-# PURVIEW CLI v1.9.1 - Microsoft Purview Automation & Data Governance
+# PURVIEW CLI v1.10.0 - Microsoft Purview Automation & Data Governance
 
-[![Version](https://img.shields.io/badge/version-1.8.5-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.9.1)
+[![Version](https://img.shields.io/badge/version-1.8.5-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.10.0)
 [![API Coverage](https://img.shields.io/badge/UC%20API%20Coverage-96%25-brightgreen.svg)](https://github.com/Keayoub/pvw-cli)
 [![Lineage](https://img.shields.io/badge/Lineage-Enhanced-green.svg)](https://github.com/Keayoub/pvw-cli)
 [![Status](https://img.shields.io/badge/status-stable-success.svg)](https://github.com/Keayoub/pvw-cli)
 
-> **LATEST UPDATE v1.9.1 (February 6, 2026):**
+> **LATEST UPDATE v1.10.0 (February 6, 2026):**
 >
 > **CSV Term Import - Multi-Value Separator Standardization & Enhanced Dry-Run**
 >
@@ -16,7 +16,7 @@
 > - **[UPDATED]** Sample CSVs with proper semicolon separators
 > - **[BREAKING]** Multi-value fields must use semicolon, not comma
 >
-> **[Full Release Notes v1.9.1](releases/v1.9.1.md)** | **[CSV Column Reference](samples/csv/UC_TERMS_CSV_COLUMNS_REFERENCE.md)** | **[CSV Examples](samples/csv/)**
+> **[Full Release Notes v1.10.0](releases/v1.10.0.md)** | **[CSV Column Reference](samples/csv/UC_TERMS_CSV_COLUMNS_REFERENCE.md)** | **[CSV Examples](samples/csv/)**
 >
 > **Previous Update v1.8.1 (January 28, 2026):**
 >
@@ -34,7 +34,7 @@
 
 ## What is PVW CLI?
 
-**PVW CLI v1.9.1** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* with **96% Unified Catalog API coverage** (46 of 48 operations).
+**PVW CLI v1.10.0** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* with **96% Unified Catalog API coverage** (46 of 48 operations).
 
 ### Key Capabilities
 
@@ -79,7 +79,7 @@ The CLI is designed for data engineers, stewards, architects, and platform teams
 
 For detailed information about previous releases, see the **[Full Release Archive](releases/)**.
 
-**Latest Release:** [v1.9.1](releases/v1.9.1.md) (February 6, 2026)  
+**Latest Release:** [v1.10.0](releases/v1.10.0.md) (February 6, 2026)  
 **Previous Release:** [v1.8.1](releases/v1.8.1.md) (January 28, 2026)
 
 ---
@@ -1425,4 +1425,4 @@ See [LICENSE](LICENSE) file for details.
 
 ---
 
-**PVW CLI v1.9.1 empowers data engineers, stewards, and architects to automate, scale, and enhance their Microsoft Purview experience with powerful command-line and programmatic capabilities.**
+**PVW CLI v1.10.0 empowers data engineers, stewards, and architects to automate, scale, and enhance their Microsoft Purview experience with powerful command-line and programmatic capabilities.**
