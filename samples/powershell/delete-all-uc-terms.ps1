@@ -36,7 +36,7 @@ Write-Host $DomainId -ForegroundColor White
 
 # Fetch all terms using the new --output json flag
 try {
-    $terms = py -m purviewcli uc term list --domain-id $DomainId --output json | ConvertFrom-Json
+    $terms = pvw uc term list --domain-id $DomainId --output json | ConvertFrom-Json
     
     if (-not $terms) {
         Write-Host "`n[!] No terms found in this domain." -ForegroundColor Yellow
@@ -93,7 +93,7 @@ foreach ($term in $terms) {
     
     try {
         # Delete the term (suppress output to avoid encoding issues)
-        $output = py -m purviewcli uc term delete --term-id $termId --force 2>&1 | Out-String
+        $output = pvw uc term delete --term-id $termId --force 2>&1 | Out-String
         
         if ($LASTEXITCODE -eq 0) {
             Write-Host "[OK]" -ForegroundColor Green

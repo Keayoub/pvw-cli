@@ -469,7 +469,7 @@ The `--output json` format produces plain JSON that works perfectly with PowerSh
 ```powershell
 # Get all terms as PowerShell objects
 $domainId = "59ae27b5-40bc-4c90-abfe-fe1a0638fe3a"
-$terms = py -m purviewcli uc term list --domain-id $domainId --output json | ConvertFrom-Json
+$terms = pvw uc term list --domain-id $domainId --output json | ConvertFrom-Json
 
 # Access properties
 Write-Host "Found $($terms.Count) terms"

@@ -2327,10 +2327,22 @@ def update_terms_from_csv(csv_file, dry_run, debug):
     import json
     
     try:
-        # Read CSV file
-        with open(csv_file, 'r', encoding='utf-8') as f:
-            reader = csv.DictReader(f)
+        # Read CSV file (robust parsing: BOM-safe + delimiter auto-detect)
+        with open(csv_file, 'r', encoding='utf-8-sig', newline='') as f:
+            sample = f.read(4096)
+            f.seek(0)
+            try:
+                dialect = csv.Sniffer().sniff(sample, delimiters=",;\t|")
+            except Exception:
+                dialect = csv.excel
+
+            reader = csv.DictReader(f, dialect=dialect)
             updates = list(reader)
+
+        if debug:
+            detected_headers = list(updates[0].keys()) if updates else []
+            console.print(f"[cyan][DEBUG] Detected CSV delimiter: '{getattr(dialect, 'delimiter', ',')}'[/cyan]")
+            console.print(f"[cyan][DEBUG] Detected CSV headers: {detected_headers}[/cyan]")
         
         if not updates:
             console.print("[yellow]No updates found in CSV file.[/yellow]")
@@ -2348,7 +2360,20 @@ def update_terms_from_csv(csv_file, dry_run, debug):
             table.add_column("Updates", style="white")
             
             for idx, update in enumerate(updates, 1):
-                term_id = update.get('term_id', '').strip()
+                update = {
+                    (k.strip().lstrip("\ufeff") if isinstance(k, str) else k): v
+                    for k, v in update.items()
+                }
+
+                term_id = (
+                    update.get('term_id')
+                    or update.get('id')
+                    or update.get('ID')
+                    or update.get('Term ID')
+                    or update.get('TermId')
+                    or update.get('termId')
+                    or ''
+                ).strip()
                 if not term_id:
                     continue
                 
@@ -2406,7 +2431,20 @@ def update_terms_from_csv(csv_file, dry_run, debug):
         failed_terms = []
         
         for idx, update in enumerate(updates, 1):
-            term_id = update.get('term_id', '').strip()
+            update = {
+                (k.strip().lstrip("\ufeff") if isinstance(k, str) else k): v
+                for k, v in update.items()
+            }
+
+            term_id = (
+                update.get('term_id')
+                or update.get('id')
+                or update.get('ID')
+                or update.get('Term ID')
+                or update.get('TermId')
+                or update.get('termId')
+                or ''
+            ).strip()
             if not term_id:
                 console.print(f"[yellow]Skipping row {idx}: Missing term_id[/yellow]")
                 continue

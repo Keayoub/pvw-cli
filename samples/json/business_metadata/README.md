@@ -41,22 +41,22 @@ Ce dossier contient des templates JSON prêts à l'emploi pour créer des groupe
 
 ```bash
 # Business Concept (Glossary Terms)
-py -m purviewcli types create-business-metadata-def --payload-file samples/json/business_metadata/business_metadata_governance.json
+pvw types create-business-metadata-def --payload-file samples/json/business_metadata/business_metadata_governance.json
 
 # Data Asset (Tables, Files)
-py -m purviewcli types create-business-metadata-def --payload-file samples/json/business_metadata/business_metadata_quality.json
+pvw types create-business-metadata-def --payload-file samples/json/business_metadata/business_metadata_quality.json
 ```
 
 ### Lister les groupes existants
 
 ```bash
-py -m purviewcli types list-business-metadata-groups
+pvw types list-business-metadata-groups
 ```
 
 ### Lire un groupe spécifique
 
 ```bash
-py -m purviewcli types read-business-metadata-def --name Governance
+pvw types read-business-metadata-def --name Governance
 ```
 
 ---
@@ -130,7 +130,7 @@ py -m purviewcli types read-business-metadata-def --name Governance
 ⚠️ **Interface Purview** : L'onglet "Custom metadata (preview)" a un bug d'affichage. Même avec la configuration correcte, tous les groupes peuvent apparaître sous "Data asset attributes".
 
 **Validation** :
-- Utilisez CLI : `py -m purviewcli types list-business-metadata-groups`
+- Utilisez CLI : `pvw types list-business-metadata-groups`
 - Testez l'ajout aux entités (HTTP 204 = succès)
 - Le fonctionnement est correct malgré l'affichage UI incorrect
 
@@ -149,7 +149,7 @@ py -m purviewcli types read-business-metadata-def --name Governance
 Pour modifier un template :
 1. Éditez le fichier JSON
 2. Testez avec `--dry-run` : ajoutez `--dry-run` à la commande create
-3. Créez le groupe : `py -m purviewcli types create-business-metadata-def --payload-file <file>`
+3. Créez le groupe : `pvw types create-business-metadata-def --payload-file <file>`
 
 **Types de données supportés** :
 - `string` - Texte (avec `maxStrLength`)

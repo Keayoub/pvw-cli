@@ -6,7 +6,7 @@ Write-Host "This script will help you create a lineage relationship between two 
 
 # Step 1: List available SQL tables
 Write-Host "[STEP 1] Fetching SQL tables..." -ForegroundColor Yellow
-$sqlTables = py -m purviewcli entity list --type-name "azure_sql_table" --limit 50 | ConvertFrom-Json
+$sqlTables = pvw entity list --type-name "azure_sql_table" --limit 50 | ConvertFrom-Json
 
 if ($sqlTables.value.Count -eq 0) {
     Write-Host "ERROR: No SQL tables found in Purview" -ForegroundColor Red
@@ -32,7 +32,7 @@ Write-Host "Selected: $($sourceEntity.displayText) [$($sourceEntity.id)]" -Foreg
 
 # Step 3: List available datasets
 Write-Host "`n[STEP 3] Fetching datasets..." -ForegroundColor Yellow
-$datasets = py -m purviewcli entity list --type-name "DataSet" --limit 50 | ConvertFrom-Json
+$datasets = pvw entity list --type-name "DataSet" --limit 50 | ConvertFrom-Json
 
 if ($datasets.value.Count -eq 0) {
     Write-Host "WARNING: No DataSets found. You can also use another SQL table as target." -ForegroundColor Yellow
@@ -123,7 +123,7 @@ if ($confirm -ne "yes") {
 
 # Step 7: Create lineage
 Write-Host "`n[STEP 7] Creating lineage in Purview..." -ForegroundColor Yellow
-$result = py -m purviewcli entity create --payload-file $tempFile 2>&1
+$result = pvw entity create --payload-file $tempFile 2>&1
 
 Write-Host "`nResult:" -ForegroundColor Cyan
 Write-Host $result

@@ -205,7 +205,7 @@ pvw uc term update-csv --csv-file replace_acronyms.csv
 ```powershell
 # Get all draft terms
 $domainId = "your-domain-id"
-$terms = py -m purviewcli uc term list --domain-id $domainId --output json | ConvertFrom-Json
+$terms = pvw uc term list --domain-id $domainId --output json | ConvertFrom-Json
 $draftTerms = $terms | Where-Object { $_.status -eq "Draft" }
 
 # Export term IDs to CSV for bulk update
@@ -289,7 +289,7 @@ pvw uc term update-json --json-file publish_terms.json
 
 ```bash
 # 1. Export terms without acronyms (PowerShell)
-$terms = py -m purviewcli uc term list --domain-id $domainId --output json | ConvertFrom-Json
+$terms = pvw uc term list --domain-id $domainId --output json | ConvertFrom-Json
 $noAcronyms = $terms | Where-Object { -not $_.acronyms -or $_.acronyms.Count -eq 0 }
 $noAcronyms | Select-Object @{Name='term_id';Expression={$_.id}}, name | Export-Csv -Path "terms_need_acronyms.csv" -NoTypeInformation
 

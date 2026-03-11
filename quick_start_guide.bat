@@ -54,7 +54,7 @@ echo.
 echo STEP 4: Test Purview CLI
 echo ------------------------
 echo Testing connection to Purview...
-python -m purviewcli glossary list --limit 1
+pvw glossary list --limit 1
 
 if %errorlevel% equ 0 (
     echo.

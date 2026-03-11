@@ -126,7 +126,7 @@ Pour les Data Assets, **PAS BESOIN** de `applicableEntityTypes` :
 - ❌ UI affiche toujours sous "Data asset attributes"
 
 **Validation alternative** : 
-- Utilisez `py -m purviewcli types list-business-metadata-groups` pour voir le scope réel
+- Utilisez `pvw types list-business-metadata-groups` pour voir le scope réel
 - Testez en ajoutant les métadonnées à un terme via API
 - Si HTTP 204 = Success, la configuration est correcte même si l'UI affiche mal
 
@@ -134,7 +134,7 @@ Pour les Data Assets, **PAS BESOIN** de `applicableEntityTypes` :
 
 **Recommandation** : 
 - Ignorez l'affichage de l'onglet UI
-- Utilisez la CLI pour valider les scopes : `py -m purviewcli types list-business-metadata-groups`
+- Utilisez la CLI pour valider les scopes : `pvw types list-business-metadata-groups`
 - Testez sur de vrais termes pour confirmer que les métadonnées s'appliquent correctement
 - Signalez le bug à Microsoft via le support Azure
 

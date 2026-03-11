@@ -66,10 +66,10 @@ foreach ($template in $templates) {
     try {
         # First validate with dry-run
         Write-Host "       Validating JSON..." -ForegroundColor Gray
-        py -m purviewcli types create-business-metadata-def --payload-file $template.File --dry-run --validate 2>&1 | Out-Null
+        pvw types create-business-metadata-def --payload-file $template.File --dry-run --validate 2>&1 | Out-Null
         
         # Create the metadata
-        $result = py -m purviewcli types create-business-metadata-def --payload-file $template.File 2>&1
+        $result = pvw types create-business-metadata-def --payload-file $template.File 2>&1
         
         if ($LASTEXITCODE -eq 0) {
             Write-Host "[SUCCESS] Created: $($template.Name)" -ForegroundColor Green
@@ -101,17 +101,17 @@ Write-Host ""
 # Verify creation
 Write-Host "Verifying created groups..." -ForegroundColor Yellow
 Write-Host ""
-py -m purviewcli types list-business-metadata-groups
+pvw types list-business-metadata-groups
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "Next Steps:" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "1. View all attributes:" -ForegroundColor White
-Write-Host "   py -m purviewcli types list-business-attributes" -ForegroundColor Gray
+Write-Host "   pvw types list-business-attributes" -ForegroundColor Gray
 Write-Host ""
 Write-Host "2. View specific group details:" -ForegroundColor White
-Write-Host "   py -m purviewcli types read-business-metadata-def --name Governance" -ForegroundColor Gray
+Write-Host "   pvw types read-business-metadata-def --name Governance" -ForegroundColor Gray
 Write-Host ""
 Write-Host "3. Apply metadata to entities:" -ForegroundColor White
 Write-Host "   Use Purview UI or entity update commands" -ForegroundColor Gray
