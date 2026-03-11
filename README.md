@@ -1,30 +1,29 @@
 # PURVIEW CLI v1.10.1 - Microsoft Purview Automation & Data Governance
 
-[![Version](https://img.shields.io/badge/version-1.10.0-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.10.1)
+[![Version](https://img.shields.io/badge/version-1.10.1-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.10.1)
 [![API Coverage](https://img.shields.io/badge/UC%20API%20Coverage-96%25-brightgreen.svg)](https://github.com/Keayoub/pvw-cli)
 [![Lineage](https://img.shields.io/badge/Lineage-Enhanced-green.svg)](https://github.com/Keayoub/pvw-cli)
 [![Status](https://img.shields.io/badge/status-stable-success.svg)](https://github.com/Keayoub/pvw-cli)
 
-> **LATEST UPDATE v1.10.1 (March 6, 2026):**
+> **LATEST UPDATE v1.10.1 (March 11, 2026):**
 >
-> **Performance Optimizations & Diagnostics**
+> **CLI Invocation Cleanup and CSV Update Fixes**
 >
-> - **[NEW]** Lazy CLI module loading - 200-500ms faster startup for help/version commands
-> - **[NEW]** Client singleton caching - 500-1500ms saved per command
-> - **[NEW]** Read query caching with TTL - Up to 90% reduction in redundant API calls
-> - **[NEW]** Rich table schema caching - Pre-compiled table templates for instant reports
-> - **[NEW]** `pvw diagnostics` command group - Monitor cache performance and system health
-> - **[IMPROVED]** Lazy credential loading - Deferred authentication initialization
+- **[UPDATED]** User-facing examples now use `pvw` instead of `py -m purviewcli`
+- **[FIXED]** `pvw uc term update-csv` now handles BOM and auto-detects CSV delimiters
+- **[FIXED]** Flexible CSV term ID headers supported: `term_id`, `term-id`, `term id`, `termId`, `termGuid`, etc.
+- **[IMPROVED]** Clearer diagnostics when a CSV file does not contain a valid term ID column
 >
 > **[Full Release Notes v1.10.1](releases/v1.10.1.md)** | **[Performance Guide](doc/PERFORMANCE_OPTIMIZATION_GUIDE.md)**
 >
-> **Previous Update v1.9.1 (March 4, 2026):**
+> **Previous Update v1.10.0 (March 6, 2026):**
 >
-> **Version Bump & Documentation Refresh**
+> **Performance Optimizations & Diagnostics**
 >
-> - Updated package version to 1.9.1
-> - Refreshed README and project metadata
-> - No breaking changes
+- Lazy CLI module loading
+- Client singleton caching
+- Read query caching with TTL
+- `pvw diagnostics` command group
 >
 > **[Archive](releases/)**
 
@@ -77,8 +76,8 @@ The CLI is designed for data engineers, stewards, architects, and platform teams
 
 For detailed information about previous releases, see the **[Full Release Archive](releases/)**.
 
-**Latest Release:** [v1.10.1](releases/v1.10.1.md) (March 6, 2026)  
-**Previous Release:** [v1.9.1](releases/v1.9.1.md) (March 4, 2026)
+**Latest Release:** [v1.10.1](releases/v1.10.1.md) (March 11, 2026)  
+**Previous Release:** [v1.10.0](releases/v1.10.0.md) (March 6, 2026)
 
 ---
 ### Unified Catalog APIs
