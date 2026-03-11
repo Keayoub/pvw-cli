@@ -1,11 +1,11 @@
-# PURVIEW CLI v1.10.0 - Microsoft Purview Automation & Data Governance
+# PURVIEW CLI v1.10.1 - Microsoft Purview Automation & Data Governance
 
-[![Version](https://img.shields.io/badge/version-1.10.0-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.10.0)
+[![Version](https://img.shields.io/badge/version-1.10.0-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.10.1)
 [![API Coverage](https://img.shields.io/badge/UC%20API%20Coverage-96%25-brightgreen.svg)](https://github.com/Keayoub/pvw-cli)
 [![Lineage](https://img.shields.io/badge/Lineage-Enhanced-green.svg)](https://github.com/Keayoub/pvw-cli)
 [![Status](https://img.shields.io/badge/status-stable-success.svg)](https://github.com/Keayoub/pvw-cli)
 
-> **LATEST UPDATE v1.10.0 (March 6, 2026):**
+> **LATEST UPDATE v1.10.1 (March 6, 2026):**
 >
 > **Performance Optimizations & Diagnostics**
 >
@@ -16,7 +16,7 @@
 > - **[NEW]** `pvw diagnostics` command group - Monitor cache performance and system health
 > - **[IMPROVED]** Lazy credential loading - Deferred authentication initialization
 >
-> **[Full Release Notes v1.10.0](releases/v1.10.0.md)** | **[Performance Guide](doc/PERFORMANCE_OPTIMIZATION_GUIDE.md)**
+> **[Full Release Notes v1.10.1](releases/v1.10.1.md)** | **[Performance Guide](doc/PERFORMANCE_OPTIMIZATION_GUIDE.md)**
 >
 > **Previous Update v1.9.1 (March 4, 2026):**
 >
@@ -32,7 +32,7 @@
 
 ## What is PVW CLI?
 
-**PVW CLI v1.10.0** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* with **96% Unified Catalog API coverage** (46 of 48 operations).
+**PVW CLI v1.10.1** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* with **96% Unified Catalog API coverage** (46 of 48 operations).
 
 ### Key Capabilities
 
@@ -77,7 +77,7 @@ The CLI is designed for data engineers, stewards, architects, and platform teams
 
 For detailed information about previous releases, see the **[Full Release Archive](releases/)**.
 
-**Latest Release:** [v1.10.0](releases/v1.10.0.md) (March 6, 2026)  
+**Latest Release:** [v1.10.1](releases/v1.10.1.md) (March 6, 2026)  
 **Previous Release:** [v1.9.1](releases/v1.9.1.md) (March 4, 2026)
 
 ---
@@ -337,7 +337,7 @@ pvw uc custom-metadata add \
   --attributes '{"Department":"Sales"}'
 ```
 
-### Performance Diagnostics & Monitoring (NEW in v1.10.0)
+### Performance Diagnostics & Monitoring (NEW in v1.10.1)
 
 ```bash
 # View cache performance statistics
@@ -1446,4 +1446,4 @@ See [LICENSE](LICENSE) file for details.
 
 ---
 
-**PVW CLI v1.10.0 empowers data engineers, stewards, and architects to automate, scale, and enhance their Microsoft Purview experience with powerful command-line and programmatic capabilities.**
+**PVW CLI v1.10.1 empowers data engineers, stewards, and architects to automate, scale, and enhance their Microsoft Purview experience with powerful command-line and programmatic capabilities.**
