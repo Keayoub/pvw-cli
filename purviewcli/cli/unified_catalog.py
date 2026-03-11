@@ -2337,12 +2337,52 @@ def update_terms_from_csv(csv_file, dry_run, debug):
                 dialect = csv.excel
 
             reader = csv.DictReader(f, dialect=dialect)
+            fieldnames = list(reader.fieldnames or [])
             updates = list(reader)
 
         if debug:
             detected_headers = list(updates[0].keys()) if updates else []
             console.print(f"[cyan][DEBUG] Detected CSV delimiter: '{getattr(dialect, 'delimiter', ',')}'[/cyan]")
             console.print(f"[cyan][DEBUG] Detected CSV headers: {detected_headers}[/cyan]")
+
+        def _normalize_header_name(name):
+            if not isinstance(name, str):
+                return ""
+            cleaned = name.strip().lstrip("\ufeff").lower()
+            # Normalize common header variants: term_id, term-id, term id, termId, etc.
+            return cleaned.replace("_", "").replace("-", "").replace(" ", "")
+
+        def _extract_term_id(row):
+            # Fast-path for known exact keys first.
+            for key in ("term_id", "id", "ID", "Term ID", "TermId", "termId"):
+                value = row.get(key)
+                if isinstance(value, str) and value.strip():
+                    return value.strip()
+
+            # Fallback for flexible header naming.
+            for key, value in row.items():
+                normalized = _normalize_header_name(key)
+                if normalized in {"termid", "termguid", "id"} and isinstance(value, str) and value.strip():
+                    return value.strip()
+
+            return ""
+
+        normalized_fieldnames = [
+            _normalize_header_name(fn) for fn in fieldnames
+        ]
+        accepted_normalized_id_headers = {"termid", "termguid", "id"}
+        if normalized_fieldnames and not any(h in accepted_normalized_id_headers for h in normalized_fieldnames):
+            console.print("[red]ERROR:[/red] CSV is missing a supported term ID column.")
+            console.print("Expected one of: term_id, id, ID, Term ID, TermId, termId, term-id, term id, termGuid")
+            console.print(f"Detected headers: {fieldnames}")
+            return
+
+        if debug and fieldnames:
+            detected_id_headers = [
+                fn for fn in fieldnames if _normalize_header_name(fn) in accepted_normalized_id_headers
+            ]
+            if detected_id_headers:
+                console.print(f"[cyan][DEBUG] Term ID header(s): {detected_id_headers}[/cyan]")
         
         if not updates:
             console.print("[yellow]No updates found in CSV file.[/yellow]")
@@ -2365,15 +2405,7 @@ def update_terms_from_csv(csv_file, dry_run, debug):
                     for k, v in update.items()
                 }
 
-                term_id = (
-                    update.get('term_id')
-                    or update.get('id')
-                    or update.get('ID')
-                    or update.get('Term ID')
-                    or update.get('TermId')
-                    or update.get('termId')
-                    or ''
-                ).strip()
+                term_id = _extract_term_id(update)
                 if not term_id:
                     continue
                 
@@ -2436,15 +2468,7 @@ def update_terms_from_csv(csv_file, dry_run, debug):
                 for k, v in update.items()
             }
 
-            term_id = (
-                update.get('term_id')
-                or update.get('id')
-                or update.get('ID')
-                or update.get('Term ID')
-                or update.get('TermId')
-                or update.get('termId')
-                or ''
-            ).strip()
+            term_id = _extract_term_id(update)
             if not term_id:
                 console.print(f"[yellow]Skipping row {idx}: Missing term_id[/yellow]")
                 continue
