@@ -260,9 +260,15 @@ def read_term_template_def(guid, name):
 def read_typedef(guid, name):
     """Read a type definition by GUID or name"""
     try:
+        if not guid and not name:
+            click.echo("Error: Provide --guid or --name")
+            return
         args = {'--guid': guid, '--name': name}
         client = Types()
-        result = client.typesReadTypeDef(args)
+        if guid:
+            result = client.typesReadByGuid(args)
+        else:
+            result = client.typesReadByName(args)
         click.echo(json.dumps(result, indent=2))
     except Exception as e:
         click.echo(f"Error: {e}")

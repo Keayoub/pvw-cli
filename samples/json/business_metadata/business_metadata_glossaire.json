@@ -1,0 +1,146 @@
+{
+  "enumDefs": [
+    {
+      "category": "ENUM",
+      "name": "StatutGlossaireEnum",
+      "description": "Statut du terme dans le glossaire métier",
+      "elementDefs": [
+        { "ordinal": 0, "value": "Brouillon" },
+        { "ordinal": 1, "value": "EnRevision" },
+        { "ordinal": 2, "value": "Approuve" },
+        { "ordinal": 3, "value": "Archive" }
+      ]
+    },
+    {
+      "category": "ENUM",
+      "name": "SecteurMetierEnum",
+      "description": "Secteurs métier applicables",
+      "elementDefs": [
+        { "ordinal": 0, "value": "Finance" },
+        { "ordinal": 1, "value": "RH" },
+        { "ordinal": 2, "value": "Ventes" },
+        { "ordinal": 3, "value": "Marketing" },
+        { "ordinal": 4, "value": "IT" },
+        { "ordinal": 5, "value": "Juridique" },
+        { "ordinal": 6, "value": "Operations" }
+      ]
+    }
+  ],
+  "businessMetadataDefs": [
+    {
+      "category": "BUSINESS_METADATA",
+      "name": "Glossaire",
+      "description": "Attributs personnalisés pour les Business Concepts (Glossary Terms) - exemples SINGLE / SET / LIST",
+      "typeVersion": "1.0",
+      "options": {
+        "isPurviewDataGovernanceDefinition": "true",
+        "dataGovernanceOptions": "{\"applicableConstructs\":[\"businessConcept:AtlasGlossaryTerm\"]}"
+      },
+      "attributeDefs": [
+        {
+          "name": "Statut",
+          "typeName": "StatutGlossaireEnum",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 0,
+          "valuesMaxCount": 1,
+          "isUnique": false,
+          "isIndexable": true,
+          "includeInNotification": false,
+          "options": {
+            "isDisabled": "false",
+            "isPurviewDataGovernanceDefinition": "true",
+            "dataGovernanceOptions": "{\"inheritApplicableConstructsFromGroup\":true,\"applicableConstructs\":[]}"
+          }
+        },
+        {
+          "name": "ProprietaireDonnee",
+          "typeName": "string",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 0,
+          "valuesMaxCount": 1,
+          "isUnique": false,
+          "isIndexable": true,
+          "includeInNotification": false,
+          "options": {
+            "maxStrLength": "200",
+            "isDisabled": "false",
+            "isPurviewDataGovernanceDefinition": "true",
+            "dataGovernanceOptions": "{\"inheritApplicableConstructsFromGroup\":true,\"applicableConstructs\":[]}"
+          }
+        },
+        {
+          "name": "SecteursApplicables",
+          "typeName": "array<SecteurMetierEnum>",
+          "isOptional": true,
+          "cardinality": "SET",
+          "valuesMinCount": 0,
+          "valuesMaxCount": 2147483647,
+          "isUnique": false,
+          "isIndexable": true,
+          "includeInNotification": false,
+          "options": {
+            "isDisabled": "false",
+            "isPurviewDataGovernanceDefinition": "true",
+            "dataGovernanceOptions": "{\"inheritApplicableConstructsFromGroup\":true,\"applicableConstructs\":[]}"
+          }
+        },
+        {
+          "name": "EtapesValidation",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "LIST",
+          "valuesMinCount": 0,
+          "valuesMaxCount": 2147483647,
+          "isUnique": false,
+          "isIndexable": false,
+          "includeInNotification": false,
+          "options": {
+            "maxStrLength": "500",
+            "isDisabled": "false",
+            "isPurviewDataGovernanceDefinition": "true",
+            "dataGovernanceOptions": "{\"inheritApplicableConstructsFromGroup\":true,\"applicableConstructs\":[]}"
+          }
+        }
+      ]
+    }
+  ]
+}
+      },
+      "attributeDefs": [
+        {
+          "name": "SecteursActivite",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 0,
+          "valuesMaxCount": 1,
+          "isIndexable": true,
+          "includeInNotification": false,
+          "options": {
+            "isDisabled": "false",
+            "isPurviewDataGovernanceDefinition": "true",
+            "dataGovernanceOptions": "{\"inheritApplicableConstructsFromGroup\":true,\"applicableConstructs\":[]}"
+          }
+        },
+        {
+          "name": "Secteur",
+          "typeName": "string",
+          "isOptional": true,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 0,
+          "valuesMaxCount": 1,
+          "isIndexable": true,
+          "includeInNotification": false,
+          "options": {
+            "maxStrLength": 32000,
+            "isDisabled": "false",
+            "isPurviewDataGovernanceDefinition": "true",
+            "dataGovernanceOptions": "{\"inheritApplicableConstructsFromGroup\":true,\"applicableConstructs\":[]}"
+          }
+        }
+      ]
+    }
+  ]
+}
