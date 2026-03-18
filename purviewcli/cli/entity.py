@@ -1969,15 +1969,18 @@ def bulk_remove_labels_by_attribute(ctx, type_name, qualified_name, payload_file
 @click.option("--guid", required=True, help="The globally unique identifier of the entity")
 @click.option(
     "--payload-file",
-    required=True,
+    required=False,
     type=click.Path(exists=True),
     help="File path to a valid JSON document containing business metadata",
 )
+@click.option("--bm-name", required=False, help="Business metadata group name (e.g., group1)")
+@click.option("--attr-name", required=False, help="Business metadata attribute name (e.g., attr1)")
+@click.option("--attr-value", required=False, help="Business metadata attribute value")
 @click.option(
     "--is-overwrite", is_flag=True, help="Whether to overwrite existing business metadata"
 )
 @click.pass_context
-def add_business_metadata(ctx, guid, payload_file, is_overwrite):
+def add_business_metadata(ctx, guid, payload_file, bm_name, attr_name, attr_value, is_overwrite):
     """Add or update business metadata to an entity"""
     try:
         if ctx.obj.get("mock"):
@@ -1988,9 +1991,32 @@ def add_business_metadata(ctx, guid, payload_file, is_overwrite):
             )
             return
 
+        # Two input modes are supported:
+        # 1) --payload-file <json>
+        # 2) --bm-name <group> --attr-name <name> --attr-value <value>
+        using_payload_file = bool(payload_file)
+        using_direct_attribute = any(v is not None for v in [bm_name, attr_name, attr_value])
+
+        if not using_payload_file and not using_direct_attribute:
+            raise ValueError(
+                "Provide either --payload-file, or --bm-name + --attr-name + --attr-value"
+            )
+
+        if using_payload_file and using_direct_attribute:
+            raise ValueError(
+                "Use either --payload-file OR --bm-name/--attr-name/--attr-value, not both"
+            )
+
+        if using_direct_attribute and not all(v is not None for v in [bm_name, attr_name, attr_value]):
+            raise ValueError(
+                "When using direct attributes, all of --bm-name, --attr-name, and --attr-value are required"
+            )
+
+        payload = payload_file if using_payload_file else {bm_name: {attr_name: attr_value}}
+
         args = {
             "--guid": [guid],
-            "--payloadFile": payload_file,
+            "--payloadFile": payload,
             "--isOverwrite": is_overwrite,
         }
 
@@ -2016,13 +2042,20 @@ def add_business_metadata(ctx, guid, payload_file, is_overwrite):
 @click.option("--bm-name", required=True, help="The business metadata name")
 @click.option(
     "--payload-file",
-    required=True,
+    required=False,
     type=click.Path(exists=True),
     help="File path to a valid JSON document containing business metadata attributes",
 )
+@click.option("--attr-name", required=False, help="Business metadata attribute name (e.g., attr1)")
+@click.option("--attr-value", required=False, help="Business metadata attribute value")
 @click.pass_context
-def add_business_metadata_attributes(ctx, guid, bm_name, payload_file):
-    """Add or update business metadata attributes"""
+def add_business_metadata_attributes(ctx, guid, bm_name, payload_file, attr_name, attr_value):
+    """Add or update business metadata attributes.
+
+    Supports two input modes:
+    - --payload-file with a JSON object of attributes
+    - --attr-name and --attr-value for a single attribute update
+    """
     try:
         if ctx.obj.get("mock"):
             console.print(
@@ -2034,10 +2067,30 @@ def add_business_metadata_attributes(ctx, guid, bm_name, payload_file):
             )
             return
 
+        using_payload_file = bool(payload_file)
+        using_direct_attribute = any(v is not None for v in [attr_name, attr_value])
+
+        if not using_payload_file and not using_direct_attribute:
+            raise ValueError(
+                "Provide either --payload-file, or --attr-name + --attr-value"
+            )
+
+        if using_payload_file and using_direct_attribute:
+            raise ValueError(
+                "Use either --payload-file OR --attr-name/--attr-value, not both"
+            )
+
+        if using_direct_attribute and not all(v is not None for v in [attr_name, attr_value]):
+            raise ValueError(
+                "When using direct attributes, both --attr-name and --attr-value are required"
+            )
+
+        payload = payload_file if using_payload_file else {attr_name: attr_value}
+
         args = {
             "--guid": [guid],
-            "--bmName": bm_name,
-            "--payloadFile": payload_file,
+            "--businessMetadataName": bm_name,
+            "--payloadFile": payload,
         }
 
         from purviewcli.client._entity import Entity

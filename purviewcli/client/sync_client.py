@@ -392,7 +392,14 @@ class SyncPurviewClient:
                 timeout=60,  # Increased timeout for Azure Front Door
             )
             # Handle the response
-            if response.status_code in [200, 201, 202]:
+            if 200 <= response.status_code < 300:
+                if not response.content or not response.content.strip():
+                    logger.debug(f"Response received: {response.status_code} (empty body)")
+                    return {
+                        "status": "success",
+                        "data": {},
+                        "status_code": response.status_code,
+                    }
                 try:
                     data = response.json()
                     logger.debug(f"Response received: {response.status_code}")
@@ -436,8 +443,14 @@ class SyncPurviewClient:
                         timeout=60,
                     )
 
-                    if response.status_code in [200, 201, 202]:
+                    if 200 <= response.status_code < 300:
                         logger.info(f"Request succeeded after token refresh: {response.status_code}")
+                        if not response.content or not response.content.strip():
+                            return {
+                                "status": "success",
+                                "data": {},
+                                "status_code": response.status_code,
+                            }
                         try:
                             data = response.json()
                             return {

@@ -1117,6 +1117,30 @@ pvw entity add-classification \
   --classification "MICROSOFT.PERSONAL.EMAIL"
 ```
 
+#### **Business Metadata Updates (Grouped Attributes)**
+
+```bash
+# Update grouped business metadata directly from command line
+pvw entity add-business-metadata \
+  --guid "entity-guid-123" \
+  --bm-name "group1" \
+  --attr-name "attr1" \
+  --attr-value "domaine.gov domaine"
+
+# Update one attribute in an existing business metadata group
+pvw entity add-business-metadata-attributes \
+  --guid "entity-guid-123" \
+  --bm-name "group1" \
+  --attr-name "attr1" \
+  --attr-value "domaine.gov domaine"
+
+# Alternative: use JSON payload file for multiple attributes
+pvw entity add-business-metadata-attributes \
+  --guid "entity-guid-123" \
+  --bm-name "group1" \
+  --payload-file "group1_attributes.json"
+```
+
 ### **Discovery to Update Workflow**
 
 ```bash
