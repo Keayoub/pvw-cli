@@ -2118,13 +2118,19 @@ def add_business_metadata_attributes(ctx, guid, bm_name, payload_file, attr_name
 @click.option("--guid", required=True, help="The globally unique identifier of the entity")
 @click.option(
     "--payload-file",
-    required=True,
+    required=False,
     type=click.Path(exists=True),
     help="File path to a valid JSON document specifying business metadata to remove",
 )
+@click.option("--bm-name", required=False, help="Business metadata group name to remove")
 @click.pass_context
-def remove_business_metadata(ctx, guid, payload_file):
-    """Remove business metadata from an entity"""
+def remove_business_metadata(ctx, guid, payload_file, bm_name):
+    """Remove business metadata from an entity.
+
+    Supports two input modes:
+    - --payload-file with a JSON object containing the group name to remove
+    - --bm-name to remove a group directly
+    """
     try:
         if ctx.obj.get("mock"):
             console.print("[yellow][MOCK] entity remove-business-metadata command[/yellow]")
@@ -2134,10 +2140,23 @@ def remove_business_metadata(ctx, guid, payload_file):
             )
             return
 
+        using_payload_file = bool(payload_file)
+        using_direct_name = bm_name is not None
+
+        if not using_payload_file and not using_direct_name:
+            raise ValueError("Provide either --payload-file or --bm-name")
+
+        if using_payload_file and using_direct_name:
+            raise ValueError("Use either --payload-file OR --bm-name, not both")
+
         args = {
             "--guid": [guid],
-            "--payloadFile": payload_file,
         }
+
+        if using_payload_file:
+            args["--payloadFile"] = payload_file
+        else:
+            args["--businessMetadataName"] = bm_name
 
         from purviewcli.client._entity import Entity
 
@@ -2161,13 +2180,19 @@ def remove_business_metadata(ctx, guid, payload_file):
 @click.option("--bm-name", required=True, help="The business metadata name")
 @click.option(
     "--payload-file",
-    required=True,
+    required=False,
     type=click.Path(exists=True),
     help="File path to a valid JSON document specifying attributes to remove",
 )
+@click.option("--attr-name", required=False, help="Business metadata attribute name to remove")
 @click.pass_context
-def remove_business_metadata_attributes(ctx, guid, bm_name, payload_file):
-    """Remove business metadata attributes"""
+def remove_business_metadata_attributes(ctx, guid, bm_name, payload_file, attr_name):
+    """Remove business metadata attributes.
+
+    Supports two input modes:
+    - --payload-file with a JSON document specifying attribute(s) to remove
+    - --attr-name to remove a single attribute directly
+    """
     try:
         if ctx.obj.get("mock"):
             console.print(
@@ -2179,11 +2204,36 @@ def remove_business_metadata_attributes(ctx, guid, bm_name, payload_file):
             )
             return
 
+        using_payload_file = bool(payload_file)
+        using_direct_attribute = attr_name is not None
+
+        if not using_payload_file and not using_direct_attribute:
+            raise ValueError("Provide either --payload-file or --attr-name")
+
+        if using_payload_file and using_direct_attribute:
+            raise ValueError("Use either --payload-file OR --attr-name, not both")
+
         args = {
             "--guid": [guid],
-            "--bmName": bm_name,
-            "--payloadFile": payload_file,
+            "--businessMetadataName": bm_name,
         }
+
+        if using_payload_file:
+            with open(payload_file, "r", encoding="utf-8") as payload_stream:
+                payload = json.load(payload_stream)
+
+            if isinstance(payload, dict) and "businessMetadataAttributes" in payload:
+                args["--attributes"] = payload["businessMetadataAttributes"]
+            elif isinstance(payload, list):
+                args["--attributes"] = payload
+            elif isinstance(payload, str):
+                args["--attributes"] = [payload]
+            else:
+                raise ValueError(
+                    "Payload file must contain a string, a list of attribute names, or a businessMetadataAttributes object"
+                )
+        else:
+            args["--attributes"] = [attr_name]
 
         from purviewcli.client._entity import Entity
 

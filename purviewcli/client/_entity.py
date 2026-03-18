@@ -146,6 +146,43 @@ class Entity(Endpoint):
         Endpoint.__init__(self)
         self.app = "catalog"
 
+    def _resolve_business_metadata_name(self, args, allow_payload=False):
+        for key in (
+            "--businessMetadataName",
+            "--bmName",
+            "--bm-name",
+            "businessMetadataName",
+            "bmName",
+            "bm_name",
+        ):
+            value = args.get(key)
+            if value:
+                return value
+
+        if allow_payload and args.get("--payloadFile"):
+            payload = get_json(args, "--payloadFile")
+            if isinstance(payload, dict) and payload:
+                return next(iter(payload))
+
+        raise ValueError("Business metadata name is required")
+
+    def _resolve_business_metadata_attributes(self, args):
+        for key in (
+            "--attributes",
+            "--businessMetadataAttributes",
+            "businessMetadataAttributes",
+        ):
+            value = args.get(key)
+            if value:
+                return value
+
+        for key in ("--attrName", "--attr-name", "attrName", "attr_name"):
+            value = args.get(key)
+            if value:
+                return [value]
+
+        raise ValueError("At least one business metadata attribute is required")
+
     # === CORE ENTITY CRUD OPERATIONS ===
 
     @decorator
@@ -2009,17 +2046,7 @@ Use Cases:
         - Testing: Clean up test environments
     """
         self.method = "DELETE"
-        
-        # Support both --businessMetadataName (direct) and --payloadFile (from CLI)
-        if "--payloadFile" in args:
-            payload = get_json(args, "--payloadFile")
-            # Get the first business metadata name from the payload
-            business_metadata_names = list(payload.keys())
-            if not business_metadata_names:
-                raise ValueError("No business metadata names found in payload file")
-            business_metadata_name = business_metadata_names[0]
-        else:
-            business_metadata_name = args["--businessMetadataName"]
+        business_metadata_name = self._resolve_business_metadata_name(args, allow_payload=True)
         
         self.endpoint = ENDPOINTS["entity"]["remove_business_metadata"].format(
             guid=args["--guid"][0]
@@ -2100,8 +2127,9 @@ Use Cases:
         - Automation: Programmatically populate catalog
     """
         self.method = "POST"
+        business_metadata_name = self._resolve_business_metadata_name(args)
         self.endpoint = ENDPOINTS["entity"]["add_business_metadata_attributes"].format(
-            guid=args["--guid"][0], businessMetadataName=args["--businessMetadataName"]
+            guid=args["--guid"][0], businessMetadataName=business_metadata_name
         )
         self.params = get_api_version_params("datamap")
         self.payload = get_json(args, "--payloadFile")
@@ -2161,12 +2189,13 @@ Use Cases:
         - Testing: Clean up test environments
     """
         self.method = "DELETE"
+        business_metadata_name = self._resolve_business_metadata_name(args)
         self.endpoint = ENDPOINTS["entity"]["remove_business_metadata_attributes"].format(
-            guid=args["--guid"][0], businessMetadataName=args["--businessMetadataName"]
+            guid=args["--guid"][0], businessMetadataName=business_metadata_name
         )
         self.params = {
             **get_api_version_params("datamap"),
-            "businessMetadataAttributes": args["--attributes"],
+            "businessMetadataAttributes": self._resolve_business_metadata_attributes(args),
         }
 
     @decorator

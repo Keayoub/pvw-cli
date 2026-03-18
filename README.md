@@ -1139,6 +1139,23 @@ pvw entity add-business-metadata-attributes \
   --guid "entity-guid-123" \
   --bm-name "group1" \
   --payload-file "group1_attributes.json"
+
+# Remove an entire business metadata group directly from command line
+pvw entity remove-business-metadata \
+  --guid "entity-guid-123" \
+  --bm-name "group1"
+
+# Remove one attribute from an existing business metadata group
+pvw entity remove-business-metadata-attributes \
+  --guid "entity-guid-123" \
+  --bm-name "group1" \
+  --attr-name "attr1"
+
+# Alternative: use JSON payload file for removing multiple attributes
+pvw entity remove-business-metadata-attributes \
+  --guid "entity-guid-123" \
+  --bm-name "group1" \
+  --payload-file "group1_attributes_to_remove.json"
 ```
 
 ### **Discovery to Update Workflow**
