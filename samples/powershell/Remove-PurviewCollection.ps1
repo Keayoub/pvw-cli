@@ -37,7 +37,7 @@ try {
     $tokenJson = az account get-access-token --resource "https://purview.azure.net" --output json
     $tokenData = $tokenJson | ConvertFrom-Json
     $script:AccessToken = $tokenData.accessToken
-    Write-Host "✅ Token acquired successfully using Azure CLI."
+    Write-Host "[OK] Token acquired successfully using Azure CLI."
 }
 catch {
     Write-Error "Failed to get access token using Azure CLI: $_"
@@ -96,7 +96,7 @@ $acctBase = "https://$AccountName.purview.azure.com"
 $acctApi  = "$acctBase/account"
 $scanApi  = "$acctBase/scan"
 
-Write-Host ">>> Resolving collection identity…" -ForegroundColor Cyan
+Write-Host ">>> Resolving collection identity..." -ForegroundColor Cyan
 $cols = Invoke-PvApi -Method GET -Url "$acctApi/collections?api-version=2019-11-01-preview"
 if (-not $cols) { throw "No collections returned from Purview." }
 
@@ -124,18 +124,18 @@ $collectionName = $colObj.name
 $friendlyName   = $colObj.friendlyName
 Write-Host "    Internal name: $collectionName (friendly: $friendlyName)" -ForegroundColor Green
 
-Write-Host ">>> Checking child collections…" -ForegroundColor Cyan
+Write-Host ">>> Checking child collections..." -ForegroundColor Cyan
 $children = Invoke-PvApi -Method GET -Url "$acctApi/collections/$collectionName/getChildCollectionNames?api-version=2019-11-01-preview"
 if ($children -and $children.value -and $children.value.Count -gt 0) {
   Write-Warning "Child collections exist under '$friendlyName' ($collectionName): $($children.value -join ', ')"
   
   if ($Force) {
-    Write-Host "⚠️ FORCE MODE: Attempting to delete child collections first..." -ForegroundColor Yellow
+    Write-Host "[!] FORCE MODE: Attempting to delete child collections first..." -ForegroundColor Yellow
     foreach ($childName in $children.value) {
       try {
         Write-Host "   - Deleting child collection: $childName"
         Invoke-PvApi -Method DELETE -Url "$acctApi/collections/$childName?api-version=2019-11-01-preview" -ExpectedStatus 200 | Out-Null
-        Write-Host "   ✅ Child collection '$childName' deleted" -ForegroundColor Green
+        Write-Host "   [OK] Child collection '$childName' deleted" -ForegroundColor Green
       } catch {
         Write-Warning "Failed to delete child collection '$childName': $($_.Exception.Message)"
         if (-not $Force) {
@@ -148,7 +148,7 @@ if ($children -and $children.value -and $children.value.Count -gt 0) {
   }
 }
 
-Write-Host ">>> Enumerating data sources & scans bound to the collection…" -ForegroundColor Cyan
+Write-Host ">>> Enumerating data sources & scans bound to the collection..." -ForegroundColor Cyan
 $dsResp = Invoke-PvApi -Method GET -Url "$scanApi/datasources?api-version=2023-09-01"
 $dsItems = @()
 if ($dsResp -and $dsResp.value) { $dsItems += $dsResp.value }
@@ -209,7 +209,7 @@ foreach ($ds in $dsTarget) {
       if ($DebugMode) { Write-Host "       DEBUG: Constructed URL = '$deleteUrl'" -ForegroundColor Magenta }
       try {
         Invoke-PvApi -Method DELETE -Url $deleteUrl -ExpectedStatus 200 | Out-Null
-        Write-Host "       ✅ Scan '$scanName' deleted" -ForegroundColor Green
+        Write-Host "       [OK] Scan '$scanName' deleted" -ForegroundColor Green
       } catch {
         Write-Warning "Failed to delete scan '$scanName': $($_.Exception.Message)"
         if (-not $Force) {
@@ -231,7 +231,7 @@ foreach ($ds in $dsTarget) {
   if ($DebugMode) { Write-Host "       DEBUG: Constructed data source URL = '$deleteUrl'" -ForegroundColor Magenta }
   try {
     Invoke-PvApi -Method DELETE -Url $deleteUrl -ExpectedStatus 200 | Out-Null
-    Write-Host "       ✅ Data source '$dsName' deleted" -ForegroundColor Green
+    Write-Host "       [OK] Data source '$dsName' deleted" -ForegroundColor Green
   } catch {
     Write-Warning "Failed to delete data source '$dsName': $($_.Exception.Message)"
     if (-not $Force) {
@@ -337,7 +337,7 @@ if ($totalAssets -gt 0) {
   Write-Host "    Found $totalAssets asset(s) in collection (from multiple detection methods)" -ForegroundColor Yellow
     
   if ($Force) {
-    Write-Host "⚠️ FORCE MODE: Attempting to delete $totalAssets assets..." -ForegroundColor Yellow
+    Write-Host "[!] FORCE MODE: Attempting to delete $totalAssets assets..." -ForegroundColor Yellow
     
     $deletedCount = 0
     $failedCount = 0
@@ -356,7 +356,7 @@ if ($totalAssets -gt 0) {
         $deleteAssetUrl = "$catalogApi/api/atlas/v2/entity/guid/$guid"
         Invoke-PvApi -Method DELETE -Url $deleteAssetUrl -ExpectedStatus 200 -IgnoreErrors | Out-Null
         $deletedCount++
-        Write-Host "     ✅ Asset deleted" -ForegroundColor Green
+        Write-Host "     [OK] Asset deleted" -ForegroundColor Green
         
         # Small delay to avoid rate limiting
         Start-Sleep -Milliseconds 100
@@ -377,7 +377,7 @@ if ($totalAssets -gt 0) {
     exit 5
   }
 } else {
-  Write-Host "    ⚠️  No assets detected via search APIs" -ForegroundColor Yellow
+  Write-Host "    [!] No assets detected via search APIs" -ForegroundColor Yellow
   
   # Even if no assets found, the collection might still have hidden/orphaned assets
   # Try to delete anyway if Force is enabled, and handle the error gracefully
@@ -387,7 +387,7 @@ if ($totalAssets -gt 0) {
   }
 }
 
-Write-Host ">>> Deleting collection '$friendlyName' ($collectionName) …" -ForegroundColor Cyan
+Write-Host ">>> Deleting collection '$friendlyName' ($collectionName) ..." -ForegroundColor Cyan
 if ($DebugMode) { 
   Write-Host "DEBUG: collectionName variable = '$collectionName'" -ForegroundColor Magenta
 }
@@ -396,25 +396,25 @@ $deleteUrl = $deleteUrlTemplate -f $collectionName
 if ($DebugMode) { Write-Host "DEBUG: Constructed collection URL = '$deleteUrl'" -ForegroundColor Magenta }
 
 if ($Force) {
-  Write-Host "⚠️ FORCE MODE: Attempting aggressive collection deletion..." -ForegroundColor Yellow
+  Write-Host "[!] FORCE MODE: Attempting aggressive collection deletion..." -ForegroundColor Yellow
 }
 
 try {
   Invoke-PvApi -Method DELETE -Url $deleteUrl -ExpectedStatus 200 | Out-Null
-  Write-Host "🎉 SUCCESS: Collection '$friendlyName' deleted successfully!" -ForegroundColor Green
+  Write-Host "[OK] SUCCESS: Collection '$friendlyName' deleted successfully!" -ForegroundColor Green
 } catch {
   if ($_.Exception.Message -match "409" -or $_.Exception.Message -match '"code"\s*:\s*"Conflict"' -or $_.Exception.Message -match "12011" -or $_.Exception.Message -match "referenced by assets") {
-    Write-Warning "Delete failed with HTTP 409 (Conflict) — collection is still referenced by assets."
+    Write-Warning "Delete failed with HTTP 409 (Conflict) - collection is still referenced by assets."
     Write-Host "Details:" -ForegroundColor Yellow
     Write-Host $_.Exception.Message
     
     if ($Force) {
-      Write-Host "`n⚠️ FORCE MODE: Collection still has asset references..." -ForegroundColor Yellow
+      Write-Host "`n[!] FORCE MODE: Collection still has asset references..." -ForegroundColor Yellow
       Write-Host "   This usually means assets exist but weren't found by search APIs" -ForegroundColor Yellow
       Write-Host "   Possible causes: indexing delays, orphaned assets, or lineage references" -ForegroundColor Yellow
       
       # Suggest using the dedicated batch removal script
-      Write-Host "`n💡 RECOMMENDED SOLUTION:" -ForegroundColor Cyan
+      Write-Host "`n[TIP] RECOMMENDED SOLUTION:" -ForegroundColor Cyan
       Write-Host "   Use the dedicated batch removal script which handles this better:" -ForegroundColor White
       Write-Host "   .\Remove-PurviewAsset-Batch.ps1 -AccountName '$AccountName' -CollectionName '$collectionName' -Mode BULK" -ForegroundColor Green
       Write-Host "   Then retry this collection deletion script." -ForegroundColor White
@@ -426,12 +426,12 @@ try {
       try {
         Write-Host "   - Final retry of collection deletion..."
         Invoke-PvApi -Method DELETE -Url "$acctApi/collections/$collectionName?api-version=2019-11-01-preview" -ExpectedStatus 200 | Out-Null
-        Write-Host "🎉 SUCCESS: Collection '$friendlyName' deleted on final retry!" -ForegroundColor Green
+        Write-Host "[OK] SUCCESS: Collection '$friendlyName' deleted on final retry!" -ForegroundColor Green
         exit 0
       } catch {
         Write-Warning "Final deletion attempt failed: $($_.Exception.Message)"
-        Write-Host "`n❌ COLLECTION DELETION FAILED - ASSETS STILL REFERENCED" -ForegroundColor Red
-        Write-Host "`n📋 NEXT STEPS:" -ForegroundColor Cyan
+        Write-Host "`n[X] COLLECTION DELETION FAILED - ASSETS STILL REFERENCED" -ForegroundColor Red
+        Write-Host "`n[INFO] NEXT STEPS:" -ForegroundColor Cyan
         Write-Host "   1. Run the batch asset removal script:" -ForegroundColor White
         Write-Host "      .\Remove-PurviewAsset-Batch.ps1 -AccountName '$AccountName' -CollectionName '$collectionName' -Mode BULK" -ForegroundColor Green
         Write-Host "   2. Wait for completion (may take time for large collections)" -ForegroundColor White
@@ -452,6 +452,6 @@ try {
   }
 }
 
-Write-Host "`n🎉 === COLLECTION DELETION COMPLETE ===" -ForegroundColor Green
-Write-Host "✅ Collection '$friendlyName' ($collectionName) has been successfully deleted" -ForegroundColor Green
-Write-Host "🧹 All associated scans and data sources have been cleaned up" -ForegroundColor Green
+Write-Host "`n[OK] === COLLECTION DELETION COMPLETE ===" -ForegroundColor Green
+Write-Host "[OK] Collection '$friendlyName' ($collectionName) has been successfully deleted" -ForegroundColor Green
+Write-Host "[CLEANUP] All associated scans and data sources have been cleaned up" -ForegroundColor Green

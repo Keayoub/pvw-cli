@@ -139,22 +139,54 @@ def create(ctx, payload_file, collection_id):
 
 @entity.command()
 @click.option("--guid", required=True, help="The globally unique identifier of the entity")
+@click.option("--cascade", is_flag=True, default=False, help="Delete all relationships connected to this entity before deleting it")
 @click.pass_context
-def delete(ctx, guid):
+def delete(ctx, guid, cascade):
     """Delete an entity by GUID"""
     try:
         if ctx.obj.get("mock"):
             console.print("[yellow][MOCK] entity delete command[/yellow]")
             console.print(f"[dim]GUID: {guid}[/dim]")
+            if cascade:
+                console.print("[dim]Cascade: relationships would be deleted first[/dim]")
             console.print("[green][OK] Mock entity delete completed successfully[/green]")
             return
 
-        args = {"--guid": guid}
-
         from purviewcli.client._entity import Entity
+        from purviewcli.client._relationship import Relationship
 
         entity_client = Entity()
-        result = entity_client.entityDelete(args)
+        relationship_client = Relationship()
+
+        # Always read the entity first to detect relationships
+        read_result = entity_client.entityRead({"--guid": [guid], "--ignoreRelationships": False, "--minExtInfo": False})
+        rel_guids = []
+        if read_result:
+            entity_body = read_result.get("entity", {})
+            for attr_values in entity_body.get("relationshipAttributes", {}).values():
+                if isinstance(attr_values, list):
+                    for item in attr_values:
+                        if isinstance(item, dict) and item.get("relationshipGuid"):
+                            rel_guids.append(item["relationshipGuid"])
+                elif isinstance(attr_values, dict) and attr_values.get("relationshipGuid"):
+                    rel_guids.append(attr_values["relationshipGuid"])
+
+        if rel_guids and not cascade:
+            console.print(f"[yellow][!] Entity has {len(rel_guids)} relationship(s) that must be removed before deletion.[/yellow]")
+            console.print("[yellow]    Re-run with --cascade to automatically delete all relationships first:[/yellow]")
+            console.print(f"[yellow]    pvw entity delete --guid {guid} --cascade[/yellow]")
+            return
+
+        if cascade and rel_guids:
+            console.print(f"[blue][*] Found {len(rel_guids)} relationship(s) to delete first[/blue]")
+            for rel_guid in rel_guids:
+                try:
+                    relationship_client.relationshipDelete({"--guid": rel_guid})
+                    console.print(f"[dim]  Deleted relationship: {rel_guid}[/dim]")
+                except Exception as rel_err:
+                    console.print(f"[yellow][!] Could not delete relationship {rel_guid}: {rel_err}[/yellow]")
+
+        result = entity_client.entityDelete({"--guid": [guid]})
 
         if result:
             console.print("[green][OK] Entity delete completed successfully[/green]")

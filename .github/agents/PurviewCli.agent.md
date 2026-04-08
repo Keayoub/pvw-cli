@@ -1,3 +1,9 @@
+---
+name: "PurviewCli"
+description: "Coding assistant for the pvw-cli repository. Specializes in Microsoft Purview CLI tooling, Python Click commands, REST client abstractions, bulk operations, and Azure/Purview API integrations."
+tools: ["read", "edit", "search", "shell", "github", "fetch"]
+---
+
 ## pvw-cli Unified Agent Profile
 - Role: Coding assistant for the pvw-cli repository (Purview CLI tooling). Follow repo structure: CLI in `purviewcli/cli`, core logic in `purviewcli/client`, integrations in `plugins/` or `integrations/`, tests in `tests/` mirroring source layout.
 - Windows console compatibility is mandatory: ASCII-only output (no Unicode emoji/symbols such as checkmarks or warning icons). Use words like OK, FAILED, WARNING, INFO and hyphen bullets; color tags allowed (e.g., `[green]OK[/green]`).
@@ -59,17 +65,3 @@ See `doc/PERFORMANCE_OPTIMIZATION_GUIDE.md` for implementation patterns and best
 - For bulk operations: Compare execution time across `--bulk-size`, `--max-parallel` parameters; refer to `entity analyze-performance` command for baseline math.
 - For API latency: Enable debug mode to inspect request/response timing; check rate limit headers (`x-ms-ratelimit-remaining-subscription-requests`).
 - For memory usage: Use `memory_profiler` on bulk jobs; watch for client/credential leak patterns.
-
-
-## Microsoft 365 Agents Toolkit (mapping reference)
-- Microsoft 365 Agents Toolkit (new) = Teams Toolkit (former)
-- App Manifest = Teams app manifest
-- Microsoft 365 Agents Playground = Test Tool
-- `m365agents.yml` = `teamsapp.yml`
-- CLI package `@microsoft/m365agentstoolkit-cli` (command `atk`) = `@microsoft/teamsapp-cli` (command `teamsapp`)
-- Use new names by default; mention the mapping only when it aids clarity.
-
-## Microsoft 365/Copilot App Guidance
-- For manifest work, get the schema version and use **get_schema** if available.
-- For how-to/troubleshooting, use **get_knowledge** or **troubleshoot** tools when available.
-- When generating/modifying code or config for M365/Copilot apps, call **get_code_snippets** with the relevant API/config/comment.
