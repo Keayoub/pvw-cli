@@ -73,15 +73,13 @@ function Search-PurviewAssets {
 
     try {
         $assetsResponse = Invoke-RestMethod -Method POST -Uri $searchUri -Headers $headers -Body $searchBody
-        Write-Host "  [OK] Search successful, found $($assetsResponse.value.Count) assets" -ForegroundColor Green
+        $found = if ($assetsResponse.value) { $assetsResponse.value.Count } else { 0 }
+        Write-Host "  [OK] Search successful, found $found assets" -ForegroundColor Green
         
-        # Ensure we always return an array (even if empty) and never null for successful searches
-        if ($assetsResponse.value) {
+        if ($assetsResponse.value -and $assetsResponse.value.Count -gt 0) {
             return $assetsResponse.value
         }
-        else {
-            return @()  # Return empty array instead of null
-        }
+        return @()  # Always return empty array on success with 0 results
     }
     catch {
         Write-Host "  [X] Search failed with detailed error:" -ForegroundColor Red
@@ -132,14 +130,54 @@ $initialAssets = Search-PurviewAssets -searchUri $searchUri -headers $headers -c
 
 # Check if search failed completely (null result indicates API error)
 if ($null -eq $initialAssets) {
-    Write-Host "[X] Cannot access collection or search failed." -ForegroundColor Red
+    Write-Host "[X] Search API error - cannot continue." -ForegroundColor Red
     exit 1
 }
 
-# Check if collection is empty (empty array or no assets)
+# If search returned 0, try Atlas direct query (bypasses search index lag)
 if ($initialAssets.Count -eq 0) {
-    Write-Host "[OK] Collection '$CollectionName' is accessible and empty - no assets to delete!" -ForegroundColor Green
-    Write-Host "The collection cleanup is complete." -ForegroundColor Cyan
+    Write-Host "[!] Search returned 0 assets - trying Atlas direct query (bypasses index lag)..." -ForegroundColor Yellow
+    $atlasUri = "https://$AccountName.purview.azure.com/catalog/api/atlas/v2/search/basic?collectionId=$CollectionName&limit=100&api-version=2023-09-01"
+    try {
+        $atlasResp = Invoke-RestMethod -Method GET -Uri $atlasUri -Headers $headers
+        if ($atlasResp -and $atlasResp.entities -and $atlasResp.entities.Count -gt 0) {
+            Write-Host "  [OK] Atlas query found $($atlasResp.entities.Count) assets" -ForegroundColor Green
+            # Normalize to same shape as search results
+            $initialAssets = $atlasResp.entities | ForEach-Object {
+                @{ id = if ($_.guid) { $_.guid } else { $_.id }; name = $_.displayText }
+            }
+        }
+    } catch {
+        Write-Host "  [!] Atlas query failed: $($_.Exception.Message)" -ForegroundColor Yellow
+    }
+}
+
+# Second fallback: DSL search
+if ($initialAssets.Count -eq 0) {
+    Write-Host "[!] Trying Atlas DSL search..." -ForegroundColor Yellow
+    $dslUri = "https://$AccountName.purview.azure.com/catalog/api/atlas/v2/search/dsl?api-version=2023-09-01"
+    $dslBody = @{
+        query = @{ bool = @{ filter = @(@{ term = @{ "collectionId" = $CollectionName } }) } }
+        size = 1000
+    } | ConvertTo-Json -Depth 6
+    try {
+        $dslResp = Invoke-RestMethod -Method POST -Uri $dslUri -Headers $headers -Body $dslBody -ContentType "application/json"
+        if ($dslResp -and $dslResp.entities -and $dslResp.entities.Count -gt 0) {
+            Write-Host "  [OK] DSL search found $($dslResp.entities.Count) assets" -ForegroundColor Green
+            $initialAssets = $dslResp.entities | ForEach-Object {
+                @{ id = if ($_.guid) { $_.guid } else { $_.id }; name = $_.displayText }
+            }
+        }
+    } catch {
+        Write-Host "  [!] DSL search failed: $($_.Exception.Message)" -ForegroundColor Yellow
+    }
+}
+
+# If still 0 after all fallbacks, collection is truly empty
+if ($initialAssets.Count -eq 0) {
+    Write-Host "[OK] Collection '$CollectionName' appears empty - no assets found via any search method." -ForegroundColor Green
+    Write-Host "     If a 409 still occurs on collection delete, the blocking references may be scan history or lineage." -ForegroundColor Yellow
+    Write-Host "     Try: pvw entity bulk-delete-from-collection --collection-name $CollectionName" -ForegroundColor Cyan
     exit 0
 }
 
@@ -203,6 +241,23 @@ do {
     # Search for assets (use batchSize to avoid API limits)
     $assets = Search-PurviewAssets -searchUri $searchUri -headers $headers -collectionName $CollectionName -limit $batchSize
     
+    # Fallback to Atlas direct query if search returns 0 (index lag)
+    if (-not $assets -or $assets.Count -eq 0) {
+        Write-Host "  [!] Search returned 0 - trying Atlas direct query..." -ForegroundColor Yellow
+        try {
+            $atlasUri = "https://$AccountName.purview.azure.com/catalog/api/atlas/v2/search/basic?collectionId=$CollectionName&limit=1000&api-version=2023-09-01"
+            $atlasResp = Invoke-RestMethod -Method GET -Uri $atlasUri -Headers $headers
+            if ($atlasResp -and $atlasResp.entities -and $atlasResp.entities.Count -gt 0) {
+                Write-Host "  [OK] Atlas query found $($atlasResp.entities.Count) assets" -ForegroundColor Green
+                $assets = $atlasResp.entities | ForEach-Object {
+                    @{ id = if ($_.guid) { $_.guid } else { $_.id }; name = $_.displayText }
+                }
+            }
+        } catch {
+            Write-Host "  [!] Atlas fallback failed: $($_.Exception.Message)" -ForegroundColor Yellow
+        }
+    }
+
     if (-not $assets -or $assets.Count -eq 0) {
         Write-Host "[OK] No more assets found - collection is empty!"
         break
