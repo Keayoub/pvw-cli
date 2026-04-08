@@ -20,7 +20,7 @@ try {
     $tokenJson = az account get-access-token --resource "https://purview.azure.net" --output json
     $tokenData = $tokenJson | ConvertFrom-Json
     $accessToken = $tokenData.accessToken
-    Write-Host "✅ Token acquired successfully."
+    Write-Host "[OK] Token acquired successfully."
 }
 catch {
     Write-Error "Failed to get access token: $_"
@@ -73,7 +73,7 @@ function Search-PurviewAssets {
 
     try {
         $assetsResponse = Invoke-RestMethod -Method POST -Uri $searchUri -Headers $headers -Body $searchBody
-        Write-Host "  ✅ Search successful, found $($assetsResponse.value.Count) assets" -ForegroundColor Green
+        Write-Host "  [OK] Search successful, found $($assetsResponse.value.Count) assets" -ForegroundColor Green
         
         # Ensure we always return an array (even if empty) and never null for successful searches
         if ($assetsResponse.value) {
@@ -84,7 +84,7 @@ function Search-PurviewAssets {
         }
     }
     catch {
-        Write-Host "  ❌ Search failed with detailed error:" -ForegroundColor Red
+        Write-Host "  [X] Search failed with detailed error:" -ForegroundColor Red
         Write-Host "    Status Code: $($_.Exception.Response.StatusCode)" -ForegroundColor Yellow
         Write-Host "    Error Message: $($_.Exception.Message)" -ForegroundColor Yellow
         
@@ -112,17 +112,17 @@ Write-Host "Testing basic Purview connectivity..."
 $testUri = "https://$AccountName.purview.azure.com/account/collections?api-version=2019-11-01-preview"
 try {
     $collectionsResponse = Invoke-RestMethod -Method GET -Uri $testUri -Headers $headers -TimeoutSec 30
-    Write-Host "✅ Purview account accessible"
+    Write-Host "[OK] Purview account accessible"
     
     # Check if our target collection exists
     $targetCollection = $collectionsResponse.value | Where-Object { $_.name -eq $CollectionName }
     if (-not $targetCollection) {
-        Write-Host "❌ Collection '$CollectionName' not found!" -ForegroundColor Red
+        Write-Host "[X] Collection '$CollectionName' not found!" -ForegroundColor Red
         exit 1
     }
 }
 catch {
-    Write-Host "❌ Cannot access Purview account:" -ForegroundColor Red
+    Write-Host "[X] Cannot access Purview account:" -ForegroundColor Red
     Write-Host "  Status: $($_.Exception.Response.StatusCode)" -ForegroundColor Yellow
     Write-Host "  Error: $($_.Exception.Message)" -ForegroundColor Yellow
     exit 1
@@ -132,30 +132,30 @@ $initialAssets = Search-PurviewAssets -searchUri $searchUri -headers $headers -c
 
 # Check if search failed completely (null result indicates API error)
 if ($null -eq $initialAssets) {
-    Write-Host "❌ Cannot access collection or search failed." -ForegroundColor Red
+    Write-Host "[X] Cannot access collection or search failed." -ForegroundColor Red
     exit 1
 }
 
 # Check if collection is empty (empty array or no assets)
 if ($initialAssets.Count -eq 0) {
-    Write-Host "✅ Collection '$CollectionName' is accessible and empty - no assets to delete!" -ForegroundColor Green
+    Write-Host "[OK] Collection '$CollectionName' is accessible and empty - no assets to delete!" -ForegroundColor Green
     Write-Host "The collection cleanup is complete." -ForegroundColor Cyan
     exit 0
 }
 
-Write-Host "✅ Collection contains assets. Starting comprehensive search..."
+Write-Host "[OK] Collection contains assets. Starting comprehensive search..."
 
 # Get a larger sample to estimate total (use smaller limit to avoid API restrictions)
 $sampleAssets = Search-PurviewAssets -searchUri $searchUri -headers $headers -collectionName $CollectionName -limit $batchSize
 
 if ($sampleAssets -and $sampleAssets.Count -gt 0) {
-    Write-Host "📊 Found $($sampleAssets.Count) assets in collection"
+    Write-Host "[STATS] Found $($sampleAssets.Count) assets in collection"
     if ($sampleAssets.Count -eq $batchSize) {
-        Write-Host "⚠️  Collection has $batchSize+ assets - continuous loop will process all"
+        Write-Host "[!]  Collection has $batchSize+ assets - continuous loop will process all"
     }
 }
 else {
-    Write-Host "❌ No assets found in collection."
+    Write-Host "[X] No assets found in collection."
     exit 0
 }
 
@@ -164,30 +164,30 @@ if ($ListOnly) {
     Write-Host "`nTo delete ALL assets in this collection, run:"
     Write-Host "  .\Remove-PurviewAsset-Batch.ps1 -AccountName $AccountName -CollectionName $CollectionName -Mode BULK"
     Write-Host "  .\Remove-PurviewAsset-Batch.ps1 -AccountName $AccountName -CollectionName $CollectionName -Mode SINGLE"
-    Write-Host "`n⚠️  This will use a continuous loop to delete ALL assets until the collection is empty!"
+    Write-Host "`n[!]  This will use a continuous loop to delete ALL assets until the collection is empty!"
     exit 0
 }
 
 # Set deletion mode based on parameter
-Write-Host "`n⚠️  This will PERMANENTLY DELETE ALL ASSETS from collection '$CollectionName'."
-Write-Host "⚠️  WARNING: This action cannot be undone!"
-Write-Host "⚠️  The script will run continuously until the collection is completely empty."
+Write-Host "`n[!]  This will PERMANENTLY DELETE ALL ASSETS from collection '$CollectionName'."
+Write-Host "[!]  WARNING: This action cannot be undone!"
+Write-Host "[!]  The script will run continuously until the collection is completely empty."
 Write-Host ""
 
 if ($Mode -eq 'SINGLE') {
     $bulkMode = $false
-    Write-Host "📊 SINGLE MODE: Individual asset deletion with detailed progress..." -ForegroundColor Cyan
+    Write-Host "[STATS] SINGLE MODE: Individual asset deletion with detailed progress..." -ForegroundColor Cyan
 }
 else {
     $bulkMode = $true
-    Write-Host "⚡ BULK MODE: Large bulk operations with minimal parallel jobs (500 assets per bulk request, 2 parallel jobs)..." -ForegroundColor Cyan
+    Write-Host "[BULK] BULK MODE: Large bulk operations with minimal parallel jobs (500 assets per bulk request, 2 parallel jobs)..." -ForegroundColor Cyan
 }
 
 Write-Host "Press Ctrl+C to cancel if needed. Starting in 3 seconds..."
 Start-Sleep -Seconds 3
 
 # Start continuous deletion loop
-Write-Host "`n🚀 Starting continuous deletion process..."
+Write-Host "`n[START] Starting continuous deletion process..."
 $totalDeleted = 0
 $totalFailed = 0
 $loopCount = 0
@@ -198,17 +198,17 @@ do {
     $loopStartTime = Get-Date
     
     Write-Host "`n=== LOOP $loopCount ==="
-    Write-Host "🔍 Searching for next batch of assets..."
+    Write-Host "[SEARCH] Searching for next batch of assets..."
     
     # Search for assets (use batchSize to avoid API limits)
     $assets = Search-PurviewAssets -searchUri $searchUri -headers $headers -collectionName $CollectionName -limit $batchSize
     
     if (-not $assets -or $assets.Count -eq 0) {
-        Write-Host "✅ No more assets found - collection is empty!"
+        Write-Host "[OK] No more assets found - collection is empty!"
         break
     }
     
-    Write-Host "📦 Found $($assets.Count) assets in this loop"
+    Write-Host "[PKG] Found $($assets.Count) assets in this loop"
     
     # Delete assets in this loop
     $loopSuccessCount = 0
@@ -352,7 +352,7 @@ do {
                 $actualSuccess = [Math]::Min($result.Success, $maxPossibleSuccess)
                 
                 if ($result.Success -gt $maxPossibleSuccess) {
-                    Write-Host "    ⚠️ Job $jobCount reported $($result.Success) successes but only had $maxPossibleSuccess assets - correcting" -ForegroundColor Yellow
+                    Write-Host "    [!] Job $jobCount reported $($result.Success) successes but only had $maxPossibleSuccess assets - correcting" -ForegroundColor Yellow
                 }
                               
                 $batchSuccess += $actualSuccess
@@ -368,18 +368,18 @@ do {
                 $avgOptimalSize = [Math]::Floor(($optimalSizes | Measure-Object -Average).Average)
                 if ($avgOptimalSize -lt $bulkDeleteSize) {
                     $bulkDeleteSize = $avgOptimalSize
-                    Write-Host "    📊 Adaptive sizing: Reduced bulk size to $bulkDeleteSize for better performance" -ForegroundColor Cyan
+                    Write-Host "    [STATS] Adaptive sizing: Reduced bulk size to $bulkDeleteSize for better performance" -ForegroundColor Cyan
                 }
             }
             
             if ($batchSuccess -gt $batch.Count) {
-                Write-Host "    ⚠️ WARNING: Batch success ($batchSuccess) exceeds batch size ($($batch.Count)) - correcting to batch size" -ForegroundColor Red
+                Write-Host "    [!] WARNING: Batch success ($batchSuccess) exceeds batch size ($($batch.Count)) - correcting to batch size" -ForegroundColor Red
                 $batchSuccess = $batch.Count
             }
             
-            Write-Host " ✅ $batchSuccess/$($batch.Count) deleted (bulk API)"
+            Write-Host " [OK] $batchSuccess/$($batch.Count) deleted (bulk API)"
             if ($batchFailed -gt 0) {
-                Write-Host "    ⚠️ $batchFailed failed (will retry in next loop)" -ForegroundColor Yellow
+                Write-Host "    [!] $batchFailed failed (will retry in next loop)" -ForegroundColor Yellow
             }
             
             # Add batch results to loop totals
@@ -416,12 +416,12 @@ do {
     $totalDeleted += $loopSuccessCount
     $totalFailed += $loopFailureCount
     
-    Write-Host "📊 Loop $loopCount results: $loopSuccessCount deleted, $loopFailureCount failed | Rate: $loopRate/min"
+    Write-Host "[STATS] Loop $loopCount results: $loopSuccessCount deleted, $loopFailureCount failed | Rate: $loopRate/min"
     
     # Overall progress
     $overallTime = (Get-Date) - $overallStartTime
     $overallRate = if ($overallTime.TotalMinutes -gt 0) { [Math]::Round($totalDeleted / $overallTime.TotalMinutes, 0) } else { 0 }
-    Write-Host "🎯 Overall progress: $totalDeleted total deleted | Overall rate: $overallRate/min"
+    Write-Host "[TARGET] Overall progress: $totalDeleted total deleted | Overall rate: $overallRate/min"
     
     # Short delay before next search
     Start-Sleep -Milliseconds 500
@@ -432,21 +432,21 @@ do {
 $totalTime = (Get-Date) - $overallStartTime
 $finalRate = if ($totalTime.TotalMinutes -gt 0) { [Math]::Round($totalDeleted / $totalTime.TotalMinutes, 0) } else { 0 }
 
-Write-Host "`n🎉 === CONTINUOUS DELETION COMPLETE ==="
-Write-Host "✅ Total assets deleted: $totalDeleted"
-Write-Host "❌ Total failures: $totalFailed"
-Write-Host "🔄 Total loops executed: $loopCount"
-Write-Host "⏱️  Total time: $([Math]::Round($totalTime.TotalMinutes, 1)) minutes ($([Math]::Round($totalTime.TotalHours, 1)) hours)"
-Write-Host "🚀 Average rate: $finalRate deletions/minute"
+Write-Host "`n[SUCCESS] === CONTINUOUS DELETION COMPLETE ==="
+Write-Host "[OK] Total assets deleted: $totalDeleted"
+Write-Host "[X] Total failures: $totalFailed"
+Write-Host "[LOOP] Total loops executed: $loopCount"
+Write-Host "[TIMER] Total time: $([Math]::Round($totalTime.TotalMinutes, 1)) minutes ($([Math]::Round($totalTime.TotalHours, 1)) hours)"
+Write-Host "[START] Average rate: $finalRate deletions/minute"
 
 if ($totalFailed -eq 0) {
-    Write-Host "`n🎉 SUCCESS: All assets successfully deleted from collection '$CollectionName'!" -ForegroundColor Green
-    Write-Host "🧹 Collection is now completely empty." -ForegroundColor Green
+    Write-Host "`n[SUCCESS] SUCCESS: All assets successfully deleted from collection '$CollectionName'!" -ForegroundColor Green
+    Write-Host "[CLEANUP] Collection is now completely empty." -ForegroundColor Green
 }
 elseif ($totalDeleted -gt 0) {
-    Write-Host "`n✅ PARTIAL SUCCESS: $totalDeleted assets deleted, $totalFailed failed." -ForegroundColor Yellow
-    Write-Host "🔄 You may run the script again to retry failed deletions." -ForegroundColor Yellow
+    Write-Host "`n[OK] PARTIAL SUCCESS: $totalDeleted assets deleted, $totalFailed failed." -ForegroundColor Yellow
+    Write-Host "[LOOP] You may run the script again to retry failed deletions." -ForegroundColor Yellow
 }
 else {
-    Write-Host "`n❌ NO DELETIONS: No assets were deleted. Check permissions." -ForegroundColor Red
+    Write-Host "`n[X] NO DELETIONS: No assets were deleted. Check permissions." -ForegroundColor Red
 }

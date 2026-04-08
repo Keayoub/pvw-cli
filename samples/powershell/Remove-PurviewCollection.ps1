@@ -332,6 +332,61 @@ if ($allAssets.Count -eq 0) {
   }
 }
 
+# Method 4: Query Atlas entity store directly via DSL (bypasses search index lag)
+if ($allAssets.Count -eq 0) {
+  try {
+    $dslPayload = @{
+      query = @{
+        bool = @{
+          filter = @(
+            @{ term = @{ "__state" = "ACTIVE" } },
+            @{ term = @{ "collectionId" = $collectionName } }
+          )
+        }
+      }
+      size = 1000
+    }
+    $dslUrl = "$catalogApi/api/atlas/v2/search/dsl?api-version=2023-09-01"
+    if ($DebugMode) { Write-Host "DEBUG: Trying Atlas DSL search" -ForegroundColor Magenta }
+    $dslResults = Invoke-PvApi -Method POST -Url $dslUrl -Body $dslPayload -IgnoreErrors
+    if ($dslResults -and $dslResults.entities) {
+      foreach ($entity in $dslResults.entities) {
+        $entityGuid = if ($entity.guid) { $entity.guid } else { $entity.id }
+        if ($entityGuid) { $allAssets += @{ id = $entityGuid; name = $entity.displayText } }
+      }
+      Write-Host "    Atlas DSL search found $($allAssets.Count) assets" -ForegroundColor Cyan
+    }
+  } catch {
+    if ($DebugMode) { Write-Warning "Atlas DSL search failed: $($_.Exception.Message)" }
+  }
+}
+
+# Method 5: Purview Discovery API - list assets by collection (does not depend on search index)
+if ($allAssets.Count -eq 0) {
+  try {
+    $discoveryUrl = "$datamapApi/api/atlas/v2/entity?collectionId=$collectionName&limit=1000&api-version=2023-09-01"
+    if ($DebugMode) { Write-Host "DEBUG: Trying Discovery API" -ForegroundColor Magenta }
+    $discoveryResults = Invoke-PvApi -Method GET -Url $discoveryUrl -IgnoreErrors
+    if ($discoveryResults -and $discoveryResults.entities) {
+      foreach ($entity in $discoveryResults.entities) {
+        $entityGuid = if ($entity.guid) { $entity.guid } else { $entity.id }
+        if ($entityGuid) { $allAssets += @{ id = $entityGuid; name = ($entity.attributes.name ?? $entityGuid) } }
+      }
+      Write-Host "    Discovery API found $($allAssets.Count) assets" -ForegroundColor Cyan
+    }
+  } catch {
+    if ($DebugMode) { Write-Warning "Discovery API failed: $($_.Exception.Message)" }
+  }
+}
+
+# Method 6: If all searches return 0 but collection has a 409, use batch delete script pattern
+# Try a forced blind-delete attempt using the Remove-PurviewAsset-Batch approach via pvw CLI
+if ($allAssets.Count -eq 0) {
+  Write-Host "    [!] Search APIs returned 0 assets but collection may have unindexed assets." -ForegroundColor Yellow
+  Write-Host "    Tip: Run Remove-PurviewAsset-Batch.ps1 -AccountName '$AccountName' -CollectionName '$CollectionName' -Mode BULK" -ForegroundColor Cyan
+  Write-Host "    to clear assets directly via bulk delete, then re-run this script." -ForegroundColor Cyan
+}
+
 $totalAssets = $allAssets.Count
 if ($totalAssets -gt 0) {
   Write-Host "    Found $totalAssets asset(s) in collection (from multiple detection methods)" -ForegroundColor Yellow
@@ -404,46 +459,47 @@ try {
   Write-Host "[OK] SUCCESS: Collection '$friendlyName' deleted successfully!" -ForegroundColor Green
 } catch {
   if ($_.Exception.Message -match "409" -or $_.Exception.Message -match '"code"\s*:\s*"Conflict"' -or $_.Exception.Message -match "12011" -or $_.Exception.Message -match "referenced by assets") {
-    Write-Warning "Delete failed with HTTP 409 (Conflict) - collection is still referenced by assets."
-    Write-Host "Details:" -ForegroundColor Yellow
-    Write-Host $_.Exception.Message
-    
+    Write-Warning "Delete failed with HTTP 409 (Conflict) - collection still has asset references."
+    Write-Host ""
+    Write-Host "[INFO] This usually means assets exist but were not found by any search API." -ForegroundColor Yellow
+    Write-Host "       Common causes: search indexing lag, orphaned/unindexed assets, lineage references." -ForegroundColor Yellow
+    Write-Host ""
+
     if ($Force) {
-      Write-Host "`n[!] FORCE MODE: Collection still has asset references..." -ForegroundColor Yellow
-      Write-Host "   This usually means assets exist but weren't found by search APIs" -ForegroundColor Yellow
-      Write-Host "   Possible causes: indexing delays, orphaned assets, or lineage references" -ForegroundColor Yellow
-      
-      # Suggest using the dedicated batch removal script
-      Write-Host "`n[TIP] RECOMMENDED SOLUTION:" -ForegroundColor Cyan
-      Write-Host "   Use the dedicated batch removal script which handles this better:" -ForegroundColor White
-      Write-Host "   .\Remove-PurviewAsset-Batch.ps1 -AccountName '$AccountName' -CollectionName '$collectionName' -Mode BULK" -ForegroundColor Green
-      Write-Host "   Then retry this collection deletion script." -ForegroundColor White
-      
-      Write-Host "`n   Attempting one more retry with extended wait..." -ForegroundColor Yellow
-      Write-Host "   - Waiting 20 seconds for backend to finalize any pending deletions..."
-      Start-Sleep -Seconds 20
-      
-      try {
-        Write-Host "   - Final retry of collection deletion..."
-        Invoke-PvApi -Method DELETE -Url "$acctApi/collections/$collectionName?api-version=2019-11-01-preview" -ExpectedStatus 200 | Out-Null
-        Write-Host "[OK] SUCCESS: Collection '$friendlyName' deleted on final retry!" -ForegroundColor Green
-        exit 0
-      } catch {
-        Write-Warning "Final deletion attempt failed: $($_.Exception.Message)"
-        Write-Host "`n[X] COLLECTION DELETION FAILED - ASSETS STILL REFERENCED" -ForegroundColor Red
-        Write-Host "`n[INFO] NEXT STEPS:" -ForegroundColor Cyan
-        Write-Host "   1. Run the batch asset removal script:" -ForegroundColor White
+      # Retry loop: 3 attempts with progressive wait
+      $retryDelays = @(15, 30, 60)
+      $deleted = $false
+      foreach ($wait in $retryDelays) {
+        Write-Host "   Waiting $wait seconds for backend to process pending deletions..." -ForegroundColor Cyan
+        Start-Sleep -Seconds $wait
+        try {
+          Write-Host "   Retrying collection deletion..."
+          Invoke-PvApi -Method DELETE -Url "$acctApi/collections/$collectionName?api-version=2019-11-01-preview" -ExpectedStatus 200 | Out-Null
+          Write-Host "[OK] SUCCESS: Collection '$friendlyName' deleted!" -ForegroundColor Green
+          $deleted = $true
+          break
+        } catch {
+          Write-Warning "Retry failed: $($_.Exception.Message)"
+        }
+      }
+
+      if (-not $deleted) {
+        Write-Host ""
+        Write-Host "[X] COLLECTION DELETION FAILED after all retries." -ForegroundColor Red
+        Write-Host ""
+        Write-Host "[INFO] NEXT STEPS:" -ForegroundColor Cyan
+        Write-Host "   1. Run the batch asset removal script to clear unindexed assets:" -ForegroundColor White
         Write-Host "      .\Remove-PurviewAsset-Batch.ps1 -AccountName '$AccountName' -CollectionName '$collectionName' -Mode BULK" -ForegroundColor Green
-        Write-Host "   2. Wait for completion (may take time for large collections)" -ForegroundColor White
-        Write-Host "   3. Re-run this script to delete the empty collection" -ForegroundColor White
-        Write-Host "`n   Alternative: Check for lineage relationships or scan history that may be blocking deletion" -ForegroundColor Yellow
+        Write-Host "   2. Wait for completion, then re-run this script." -ForegroundColor White
+        Write-Host "   3. If it still fails, check for lineage relationships or scan history blocking deletion." -ForegroundColor White
         exit 3
       }
     } else {
-      Write-Host "`nTips:" -ForegroundColor Yellow
-      Write-Host "- Ensure no child collections, scans, or data sources remain" -ForegroundColor Yellow
-      Write-Host "- Sometimes backend cleanup may take time before delete succeeds" -ForegroundColor Yellow
-      Write-Host "- Use -Force parameter to attempt aggressive cleanup and retry" -ForegroundColor Yellow
+      Write-Host "[!] Re-run with -Force to attempt automatic retry with wait:" -ForegroundColor Yellow
+      Write-Host "    .\Remove-PurviewCollection.ps1 -AccountName '$AccountName' -CollectionName '$CollectionName' -Force" -ForegroundColor Green
+      Write-Host ""
+      Write-Host "    Or clear assets first with:" -ForegroundColor Yellow
+      Write-Host "    .\Remove-PurviewAsset-Batch.ps1 -AccountName '$AccountName' -CollectionName '$collectionName' -Mode BULK" -ForegroundColor Green
       exit 2
     }
   } else {
