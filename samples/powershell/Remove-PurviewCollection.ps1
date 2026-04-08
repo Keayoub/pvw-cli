@@ -370,7 +370,7 @@ if ($allAssets.Count -eq 0) {
     if ($discoveryResults -and $discoveryResults.entities) {
       foreach ($entity in $discoveryResults.entities) {
         $entityGuid = if ($entity.guid) { $entity.guid } else { $entity.id }
-        if ($entityGuid) { $allAssets += @{ id = $entityGuid; name = ($entity.attributes.name ?? $entityGuid) } }
+        if ($entityGuid) { $allAssets += @{ id = $entityGuid; name = if ($entity.attributes -and $entity.attributes.name) { $entity.attributes.name } else { $entityGuid } } }
       }
       Write-Host "    Discovery API found $($allAssets.Count) assets" -ForegroundColor Cyan
     }
