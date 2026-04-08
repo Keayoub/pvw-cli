@@ -19,6 +19,27 @@ from .console_utils import get_console
 # Save reference to Python builtin list before it is shadowed by the @entity.command() named 'list'
 _builtin_list = list
 
+
+def _parse_attr_value(value):
+    """Parse a CLI attr-value string into the appropriate Python type.
+
+    Resolution order:
+    1. JSON array/object literal  e.g. '["Finance","IT"]'
+    2. Semicolon-separated list   e.g. 'Finance;IT;Marketing'
+    3. Plain scalar               e.g. 'Finance'
+    """
+    if value is None:
+        return value
+    # 1. JSON parse (handles both array and plain JSON scalars from CSV export)
+    stripped = value.strip()
+    if stripped.startswith("[") or stripped.startswith("{"):
+        try:
+            return json.loads(stripped)
+        except (json.JSONDecodeError, ValueError):
+            pass
+    # 2. Plain scalar
+    return value
+
 console = get_console()
 
 
@@ -2044,7 +2065,7 @@ def add_business_metadata(ctx, guid, payload_file, bm_name, attr_name, attr_valu
                 "When using direct attributes, all of --bm-name, --attr-name, and --attr-value are required"
             )
 
-        payload = payload_file if using_payload_file else {bm_name: {attr_name: attr_value}}
+        payload = payload_file if using_payload_file else {bm_name: {attr_name: _parse_attr_value(attr_value)}}
 
         args = {
             "--guid": [guid],
@@ -2117,7 +2138,7 @@ def add_business_metadata_attributes(ctx, guid, bm_name, payload_file, attr_name
                 "When using direct attributes, both --attr-name and --attr-value are required"
             )
 
-        payload = payload_file if using_payload_file else {attr_name: attr_value}
+        payload = payload_file if using_payload_file else {attr_name: _parse_attr_value(attr_value)}
 
         args = {
             "--guid": [guid],
