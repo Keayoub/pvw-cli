@@ -3189,27 +3189,64 @@ def sync_classic(domain_id, glossary_guid, create_glossary, dry_run, update_exis
         
         # Step 3: Get existing classic glossary terms and glossary name
         console.print("[bold]Step 3:[/bold] Checking existing classic glossary terms...")
-        
+
+        def _normalize_term_name(name):
+            if not name:
+                return ""
+            return " ".join(str(name).split()).strip().lower()
+
         existing_terms = {}
         glossary_name = "Glossary"  # Default fallback
         glossary_qualified_name = "Glossary"  # Default fallback for qualified name
         try:
-            glossary_details = glossary_client.glossaryReadDetailed({"--glossaryGuid": [target_glossary_guid]})
-            existing_term_list = glossary_details.get("terms", [])
-            
+            all_glossaries = glossary_client.glossaryRead({})
+            if isinstance(all_glossaries, dict) and all_glossaries.get("status") == "error":
+                raise ValueError(all_glossaries.get("message", "Failed to list glossaries"))
+
+            if isinstance(all_glossaries, dict):
+                glossary_list = all_glossaries.get("value") or []
+            elif isinstance(all_glossaries, list):
+                glossary_list = all_glossaries
+            else:
+                glossary_list = []
+
+            glossary_details = next(
+                (g for g in glossary_list if str(g.get("guid", "")).strip() == str(target_glossary_guid).strip()),
+                None,
+            )
+            if not glossary_details:
+                raise ValueError(f"Target glossary GUID not found in classic glossaries: {target_glossary_guid}")
+
             # Get glossary name and qualifiedName for term qualifiedName construction
             glossary_name = glossary_details.get("name", "Glossary")
             glossary_qualified_name = glossary_details.get("qualifiedName", f"{glossary_name}@Glossary")
-            
+
+            existing_term_list = glossary_details.get("terms", [])
+            if not existing_term_list:
+                term_response = glossary_client.glossaryReadTermsByGlossary({
+                    "--glossaryGuid": target_glossary_guid,
+                })
+                if isinstance(term_response, dict) and term_response.get("status") == "error":
+                    raise ValueError(term_response.get("message", "Failed to list glossary terms"))
+                if isinstance(term_response, dict):
+                    existing_term_list = term_response.get("value") or term_response.get("terms") or []
+                elif isinstance(term_response, list):
+                    existing_term_list = term_response
+                else:
+                    existing_term_list = []
+
             for term in existing_term_list:
                 term_name = term.get("displayText") or term.get("name")
                 term_guid = term.get("termGuid") or term.get("guid")
-                if term_name:
-                    existing_terms[term_name.lower()] = term_guid
-            
+                normalized_name = _normalize_term_name(term_name)
+                if normalized_name and term_guid:
+                    existing_terms[normalized_name] = term_guid
+
             console.print(f"[green][OK][/green] Found {len(existing_terms)} existing term(s) in classic glossary\n")
         except Exception as e:
-            console.print(f"[yellow][!][/yellow] Could not fetch existing terms: {e}\n")
+            console.print(f"[red]ERROR:[/red] Could not fetch existing terms: {e}")
+            console.print("[yellow][TIP][/yellow] Verify --glossary-guid is a classic glossary GUID from 'pvw glossary list'.")
+            return
         
         # Step 4: Sync terms
         console.print("[bold]Step 4:[/bold] Synchronizing terms...")
@@ -3225,7 +3262,7 @@ def sync_classic(domain_id, glossary_guid, create_glossary, dry_run, update_exis
             term_status = uc_term.get("status", "Draft")
             
             # Check if term already exists
-            existing_guid = existing_terms.get(term_name.lower())
+            existing_guid = existing_terms.get(_normalize_term_name(term_name))
             
             if existing_guid and not update_existing:
                 console.print(f"   [dim][-] Skipping:[/dim] {term_name} (already exists)")
