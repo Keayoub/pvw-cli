@@ -3063,7 +3063,8 @@ def list_related_entities(term_id, relationship_type, entity_type, output):
 @click.option("--create-glossary", is_flag=True, help="Create classic glossary if it doesn't exist")
 @click.option("--dry-run", is_flag=True, help="Preview changes without applying them")
 @click.option("--update-existing", is_flag=True, help="Update existing classic terms if they already exist")
-def sync_classic(domain_id, glossary_guid, create_glossary, dry_run, update_existing):
+@click.option("--delete-removed", is_flag=True, help="Delete classic terms that no longer exist in the Unified Catalog")
+def sync_classic(domain_id, glossary_guid, create_glossary, dry_run, update_existing, delete_removed):
     """Synchronize Unified Catalog terms to classic glossary terms.
     
     This command bridges the Unified Catalog (business metadata) with classic glossaries,
@@ -3084,6 +3085,9 @@ def sync_classic(domain_id, glossary_guid, create_glossary, dry_run, update_exis
         
         # Update existing terms in classic glossary
         pvw uc term sync-classic --domain-id <domain-guid> --update-existing
+
+        # Update existing terms and delete terms removed from UC
+        pvw uc term sync-classic --domain-id <domain-guid> --update-existing --delete-removed
     """
     try:
         from purviewcli.client._glossary import Glossary
@@ -3094,7 +3098,7 @@ def sync_classic(domain_id, glossary_guid, create_glossary, dry_run, update_exis
         glossary_client = Glossary()
         
         console.print("[cyan]" + "-" * 59 + "[/cyan]")
-        console.print("[bold cyan]  Unified Catalog → Classic Glossary Sync  [/bold cyan]")
+        console.print("[bold cyan]  Unified Catalog -> Classic Glossary Sync  [/bold cyan]")
         console.print("[cyan]" + "-" * 59 + "[/cyan]\n")
         
         if dry_run:
@@ -3297,7 +3301,7 @@ def sync_classic(domain_id, glossary_guid, create_glossary, dry_run, update_exis
                             temp_file = f.name
                         
                         try:
-                            glossary_client.glossaryUpdateTerm({"--payloadFile": temp_file})
+                            glossary_client.glossaryUpdateTerm({"--termGuid": existing_guid, "--payloadFile": temp_file})
                             console.print(f"   [green][OK] Updated:[/green] {term_name}")
                             updated_count += 1
                         finally:
@@ -3341,27 +3345,54 @@ def sync_classic(domain_id, glossary_guid, create_glossary, dry_run, update_exis
             except Exception as e:
                 console.print(f"   [red][X] Failed:[/red] {term_name} - {str(e)}")
                 failed_count += 1
-        
+
+        # Step 5: Delete classic terms removed from UC (only when --delete-removed is set)
+        deleted_count = 0
+        if delete_removed:
+            console.print("\n[bold]Step 5:[/bold] Removing classic terms no longer in Unified Catalog...")
+            uc_term_names = {_normalize_term_name(t.get("name", "")) for t in uc_terms}
+            terms_to_delete = {
+                name: guid
+                for name, guid in existing_terms.items()
+                if name not in uc_term_names
+            }
+            if not terms_to_delete:
+                console.print("   [dim]No orphaned classic terms found.[/dim]")
+            else:
+                for term_name_norm, term_guid in terms_to_delete.items():
+                    if dry_run:
+                        console.print(f"   [yellow]Would delete:[/yellow] {term_name_norm}")
+                        deleted_count += 1
+                    else:
+                        try:
+                            glossary_client.glossaryDeleteTerm({"--termGuid": term_guid})
+                            console.print(f"   [green][OK] Deleted:[/green] {term_name_norm}")
+                            deleted_count += 1
+                        except Exception as e:
+                            console.print(f"   [red][X] Failed to delete:[/red] {term_name_norm} - {str(e)}")
+                            failed_count += 1
+
         # Summary
         console.print("\n[cyan]" + "-" * 59 + "[/cyan]")
         console.print("[bold cyan]  Synchronization Summary  [/bold cyan]")
         console.print("[cyan]" + "-" * 59 + "[/cyan]")
-        
+
         summary_table = Table(show_header=False, box=None)
         summary_table.add_column("Metric", style="bold")
         summary_table.add_column("Count", style="cyan")
-        
+
         summary_table.add_row("Total UC Terms", str(len(uc_terms)))
         summary_table.add_row("Created", f"[green]{created_count}[/green]")
         summary_table.add_row("Updated", f"[yellow]{updated_count}[/yellow]")
         summary_table.add_row("Skipped", f"[dim]{skipped_count}[/dim]")
+        summary_table.add_row("Deleted", f"[magenta]{deleted_count}[/magenta]")
         summary_table.add_row("Failed", f"[red]{failed_count}[/red]")
-        
+
         console.print(summary_table)
-        
+
         if dry_run:
             console.print("\n[yellow][TIP] This was a dry run. Use without --dry-run to apply changes.[/yellow]")
-        elif failed_count == 0 and (created_count > 0 or updated_count > 0):
+        elif failed_count == 0 and (created_count > 0 or updated_count > 0 or deleted_count > 0):
             console.print("\n[green][OK] Synchronization completed successfully![/green]")
         
     except Exception as e:

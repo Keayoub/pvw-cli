@@ -116,7 +116,36 @@ pvw uc term update --term-id "term-456" --status "Published"
 
 # Delete term
 pvw uc term delete --term-id "term-456" --confirm
+
+# Sync UC terms to a classic glossary (create missing terms)
+pvw uc term sync-classic --domain-id "abc-123" --glossary-guid "gloss-guid"
+
+# Sync and update existing classic terms to match UC
+pvw uc term sync-classic --domain-id "abc-123" --glossary-guid "gloss-guid" --update-existing
+
+# Full two-way reconciliation: update existing + delete terms removed from UC
+pvw uc term sync-classic --domain-id "abc-123" --glossary-guid "gloss-guid" --update-existing --delete-removed
+
+# Preview changes without applying (dry run)
+pvw uc term sync-classic --domain-id "abc-123" --glossary-guid "gloss-guid" --update-existing --delete-removed --dry-run
+
+# Auto-create the classic glossary if it doesn't exist yet
+pvw uc term sync-classic --domain-id "abc-123" --create-glossary
 ```
+
+#### `sync-classic` option reference
+
+| Option | Description |
+|---|---|
+| `--domain-id` | Governance domain ID to sync terms from |
+| `--glossary-guid` | Target classic glossary GUID |
+| `--create-glossary` | Create the classic glossary if it does not exist |
+| `--update-existing` | Update classic terms that already exist in the glossary |
+| `--delete-removed` | Delete classic terms that no longer exist in the UC domain |
+| `--dry-run` | Preview all changes without applying them |
+
+> **Note:** `--delete-removed` is opt-in to prevent accidental data loss.
+> Always use `--dry-run` first when running against a production glossary.
 
 ### 📦 Data Products (`pv uc dataproduct`)
 
