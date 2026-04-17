@@ -1,11 +1,11 @@
-# PURVIEW CLI v1.10.5 - Microsoft Purview Automation & Data Governance
+# PURVIEW CLI v1.10.6 - Microsoft Purview Automation & Data Governance
 
-[![Version](https://img.shields.io/badge/version-1.10.5-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.10.5)
+[![Version](https://img.shields.io/badge/version-1.10.5-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.10.6)
 [![API Coverage](https://img.shields.io/badge/UC%20API%20Coverage-96%25-brightgreen.svg)](https://github.com/Keayoub/pvw-cli)
 [![Lineage](https://img.shields.io/badge/Lineage-Enhanced-green.svg)](https://github.com/Keayoub/pvw-cli)
 [![Status](https://img.shields.io/badge/status-stable-success.svg)](https://github.com/Keayoub/pvw-cli)
 
-> **LATEST UPDATE v1.10.5 (April 15, 2026):**
+> **LATEST UPDATE v1.10.6 (April 15, 2026):**
 >
 > **Classic Glossary Sync Fixes and Enhancements**
 >
@@ -14,9 +14,9 @@
 - **[NEW]** `--delete-removed` flag: removes classic glossary terms no longer present in the UC domain (opt-in)
 - **[NEW]** Sync summary table now includes a `Deleted` row
 >
-> **[Full Release Notes v1.10.5](releases/v1.10.5.md)** | **[Performance Guide](doc/PERFORMANCE_OPTIMIZATION_GUIDE.md)**
+> **[Full Release Notes v1.10.6](releases/v1.10.6.md)** | **[Performance Guide](doc/PERFORMANCE_OPTIMIZATION_GUIDE.md)**
 >
-> **Previous Update v1.10.5 (March 11, 2026):**
+> **Previous Update v1.10.6 (March 11, 2026):**
 >
 > **CLI Invocation Cleanup and CSV Update Fixes**
 >
@@ -25,7 +25,7 @@
 - **[FIXED]** Flexible CSV term ID headers supported: `term_id`, `term-id`, `term id`, `termId`, `termGuid`, etc.
 - **[IMPROVED]** Clearer diagnostics when a CSV file does not contain a valid term ID column
 >
-> **[Full Release Notes v1.10.5](releases/v1.10.5.md)** | **[Performance Guide](doc/PERFORMANCE_OPTIMIZATION_GUIDE.md)**
+> **[Full Release Notes v1.10.6](releases/v1.10.6.md)** | **[Performance Guide](doc/PERFORMANCE_OPTIMIZATION_GUIDE.md)**
 >
 > **Previous Update v1.10.0 (March 6, 2026):**
 >
@@ -42,7 +42,7 @@
 
 ## What is PVW CLI?
 
-**PVW CLI v1.10.5** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* with **96% Unified Catalog API coverage** (46 of 48 operations).
+**PVW CLI v1.10.6** is a modern, full-featured command-line interface and Python library for Microsoft Purview. It enables automation and management of *all major Purview APIs* with **96% Unified Catalog API coverage** (46 of 48 operations).
 
 ### Key Capabilities
 
@@ -87,7 +87,7 @@ The CLI is designed for data engineers, stewards, architects, and platform teams
 
 For detailed information about previous releases, see the **[Full Release Archive](releases/)**.
 
-**Latest Release:** [v1.10.5](releases/v1.10.5.md) (March 11, 2026)  
+**Latest Release:** [v1.10.6](releases/v1.10.6.md) (March 11, 2026)  
 **Previous Release:** [v1.10.0](releases/v1.10.0.md) (March 6, 2026)
 
 ---
@@ -347,7 +347,7 @@ pvw uc custom-metadata add \
   --attributes '{"Department":"Sales"}'
 ```
 
-### Performance Diagnostics & Monitoring (NEW in v1.10.5)
+### Performance Diagnostics & Monitoring (NEW in v1.10.6)
 
 ```bash
 # View cache performance statistics
@@ -1526,4 +1526,4 @@ See [LICENSE](LICENSE) file for details.
 
 ---
 
-**PVW CLI v1.10.5 empowers data engineers, stewards, and architects to automate, scale, and enhance their Microsoft Purview experience with powerful command-line and programmatic capabilities.**
+**PVW CLI v1.10.6 empowers data engineers, stewards, and architects to automate, scale, and enhance their Microsoft Purview experience with powerful command-line and programmatic capabilities.**
