@@ -3118,8 +3118,9 @@ def list(type_name, limit):
         search_client = Search()
         
         # Create search query payload with proper filter structure
+        # Use null keywords to return all entities (Purview API ignores "*" as a wildcard)
         search_payload = {
-            "keywords": "*",
+            "keywords": None,
             "limit": limit,
         }
         
