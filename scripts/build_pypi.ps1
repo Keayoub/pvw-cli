@@ -47,7 +47,7 @@ if ($LASTEXITCODE -ne 0) { Write-Host $verOutput; Write-ErrorAndExit "Failed to 
 Write-Host "📋 Current version: $verOutput`n"
 
 Write-Info "Building package (python -m build)..."
-& python -m build
+& python -m build --no-isolation
 if ($LASTEXITCODE -ne 0) { Write-ErrorAndExit "Package build failed" 4 }
 Write-Success "Package built successfully`n"
 
