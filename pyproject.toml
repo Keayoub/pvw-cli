@@ -43,7 +43,7 @@ dependencies = [
     "aiohttp>=3.8.0",
     "pydantic>=1.10.0,<2.12",
     "PyYAML>=6.0",
-    "cryptography>=41.0.5,<46.0.0",
+    "cryptography>=41.0.5,<47.0.0",
 ]
 
 [project.optional-dependencies]
