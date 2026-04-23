@@ -128,6 +128,148 @@ def readscanhistory(datasourcename, scanname):
     """Read scan history"""
     _invoke_scan_method('scanReadHistory', dataSourceName=datasourcename, scanName=scanname)
 
+
+@scan.command()
+@click.option('--integrationRuntimeName', required=True)
+def readintegrationruntime(integrationruntimename):
+    """Read a specific integration runtime"""
+    _invoke_scan_method('scanIntegrationRuntimeRead', integrationRuntimeName=integrationruntimename)
+
+
+@scan.command()
+def readintegrationruntimes():
+    """Read all integration runtimes"""
+    _invoke_scan_method('scanIntegrationRuntimeRead')
+
+
+@scan.command()
+@click.option('--integrationRuntimeName', required=True)
+def deleteintegrationruntime(integrationruntimename):
+    """Delete an integration runtime"""
+    _invoke_scan_method('scanIntegrationRuntimeDelete', integrationRuntimeName=integrationruntimename)
+
+
+@scan.command()
+@click.option('--integrationRuntimeName', required=True,
+              help='Self-hosted integration runtime name to delete')
+@click.option('--delete-dependent-scans', is_flag=True,
+              help='Delete scans that still reference this runtime')
+@click.option('--dry-run', is_flag=True,
+              help='Show dependencies and actions without deleting')
+def deleteintegrationruntimesafe(integrationruntimename, delete_dependent_scans, dry_run):
+    """Safely delete a self-hosted integration runtime by resolving scan dependencies first."""
+    scan_client = Scan()
+
+    def _value_list(result):
+        if isinstance(result, dict):
+            value = result.get('value')
+            if isinstance(value, list):
+                return value
+        if isinstance(result, list):
+            return result
+        return []
+
+    try:
+        # Validate runtime existence early for clearer operator feedback.
+        scan_client.scanIntegrationRuntimeRead({'--integrationRuntimeName': integrationruntimename})
+    except Exception as exc:
+        click.echo(f"[ERROR] Integration runtime '{integrationruntimename}' was not found or is not readable: {exc}", err=True)
+        return
+
+    dependent_scans = []
+
+    try:
+        ds_result = scan_client.scanDataSourcesRead({})
+        data_sources = _value_list(ds_result)
+    except Exception as exc:
+        click.echo(f"[ERROR] Failed to enumerate data sources: {exc}", err=True)
+        return
+
+    for ds in data_sources:
+        ds_name = ds.get('name') if isinstance(ds, dict) else None
+        if not ds_name:
+            continue
+
+        try:
+            scans_result = scan_client.scanRead({'--dataSourceName': ds_name})
+            scans = _value_list(scans_result)
+        except Exception:
+            continue
+
+        for scan in scans:
+            scan_name = scan.get('name') if isinstance(scan, dict) else None
+            if not scan_name:
+                continue
+
+            try:
+                full_scan = scan_client.scanRead({'--dataSourceName': ds_name, '--scanName': scan_name})
+            except Exception:
+                continue
+
+            if not isinstance(full_scan, dict):
+                continue
+
+            connected_via = full_scan.get('properties', {}).get('connectedVia', {})
+            if not isinstance(connected_via, dict):
+                continue
+
+            runtime_ref = connected_via.get('referenceName')
+            if runtime_ref != integrationruntimename:
+                continue
+
+            run_count = 0
+            try:
+                runs_result = scan_client.scanReadHistory({'--dataSourceName': ds_name, '--scanName': scan_name})
+                run_count = len(_value_list(runs_result))
+            except Exception:
+                run_count = 0
+
+            dependent_scans.append({
+                'dataSourceName': ds_name,
+                'scanName': scan_name,
+                'runCount': run_count,
+            })
+
+    if dependent_scans:
+        click.echo(f"[INFO] Found {len(dependent_scans)} scan(s) referencing runtime '{integrationruntimename}':")
+        for item in dependent_scans:
+            click.echo(
+                f"  - dataSource={item['dataSourceName']} scan={item['scanName']} runs={item['runCount']}"
+            )
+
+        if not delete_dependent_scans:
+            click.echo("[ERROR] Cannot delete integration runtime because related scan definitions still reference it.", err=True)
+            click.echo("[INFO] Scan history is informational and does not unblock deletion by itself.", err=True)
+            click.echo("[INFO] To continue, use one of the following:", err=True)
+            click.echo(
+                f"  - Remove those scans manually, then rerun: pvw scan deleteintegrationruntimesafe --integrationRuntimeName {integrationruntimename}",
+                err=True,
+            )
+            click.echo(
+                f"  - Let CLI delete dependent scans automatically: pvw scan deleteintegrationruntimesafe --integrationRuntimeName {integrationruntimename} --delete-dependent-scans",
+                err=True,
+            )
+            raise click.ClickException("Integration runtime deletion blocked by dependent scans")
+
+    if dry_run:
+        if dependent_scans and delete_dependent_scans:
+            click.echo("[INFO] DRY RUN: Would delete dependent scans before deleting runtime")
+        click.echo(f"[INFO] DRY RUN: Would delete integration runtime '{integrationruntimename}'")
+        return
+
+    if dependent_scans and delete_dependent_scans:
+        for item in dependent_scans:
+            scan_client.scanDelete({
+                '--dataSourceName': item['dataSourceName'],
+                '--scanName': item['scanName'],
+            })
+            click.echo(
+                f"[OK] Deleted dependent scan: dataSource={item['dataSourceName']} scan={item['scanName']}"
+            )
+
+    scan_client.scanIntegrationRuntimeDelete({'--integrationRuntimeName': integrationruntimename})
+    click.echo(f"[OK] Deleted integration runtime '{integrationruntimename}'")
+
 # === SCAN RULESETS ===
 
 @scan.command()

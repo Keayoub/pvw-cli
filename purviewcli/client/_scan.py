@@ -351,6 +351,38 @@ Use Cases:
         self.endpoint = ENDPOINTS["scanning"]["delete_data_source"].format(dataSourceName=args["--dataSourceName"])
         self.params = get_api_version_params("scanning")
 
+    # === INTEGRATION RUNTIME MANAGEMENT ===
+
+    @decorator
+    def scanIntegrationRuntimeRead(self, args):
+        """Read integration runtimes or one specific integration runtime."""
+        self.method = "GET"
+        if args.get("--integrationRuntimeName"):
+            self.endpoint = ENDPOINTS["scanning"]["get_integration_runtime"].format(
+                integrationRuntimeName=args["--integrationRuntimeName"]
+            )
+        else:
+            self.endpoint = ENDPOINTS["scanning"]["list_integration_runtimes"]
+        self.params = get_api_version_params("scanning")
+
+    @decorator
+    def scanIntegrationRuntimeDelete(self, args):
+        """Delete an integration runtime by name."""
+        self.method = "DELETE"
+        self.endpoint = ENDPOINTS["scanning"]["delete_integration_runtime"].format(
+            integrationRuntimeName=args["--integrationRuntimeName"]
+        )
+        self.params = get_api_version_params("scanning")
+
+    @decorator
+    def scanIntegrationRuntimeStatus(self, args):
+        """Read integration runtime status by name."""
+        self.method = "GET"
+        self.endpoint = ENDPOINTS["scanning"]["get_integration_runtime_status"].format(
+            integrationRuntimeName=args["--integrationRuntimeName"]
+        )
+        self.params = get_api_version_params("scanning")
+
     # === SCAN CONFIGURATION ===
 
     @decorator
@@ -1616,7 +1648,7 @@ Use Cases:
         - Reporting: Generate catalog reports
     """
         self.method = "GET"
-        self.endpoint = ENDPOINTS["scanning"]["get_scan_history"].format(
+        self.endpoint = ENDPOINTS["scanning"]["list_scan_results"].format(
             dataSourceName=args["--dataSourceName"], scanName=args["--scanName"]
         )
         self.params = {

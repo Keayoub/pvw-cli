@@ -278,6 +278,11 @@ ENDPOINTS = {
         "get_scan_result": "/scan/datasources/{dataSourceName}/scans/{scanName}/runs/{runId}",
         "list_scan_results": "/scan/datasources/{dataSourceName}/scans/{scanName}/runs",
         "cancel_scan": "/scan/datasources/{dataSourceName}/scans/{scanName}/runs/{runId}/cancel",
+        # Integration runtime management
+        "list_integration_runtimes": "/scan/integrationruntimes",
+        "get_integration_runtime": "/scan/integrationruntimes/{integrationRuntimeName}",
+        "delete_integration_runtime": "/scan/integrationruntimes/{integrationRuntimeName}",
+        "get_integration_runtime_status": "/scan/integrationruntimes/{integrationRuntimeName}/status",
         # Scan rules and filters
         "list_scan_rule_sets": "/scan/scanrulesets",
         "create_scan_rule_set": "/scan/scanrulesets/{scanRulesetName}",

@@ -283,6 +283,14 @@ def get_details(ctx, collection_name, include_assets, include_data_sources, incl
               help="Delete all assets in the collection first")
 @click.option("--delete-data-sources", "-dds", is_flag=True, 
               help="Delete all data sources in the collection")
+@click.option("--delete-lineage/--no-delete-lineage", default=True,
+                            help="Detect and delete lineage process blockers linked to collection assets")
+@click.option("--lineage-depth", type=int, default=1,
+                            help="Lineage hop depth used to discover process blockers")
+@click.option("--lineage-width", type=int, default=6,
+                            help="Lineage expansion width used to discover process blockers")
+@click.option("--lineage-scan-limit", type=int, default=500,
+                            help="Maximum collection assets to inspect for lineage blockers")
 @click.option("--batch-size", type=int, default=50, 
               help="Batch size for asset deletion (Microsoft recommended: 50)")
 @click.option("--max-parallel", type=int, default=10, 
@@ -292,7 +300,8 @@ def get_details(ctx, collection_name, include_assets, include_data_sources, incl
 @click.confirmation_option(prompt="Are you sure you want to force delete this collection?")
 @click.pass_context
 def force_delete(ctx, collection_name, delete_assets, delete_data_sources, 
-                batch_size, max_parallel, dry_run):
+                                delete_lineage, lineage_depth, lineage_width, lineage_scan_limit,
+                                batch_size, max_parallel, dry_run):
     """
     Force delete a collection with comprehensive cleanup
 
@@ -306,6 +315,8 @@ def force_delete(ctx, collection_name, delete_assets, delete_data_sources,
     try:
         from purviewcli.client._collections import Collections
         from purviewcli.client._entity import Entity
+        from purviewcli.client._lineage import Lineage
+        from purviewcli.client._relationship import Relationship
         from purviewcli.client._search import Search
         from rich.console import Console
         from rich.progress import Progress
@@ -326,6 +337,8 @@ def force_delete(ctx, collection_name, delete_assets, delete_data_sources,
 
         collections_client = Collections()
         entity_client = Entity()
+        lineage_client = Lineage()
+        relationship_client = Relationship()
         search_client = Search()
 
         # Step 1: Verify collection exists
@@ -334,7 +347,50 @@ def force_delete(ctx, collection_name, delete_assets, delete_data_sources,
             console.print(f"[red][X] Collection '{collection_name}' not found[/red]")
             return
 
-        # Step 2: Delete assets if requested
+        # Step 2: Detect lineage/process blockers connected to collection assets
+        console.print("[blue][INFO] Scanning lineage/process blockers for collection assets...[/blue]")
+        asset_guids = _get_collection_asset_guids(search_client, collection_name, lineage_scan_limit)
+        if asset_guids:
+            blockers = _find_lineage_process_blockers(
+                lineage_client,
+                asset_guids,
+                depth=lineage_depth,
+                width=lineage_width,
+            )
+        else:
+            blockers = []
+
+        if blockers:
+            _display_lineage_blockers(blockers)
+            if delete_lineage:
+                console.print(
+                    f"[blue][DEL] {'[DRY RUN] ' if dry_run else ''}Deleting {len(blockers)} lineage process blockers...[/blue]"
+                )
+                deleted_blockers, failed_blockers = _delete_entities_with_relationship_cleanup(
+                    entity_client,
+                    relationship_client,
+                    [b["guid"] for b in blockers],
+                    dry_run,
+                )
+                console.print(
+                    f"[green][OK] {'Would delete' if dry_run else 'Deleted'} {deleted_blockers} lineage blocker entities[/green]"
+                )
+                if failed_blockers:
+                    console.print(
+                        f"[yellow][!] Failed to delete {len(failed_blockers)} lineage blocker entities (see GUID list below)[/yellow]"
+                    )
+                    for failed in failed_blockers:
+                        console.print(
+                            f"[yellow]  - GUID={failed.get('guid', 'N/A')} ERROR={failed.get('error', 'unknown')}[/yellow]"
+                        )
+            else:
+                console.print(
+                    "[yellow][!] Lineage blockers detected but lineage deletion is disabled (--no-delete-lineage). Collection deletion may fail.[/yellow]"
+                )
+        else:
+            console.print("[green][OK] No lineage process blockers detected for scanned assets[/green]")
+
+        # Step 3: Delete assets if requested
         if delete_assets:
             console.print(f"[blue][DEL] {'[DRY RUN] ' if dry_run else ''}Deleting assets in collection...[/blue]")
             deleted_count = _bulk_delete_collection_assets(
@@ -343,12 +399,12 @@ def force_delete(ctx, collection_name, delete_assets, delete_data_sources,
             )
             console.print(f"[green][OK] {'Would delete' if dry_run else 'Deleted'} {deleted_count} assets[/green]")
 
-        # Step 3: Delete data sources if requested
+        # Step 4: Delete data sources if requested
         if delete_data_sources:
             console.print(f"[blue][DELETE] {'[DRY RUN] ' if dry_run else ''}Deleting data sources...[/blue]")
             console.print("[yellow][!] Data source deletion feature coming soon[/yellow]")
 
-        # Step 4: Delete the collection itself
+        # Step 5: Delete the collection itself
         if not dry_run:
             console.print(f"[blue][DEL] Deleting collection '{collection_name}'...[/blue]")
             result = collections_client.collectionsDelete({"--collectionName": collection_name})
@@ -526,6 +582,164 @@ def _bulk_delete_collection_assets(search_client, entity_client, collection_name
             progress.update(task, completed=total_assets)
     
     return deleted_count
+
+
+def _get_collection_asset_guids(search_client, collection_name, limit):
+    """Collect asset GUIDs for a collection using search paging."""
+    guids = []
+    offset = 0
+    page_size = 100
+
+    while len(guids) < limit:
+        request_payload = {
+            "keywords": None,
+            "limit": min(page_size, limit - len(guids)),
+            "offset": offset,
+            "filter": {"collectionId": collection_name},
+        }
+
+        response = search_client.searchQuery({"--payload": json.dumps(request_payload)})
+        entities = response.get("value", []) if isinstance(response, dict) else []
+        if not entities:
+            break
+
+        for entity in entities:
+            guid = entity.get("id") or entity.get("guid")
+            if guid:
+                guids.append(str(guid))
+
+        if len(entities) < request_payload["limit"]:
+            break
+
+        offset += request_payload["limit"]
+
+    # Preserve order while removing duplicates
+    unique_guids = list(dict.fromkeys(guids))
+    return unique_guids
+
+
+def _find_lineage_process_blockers(lineage_client, asset_guids, depth=1, width=6):
+    """Find lineage process entities connected to collection assets."""
+    blockers = {}
+
+    for asset_guid in asset_guids:
+        try:
+            result = lineage_client.lineageRead(
+                {
+                    "--guid": asset_guid,
+                    "--depth": depth,
+                    "--width": width,
+                    "--direction": "BOTH",
+                }
+            )
+        except Exception:
+            continue
+
+        entity_map = result.get("guidEntityMap", {}) if isinstance(result, dict) else {}
+        if not isinstance(entity_map, dict):
+            continue
+
+        for map_guid, entity in entity_map.items():
+            if not isinstance(entity, dict):
+                continue
+
+            type_name = str(entity.get("typeName", ""))
+            if "process" not in type_name.lower():
+                continue
+
+            process_guid = str(entity.get("guid") or map_guid)
+            if process_guid not in blockers:
+                attributes = entity.get("attributes", {}) if isinstance(entity.get("attributes"), dict) else {}
+                blockers[process_guid] = {
+                    "guid": process_guid,
+                    "name": entity.get("displayText") or attributes.get("name") or "",
+                    "typeName": type_name,
+                    "qualifiedName": attributes.get("qualifiedName", ""),
+                    "linkedAssets": set(),
+                }
+            blockers[process_guid]["linkedAssets"].add(asset_guid)
+
+    blocker_list = []
+    for blocker in blockers.values():
+        blocker["linkedAssetCount"] = len(blocker["linkedAssets"])
+        blocker["linkedAssets"] = sorted(list(blocker["linkedAssets"]))
+        blocker_list.append(blocker)
+
+    blocker_list.sort(key=lambda x: x.get("name", ""))
+    return blocker_list
+
+
+def _display_lineage_blockers(blockers):
+    """Display lineage blocker GUIDs in an operator-friendly format."""
+    from rich.console import Console
+    from rich.table import Table
+
+    console = Console(no_color=True)
+    table = Table(title="Lineage Process Blockers")
+    table.add_column("GUID", style="cyan")
+    table.add_column("Name", style="green")
+    table.add_column("Type", style="yellow")
+    table.add_column("Linked Assets", style="magenta")
+
+    for blocker in blockers:
+        table.add_row(
+            blocker.get("guid", ""),
+            blocker.get("name", ""),
+            blocker.get("typeName", ""),
+            str(blocker.get("linkedAssetCount", 0)),
+        )
+
+    console.print(table)
+    console.print("[blue][INFO] Support-ready blocker GUIDs:[/blue]")
+    for blocker in blockers:
+        console.print(f"  - {blocker.get('guid', '')}")
+
+
+def _extract_relationship_guids(entity_read_result):
+    """Extract relationship GUIDs from an entity read response."""
+    relationship_guids = []
+    entity_body = entity_read_result.get("entity", {}) if isinstance(entity_read_result, dict) else {}
+    relationship_attributes = entity_body.get("relationshipAttributes", {})
+
+    if not isinstance(relationship_attributes, dict):
+        return relationship_guids
+
+    for values in relationship_attributes.values():
+        if isinstance(values, list):
+            for item in values:
+                if isinstance(item, dict) and item.get("relationshipGuid"):
+                    relationship_guids.append(str(item.get("relationshipGuid")))
+        elif isinstance(values, dict) and values.get("relationshipGuid"):
+            relationship_guids.append(str(values.get("relationshipGuid")))
+
+    return list(dict.fromkeys(relationship_guids))
+
+
+def _delete_entities_with_relationship_cleanup(entity_client, relationship_client, entity_guids, dry_run):
+    """Delete entities after removing their relationships to avoid dependency errors."""
+    deleted_count = 0
+    failed = []
+
+    for guid in entity_guids:
+        try:
+            if not dry_run:
+                entity_read = entity_client.entityRead(
+                    {
+                        "--guid": [guid],
+                        "--ignoreRelationships": False,
+                        "--minExtInfo": False,
+                    }
+                )
+                relationship_guids = _extract_relationship_guids(entity_read)
+                for rel_guid in relationship_guids:
+                    relationship_client.relationshipDelete({"--guid": rel_guid})
+
+                entity_client.entityDelete({"--guid": [guid]})
+            deleted_count += 1
+        except Exception as exc:
+            failed.append({"guid": guid, "error": str(exc)})
+
+    return deleted_count, failed
 
 
 @collections.command()
