@@ -91,13 +91,35 @@ pvw lineage          Lineage creation and CSV import
 pvw scan             Data source scanning
 pvw search           Search and discovery
 pvw types            Type definitions
-pvw uc               Unified Catalog (domains, terms, data products, OKRs, CDEs)
+pvw uc               Unified Catalog (domains, terms, data products, OKRs, CDEs, quality)
 pvw workflow         Approval workflows
 pvw diagnostics      Cache stats and profile info
 ```
 
 Run `pvw <command> --help` for full options on any command.
 
+---
+
+## 📚 Quick Start & Documentation
+
+### Quick Reference Guide
+For a comprehensive command reference with examples, see **[doc/QUICK_REFERENCE.md](doc/QUICK_REFERENCE.md)**
+
+This guide covers:
+- All Unified Catalog commands (terms, domains, data products, CDEs, OKRs)
+- Data Quality commands and workflow examples
+- Facets, hierarchy, and relationship operations
+- Common patterns and troubleshooting tips
+
+### Additional Documentation
+
+- **[API Implementation Status](doc/API_GAPS_ANALYSIS.md)** - Complete API coverage analysis
+- **[Performance Guide](doc/PERFORMANCE_OPTIMIZATION_GUIDE.md)** - Optimization techniques and caching
+- **[Authentication Troubleshooting](doc/AUTHENTICATION_TROUBLESHOOTING.md)** - Fix auth issues
+- **[Sample Notebooks](samples/notebooks%20(basic)/)** - Jupyter notebooks with working examples
+- **[Advanced Notebooks](samples/notebooks%20(plus)/)** - Data visualization and analytics
+
+---
 ---
 
 ## Examples
