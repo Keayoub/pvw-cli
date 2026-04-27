@@ -3611,5 +3611,297 @@ def _calculate_optimal_configs(asset_count, bulk_size):
     return sorted(configs, key=lambda x: x['efficiency'], reverse=True)
 
 
+# === ADVANCED ENTITY OPERATIONS ===
+
+
+@entity.command()
+@click.option("--guid", required=True, help="The globally unique identifier of the entity")
+@click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
+@click.pass_context
+def history(ctx, guid, output):
+    """Get change history for an entity by GUID.
+    
+    Retrieves the complete change history for an entity, showing all modifications,
+    updates, and metadata changes over time. Useful for compliance, auditing, and
+    understanding entity evolution.
+    
+    Examples:
+        # Get history for an entity
+        pvw entity history --guid <entity-guid>
+        
+        # Export as JSON
+        pvw entity history --guid <entity-guid> --output json
+    """
+    try:
+        if ctx.obj.get("mock"):
+            console.print("[yellow][MOCK] entity history command[/yellow]")
+            console.print(f"[dim]GUID: {guid}[/dim]")
+            console.print("[green][OK] Mock entity history completed successfully[/green]")
+            return
+            
+        args = {"--guid": guid}
+        from purviewcli.client._entity import Entity
+        entity_client = Entity()
+        result = entity_client.entityReadHistory(args)
+        
+        if result:
+            if output == "json":
+                console.print(json.dumps(result, indent=2))
+            else:
+                # Display history in table format
+                from rich.table import Table
+                
+                events = result.get("value", result.get("events", []))
+                if not events:
+                    console.print("[yellow]No history events found for this entity.[/yellow]")
+                    return
+                
+                table = Table(title=f"Entity History: {guid[:8]}...", show_header=True)
+                table.add_column("Event Time", style="cyan", no_wrap=True)
+                table.add_column("Action", style="yellow")
+                table.add_column("User", style="green")
+                table.add_column("Details", style="white")
+                
+                for event in events[:50]:  # Limit to 50 most recent
+                    event_time = event.get("eventTime", event.get("timestamp", "N/A"))
+                    if "T" in str(event_time):
+                        event_time = event_time.split("T")[0] + " " + event_time.split("T")[1][:8]
+                    
+                    action = event.get("action", event.get("operation", "N/A"))
+                    user = event.get("user", event.get("modifiedBy", "N/A"))
+                    details = event.get("details", event.get("description", ""))[:40]
+                    
+                    table.add_row(str(event_time), action, user, details)
+                
+                console.print(table)
+                console.print(f"\n[dim]Showing {min(len(events), 50)} of {len(events)} events[/dim]")
+                
+            console.print("[green][OK] Entity history retrieved successfully[/green]")
+        else:
+            console.print("[yellow][!] No history found for this entity[/yellow]")
+            
+    except Exception as e:
+        console.print(f"[red][X] Error executing entity history: {str(e)}[/red]")
+
+
+@entity.command()
+@click.option("--guid", help="Entity GUID to validate")
+@click.option("--payload-file", help="JSON file with entity definition to validate")
+@click.option("--type-name", help="Entity type name (required if using payload-file)")
+@click.pass_context
+def validate(ctx, guid, payload_file, type_name):
+    """Validate an entity definition before creation or update.
+    
+    Performs pre-flight validation to check if an entity definition is valid
+    without actually creating or updating it. Helps catch errors early and
+    ensures data quality.
+    
+    Examples:
+        # Validate existing entity by GUID
+        pvw entity validate --guid <entity-guid>
+        
+        # Validate new entity definition from file
+        pvw entity validate --payload-file entity.json --type-name DataSet
+    """
+    try:
+        if ctx.obj.get("mock"):
+            console.print("[yellow][MOCK] entity validate command[/yellow]")
+            console.print("[green][OK] Mock entity validation completed successfully[/green]")
+            return
+        
+        args = {}
+        if guid:
+            args["--guid"] = guid
+        if payload_file:
+            args["--payloadFile"] = payload_file
+        if type_name:
+            args["--typeName"] = type_name
+            
+        from purviewcli.client._entity import Entity
+        entity_client = Entity()
+        result = entity_client.entityValidate(args)
+        
+        if result:
+            validation_status = result.get("valid", result.get("isValid", False))
+            
+            if validation_status:
+                console.print("[green][OK] Entity validation passed[/green]")
+            else:
+                console.print("[red][X] Entity validation failed[/red]")
+                
+            # Show validation errors if any
+            errors = result.get("errors", result.get("validationErrors", []))
+            if errors:
+                console.print("\n[red]Validation Errors:[/red]")
+                for error in errors:
+                    if isinstance(error, dict):
+                        console.print(f"  - {error.get('message', error.get('error', str(error)))}")
+                    else:
+                        console.print(f"  - {error}")
+            
+            # Show warnings if any
+            warnings = result.get("warnings", [])
+            if warnings:
+                console.print("\n[yellow]Warnings:[/yellow]")
+                for warning in warnings:
+                    if isinstance(warning, dict):
+                        console.print(f"  - {warning.get('message', str(warning))}")
+                    else:
+                        console.print(f"  - {warning}")
+                        
+            console.print(json.dumps(result, indent=2))
+        else:
+            console.print("[yellow][!] Validation completed with no result[/yellow]")
+            
+    except Exception as e:
+        console.print(f"[red][X] Error executing entity validate: {str(e)}[/red]")
+
+
+@entity.command()
+@click.option("--guid", required=True, help="The globally unique identifier of the entity")
+@click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
+@click.pass_context
+def dependencies(ctx, guid, output):
+    """Get dependencies for an entity by GUID.
+    
+    Retrieves all entities that this entity depends on or that depend on it.
+    Useful for understanding data lineage, impact analysis, and entity relationships.
+    
+    Examples:
+        # Get dependencies for an entity
+        pvw entity dependencies --guid <entity-guid>
+        
+        # Export as JSON
+        pvw entity dependencies --guid <entity-guid> --output json
+    """
+    try:
+        if ctx.obj.get("mock"):
+            console.print("[yellow][MOCK] entity dependencies command[/yellow]")
+            console.print(f"[dim]GUID: {guid}[/dim]")
+            console.print("[green][OK] Mock entity dependencies completed successfully[/green]")
+            return
+            
+        args = {"--guid": guid}
+        from purviewcli.client._entity import Entity
+        entity_client = Entity()
+        result = entity_client.entityReadDependencies(args)
+        
+        if result:
+            if output == "json":
+                console.print(json.dumps(result, indent=2))
+            else:
+                # Display dependencies in table format
+                from rich.table import Table
+                
+                dependencies = result.get("dependencies", result.get("value", []))
+                if not dependencies:
+                    console.print("[yellow]No dependencies found for this entity.[/yellow]")
+                    return
+                
+                table = Table(title=f"Entity Dependencies: {guid[:8]}...", show_header=True)
+                table.add_column("Type", style="cyan")
+                table.add_column("Entity GUID", style="yellow", no_wrap=True)
+                table.add_column("Entity Name", style="green")
+                table.add_column("Relationship", style="white")
+                
+                for dep in dependencies[:100]:  # Limit to 100
+                    dep_type = dep.get("type", dep.get("dependencyType", "N/A"))
+                    dep_guid = dep.get("guid", dep.get("entityGuid", "N/A"))
+                    dep_name = dep.get("name", dep.get("displayName", "N/A"))
+                    relationship = dep.get("relationship", dep.get("relationshipType", "N/A"))
+                    
+                    # Truncate GUID for display
+                    if len(dep_guid) > 20:
+                        dep_guid = dep_guid[:8] + "..." + dep_guid[-8:]
+                    
+                    table.add_row(dep_type, dep_guid, dep_name[:30], relationship)
+                
+                console.print(table)
+                console.print(f"\n[dim]Showing {min(len(dependencies), 100)} of {len(dependencies)} dependencies[/dim]")
+                
+            console.print("[green][OK] Entity dependencies retrieved successfully[/green]")
+        else:
+            console.print("[yellow][!] No dependencies found for this entity[/yellow]")
+            
+    except Exception as e:
+        console.print(f"[red][X] Error executing entity dependencies: {str(e)}[/red]")
+
+
+@entity.command()
+@click.option("--guid", required=True, help="The globally unique identifier of the entity")
+@click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
+@click.pass_context
+def usage(ctx, guid, output):
+    """Get usage statistics for an entity by GUID.
+    
+    Retrieves usage metrics including access patterns, query statistics, and
+    popularity metrics. Helps identify frequently used assets and optimize
+    data governance.
+    
+    Examples:
+        # Get usage statistics for an entity
+        pvw entity usage --guid <entity-guid>
+        
+        # Export as JSON
+        pvw entity usage --guid <entity-guid> --output json
+    """
+    try:
+        if ctx.obj.get("mock"):
+            console.print("[yellow][MOCK] entity usage command[/yellow]")
+            console.print(f"[dim]GUID: {guid}[/dim]")
+            console.print("[green][OK] Mock entity usage completed successfully[/green]")
+            return
+            
+        args = {"--guid": guid}
+        from purviewcli.client._entity import Entity
+        entity_client = Entity()
+        result = entity_client.entityReadUsage(args)
+        
+        if result:
+            if output == "json":
+                console.print(json.dumps(result, indent=2))
+            else:
+                # Display usage statistics
+                console.print(f"\n[bold cyan]Usage Statistics for Entity: {guid[:8]}...[/bold cyan]\n")
+                
+                # Extract metrics
+                total_views = result.get("totalViews", result.get("viewCount", 0))
+                unique_users = result.get("uniqueUsers", result.get("userCount", 0))
+                last_accessed = result.get("lastAccessed", result.get("lastAccessTime", "N/A"))
+                access_freq = result.get("accessFrequency", result.get("frequency", "N/A"))
+                
+                console.print(f"[green]Total Views:[/green] {total_views}")
+                console.print(f"[green]Unique Users:[/green] {unique_users}")
+                console.print(f"[green]Last Accessed:[/green] {last_accessed}")
+                console.print(f"[green]Access Frequency:[/green] {access_freq}")
+                
+                # Show top users if available
+                top_users = result.get("topUsers", result.get("users", []))
+                if top_users:
+                    from rich.table import Table
+                    
+                    table = Table(title="Top Users", show_header=True)
+                    table.add_column("User", style="cyan")
+                    table.add_column("Access Count", style="yellow")
+                    table.add_column("Last Access", style="green")
+                    
+                    for user in top_users[:10]:  # Top 10
+                        user_name = user.get("name", user.get("user", "N/A"))
+                        access_count = user.get("accessCount", user.get("count", 0))
+                        last_access = user.get("lastAccess", user.get("lastAccessTime", "N/A"))
+                        
+                        table.add_row(user_name, str(access_count), str(last_access))
+                    
+                    console.print("\n")
+                    console.print(table)
+                
+            console.print("\n[green][OK] Entity usage statistics retrieved successfully[/green]")
+        else:
+            console.print("[yellow][!] No usage statistics available for this entity[/yellow]")
+            
+    except Exception as e:
+        console.print(f"[red][X] Error executing entity usage: {str(e)}[/red]")
+
+
 # Make the entity group available for import
 __all__ = ["entity"]

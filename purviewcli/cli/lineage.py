@@ -1095,6 +1095,237 @@ def show_relationships(ctx, process_guid, output_format):
             console.print(f"[dim]{traceback.format_exc()}[/dim]")
 
 
+# === ADVANCED LINEAGE OPERATIONS ===
+
+
+@lineage.command()
+@click.option("--guid", required=True, help="Entity GUID to get upstream lineage for")
+@click.option("--depth", default=3, type=int, help="Maximum depth to traverse (default: 3)")
+@click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
+@click.pass_context
+def upstream(ctx, guid, depth, output):
+    """Get upstream lineage for an entity (data sources that feed into this entity).
+    
+    Retrieves all upstream entities in the lineage graph, showing where the data
+    originates from. Useful for data provenance and understanding data sources.
+    
+    Examples:
+        # Get upstream lineage for an entity
+        pvw lineage upstream --guid <entity-guid>
+        
+        # Limit depth to 5 levels
+        pvw lineage upstream --guid <entity-guid> --depth 5
+        
+        # Export as JSON
+        pvw lineage upstream --guid <entity-guid> --output json
+    """
+    try:
+        args = {"--guid": guid, "--depth": depth}
+        from purviewcli.client._lineage import Lineage
+        lineage_client = Lineage()
+        result = lineage_client.lineageReadUpstream(args)
+        
+        if result:
+            if output == "json":
+                console.print(json.dumps(result, indent=2))
+            else:
+                # Display upstream lineage in table
+                from rich.table import Table
+                
+                entities = result.get("guidEntityMap", result.get("entities", {}))
+                relations = result.get("relations", [])
+                
+                console.print(f"\n[bold cyan]Upstream Lineage (Depth: {depth})[/bold cyan]")
+                console.print(f"[dim]Total Entities: {len(entities)}[/dim]")
+                console.print(f"[dim]Total Relations: {len(relations)}[/dim]\n")
+                
+                if entities:
+                    table = Table(title="Upstream Entities", show_header=True)
+                    table.add_column("Entity Name", style="cyan")
+                    table.add_column("Type", style="yellow")
+                    table.add_column("GUID", style="green", no_wrap=True)
+                    table.add_column("Qualified Name", style="white")
+                    
+                    for entity_guid, entity in entities.items():
+                        name = entity.get("displayText", entity.get("attributes", {}).get("name", "N/A"))
+                        type_name = entity.get("typeName", "N/A")
+                        qualified_name = entity.get("attributes", {}).get("qualifiedName", "N/A")
+                        
+                        # Truncate long values
+                        if len(entity_guid) > 20:
+                            display_guid = entity_guid[:8] + "..." + entity_guid[-8:]
+                        else:
+                            display_guid = entity_guid
+                        
+                        if len(qualified_name) > 40:
+                            qualified_name = qualified_name[:37] + "..."
+                        
+                        table.add_row(name[:30], type_name, display_guid, qualified_name)
+                    
+                    console.print(table)
+                
+            console.print("\n[green][OK] Upstream lineage retrieved successfully[/green]")
+        else:
+            console.print("[yellow][!] No upstream lineage found for this entity[/yellow]")
+            
+    except Exception as e:
+        console.print(f"[red][X] Error executing lineage upstream: {str(e)}[/red]")
+
+
+@lineage.command()
+@click.option("--guid", required=True, help="Entity GUID to get downstream lineage for")
+@click.option("--depth", default=3, type=int, help="Maximum depth to traverse (default: 3)")
+@click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
+@click.pass_context
+def downstream(ctx, guid, depth, output):
+    """Get downstream lineage for an entity (data consumers that use this entity).
+    
+    Retrieves all downstream entities in the lineage graph, showing where the data
+    flows to. Useful for impact analysis and understanding data dependencies.
+    
+    Examples:
+        # Get downstream lineage for an entity
+        pvw lineage downstream --guid <entity-guid>
+        
+        # Limit depth to 5 levels
+        pvw lineage downstream --guid <entity-guid> --depth 5
+        
+        # Export as JSON
+        pvw lineage downstream --guid <entity-guid> --output json
+    """
+    try:
+        args = {"--guid": guid, "--depth": depth}
+        from purviewcli.client._lineage import Lineage
+        lineage_client = Lineage()
+        result = lineage_client.lineageReadDownstream(args)
+        
+        if result:
+            if output == "json":
+                console.print(json.dumps(result, indent=2))
+            else:
+                # Display downstream lineage in table
+                from rich.table import Table
+                
+                entities = result.get("guidEntityMap", result.get("entities", {}))
+                relations = result.get("relations", [])
+                
+                console.print(f"\n[bold cyan]Downstream Lineage (Depth: {depth})[/bold cyan]")
+                console.print(f"[dim]Total Entities: {len(entities)}[/dim]")
+                console.print(f"[dim]Total Relations: {len(relations)}[/dim]\n")
+                
+                if entities:
+                    table = Table(title="Downstream Entities", show_header=True)
+                    table.add_column("Entity Name", style="cyan")
+                    table.add_column("Type", style="yellow")
+                    table.add_column("GUID", style="green", no_wrap=True)
+                    table.add_column("Qualified Name", style="white")
+                    
+                    for entity_guid, entity in entities.items():
+                        name = entity.get("displayText", entity.get("attributes", {}).get("name", "N/A"))
+                        type_name = entity.get("typeName", "N/A")
+                        qualified_name = entity.get("attributes", {}).get("qualifiedName", "N/A")
+                        
+                        # Truncate long values
+                        if len(entity_guid) > 20:
+                            display_guid = entity_guid[:8] + "..." + entity_guid[-8:]
+                        else:
+                            display_guid = entity_guid
+                        
+                        if len(qualified_name) > 40:
+                            qualified_name = qualified_name[:37] + "..."
+                        
+                        table.add_row(name[:30], type_name, display_guid, qualified_name)
+                    
+                    console.print(table)
+                
+            console.print("\n[green][OK] Downstream lineage retrieved successfully[/green]")
+        else:
+            console.print("[yellow][!] No downstream lineage found for this entity[/yellow]")
+            
+    except Exception as e:
+        console.print(f"[red][X] Error executing lineage downstream: {str(e)}[/red]")
+
+
+@lineage.command()
+@click.option("--guid", required=True, help="Entity GUID to get temporal lineage for")
+@click.option("--start-time", help="Start timestamp for temporal range (ISO 8601 format)")
+@click.option("--end-time", help="End timestamp for temporal range (ISO 8601 format)")
+@click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
+@click.pass_context
+def temporal(ctx, guid, start_time, end_time, output):
+    """Get temporal lineage for an entity (lineage changes over time).
+    
+    Retrieves lineage information for a specific time period, showing how
+    data flows have evolved. Useful for historical analysis and understanding
+    lineage changes.
+    
+    Examples:
+        # Get temporal lineage for an entity
+        pvw lineage temporal --guid <entity-guid>
+        
+        # Get lineage for specific time range
+        pvw lineage temporal --guid <entity-guid> --start-time 2026-01-01T00:00:00Z --end-time 2026-04-01T00:00:00Z
+        
+        # Export as JSON
+        pvw lineage temporal --guid <entity-guid> --output json
+    """
+    try:
+        args = {"--guid": guid}
+        if start_time:
+            args["--startTime"] = start_time
+        if end_time:
+            args["--endTime"] = end_time
+            
+        from purviewcli.client._lineage import Lineage
+        lineage_client = Lineage()
+        result = lineage_client.lineageReadTemporal(args)
+        
+        if result:
+            if output == "json":
+                console.print(json.dumps(result, indent=2))
+            else:
+                # Display temporal lineage
+                from rich.table import Table
+                
+                timeline = result.get("timeline", result.get("temporalEvents", []))
+                
+                console.print(f"\n[bold cyan]Temporal Lineage[/bold cyan]")
+                if start_time and end_time:
+                    console.print(f"[dim]Period: {start_time} to {end_time}[/dim]\n")
+                else:
+                    console.print(f"[dim]All available history[/dim]\n")
+                
+                if timeline:
+                    table = Table(title="Lineage Timeline", show_header=True)
+                    table.add_column("Timestamp", style="cyan", no_wrap=True)
+                    table.add_column("Event Type", style="yellow")
+                    table.add_column("Entity", style="green")
+                    table.add_column("Details", style="white")
+                    
+                    for event in timeline:
+                        timestamp = event.get("timestamp", event.get("eventTime", "N/A"))
+                        if "T" in str(timestamp):
+                            timestamp = timestamp.split("T")[0] + " " + timestamp.split("T")[1][:8]
+                        
+                        event_type = event.get("eventType", event.get("type", "N/A"))
+                        entity_name = event.get("entityName", event.get("entity", "N/A"))
+                        details = event.get("details", event.get("description", ""))[:40]
+                        
+                        table.add_row(str(timestamp), event_type, entity_name[:30], details)
+                    
+                    console.print(table)
+                    console.print(f"\n[dim]Total Events: {len(timeline)}[/dim]")
+                else:
+                    console.print("[yellow]No temporal lineage events found for this entity.[/yellow]")
+                
+            console.print("\n[green][OK] Temporal lineage retrieved successfully[/green]")
+        else:
+            console.print("[yellow][!] No temporal lineage found for this entity[/yellow]")
+            
+    except Exception as e:
+        console.print(f"[red][X] Error executing lineage temporal: {str(e)}[/red]")
+
+
 # Remove the duplicate registration and ensure only one 'import' command is registered
 # lineage.add_command(import_cmd, name='import')
 
