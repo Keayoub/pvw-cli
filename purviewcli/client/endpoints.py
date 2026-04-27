@@ -12,6 +12,7 @@ API_VERSION = {
     "datamap": {"stable": "2023-09-01", "preview": "2024-03-01-preview"},
     "account": {"preview": "2019-11-01-preview"},  # Only preview version available
     "scanning": {"stable": "2023-09-01", "preview": "2023-09-01"},  # Scanning uses 2023-09-01 for both stable and preview
+    "quality": {"preview": "2026-01-12-preview"},
     "workflow": {"preview": "2023-10-01-preview"},
     "devops_policies": {"preview": "2022-11-01-preview"},
     "self_service_policies": {"preview": "2022-12-01-preview"},
@@ -472,6 +473,52 @@ ENDPOINTS = {
         "update_custom_attribute": "/datagovernance/catalog/attributes/{attributeId}",
         "delete_custom_attribute": "/datagovernance/catalog/attributes/{attributeId}",
     },
+    # ==================== DATA QUALITY API ENDPOINTS ====================
+    # Separate quality namespace discovered in repo diagnostics scripts.
+    # See scripts/test_new_endpoints.py
+    "data_quality": {
+        # Domain quality reporting
+        "list_business_domains": "/datagovernance/quality/business-domains",
+        "get_domain_report": "/datagovernance/quality/business-domains/{domainId}/report",
+        "list_domain_data_sources": "/datagovernance/quality/business-domains/{domainId}/data-sources",
+        "list_domain_schedules": "/datagovernance/quality/business-domains/{domainId}/schedules",
+        "list_domain_alerts": "/datagovernance/quality/business-domains/{domainId}/alerts",
+        "list_domain_assets": "/datagovernance/quality/business-domains/{domainId}/assets",
+        # Data source connections
+        "list_connections": "/datagovernance/quality/connections",
+        "create_connection": "/datagovernance/quality/connections",
+        "get_connection": "/datagovernance/quality/connections/{connectionId}",
+        "update_connection": "/datagovernance/quality/connections/{connectionId}",
+        "delete_connection": "/datagovernance/quality/connections/{connectionId}",
+        # Quality rules
+        "list_rules": "/datagovernance/quality/rules",
+        "list_rules_by_domain": "/datagovernance/quality/business-domains/{domainId}/rules",
+        "create_rule": "/datagovernance/quality/rules",
+        "get_rule": "/datagovernance/quality/rules/{ruleId}",
+        "update_rule": "/datagovernance/quality/rules/{ruleId}",
+        "delete_rule": "/datagovernance/quality/rules/{ruleId}",
+        "apply_rule": "/datagovernance/quality/rules/{ruleId}/apply",
+        # Data profiling
+        "list_profiles": "/datagovernance/quality/profiles",
+        "create_profile": "/datagovernance/quality/profiles",
+        "get_profile": "/datagovernance/quality/profiles/{profileId}",
+        "update_profile": "/datagovernance/quality/profiles/{profileId}",
+        "delete_profile": "/datagovernance/quality/profiles/{profileId}",
+        "run_profile": "/datagovernance/quality/profiles/{profileId}/run",
+        "get_profile_results": "/datagovernance/quality/profiles/{profileId}/results",
+        # Quality scans
+        "list_scans": "/datagovernance/quality/scans",
+        "create_scan": "/datagovernance/quality/scans",
+        "get_scan": "/datagovernance/quality/scans/{scanId}",
+        "update_scan": "/datagovernance/quality/scans/{scanId}",
+        "delete_scan": "/datagovernance/quality/scans/{scanId}",
+        "run_scan": "/datagovernance/quality/scans/{scanId}/run",
+        "get_scan_results": "/datagovernance/quality/scans/{scanId}/results",
+        "stop_scan": "/datagovernance/quality/scans/{scanId}/stop",
+        # Quality scores
+        "get_quality_score": "/datagovernance/quality/assets/{assetId}/score",
+        "list_asset_scores": "/datagovernance/quality/scores",
+    },
     # ==================== AZURE RESOURCE MANAGER ENDPOINTS ====================
     "management": {
         # Azure Resource Manager endpoints for Purview accounts
@@ -530,6 +577,7 @@ def get_api_version_params(api_type: str = "datamap") -> dict:
         "account": ACCOUNT_API_VERSION,
         "collections": ACCOUNT_API_VERSION,
         "scanning": SCANNING_API_VERSION,
+        "quality": get_api_version("quality"),
         "workflow": WORKFLOW_API_VERSION,
         "devops_policies": get_api_version("devops_policies"),
         "self_service_policies": get_api_version("self_service_policies"),
@@ -569,6 +617,7 @@ def get_endpoint_category(endpoint_name: str) -> str:
         "sharing": "sharing",
         "metadata_policies": "metadata_policies",
         "unified_catalog": "datamap",
+        "data_quality": "quality",
         "management": "management",
     }
 

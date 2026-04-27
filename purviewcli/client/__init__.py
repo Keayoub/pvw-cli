@@ -7,6 +7,7 @@ from ._lineage import Lineage
 from ._search import Search
 from ._types import Types
 from ._relationship import Relationship
+from ._quality import DataQuality
 from .client_cache import get_cached_client, clear_client_cache, cache_stats
 from .query_cache import get_read_query_cache, ReadQueryCache
 
@@ -20,6 +21,7 @@ __all__ = [
     "Search",
     "Types",
     "Relationship",
+    "DataQuality",
     "get_cached_client",
     "clear_client_cache",
     "cache_stats",

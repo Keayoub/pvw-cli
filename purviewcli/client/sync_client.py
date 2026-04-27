@@ -209,32 +209,78 @@ class SyncPurviewClient:
         """Get Purview account ID from Atlas endpoint URL"""
         account_id = os.getenv("PURVIEW_ACCOUNT_ID")
         if not account_id:
+            # For Unified Catalog, tenant ID is commonly used as the account ID.
+            tenant_id = os.getenv("AZURE_TENANT_ID")
+            account_name = self.config.account_name
+
             import subprocess
+
+            def _run_az(args):
+                last_exc = None
+                for az_cmd in ["az", "az.cmd"]:
+                    try:
+                        return subprocess.run(
+                            [az_cmd] + args,
+                            capture_output=True,
+                            text=True,
+                            check=True,
+                            shell=True,
+                        )
+                    except Exception as exc:
+                        last_exc = exc
+                raise last_exc
+
             try:
-                # Get the Atlas catalog endpoint and extract account ID from it
-                result = subprocess.run([
-                    "az", "purview", "account", "show", 
-                    "--name", self.config.account_name,
-                    "--resource-group", os.getenv("PURVIEW_RESOURCE_GROUP", "fabric-artifacts"),
-                    "--query", "endpoints.catalog", 
-                    "-o", "tsv"
-                ], capture_output=True, text=True, check=True)
-                atlas_url = result.stdout.strip()
+                atlas_url = ""
+
+                # Prefer explicit resource group when provided.
+                rg = os.getenv("PURVIEW_RESOURCE_GROUP", "").strip()
+                if account_name and rg and account_name != "test-purview-account":
+                    try:
+                        result = _run_az([
+                            "purview", "account", "show",
+                            "--name", account_name,
+                            "--resource-group", rg,
+                            "--query", "endpoints.catalog",
+                            "-o", "tsv",
+                        ])
+                        atlas_url = result.stdout.strip()
+                    except Exception:
+                        # Fallback to ARM resource query when purview extension is unavailable.
+                        result = _run_az([
+                            "resource", "show",
+                            "-g", rg,
+                            "-n", account_name,
+                            "--resource-type", "Microsoft.Purview/accounts",
+                            "--api-version", "2021-07-01",
+                            "--query", "properties.endpoints.catalog",
+                            "-o", "tsv",
+                        ])
+                        atlas_url = result.stdout.strip()
+
+                # If resource group is not known, discover by account name.
+                if not atlas_url and account_name and account_name != "test-purview-account":
+                    result = _run_az([
+                        "purview", "account", "list",
+                        "--query", f"[?name=='{account_name}'].endpoints.catalog | [0]",
+                        "-o", "tsv",
+                    ])
+                    atlas_url = result.stdout.strip()
                 
                 if atlas_url and "-api.purview-service.microsoft.com" in atlas_url:
                     account_id = atlas_url.split("://")[1].split("-api.purview-service.microsoft.com")[0]
                 else:
-                    raise Exception(f"Could not extract account ID from Atlas URL: {atlas_url}")
+                    raise Exception(f"Could not extract account ID from Atlas URL: {atlas_url or 'empty'}")
             except Exception as e:
-                # For Unified Catalog, the account ID is typically the Azure Tenant ID
-                try:
-                    tenant_result = subprocess.run([
-                        "az", "account", "show", "--query", "tenantId", "-o", "tsv"
-                    ], capture_output=True, text=True, check=True)
-                    account_id = tenant_result.stdout.strip()
-                    print(f"Info: Using Tenant ID as Purview Account ID for Unified Catalog: {account_id}")
-                except Exception:
-                    raise Exception(f"Could not determine Purview account ID. For Unified Catalog, this is typically your Azure Tenant ID. Please set PURVIEW_ACCOUNT_ID environment variable. Error: {e}")
+                # Last resort fallback: tenant ID from env can work in some tenants.
+                if tenant_id:
+                    account_id = tenant_id
+                else:
+                    raise Exception(
+                        "Could not determine Purview account ID. Set PURVIEW_ACCOUNT_ID explicitly, "
+                        "or set PURVIEW_ACCOUNT_NAME (and optionally PURVIEW_RESOURCE_GROUP) so the CLI "
+                        f"can discover it. Error: {e}"
+                    )
         return account_id
 
     def _get_authentication_token(self, for_unified_catalog=False):
@@ -334,6 +380,7 @@ class SyncPurviewClient:
             # Determine if this is a Unified Catalog / Data Map (Atlas) request
             is_unified_catalog = (
                 endpoint.startswith('/datagovernance/catalog')
+                or endpoint.startswith('/datagovernance/quality')
                 or endpoint.startswith('/catalog')
                 or endpoint.startswith('/datamap')
             )

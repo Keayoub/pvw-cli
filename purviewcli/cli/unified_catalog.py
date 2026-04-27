@@ -4585,6 +4585,10 @@ def delete(objective_id, key_result_id, yes):
 from purviewcli.cli.health import health as health_commands
 uc.add_command(health_commands, name="health")
 
+# Import and register data quality commands under Unified Catalog
+from purviewcli.cli.quality import quality as quality_commands
+uc.add_command(quality_commands, name="quality")
+
 
 # ========================================
 # DATA POLICIES (NEW)
