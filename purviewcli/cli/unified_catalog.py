@@ -3057,6 +3057,51 @@ def list_related_entities(term_id, relationship_type, entity_type, output):
         console.print(f"[red]ERROR:[/red] {str(e)}")
 
 
+@term.command(name="delete-relationship")
+@click.option("--term-id", required=True, help="ID of the term containing the relationship")
+@click.option("--entity-id", required=True, help="ID of the related entity to remove")
+@click.option("--confirm", is_flag=True, help="Skip confirmation prompt")
+def delete_relationship(term_id, entity_id, confirm):
+    """Delete a specific relationship between a term and another entity.
+    
+    Removes relationships such as synonyms, related terms, or other associations.
+    This is useful for maintaining clean term relationships and removing obsolete connections.
+    
+    Examples:
+        # Remove a synonym relationship
+        pvw uc term delete-relationship --term-id <term-guid> --entity-id <related-term-guid>
+        
+        # Remove relationship without confirmation
+        pvw uc term delete-relationship --term-id <term-guid> --entity-id <entity-guid> --confirm
+    """
+    try:
+        if not confirm:
+            if not click.confirm(
+                f"Are you sure you want to delete the relationship between term {term_id[:8]}... and entity {entity_id[:8]}...?",
+                default=False
+            ):
+                console.print("[yellow]Operation cancelled.[/yellow]")
+                return
+        
+        client = UnifiedCatalogClient()
+        args = {
+            "--term-id": [term_id],
+            "--entity-id": [entity_id]
+        }
+        
+        result = client.delete_term_relationship(args)
+        
+        if result:
+            console.print("[green]✓[/green] Relationship deleted successfully")
+            if isinstance(result, dict) and result.get("message"):
+                console.print(f"  {result['message']}")
+        else:
+            console.print("[green]✓[/green] Relationship deleted (no response from server)")
+    
+    except Exception as e:
+        console.print(f"[red]ERROR:[/red] {str(e)}")
+
+
 @term.command(name="sync-classic")
 @click.option("--domain-id", required=False, help="Governance domain ID to sync terms from (if not provided, syncs all domains)")
 @click.option("--glossary-guid", required=False, help="Target classic glossary GUID (if not provided, creates/uses glossary with domain name)")
