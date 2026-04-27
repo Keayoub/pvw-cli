@@ -416,6 +416,56 @@ pvw collection get --collectionName <collection-name>
 
 ---
 
+## � Advanced Operations (Phase 3)
+
+### Entity Advanced Operations
+
+```bash
+# Get entity change history
+pvw entity history --guid <entity-guid>
+pvw entity history --guid <entity-guid> --output json
+
+# Validate entity before creation/update
+pvw entity validate --guid <entity-guid>
+pvw entity validate --payload-file entity.json --type-name DataSet
+
+# Show entity dependencies
+pvw entity dependencies --guid <entity-guid>
+pvw entity dependencies --guid <entity-guid> --output json
+
+# Get entity usage statistics
+pvw entity usage --guid <entity-guid>
+pvw entity usage --guid <entity-guid> --output json
+
+# Get entity audit events
+pvw entity audit --guid <entity-guid>
+```
+
+### Lineage Advanced Operations
+
+```bash
+# Get upstream lineage (data sources)
+pvw lineage upstream --guid <entity-guid>
+pvw lineage upstream --guid <entity-guid> --depth 5
+pvw lineage upstream --guid <entity-guid> --output json
+
+# Get downstream lineage (data consumers)
+pvw lineage downstream --guid <entity-guid>
+pvw lineage downstream --guid <entity-guid> --depth 5
+pvw lineage downstream --guid <entity-guid> --output json
+
+# Get temporal lineage (historical changes)
+pvw lineage temporal --guid <entity-guid>
+pvw lineage temporal --guid <entity-guid> --start-time 2026-01-01T00:00:00Z --end-time 2026-04-01T00:00:00Z
+pvw lineage temporal --guid <entity-guid> --output json
+
+# Get impact analysis
+pvw lineage impact --guid <entity-guid>
+pvw lineage impact-report --guid <entity-guid> --output-file impact_report.json
+```
+
+---
+
 ## 📚 Additional Resources
 
 - **Full Documentation**: See `doc/` folder in repository
@@ -426,16 +476,18 @@ pvw collection get --collectionName <collection-name>
 
 ---
 
-## 🔄 Recent Updates (v1.10.25)
+## 🔄 Recent Updates (v1.10.25+)
 
-- ✅ **Data Quality APIs**: Full implementation of quality namespace
+- ✅ **Data Quality APIs**: Full implementation of quality namespace (v1.10.25)
 - ✅ **Facets APIs**: All entity type facets (terms, products, CDEs, objectives)
 - ✅ **Hierarchy API**: Glossary term hierarchy visualization
 - ✅ **Relationships API**: Generic relationship listing
 - ✅ **Sample Notebooks**: Basic and advanced quality command notebooks
+- ✅ **Phase 3 Advanced Operations**: Entity history, validation, dependencies, usage (April 27, 2026)
+- ✅ **Advanced Lineage**: Upstream, downstream, temporal lineage operations (April 27, 2026)
 
 ---
 
-**Version**: 1.10.25  
+**Version**: 1.10.25+  
 **Last Updated**: April 27, 2026  
 **CLI Repository**: https://github.com/Keayoub/pvw-cli

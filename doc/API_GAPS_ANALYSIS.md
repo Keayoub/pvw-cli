@@ -1,13 +1,13 @@
 # Microsoft Purview API Implementation Status
 **Date**: April 27, 2026  
-**Current CLI Version**: 1.10.25  
-**Status**: ✅ **All Core Unified Catalog APIs Implemented**
+**Current CLI Version**: 1.10.25+  
+**Status**: ✅ **All Core APIs + Phase 3 Advanced Operations Implemented**
 
 ---
 
 ## 📊 Quick Summary
 
-**Unified Catalog API Coverage**: 🎉 **100% Complete** (48/48 Core APIs)
+**Total API Coverage**: 🎉 **100% of Planned APIs Complete**
 
 | Category | APIs | Status |
 |----------|------|--------|
@@ -23,14 +23,16 @@
 | **Hierarchies API** | **1** | ✅ **100% Complete** |
 | **Relationships APIs** | **3** | ✅ **100% Complete** |
 | **Data Quality APIs** | **All** | ✅ **100% Complete** (v1.10.25) |
+| **Advanced Entity Operations** | **5** | ✅ **100% Complete** (Phase 3) |
+| **Advanced Lineage Operations** | **4** | ✅ **100% Complete** (Phase 3) |
 
 ### 🎯 Implementation Achievements
 
 - ✅ **Phase 1 Complete**: All high-priority Unified Catalog APIs
 - ✅ **Phase 2 Complete**: All facets and enhanced search APIs
 - ✅ **Data Quality Complete**: Full quality namespace implementation (v1.10.25)
-- 📋 **Phase 3 Optional**: Advanced entity operations (defined, not exposed)
-- 📋 **Phase 4 Optional**: Analytics and reporting (nice-to-have)
+- ✅ **Phase 3 Complete**: Advanced entity and lineage operations (April 27, 2026)
+- 📋 **Phase 4 Remaining**: Analytics and reporting (optional, nice-to-have)
 
 ---
 
@@ -281,28 +283,64 @@ No further implementation needed for core Unified Catalog features!
 
 ---
 
-### Phase 3: Advanced Entity Operations (Q3 2026 - Optional Enhancement)
+### ✅ Phase 3: Advanced Entity Operations - COMPLETE!
 
-These advanced APIs are **defined in endpoints.py but not yet exposed via CLI**:
+**Just Implemented** (April 27, 2026): All Phase 3 advanced operations are now exposed via CLI:
 
-1. **Entity History/Audit** - Track entity changes over time
-   - `GET /datamap/api/atlas/v2/entity/guid/{guid}/history`
-   - `GET /datamap/api/atlas/v2/entity/guid/{guid}/audit`
-   - **Use Case**: Compliance audits, change tracking, rollback analysis
+#### Entity Operations ✅
+1. **Entity History** - `pvw entity history --guid <guid>`
+   - Track entity changes over time
+   - View complete modification history
+   - Compliance and audit support
 
-2. **Impact Analysis** - Upstream/downstream lineage
-   - `GET /datamap/api/atlas/v2/lineage/{guid}/upstream`
-   - `GET /datamap/api/atlas/v2/lineage/{guid}/downstream`
-   - `GET /datamap/api/atlas/v2/lineage/{guid}/impact`
-   - **Use Case**: Change impact assessment, dependency analysis
+2. **Entity Validation** - `pvw entity validate --guid <guid>`
+   - Pre-flight validation before creation/update
+   - Schema validation
+   - Data quality checks
 
-3. **Entity Validation** - Pre-flight checks
-   - `POST /datamap/api/atlas/v2/entity/validate`
-   - **Use Case**: Validate entities before creation, schema validation
+3. **Entity Dependencies** - `pvw entity dependencies --guid <guid>`
+   - Show all entity dependencies
+   - Impact analysis
+   - Relationship visualization
 
-**Estimated Effort**: 4-5 days  
-**Impact**: Medium - Adds enterprise-grade features  
-**Priority**: Optional - Can be implemented based on user demand
+4. **Entity Usage** - `pvw entity usage --guid <guid>`
+   - Usage statistics and metrics
+   - Access patterns
+   - Popularity tracking
+
+5. **Entity Audit** - `pvw entity audit --guid <guid>` *(already existed)*
+   - Audit log retrieval
+   - Compliance reporting
+
+#### Lineage Operations ✅
+1. **Upstream Lineage** - `pvw lineage upstream --guid <guid>`
+   - Show upstream data sources
+   - Data provenance
+   - Source tracking
+
+2. **Downstream Lineage** - `pvw lineage downstream --guid <guid>`
+   - Show downstream consumers
+   - Impact analysis
+   - Dependency tracking
+
+3. **Temporal Lineage** - `pvw lineage temporal --guid <guid>`
+   - Historical lineage changes
+   - Time-based analysis
+   - Evolution tracking
+
+4. **Impact Analysis** - `pvw lineage impact --guid <guid>` *(already existed)*
+   - Comprehensive impact reports
+   - Change impact assessment
+
+**All commands support:**
+- JSON output (`--output json`)
+- Table output (default)
+- Depth control for lineage operations
+- Time range filtering for temporal analysis
+
+**Estimated Effort**: 4-5 days → **✅ COMPLETED in 1 day**  
+**Impact**: HIGH - Adds enterprise-grade features  
+**Status**: ✅ **Phase 3 COMPLETE**
 
 ---
 
