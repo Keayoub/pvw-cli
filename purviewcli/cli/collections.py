@@ -1050,4 +1050,92 @@ def resources(collection_name, format, output_json, sort_by, asset_type, data_so
         traceback.print_exc()
 
 
+@collections.command()
+@click.option('--collection-name', help='Collection name to get analytics for (optional)')
+@click.option('--output', type=click.Choice(['json', 'table']), default='table', help='Output format')
+def analytics(collection_name, output):
+    """Get collection analytics including asset counts, hierarchy metrics, and usage patterns.
+    
+    Provides comprehensive analytics for collections including:
+    - Asset counts by type
+    - Hierarchy depth and breadth metrics
+    - Data source distribution
+    - Access patterns and usage
+    
+    Examples:
+        # View analytics for all collections
+        pvw collections analytics
+        
+        # Get analytics for specific collection
+        pvw collections analytics --collection-name my-collection
+        
+        # Get analytics as JSON
+        pvw collections analytics --output json
+    """
+    try:
+        args = {}
+        if collection_name:
+            args['--collectionName'] = collection_name
+        
+        client = Collections()
+        result = client.collectionsReadAnalytics(args)
+        
+        if output == 'json':
+            click.echo(json.dumps(result, indent=2))
+        else:
+            # Display analytics in table format
+            from rich.console import Console
+            from rich.table import Table
+            
+            console = Console()
+            console.print(f"\n[bold cyan]Collection Analytics[/bold cyan]\n")
+            
+            if result:
+                # Asset counts table
+                if 'assetCounts' in result:
+                    asset_table = Table(title="Asset Counts by Type")
+                    asset_table.add_column("Asset Type", style="cyan")
+                    asset_table.add_column("Count", style="green", justify="right")
+                    
+                    for asset_type, count in result['assetCounts'].items():
+                        asset_table.add_row(asset_type, str(count))
+                    
+                    console.print(asset_table)
+                    console.print()
+                
+                # Hierarchy metrics
+                if 'hierarchy' in result:
+                    hierarchy = result['hierarchy']
+                    console.print(f"[cyan]Total Collections:[/cyan] {hierarchy.get('totalCollections', 0)}")
+                    console.print(f"[cyan]Max Depth:[/cyan] {hierarchy.get('maxDepth', 0)}")
+                    console.print(f"[cyan]Avg Children:[/cyan] {hierarchy.get('avgChildren', 0):.1f}")
+                    console.print()
+                
+                # Data source distribution
+                if 'dataSources' in result:
+                    ds_table = Table(title="Data Source Distribution")
+                    ds_table.add_column("Data Source", style="cyan")
+                    ds_table.add_column("Asset Count", style="green", justify="right")
+                    
+                    for ds, count in result['dataSources'].items():
+                        ds_table.add_row(ds, str(count))
+                    
+                    console.print(ds_table)
+                    console.print()
+                
+                # Usage patterns
+                if 'usage' in result:
+                    usage = result['usage']
+                    console.print(f"[cyan]Most Active Collection:[/cyan] {usage.get('mostActive', 'N/A')}")
+                    console.print(f"[cyan]Total Scans:[/cyan] {usage.get('totalScans', 0)}")
+                    console.print(f"[cyan]Recent Activity:[/cyan] {usage.get('recentActivity', 0)} events")
+                
+                console.print("\n[green][OK] Collection analytics retrieved successfully[/green]")
+            else:
+                console.print("[yellow][!] No analytics data available[/yellow]")
+    
+    except Exception as e:
+        click.echo(f"Error: {e}", err=True)
+
+
 __all__ = ["collections"]

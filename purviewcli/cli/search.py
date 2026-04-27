@@ -604,4 +604,87 @@ def find_table(
         _format_search_results(result_obj, show_ids=show_ids)
 
 
+@search.command()
+@click.option('--output', type=click.Choice(['json', 'table']), default='table', help='Output format')
+def analytics(output):
+    """Get search analytics including query patterns, popular assets, and search trends.
+    
+    Provides comprehensive search analytics including:
+    - Most searched terms
+    - Popular asset types
+    - Search success rates
+    - Query performance metrics
+    - Search trends over time
+    
+    Examples:
+        # View search analytics in table format
+        pvw search analytics
+        
+        # Get analytics as JSON
+        pvw search analytics --output json
+    """
+    try:
+        args = {}
+        
+        search_client = Search()
+        result = search_client.searchReadAnalytics(args)
+        
+        if output == 'json':
+            console.print(json.dumps(result, indent=2))
+        else:
+            # Display analytics in table format
+            console.print(f"\n[bold cyan]Search Analytics[/bold cyan]\n")
+            
+            if result:
+                # Most searched terms
+                if 'topSearchTerms' in result:
+                    terms_table = Table(title="Top Search Terms")
+                    terms_table.add_column("Term", style="cyan")
+                    terms_table.add_column("Count", style="green", justify="right")
+                    terms_table.add_column("Success Rate", style="yellow", justify="right")
+                    
+                    for term_data in result['topSearchTerms']:
+                        term = term_data.get('term', '')
+                        count = term_data.get('count', 0)
+                        success_rate = term_data.get('successRate', 0)
+                        terms_table.add_row(term, str(count), f"{success_rate:.1f}%")
+                    
+                    console.print(terms_table)
+                    console.print()
+                
+                # Popular asset types
+                if 'popularAssetTypes' in result:
+                    asset_table = Table(title="Popular Asset Types")
+                    asset_table.add_column("Asset Type", style="cyan")
+                    asset_table.add_column("Search Count", style="green", justify="right")
+                    
+                    for asset_type, count in result['popularAssetTypes'].items():
+                        asset_table.add_row(asset_type, str(count))
+                    
+                    console.print(asset_table)
+                    console.print()
+                
+                # Performance metrics
+                if 'performance' in result:
+                    perf = result['performance']
+                    console.print(f"[cyan]Avg Query Time:[/cyan] {perf.get('avgQueryTime', 0):.2f}ms")
+                    console.print(f"[cyan]Total Queries:[/cyan] {perf.get('totalQueries', 0)}")
+                    console.print(f"[cyan]Cache Hit Rate:[/cyan] {perf.get('cacheHitRate', 0):.1f}%")
+                    console.print()
+                
+                # Search trends
+                if 'trends' in result:
+                    trends = result['trends']
+                    console.print(f"[cyan]Daily Searches:[/cyan] {trends.get('dailySearches', 0)}")
+                    console.print(f"[cyan]Weekly Growth:[/cyan] {trends.get('weeklyGrowth', 0):.1f}%")
+                    console.print(f"[cyan]Peak Hour:[/cyan] {trends.get('peakHour', 'N/A')}")
+                
+                console.print("\n[green][OK] Search analytics retrieved successfully[/green]")
+            else:
+                console.print("[yellow][!] No analytics data available[/yellow]")
+    
+    except Exception as e:
+        console.print(f"[red][X] Error executing search analytics: {str(e)}[/red]")
+
+
 __all__ = ["search"]

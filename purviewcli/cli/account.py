@@ -195,5 +195,234 @@ def get_collection(ctx, collection_name):
         console.print(f"[red][X] Error executing account get-collection: {str(e)}[/red]")
 
 
+@account.command()
+@click.option('--output', type=click.Choice(['json', 'table']), default='table', help='Output format')
+@click.pass_context
+def analytics(ctx, output):
+    """Get account analytics including entity counts, collection metrics, and storage usage.
+    
+    Provides comprehensive analytics data for the Purview account including:
+    - Total entity counts by type
+    - Collection statistics
+    - Storage usage metrics
+    - Activity trends
+    
+    Examples:
+        # View analytics in table format
+        pvw account analytics
+        
+        # Get analytics as JSON
+        pvw account analytics --output json
+    """
+    try:
+        if ctx.obj.get("mock"):
+            console.print("[yellow][MOCK] account analytics command[/yellow]")
+            console.print("[green][OK] Mock account analytics completed successfully[/green]")
+            return
+
+        args = {}
+
+        from purviewcli.client._account import Account
+        account_client = Account()
+        result = account_client.accountReadAnalytics(args)
+
+        if result:
+            if output == 'json':
+                console.print(json.dumps(result, indent=2))
+            else:
+                # Display analytics in table format
+                console.print(f"\n[bold cyan]Account Analytics[/bold cyan]\n")
+                
+                try:
+                    from rich.table import Table
+                    
+                    # Entity counts table
+                    if 'entityCounts' in result:
+                        entity_table = Table(title="Entity Counts by Type")
+                        entity_table.add_column("Entity Type", style="cyan")
+                        entity_table.add_column("Count", style="green", justify="right")
+                        
+                        for entity_type, count in result['entityCounts'].items():
+                            entity_table.add_row(entity_type, str(count))
+                        
+                        console.print(entity_table)
+                        console.print()
+                    
+                    # Collection metrics
+                    if 'collections' in result:
+                        console.print(f"[cyan]Collections:[/cyan] {result['collections']}")
+                    
+                    # Storage usage
+                    if 'storageUsage' in result:
+                        storage = result['storageUsage']
+                        console.print(f"[cyan]Storage Used:[/cyan] {storage.get('used', 'N/A')}")
+                        console.print(f"[cyan]Storage Limit:[/cyan] {storage.get('limit', 'N/A')}")
+                    
+                    # Activity metrics
+                    if 'activity' in result:
+                        activity = result['activity']
+                        console.print(f"\n[cyan]Recent Activity:[/cyan]")
+                        console.print(f"  Scans: {activity.get('scans', 0)}")
+                        console.print(f"  Lineages: {activity.get('lineages', 0)}")
+                        console.print(f"  Classifications: {activity.get('classifications', 0)}")
+                    
+                except ImportError:
+                    # Fallback if Rich isn't available
+                    console.print(json.dumps(result, indent=2))
+            
+            console.print("\n[green][OK] Account analytics retrieved successfully[/green]")
+        else:
+            console.print("[yellow][!] No analytics data available[/yellow]")
+
+    except Exception as e:
+        console.print(f"[red][X] Error executing account analytics: {str(e)}[/red]")
+
+
+@account.command()
+@click.option('--output', type=click.Choice(['json', 'table']), default='table', help='Output format')
+@click.pass_context
+def usage(ctx, output):
+    """Get account resource usage statistics.
+    
+    Provides detailed usage metrics including:
+    - API call counts and limits
+    - Storage consumption
+    - Scan usage
+    - Active connections
+    
+    Examples:
+        # View usage in table format
+        pvw account usage
+        
+        # Get usage as JSON
+        pvw account usage --output json
+    """
+    try:
+        if ctx.obj.get("mock"):
+            console.print("[yellow][MOCK] account usage command[/yellow]")
+            console.print("[green][OK] Mock account usage completed successfully[/green]")
+            return
+
+        args = {}
+
+        from purviewcli.client._account import Account
+        account_client = Account()
+        result = account_client.accountReadUsage(args)
+
+        if result:
+            if output == 'json':
+                console.print(json.dumps(result, indent=2))
+            else:
+                # Display usage in table format
+                console.print(f"\n[bold cyan]Account Usage Statistics[/bold cyan]\n")
+                
+                try:
+                    from rich.table import Table
+                    
+                    usage_table = Table(title="Resource Usage")
+                    usage_table.add_column("Resource", style="cyan")
+                    usage_table.add_column("Current", style="yellow", justify="right")
+                    usage_table.add_column("Limit", style="green", justify="right")
+                    usage_table.add_column("Utilization", style="magenta", justify="right")
+                    
+                    if 'usage' in result:
+                        for resource, metrics in result['usage'].items():
+                            current = metrics.get('current', 0)
+                            limit = metrics.get('limit', 'Unlimited')
+                            if isinstance(limit, (int, float)) and limit > 0:
+                                utilization = f"{(current / limit * 100):.1f}%"
+                            else:
+                                utilization = "N/A"
+                            
+                            usage_table.add_row(
+                                resource,
+                                str(current),
+                                str(limit),
+                                utilization
+                            )
+                    
+                    console.print(usage_table)
+                    
+                except ImportError:
+                    console.print(json.dumps(result, indent=2))
+            
+            console.print("\n[green][OK] Account usage statistics retrieved successfully[/green]")
+        else:
+            console.print("[yellow][!] No usage data available[/yellow]")
+
+    except Exception as e:
+        console.print(f"[red][X] Error executing account usage: {str(e)}[/red]")
+
+
+@account.command()
+@click.option('--output', type=click.Choice(['json', 'table']), default='table', help='Output format')
+@click.pass_context
+def limits(ctx, output):
+    """Get account resource limits and quotas.
+    
+    Displays configured limits and quotas for the Purview account including:
+    - Entity limits
+    - Scan limits
+    - Storage limits
+    - API rate limits
+    
+    Examples:
+        # View limits in table format
+        pvw account limits
+        
+        # Get limits as JSON
+        pvw account limits --output json
+    """
+    try:
+        if ctx.obj.get("mock"):
+            console.print("[yellow][MOCK] account limits command[/yellow]")
+            console.print("[green][OK] Mock account limits completed successfully[/green]")
+            return
+
+        args = {}
+
+        from purviewcli.client._account import Account
+        account_client = Account()
+        result = account_client.accountReadLimits(args)
+
+        if result:
+            if output == 'json':
+                console.print(json.dumps(result, indent=2))
+            else:
+                # Display limits in table format
+                console.print(f"\n[bold cyan]Account Resource Limits[/bold cyan]\n")
+                
+                try:
+                    from rich.table import Table
+                    
+                    limits_table = Table(title="Resource Limits")
+                    limits_table.add_column("Resource", style="cyan")
+                    limits_table.add_column("Limit", style="green", justify="right")
+                    limits_table.add_column("Description", style="dim")
+                    
+                    if 'limits' in result:
+                        for resource, details in result['limits'].items():
+                            limit_value = details.get('value', 'Unlimited')
+                            description = details.get('description', '')
+                            
+                            limits_table.add_row(
+                                resource,
+                                str(limit_value),
+                                description
+                            )
+                    
+                    console.print(limits_table)
+                    
+                except ImportError:
+                    console.print(json.dumps(result, indent=2))
+            
+            console.print("\n[green][OK] Account limits retrieved successfully[/green]")
+        else:
+            console.print("[yellow][!] No limits data available[/yellow]")
+
+    except Exception as e:
+        console.print(f"[red][X] Error executing account limits: {str(e)}[/red]")
+
+
 # Make the account group available for import
 __all__ = ['account']

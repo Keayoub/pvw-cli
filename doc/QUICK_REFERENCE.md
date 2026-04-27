@@ -466,6 +466,84 @@ pvw lineage impact-report --guid <entity-guid> --output-file impact_report.json
 
 ---
 
+## 📊 Analytics & Reporting Commands
+
+### Account Analytics
+
+```bash
+# Get comprehensive account analytics
+pvw account analytics
+
+# View account analytics as JSON
+pvw account analytics --output json
+
+# Get resource usage statistics
+pvw account usage
+
+# Get resource usage as JSON
+pvw account usage --output json
+
+# View resource limits and quotas
+pvw account limits
+
+# Get limits as JSON
+pvw account limits --output json
+```
+
+**Analytics Metrics**:
+- Entity counts by type
+- Collection statistics
+- Storage usage metrics
+- Activity trends
+- API call counts and limits
+- Active connections
+
+### Collection Analytics
+
+```bash
+# Get analytics for all collections
+pvw collections analytics
+
+# Get analytics for specific collection
+pvw collections analytics --collection-name my-collection
+
+# View as JSON
+pvw collections analytics --output json
+
+# Specific collection JSON output
+pvw collections analytics --collection-name my-collection --output json
+```
+
+**Collection Metrics**:
+- Asset counts by type
+- Hierarchy depth and breadth
+- Data source distribution
+- Access patterns
+- Usage trends
+- Total collections and depth
+
+### Search Analytics
+
+```bash
+# Get search analytics
+pvw search analytics
+
+# View as JSON
+pvw search analytics --output json
+```
+
+**Search Metrics**:
+- Most searched terms
+- Popular asset types
+- Search success rates
+- Query performance metrics
+- Daily search volumes
+- Search trends over time
+- Peak usage hours
+- Cache hit rates
+
+---
+
 ## 📚 Additional Resources
 
 - **Full Documentation**: See `doc/` folder in repository
@@ -478,16 +556,18 @@ pvw lineage impact-report --guid <entity-guid> --output-file impact_report.json
 
 ## 🔄 Recent Updates (v1.10.25+)
 
-- ✅ **Data Quality APIs**: Full implementation of quality namespace (v1.10.25)
+- ✅ **Data Quality APIs**: Full implementation of quality namespace (v1.10.25) 
 - ✅ **Facets APIs**: All entity type facets (terms, products, CDEs, objectives)
 - ✅ **Hierarchy API**: Glossary term hierarchy visualization
 - ✅ **Relationships API**: Generic relationship listing
 - ✅ **Sample Notebooks**: Basic and advanced quality command notebooks
 - ✅ **Phase 3 Advanced Operations**: Entity history, validation, dependencies, usage (April 27, 2026)
 - ✅ **Advanced Lineage**: Upstream, downstream, temporal lineage operations (April 27, 2026)
+- ✅ **Phase 4 Analytics & Reporting**: Account, collection, and search analytics (April 27, 2026)
 
 ---
 
 **Version**: 1.10.25+  
 **Last Updated**: April 27, 2026  
 **CLI Repository**: https://github.com/Keayoub/pvw-cli
+
