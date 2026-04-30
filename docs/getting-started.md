@@ -87,6 +87,8 @@ List glossary terms:
 pvw glossary readTerms
 ```
 
+If your primary goal is modern governance in Microsoft Purview, continue with the dedicated [Unified Catalog](unified-catalog.md) page.
+
 ## 6. Troubleshooting Authentication
 
 If you see a legacy tenant resource principal issue, set:
@@ -98,5 +100,6 @@ export PURVIEW_AUTH_SCOPE=https://purview.azure.net/.default
 If you need more help, see:
 
 - [Authentication Troubleshooting](authentication-troubleshooting.md)
+- [Unified Catalog](unified-catalog.md)
 - [Quick Reference](quick-reference.md)
 - [Full Documentation Catalog](documentation-catalog.md)

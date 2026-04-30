@@ -100,6 +100,7 @@ pvw glossary readTerms
 ## Where to Go Next
 
 - [Getting Started](getting-started.md) for installation, configuration, and first commands
+- [Unified Catalog](unified-catalog.md) for domains, terms, data products, OKRs, and CDE workflows
 - [Full Documentation Catalog](documentation-catalog.md) to browse all documentation pages
 - [Full Samples Catalog](samples-catalog.md) to browse notebooks, PowerShell, JSON, and CSV samples
 - [Command Documentation](commands/) for per-command help
