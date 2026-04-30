@@ -2,6 +2,7 @@
 
 [![Version](https://img.shields.io/badge/version-1.10.14-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.11.0)
 [![Status](https://img.shields.io/badge/status-stable-success.svg)](https://github.com/Keayoub/pvw-cli)
+[![Docs](https://img.shields.io/badge/docs-github%20pages-0A8F84?logo=githubpages&logoColor=white)](https://keayoub.github.io/pvw-cli/)
 
 A Python CLI and library for automating Microsoft Purview. Covers the Data Map, Unified Catalog, Collections, Search, Lineage, Scan, and Management APIs.
 
