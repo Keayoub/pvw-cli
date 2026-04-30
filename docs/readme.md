@@ -1,132 +1,111 @@
-# Purview CLI Documentation Hub
+# pvw-cli Documentation
 
-Welcome to the documentation hub for the Purview CLI tool.
+`pvw-cli` is a Python CLI and library for automating Microsoft Purview. It covers Data Map, Unified Catalog, Collections, Search, Lineage, Scan, and Management APIs.
 
-This documentation is organized for both new and advanced users, providing:
+## Install
 
-- Quick start guides
-- Complete CLI and API references
-- User guides and advanced workflows
-- Per-command documentation
-- Examples and best practices
+Install from PyPI:
 
----
+```bash
+pip install pvw-cli
+```
 
-## 📚 Main Documentation Portal
+Install from source:
 
-The [Integrated Documentation Portal](integrated/readme.md) provides:
+```bash
+git clone https://github.com/Keayoub/pvw-cli.git
+cd pvw-cli
+pip install -r requirements.txt
+pip install -e .
+```
 
-- **Quick Start**: [Installation](integrated/guides/installation.md), [Configuration](integrated/guides/configuration.md), [Quickstart](integrated/guides/quickstart.md)
-- **CLI Reference**: [All commands, options, and usage patterns](commands/)
-  - [Account Commands](commands/account/)
-  - [Entity Commands](commands/entity/)
-  - [Glossary Commands](commands/glossary/)
-  - [Insight Commands](commands/insight/)
-  - [Lineage Commands](commands/lineage/)
-  - [Management Commands](commands/management/)
-  - [PolicyStore Commands](commands/policystore/)
-  - [Relationship Commands](commands/relationship/)
-  - [Scan Commands](commands/scan/)
-  - [Search Commands](commands/search/)
-  - [Share Commands](commands/share/)
-  - [Types Commands](commands/types/)
-- **API Documentation**: [Auto-generated docs for all modules](integrated/api/index.html)
-- **User Guides**: [Step-by-step guides](integrated/guides/readme.md)
-  - [Installation Guide](integrated/guides/installation.md)
-  - [Configuration Guide](integrated/guides/configuration.md)
-  - [Quickstart](integrated/guides/quickstart.md)
-- **Complete Reference**: [Comprehensive feature and command reference](integrated/reference/readme.md)
-  - [API Mapping](integrated/reference/api-mapping.md)
-  - [Command Reference](integrated/reference/command-reference.md)
-  - [Complete CLI Reference](integrated/reference/complete-cli-reference.md)
-- **Examples**: [Sample code and real-world scenarios](integrated/examples/readme.md)
+## Configure
 
----
+Set these required environment variables before running commands:
 
-## 🛠️ Command Documentation (docs/commands)
+| Variable | Description |
+|---|---|
+| `PURVIEW_ACCOUNT_NAME` | Your Purview account name |
+| `PURVIEW_ACCOUNT_ID` | Your Azure Tenant ID |
+| `PURVIEW_RESOURCE_GROUP` | Resource group containing the Purview account |
 
-Detailed documentation for each CLI command group is available in [docs/commands/](commands/):
+PowerShell:
 
-| Command Group | Documentation |
-|--------------|---------------|
-| Account      | [account](commands/account/) |
-| Entity       | [entity](commands/entity/) |
-| Glossary     | [glossary](commands/glossary/) |
-| Insight      | [insight](commands/insight/) |
-| Lineage      | [lineage](commands/lineage/) |
-| Management   | [management](commands/management/) |
-| PolicyStore  | [policystore](commands/policystore/) |
-| Relationship | [relationship](commands/relationship/) |
-| Scan         | [scan](commands/scan/) |
-| Search       | [search](commands/search/) |
-| Share        | [share](commands/share/) |
-| Types        | [types](commands/types/) |
+```powershell
+$env:PURVIEW_ACCOUNT_NAME = "your-purview-account"
+$env:PURVIEW_ACCOUNT_ID = "your-tenant-id-guid"
+$env:PURVIEW_RESOURCE_GROUP = "your-resource-group"
+```
 
-Each folder contains Markdown files for every command, with usage, parameters, and examples. For example:
-- [entity/addLabels.md](commands/entity/addLabels.md)
-- [entity/create.md](commands/entity/create.md)
-- [glossary/main.md](commands/glossary/main.md)
-- ...and many more for each command group.
+Bash:
 
----
+```bash
+export PURVIEW_ACCOUNT_NAME=your-purview-account
+export PURVIEW_ACCOUNT_ID=your-tenant-id-guid
+export PURVIEW_RESOURCE_GROUP=your-resource-group
+```
 
-## 🗂️ Full Documentation Index
+To find your tenant ID:
 
-### Integrated Portal
-- [Integrated README](integrated/readme.md)
-- [CLI Reference](commands/)
-  - [Account](commands/account/)
-  - [Entity](commands/entity/)
-  - [Glossary](commands/glossary/)
-  - [Insight](commands/insight/)
-  - [Lineage](commands/lineage/)
-  - [Management](commands/management/)
-  - [PolicyStore](commands/policystore/)
-  - [Relationship](commands/relationship/)
-  - [Scan](commands/scan/)
-  - [Search](commands/search/)
-  - [Share](commands/share/)
-  - [Types](commands/types/)
-- [API Documentation](integrated/api/index.html)
-- [User Guides](integrated/guides/readme.md)
-  - [Installation](integrated/guides/installation.md)
-  - [Configuration](integrated/guides/configuration.md)
-  - [Quickstart](integrated/guides/quickstart.md)
-- [Reference](integrated/reference/readme.md)
-  - [API Mapping](integrated/reference/api-mapping.md)
-  - [Command Reference](integrated/reference/command-reference.md)
-  - [Complete CLI Reference](integrated/reference/complete-cli-reference.md)
-- [Examples](integrated/examples/readme.md)
+```bash
+az account show --query tenantId -o tsv
+```
 
-### Command Documentation (docs/commands)
-- [Account](commands/account/)
-- [Entity](commands/entity/)
-- [Glossary](commands/glossary/)
-- [Insight](commands/insight/)
-- [Lineage](commands/lineage/)
-- [Management](commands/management/)
-- [PolicyStore](commands/policystore/)
-- [Relationship](commands/relationship/)
-- [Scan](commands/scan/)
-- [Search](commands/search/)
-- [Share](commands/share/)
-- [Types](commands/types/)
+## Authenticate
 
----
+`pvw-cli` uses `DefaultAzureCredential` and tries these authentication methods:
 
-## 🔎 Where to Start
+1. Azure CLI via `az login`
+2. Service principal via `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, and `AZURE_CLIENT_SECRET`
+3. Managed identity when running on Azure
 
-- **New users:** Start with the [Quick Start Guide](integrated/guides/quickstart.md) and [Installation](integrated/guides/installation.md).
-- **Looking for a specific command?** Browse [docs/commands/](commands/) or use the [Complete CLI Reference](integrated/reference/complete-cli-reference.md).
-- **Want to automate or extend?** See [API Documentation](integrated/api/) and [Examples](integrated/examples/readme.md).
+If your tenant uses the older Purview resource principal, set:
 
----
+```bash
+export PURVIEW_AUTH_SCOPE=https://purview.azure.net/.default
+```
 
-## 📝 Contributing & Support
+## Start Using pvw-cli
 
-- [Issue Tracker](https://github.com/Keayoub/Purview_cli/issues)
-- [Email Support](mailto:keayoub@msn.com)
+See the installed command groups:
 
----
+```bash
+pvw --help
+```
 
-*This documentation is generated and maintained from the Purview CLI source code. For the most up-to-date information, always refer to this documentation hub.*
+Common command groups:
+
+```text
+pvw account
+pvw collections
+pvw entity
+pvw glossary
+pvw lineage
+pvw scan
+pvw search
+pvw types
+pvw uc
+pvw workflow
+pvw diagnostics
+```
+
+Examples:
+
+```bash
+pvw account getAccount
+pvw search query --keywords "customer"
+pvw glossary readTerms
+```
+
+## Where to Go Next
+
+- [Getting Started](getting-started.md) for installation, configuration, and first commands
+- [Full Documentation Catalog](documentation-catalog.md) to browse all documentation pages
+- [Full Samples Catalog](samples-catalog.md) to browse notebooks, PowerShell, JSON, and CSV samples
+- [Command Documentation](commands/) for per-command help
+- [Integrated Portal](integrated/readme.md) for organized guides and reference material
+
+## Support
+
+- [GitHub Repository](https://github.com/Keayoub/pvw-cli)
+- [Issue Tracker](https://github.com/Keayoub/pvw-cli/issues)
