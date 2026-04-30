@@ -3,7 +3,6 @@ site_description: Documentation and sample catalog for pvw-cli
 site_url: https://keayoub.github.io/pvw-cli/
 repo_url: https://github.com/Keayoub/pvw-cli
 repo_name: Keayoub/pvw-cli
-exclude_docs: readme.md
 
 theme:
   name: material
@@ -29,7 +28,7 @@ validation:
     not_found: ignore
 
 nav:
-  - Home: index.md
+  - Home: readme.md
   - Getting Started: getting-started.md
   - Full Documentation Catalog: documentation-catalog.md
   - Full Samples Catalog: samples-catalog.md
