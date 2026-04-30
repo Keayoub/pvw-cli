@@ -41,7 +41,7 @@ tools: [execute/getTerminalOutput, execute/killTerminal, execute/sendToTerminal,
 
 **Batch API Requests:** [PLANNED] Not yet implemented. Requires endpoint analysis to identify batch-capable operations and request coalescing in api_client layer.
 
-See `doc/PERFORMANCE_OPTIMIZATION_GUIDE.md` for implementation patterns and best practices.
+See `doc/performance-optimization-guide.md` for implementation patterns and best practices.
 
 ## Release Workflow (repo-specific)
 - When the user says they are ready to publish, use the release script at `scripts/release.ps1` (case-insensitive path on Windows; user may refer to `scripts/Release.ps1`).

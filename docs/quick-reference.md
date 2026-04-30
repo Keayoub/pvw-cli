@@ -548,8 +548,8 @@ pvw search analytics --output json
 
 - **Full Documentation**: See `docs/` folder in repository
 - **API Reference**: [docs/API_GAPS_ANALYSIS.md](./API_GAPS_ANALYSIS.md)
-- **Performance Guide**: [docs/PERFORMANCE_OPTIMIZATION_GUIDE.md](./PERFORMANCE_OPTIMIZATION_GUIDE.md)
-- **Authentication Guide**: [docs/AUTHENTICATION_TROUBLESHOOTING.md](./AUTHENTICATION_TROUBLESHOOTING.md)
+- **Performance Guide**: [docs/performance-optimization-guide.md](./performance-optimization-guide.md)
+- **Authentication Guide**: [docs/authentication-troubleshooting.md](./authentication-troubleshooting.md)
 - **Sample Notebooks**: `samples/notebooks (basic)/` and `samples/notebooks (plus)/`
 
 ---

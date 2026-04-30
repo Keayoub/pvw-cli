@@ -14,7 +14,7 @@ This documentation is organized for both new and advanced users, providing:
 
 ## 📚 Main Documentation Portal
 
-The [Integrated Documentation Portal](integrated/README.md) provides:
+The [Integrated Documentation Portal](integrated/readme.md) provides:
 
 - **Quick Start**: [Installation](integrated/guides/installation.md), [Configuration](integrated/guides/configuration.md), [Quickstart](integrated/guides/quickstart.md)
 - **CLI Reference**: [All commands, options, and usage patterns](commands/)
@@ -31,15 +31,15 @@ The [Integrated Documentation Portal](integrated/README.md) provides:
   - [Share Commands](commands/share/)
   - [Types Commands](commands/types/)
 - **API Documentation**: [Auto-generated docs for all modules](integrated/api/index.html)
-- **User Guides**: [Step-by-step guides](integrated/guides/README.md)
+- **User Guides**: [Step-by-step guides](integrated/guides/readme.md)
   - [Installation Guide](integrated/guides/installation.md)
   - [Configuration Guide](integrated/guides/configuration.md)
   - [Quickstart](integrated/guides/quickstart.md)
-- **Complete Reference**: [Comprehensive feature and command reference](integrated/reference/README.md)
+- **Complete Reference**: [Comprehensive feature and command reference](integrated/reference/readme.md)
   - [API Mapping](integrated/reference/api-mapping.md)
   - [Command Reference](integrated/reference/command-reference.md)
   - [Complete CLI Reference](integrated/reference/complete-cli-reference.md)
-- **Examples**: [Sample code and real-world scenarios](integrated/examples/README.md)
+- **Examples**: [Sample code and real-world scenarios](integrated/examples/readme.md)
 
 ---
 
@@ -65,7 +65,7 @@ Detailed documentation for each CLI command group is available in [docs/commands
 Each folder contains Markdown files for every command, with usage, parameters, and examples. For example:
 - [entity/addLabels.md](commands/entity/addLabels.md)
 - [entity/create.md](commands/entity/create.md)
-- [glossary/README.md](commands/glossary/README.md)
+- [glossary/main.md](commands/glossary/main.md)
 - ...and many more for each command group.
 
 ---
@@ -73,7 +73,7 @@ Each folder contains Markdown files for every command, with usage, parameters, a
 ## 🗂️ Full Documentation Index
 
 ### Integrated Portal
-- [Integrated README](integrated/README.md)
+- [Integrated README](integrated/readme.md)
 - [CLI Reference](commands/)
   - [Account](commands/account/)
   - [Entity](commands/entity/)
@@ -88,15 +88,15 @@ Each folder contains Markdown files for every command, with usage, parameters, a
   - [Share](commands/share/)
   - [Types](commands/types/)
 - [API Documentation](integrated/api/index.html)
-- [User Guides](integrated/guides/README.md)
+- [User Guides](integrated/guides/readme.md)
   - [Installation](integrated/guides/installation.md)
   - [Configuration](integrated/guides/configuration.md)
   - [Quickstart](integrated/guides/quickstart.md)
-- [Reference](integrated/reference/README.md)
+- [Reference](integrated/reference/readme.md)
   - [API Mapping](integrated/reference/api-mapping.md)
   - [Command Reference](integrated/reference/command-reference.md)
   - [Complete CLI Reference](integrated/reference/complete-cli-reference.md)
-- [Examples](integrated/examples/README.md)
+- [Examples](integrated/examples/readme.md)
 
 ### Command Documentation (docs/commands)
 - [Account](commands/account/)
@@ -118,7 +118,7 @@ Each folder contains Markdown files for every command, with usage, parameters, a
 
 - **New users:** Start with the [Quick Start Guide](integrated/guides/quickstart.md) and [Installation](integrated/guides/installation.md).
 - **Looking for a specific command?** Browse [docs/commands/](commands/) or use the [Complete CLI Reference](integrated/reference/complete-cli-reference.md).
-- **Want to automate or extend?** See [API Documentation](integrated/api/) and [Examples](integrated/examples/README.md).
+- **Want to automate or extend?** See [API Documentation](integrated/api/) and [Examples](integrated/examples/readme.md).
 
 ---
 

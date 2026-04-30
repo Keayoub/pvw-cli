@@ -260,7 +260,7 @@ def show_recommendations(checks: Dict[str, bool]):
     print(f"  {Colors.BLUE}1. Wait 5-10 minutes for permissions to propagate{Colors.END}")
     print(f"  {Colors.BLUE}2. Try: az logout && az login (refresh authentication){Colors.END}")
     print(f"  {Colors.BLUE}3. Enable debug: export LOGLEVEL=DEBUG{Colors.END}")
-    print(f"  {Colors.BLUE}4. Check: doc/COLLECTIONS_PERMISSIONS.md{Colors.END}")
+    print(f"  {Colors.BLUE}4. Check: docs/collections-permissions.md{Colors.END}")
 
 def main():
     """Run all diagnostics"""

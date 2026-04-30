@@ -133,8 +133,8 @@ python scripts/diagnose_collections_permissions.py
 ## 📚 DOCUMENTATION COMPLÈTE
 
 Pour plus de détails:
-- **Français:** `docs/COLLECTIONS_PERMISSIONS_FR.md`
-- **Complet (Anglais):** `docs/COLLECTIONS_PERMISSIONS.md`
+- **Français:** `docs/collections-permissions-fr.md`
+- **Complet (Anglais):** `docs/collections-permissions.md`
 
 ---
 
@@ -169,4 +169,4 @@ pvw collections create \
 Si toujours pas de succès après tous ces étapes:
 1. Exécutez le script de diagnostic
 2. Partez les logs (LOGLEVEL=DEBUG)
-3. Vérifiez `docs/COLLECTIONS_PERMISSIONS.md` pour plus de détails
+3. Vérifiez `docs/collections-permissions.md` pour plus de détails

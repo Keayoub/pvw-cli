@@ -70,7 +70,7 @@ All 5 core performance optimizations have been successfully implemented and inte
 | `purviewcli/client/query_cache.py` | Read-query caching with TTL |
 | `purviewcli/cli/table_cache.py` | Rich table schema caching |
 | `purviewcli/cli/diagnostics.py` | Cache statistics and management commands |
-| `docs/PERFORMANCE_OPTIMIZATION_GUIDE.md` | Comprehensive usage guide |
+| `docs/performance-optimization-guide.md` | Comprehensive usage guide |
 
 ---
 
@@ -196,7 +196,7 @@ This can be implemented incrementally as a future enhancement.
 ## 📖 Documentation
 
 Comprehensive usage guide available at:
-`docs/PERFORMANCE_OPTIMIZATION_GUIDE.md`
+`docs/performance-optimization-guide.md`
 
 Covers:
 - How each optimization works

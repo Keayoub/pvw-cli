@@ -465,7 +465,7 @@ Le client Purview Unified Catalog de pvw-cli a maintenant une **couverture compl
 - [Microsoft Purview Unified Catalog REST API Reference](https://learn.microsoft.com/en-us/rest/api/purview/purview-unified-catalog/operation-groups?view=rest-purview-purview-unified-catalog-2025-09-15-preview)
 - [pvw-cli Documentation](../README.md)
 - [API Gaps Analysis](./API_GAPS_ANALYSIS.md)
-- [Quick Reference Guide](./QUICK_REFERENCE.md)
+- [Quick Reference Guide](./quick-reference.md)
 
 ---
 

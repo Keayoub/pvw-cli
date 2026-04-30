@@ -103,7 +103,7 @@ Run `pvw <command> --help` for full options on any command.
 ## 📚 Quick Start & Documentation
 
 ### Quick Reference Guide
-For a comprehensive command reference with examples, see **[docs/QUICK_REFERENCE.md](docs/QUICK_REFERENCE.md)**
+For a comprehensive command reference with examples, see **[docs/quick-reference.md](docs/quick-reference.md)**
 
 This guide covers:
 - All Unified Catalog commands (terms, domains, data products, CDEs, OKRs)
@@ -114,8 +114,8 @@ This guide covers:
 ### Additional Documentation
 
 - **[API Implementation Status](docs/API_GAPS_ANALYSIS.md)** - Complete API coverage analysis
-- **[Performance Guide](docs/PERFORMANCE_OPTIMIZATION_GUIDE.md)** - Optimization techniques and caching
-- **[Authentication Troubleshooting](docs/AUTHENTICATION_TROUBLESHOOTING.md)** - Fix auth issues
+- **[Performance Guide](docs/performance-optimization-guide.md)** - Optimization techniques and caching
+- **[Authentication Troubleshooting](docs/authentication-troubleshooting.md)** - Fix auth issues
 - **[Sample Notebooks](samples/notebooks%20(basic)/)** - Jupyter notebooks with working examples
 - **[Advanced Notebooks](samples/notebooks%20(plus)/)** - Data visualization and analytics
 
@@ -350,10 +350,10 @@ Notes:
 
 ## Documentation
 
-- [Full docs](docs/README.md)
+- [Full docs](docs/readme.md)
 - [Unified Catalog commands](docs/commands/unified-catalog.md)
 - [Term bulk import guide](docs/commands/unified-catalog/term-bulk-import.md)
-- [Performance optimization guide](docs/PERFORMANCE_OPTIMIZATION_GUIDE.md)
+- [Performance optimization guide](docs/performance-optimization-guide.md)
 - [Release archive](releases/)
 
 ---

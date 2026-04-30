@@ -1,14 +1,14 @@
 # Purview CLI Integrated Documentation Portal
 
-This portal provides a structured, user-friendly entry point to all documentation for the Purview CLI tool. It is designed for both new and advanced users, and is referenced from the main [docs/README.md](../README.md) documentation hub.
+This portal provides a structured, user-friendly entry point to all documentation for the Purview CLI tool. It is designed for both new and advanced users, and is referenced from the main [docs/readme.md](../readme.md) documentation hub.
 
 ## Documentation Sections
 
 - **[CLI Reference](cli/README.md):** Complete command-line interface documentation with examples and usage patterns.
 - **[API Documentation](api/index.html):** Auto-generated API documentation for all modules and classes.
-- **[User Guides](guides/README.md):** Step-by-step guides for common tasks and workflows.
-- **[Complete Reference](reference/README.md):** Comprehensive reference documentation covering all features.
-- **[Examples](examples/README.md):** Code examples and sample implementations.
+- **[User Guides](guides/readme.md):** Step-by-step guides for common tasks and workflows.
+- **[Complete Reference](reference/readme.md):** Comprehensive reference documentation covering all features.
+- **[Examples](examples/readme.md):** Code examples and sample implementations.
 
 ## Quick Start
 
@@ -32,8 +32,8 @@ See the [CLI Reference](cli/README.md) for a full list of command groups and the
 For issues and questions:
 - Check the [CLI Reference](cli/README.md) for command usage
 - Review [API Documentation](api/index.html) for implementation details
-- Browse [Examples](examples/README.md) for sample code
+- Browse [Examples](examples/readme.md) for sample code
 
 ---
 
-*This portal is referenced from the main documentation hub ([docs/README.md](../README.md)). For a full index and navigation, start there.*
+*This portal is referenced from the main documentation hub ([docs/readme.md](../readme.md)). For a full index and navigation, start there.*

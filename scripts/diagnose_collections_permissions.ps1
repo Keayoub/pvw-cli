@@ -287,7 +287,7 @@ function Show-Recommendations {
         
         Write-Host ""
         Write-Host "Additional Help:" -ForegroundColor Blue
-        Write-Host "  • Full guide: doc/COLLECTIONS_PERMISSIONS.md"
+        Write-Host "  - Full guide: docs/collections-permissions.md"
         Write-Host "  • Enable debug: `$env:LOGLEVEL = 'DEBUG'; pvw collections create ..."
         Write-Host "  • Wait 5-10 minutes for Azure role propagation"
         Write-Host "  • Retry after: az logout && az login"

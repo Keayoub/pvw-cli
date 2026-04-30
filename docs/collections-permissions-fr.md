@@ -101,7 +101,7 @@ pvw collections create \
 
 ## Documentation Complète
 
-Voir le fichier [COLLECTIONS_PERMISSIONS.md](COLLECTIONS_PERMISSIONS.md) pour les détails complets avec:
+Voir le fichier [collections-permissions.md](collections-permissions.md) pour les détails complets avec:
 - Scripts PowerShell et Bash complets
 - Exemples détaillés pour chaque permission
 - Procédures de dépannage avancées
