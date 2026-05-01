@@ -1696,9 +1696,138 @@ Use Cases:
         - Migration: Transfer catalog from other systems
         - Mass Updates: Apply changes to many resources
     """
-        self.method = "GET"
+        self.method = "POST"
         self.endpoint = ENDPOINTS["entity"]["bulk_classification"]
-        self.params = {**get_api_version_params("datamap"), "guid": args["--guid"]}
+        self.params = get_api_version_params("datamap")
+        self.payload = get_json(args, "--payloadFile")
+
+    def entityAddClassification(self, args):
+        """Compatibility alias used by CLI bulk classification commands."""
+        return self.entityBulkClassification(args)
+
+    def entityBulkRemoveLabels(self, args):
+        """
+        Remove labels for multiple entities.
+
+        Purview does not expose a single bulk-remove-labels endpoint for GUIDs,
+        so this method executes the per-entity label removal endpoint in a loop.
+        """
+        payload = get_json(args, "--payloadFile")
+        if payload is None:
+            raise ValueError("Payload file is required for bulk label removal")
+
+        items = []
+        if isinstance(payload, dict) and isinstance(payload.get("entities"), list):
+            items = payload.get("entities", [])
+        elif isinstance(payload, list):
+            items = payload
+        else:
+            raise ValueError(
+                "Bulk remove labels payload must be a list or an object with 'entities' array"
+            )
+
+        succeeded = 0
+        failed = 0
+        results = []
+
+        for item in items:
+            guid = item.get("guid") if isinstance(item, dict) else None
+            labels = item.get("labels") if isinstance(item, dict) else None
+
+            if not guid or labels is None:
+                failed += 1
+                results.append(
+                    {
+                        "guid": guid,
+                        "status": "error",
+                        "message": "Each item requires 'guid' and 'labels'",
+                    }
+                )
+                continue
+
+            try:
+                self.entityRemoveLabels({"--guid": [str(guid)], "--payloadFile": labels})
+                succeeded += 1
+                results.append({"guid": str(guid), "status": "success"})
+            except Exception as exc:
+                failed += 1
+                results.append({"guid": str(guid), "status": "error", "message": str(exc)})
+
+        return {"succeeded": succeeded, "failed": failed, "results": results}
+
+    def entityBulkRemoveLabelsByUniqueAttribute(self, args):
+        """
+        Remove labels for multiple entities by unique attribute.
+
+        Purview does not expose a single bulk endpoint for this operation,
+        so this method loops over per-entity unique-attribute requests.
+        """
+        payload = get_json(args, "--payloadFile")
+
+        items = []
+        if isinstance(payload, dict) and isinstance(payload.get("entities"), list):
+            items = payload.get("entities", [])
+        elif isinstance(payload, list):
+            items = payload
+
+        # Backward-compatible single-item mode from CLI options.
+        if not items:
+            items = [
+                {
+                    "typeName": args.get("--typeName"),
+                    "qualifiedName": args.get("--qualifiedName"),
+                    "labels": payload,
+                }
+            ]
+
+        succeeded = 0
+        failed = 0
+        results = []
+
+        for item in items:
+            type_name = item.get("typeName")
+            qualified_name = item.get("qualifiedName")
+            labels = item.get("labels")
+
+            if not type_name or not qualified_name or labels is None:
+                failed += 1
+                results.append(
+                    {
+                        "qualifiedName": qualified_name,
+                        "status": "error",
+                        "message": "Each item requires 'typeName', 'qualifiedName', and 'labels'",
+                    }
+                )
+                continue
+
+            try:
+                self.entityDeleteLabelsByUniqueAttribute(
+                    {
+                        "--typeName": str(type_name),
+                        "--qualifiedName": str(qualified_name),
+                        "--payloadFile": labels,
+                    }
+                )
+                succeeded += 1
+                results.append(
+                    {
+                        "typeName": str(type_name),
+                        "qualifiedName": str(qualified_name),
+                        "status": "success",
+                    }
+                )
+            except Exception as exc:
+                failed += 1
+                results.append(
+                    {
+                        "typeName": str(type_name) if type_name else None,
+                        "qualifiedName": str(qualified_name) if qualified_name else None,
+                        "status": "error",
+                        "message": str(exc),
+                    }
+                )
+
+        return {"succeeded": succeeded, "failed": failed, "results": results}
 
     # === UNIQUE ATTRIBUTE CLASSIFICATION OPERATIONS ===
 

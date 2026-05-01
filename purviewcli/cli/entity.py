@@ -1695,7 +1695,7 @@ def bulk_add_classification(ctx, payload_file):
         from purviewcli.client._entity import Entity
 
         entity_client = Entity()
-        result = entity_client.entityAddClassification(args)
+        result = entity_client.entityBulkClassification(args)
 
         if result:
             console.print("[green][OK] Entity bulk-add-classification completed successfully[/green]")
@@ -2519,7 +2519,7 @@ def bulk_classify_csv(ctx, csv_file, batch_size):
                 payload_file = tmpf.name
             try:
                 args = {"--payloadFile": payload_file}
-                result = entity_client.entityAddClassification(args)
+                result = entity_client.entityBulkClassification(args)
                 if result and (not isinstance(result, dict) or result.get("status") != "error"):
                     success += len(batch)
                 else:
@@ -2789,7 +2789,25 @@ def bulk_update_csv(
     error_csv,
     debug,
 ):
-    """Bulk update entities from a CSV file (guid, attributes...)
+    """Bulk update entities from a CSV file (guid, typeName, and attributes...)
+
+    CSV Format Requirements:
+    
+    1. GUID-based updates (RECOMMENDED for attribute updates):
+       - REQUIRED columns: guid, typeName
+       - Optional columns: description, displayName, or any custom attributes
+       - Example:
+         typeName,guid,description
+         DataSet,550e8400-e29b-41d4-a716-446655440001,Updated Description 1
+         Process,550e8400-e29b-41d4-a716-446655440002,Updated Description 2
+    
+    2. Qualified-name based updates (if you have typeName + qualifiedName):
+       - REQUIRED columns: typeName, qualifiedName
+       - Optional columns: description, displayName, etc.
+       - Attributes will be mapped from column headers
+    
+    NOTE: GUID-based updates REQUIRE both 'guid' and 'typeName' to avoid per-item API calls.
+          Not providing typeName will result in "Type ENTITY with name null does not exist" error.
 
         \b
     Preset configurations:
@@ -2880,9 +2898,10 @@ def bulk_update_csv(
 
         # Determine mode:
         # - If CSV has both 'typeName' and 'qualifiedName' -> map rows to Purview entities and call bulk create-or-update
-        # - Else if CSV has 'guid' -> build guid-based payloads (preferred for partial attribute updates)
+        # - Else if CSV has 'guid' and 'typeName' -> build guid-based payloads (preferred for partial attribute updates)
         has_type_qn = ("typeName" in df.columns and "qualifiedName" in df.columns)
         has_guid = "guid" in df.columns
+        has_type_name = "typeName" in df.columns
         classification_columns = [
             col for col in ["classification", "classificationName"] if col in df.columns
         ]
@@ -2890,10 +2909,21 @@ def bulk_update_csv(
         if debug:
             console.print(f"[cyan][DEBUG] has_type_qn: {has_type_qn}[/cyan]")
             console.print(f"[cyan][DEBUG] has_guid: {has_guid}[/cyan]")
+            console.print(f"[cyan][DEBUG] has_type_name: {has_type_name}[/cyan]")
             if classification_columns:
                 console.print(
                     f"[cyan][DEBUG] Classification columns: {classification_columns}[/cyan]"
                 )
+        
+        # Validate that we have required columns
+        if has_guid and not has_type_name:
+            console.print("[red][X] ERROR: GUID-based updates REQUIRE 'typeName' column in CSV[/red]")
+            console.print("[yellow]    Your CSV has: guid, description[/yellow]")
+            console.print("[yellow]    Required CSV format:[/yellow]")
+            console.print("[cyan]    typeName,guid,description[/cyan]")
+            console.print("[cyan]    DataSet,550e8400-e29b-41d4-a716-446655440001,Updated Description[/cyan]")
+            console.print("[yellow]    This keeps bulk operations efficient (no per-item API calls)[/yellow]")
+            return
 
         for i in range(0, total, batch_size):
             batch = df.iloc[i : i + batch_size]
@@ -2975,7 +3005,17 @@ def bulk_update_csv(
                         errors.append("Row has empty guid")
                         continue
 
+                    # Build entity with guid + typeName (both required by Purview bulk API)
                     entity: dict[str, object] = {"guid": guid}
+                    
+                    # Get typeName from CSV (required)
+                    if "typeName" not in r or pd.isna(r.get("typeName")):
+                        failed += 1
+                        failed_rows.append(r)
+                        errors.append(f"Row missing typeName for GUID {guid}")
+                        continue
+                    
+                    entity["typeName"] = str(r.get("typeName")).strip()
                     attributes: dict[str, str] = {}
 
                     if has_attr_name_value:

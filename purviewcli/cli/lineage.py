@@ -292,7 +292,7 @@ def create_bulk(ctx, json_file):
         from purviewcli.client._lineage import Lineage
         lineage_client = Lineage()
         args = {'--payloadFile': json_file}
-        result = lineage_client.lineageBulkCreate(args)
+        result = lineage_client.lineageCreateBulk(args)
         console.print("[green][OK] Bulk lineage creation completed successfully[/green]")
         console.print(json.dumps(result, indent=2))
     except Exception as e:

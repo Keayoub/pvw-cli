@@ -908,17 +908,35 @@ Use Cases:
         - Automation: Programmatically populate catalog
     """
         self.method = "POST"
-        self.endpoint = ENDPOINTS["lineage"]["create_lineage"]
         self.params = get_api_version_params("datamap")
-        
+
         # Process input file (CSV or JSON)
         input_file = args.get("--inputFile")
         if input_file:
             lineage_data = self._process_lineage_file(input_file, args)
         else:
             lineage_data = get_json(args, "--payloadFile")
-        
-        self.payload = lineage_data
+
+        # Prefer official bulk endpoints whenever payload is bulk-shaped.
+        if isinstance(lineage_data, dict) and "relationships" in lineage_data and "entities" not in lineage_data:
+            self.endpoint = ENDPOINTS["relationship"]["bulk_create_relationships"]
+            self.payload = lineage_data.get("relationships", [])
+        elif isinstance(lineage_data, dict) and (
+            "entities" in lineage_data or "referredEntities" in lineage_data
+        ):
+            self.endpoint = ENDPOINTS["entity"]["bulk_create_or_update"]
+            self.payload = lineage_data
+        elif isinstance(lineage_data, list):
+            self.endpoint = ENDPOINTS["relationship"]["bulk_create_relationships"]
+            self.payload = lineage_data
+        else:
+            # Fallback for single lineage payloads.
+            self.endpoint = ENDPOINTS["lineage"]["create_lineage"]
+            self.payload = lineage_data
+
+    def lineageBulkCreate(self, args):
+        """Compatibility alias used by CLI for bulk lineage creation."""
+        return self.lineageCreateBulk(args)
 
     def _process_lineage_file(self, input_file, args):
         """Process lineage input file (CSV or JSON) and convert to API format"""
