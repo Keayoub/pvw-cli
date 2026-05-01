@@ -30,7 +30,14 @@ validation:
 nav:
   - Home: readme.md
   - Getting Started: getting-started.md
+  - Common Workflows: common-workflows.md
   - Entity Bulk CSV Guide: entity-bulk-csv-guide.md
+  - Bulk CSV Troubleshooting: bulk-csv-troubleshooting.md
+  - Command Tasks:
+      - Create Tasks: commands/task-create.md
+      - Update Tasks: commands/task-update.md
+      - Delete Tasks: commands/task-delete.md
+      - Import Tasks: commands/task-import.md
   - Unified Catalog: unified-catalog.md
   - Full Documentation Catalog: documentation-catalog.md
   - Full Samples Catalog: samples-catalog.md
