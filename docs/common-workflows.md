@@ -5,6 +5,7 @@ Use this page as a practical entry point instead of scanning the full catalogs.
 ## Start Here
 
 - New to pvw-cli: [Getting Started](getting-started.md)
+- Not sure which command family to use: [Which Command Should I Use?](which-command-should-i-use.md)
 - Bulk CSV create and update with performance presets: [Entity Bulk CSV Guide](entity-bulk-csv-guide.md)
 - Troubleshooting throttling and CSV errors: [Bulk CSV Troubleshooting](bulk-csv-troubleshooting.md)
 - Full command index: [Full Documentation Catalog](documentation-catalog.md)

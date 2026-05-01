@@ -31,6 +31,7 @@ nav:
   - Home: readme.md
   - Getting Started: getting-started.md
   - Common Workflows: common-workflows.md
+  - Which Command Should I Use?: which-command-should-i-use.md
   - Entity Bulk CSV Guide: entity-bulk-csv-guide.md
   - Bulk CSV Troubleshooting: bulk-csv-troubleshooting.md
   - Command Tasks:
