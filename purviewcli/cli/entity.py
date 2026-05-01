@@ -2847,13 +2847,68 @@ def bulk_update_csv(
             return
 
         df = pd.read_csv(csv_file)
+
+        # Normalize CSV headers to avoid failures from BOM/quotes/spaces/case mismatches.
+        df.columns = [
+            str(c).replace("\ufeff", "").strip().strip('"').strip("'") for c in df.columns
+        ]
+
+        lower_to_actual = {str(c).lower(): c for c in df.columns}
+        rename_map = {}
+
+        # Common GUID aliases.
+        if "guid" not in df.columns:
+            for alias in ["id", "entityid"]:
+                if alias in lower_to_actual:
+                    rename_map[lower_to_actual[alias]] = "guid"
+                    break
+
+        # Common type aliases from search/export results.
+        if "typename" not in lower_to_actual and "typeName" not in df.columns:
+            for alias in [
+                "entitytype",
+                "entityfulltypename",
+                "entityfulletypename",
+                "entityfulletype",
+            ]:
+                if alias in lower_to_actual:
+                    rename_map[lower_to_actual[alias]] = "typeName"
+                    break
+
+        # Normalize description/displayName aliases while preserving canonical output fields.
+        if "description" not in lower_to_actual:
+            for alias in ["Description", "desc"]:
+                if alias in df.columns:
+                    rename_map[alias] = "description"
+                    break
+        if "displayname" not in lower_to_actual:
+            for alias in ["DisplayName", "display_text", "displayText"]:
+                if alias in df.columns:
+                    rename_map[alias] = "displayName"
+                    break
+
+        if rename_map:
+            df = df.rename(columns=rename_map)
+
+        # Normalize typeName values (trim and strip namespace prefixes like MICROSOFT.mssql_table).
+        if "typeName" in df.columns:
+            def _normalize_type_name(value):
+                if pd.isna(value):
+                    return value
+                normalized = str(value).strip().strip('"').strip("'")
+                if "." in normalized:
+                    normalized = normalized.split(".")[-1]
+                return normalized
+
+            df["typeName"] = df["typeName"].apply(_normalize_type_name)
+
         if df.empty:
             console.print("[yellow]No rows found in CSV. Exiting.[/yellow]")
             return
         
         if debug:
             # Use __builtins__['list'] to avoid conflict with entity list command below
-            console.print(f"[cyan][DEBUG] CSV columns: {__builtins__['list'](df.columns)}[/cyan]")
+            console.print(f"[cyan][DEBUG] CSV columns (normalized): {__builtins__['list'](df.columns)}[/cyan]")
             console.print(f"[cyan][DEBUG] Total rows: {len(df)}[/cyan]")
             console.print(f"[cyan][DEBUG] First row:\n{df.iloc[0].to_dict()}[/cyan]")
 
@@ -2922,6 +2977,7 @@ def bulk_update_csv(
             console.print("[yellow]    Required CSV format:[/yellow]")
             console.print("[cyan]    typeName,guid,description[/cyan]")
             console.print("[cyan]    DataSet,550e8400-e29b-41d4-a716-446655440001,Updated Description[/cyan]")
+            console.print("[yellow]    Column order does NOT matter, but column names must match[/yellow]")
             console.print("[yellow]    This keeps bulk operations efficient (no per-item API calls)[/yellow]")
             return
 
@@ -3014,8 +3070,15 @@ def bulk_update_csv(
                         failed_rows.append(r)
                         errors.append(f"Row missing typeName for GUID {guid}")
                         continue
-                    
-                    entity["typeName"] = str(r.get("typeName")).strip()
+
+                    type_name = str(r.get("typeName")).strip()
+                    if not type_name:
+                        failed += 1
+                        failed_rows.append(r)
+                        errors.append(f"Row has empty typeName for GUID {guid}")
+                        continue
+
+                    entity["typeName"] = type_name
                     attributes: dict[str, str] = {}
 
                     if has_attr_name_value:
