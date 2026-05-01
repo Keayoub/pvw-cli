@@ -2546,27 +2546,62 @@ def bulk_classify_csv(ctx, csv_file, batch_size):
 @entity.command()
 @click.option("--csv-file", required=True, type=click.Path(exists=True), help="CSV file with entity attributes (typeName, qualifiedName, ...)")
 @click.option("--batch-size", default=100, help="Batch size for API calls")
+@click.option("--throttle-ms", default=0, type=int, help="Delay between batches in milliseconds")
+@click.option("--max-retries", default=3, type=int, help="Max retry attempts per batch on API failure")
+@click.option("--retry-backoff-ms", default=1000, type=int, help="Base retry backoff delay in milliseconds")
+@click.option(
+    "--retry-mode",
+    type=click.Choice(["fixed", "exponential"], case_sensitive=False),
+    default="exponential",
+    help="Retry backoff mode: fixed or exponential",
+)
 @click.option("--dry-run", is_flag=True, help="Preview entities to be created without making changes")
 @click.option("--error-csv", type=click.Path(), help="CSV file to write failed rows (optional)")
 @click.option("--debug", is_flag=True, help="Enable debug mode for detailed logging")
 @click.pass_context
-def bulk_create_csv(ctx, csv_file, batch_size, dry_run, error_csv, debug):
+def bulk_create_csv(
+    ctx,
+    csv_file,
+    batch_size,
+    throttle_ms,
+    max_retries,
+    retry_backoff_ms,
+    retry_mode,
+    dry_run,
+    error_csv,
+    debug,
+):
     """Bulk create entities from a CSV file with support for custom attributes and classifications.
     
     Supports:
     - Dot notation for nested attributes (businessMetadata.fieldName, customAttributes.fieldName)
     - Optional classification or classificationName column (multi-value with ; or , separator)
     - Simple field names: Added to root attributes
-    
+
     Example CSV with classifications:
     typeName,qualifiedName,displayName,classification,businessMetadata.department
     DataSet,my-data-asset,My Asset,PII;CONFIDENTIAL,Sales
     azure_datalake_gen2_path,//myaccount/container/path,My Path,INTERNAL,Engineering
+
+        \b
+    Preset configurations:
+            Fast:
+                --batch-size 100 --throttle-ms 50 --max-retries 3 --retry-backoff-ms 1000 --retry-mode fixed
+            Balanced:
+                --batch-size 50 --throttle-ms 200 --max-retries 4 --retry-backoff-ms 1500 --retry-mode exponential
+            Safe:
+                --batch-size 25 --throttle-ms 500 --max-retries 5 --retry-backoff-ms 2000 --retry-mode exponential
+
+        \b
+    Quick tuning:
+            Increase throughput: increase --batch-size or lower --throttle-ms
+            Reduce throttling: lower --batch-size or increase --throttle-ms
     """
     import pandas as pd
     import tempfile
     import os
     import json
+    import time
     from purviewcli.client._entity import Entity, map_flat_entity_to_purview_entity
     
     try:
@@ -2575,6 +2610,14 @@ def bulk_create_csv(ctx, csv_file, batch_size, dry_run, error_csv, debug):
             console.print(f"[dim]CSV File: {csv_file}[/dim]")
             console.print("[green][OK] Mock entity bulk-create-csv completed successfully[/green]")
             return
+
+        retry_mode = (retry_mode or "exponential").lower()
+
+        if debug:
+            console.print(f"[cyan][DEBUG] Throttle (ms): {throttle_ms}[/cyan]")
+            console.print(f"[cyan][DEBUG] Max Retries: {max_retries}[/cyan]")
+            console.print(f"[cyan][DEBUG] Retry Backoff (ms): {retry_backoff_ms}[/cyan]")
+            console.print(f"[cyan][DEBUG] Retry Mode: {retry_mode}[/cyan]")
 
         df = pd.read_csv(csv_file)
         
@@ -2608,6 +2651,37 @@ def bulk_create_csv(ctx, csv_file, batch_size, dry_run, error_csv, debug):
         success, failed = 0, 0
         errors = []
         failed_rows = []
+
+        def _call_bulk_with_retry(args, batch_label):
+            last_error = None
+            total_attempts = max_retries + 1
+            for attempt in range(1, total_attempts + 1):
+                try:
+                    return entity_client.entityCreateBulk(args)
+                except Exception as exc:
+                    last_error = exc
+                    if attempt >= total_attempts:
+                        break
+
+                    if retry_mode == "fixed":
+                        delay_ms = retry_backoff_ms
+                    else:
+                        delay_ms = retry_backoff_ms * (2 ** (attempt - 1))
+
+                    if debug:
+                        console.print(
+                            f"[yellow][DEBUG] {batch_label} attempt {attempt}/{total_attempts} failed: {str(exc)}[/yellow]"
+                        )
+                        console.print(
+                            f"[yellow][DEBUG] Retrying in {delay_ms} ms[/yellow]"
+                        )
+
+                    if delay_ms > 0:
+                        time.sleep(delay_ms / 1000.0)
+
+            if last_error is not None:
+                raise last_error
+            raise RuntimeError(f"{batch_label} failed without exception details")
         
         for i in range(0, total, batch_size):
             batch = df.iloc[i:i+batch_size]
@@ -2638,7 +2712,7 @@ def bulk_create_csv(ctx, csv_file, batch_size, dry_run, error_csv, debug):
             
             try:
                 args = {"--payloadFile": payload_file}
-                result = entity_client.entityCreateBulk(args)
+                result = _call_bulk_with_retry(args, f"Batch {i//batch_size+1}")
                 
                 if debug:
                     console.print(f"[cyan][DEBUG] API Response (batch {i//batch_size+1}):[/cyan]")
@@ -2664,6 +2738,13 @@ def bulk_create_csv(ctx, csv_file, batch_size, dry_run, error_csv, debug):
                     console.print(traceback.format_exc())
             finally:
                 os.remove(payload_file)
+
+            if throttle_ms > 0 and (i + batch_size) < total:
+                if debug:
+                    console.print(
+                        f"[cyan][DEBUG] Throttling {throttle_ms} ms before next batch[/cyan]"
+                    )
+                time.sleep(throttle_ms / 1000.0)
         
         console.print(f"\n[green]SUCCESS: Bulk create completed. Success: {success}, Failed: {failed}[/green]")
         if errors:
@@ -2683,21 +2764,61 @@ def bulk_create_csv(ctx, csv_file, batch_size, dry_run, error_csv, debug):
 @entity.command()
 @click.option("--csv-file", required=True, type=click.Path(exists=True), help="CSV file with GUID and attributes to update")
 @click.option("--batch-size", default=100, help="Batch size for API calls")
+@click.option("--throttle-ms", default=0, type=int, help="Delay between batches in milliseconds")
+@click.option("--max-retries", default=3, type=int, help="Max retry attempts per batch on API failure")
+@click.option("--retry-backoff-ms", default=1000, type=int, help="Base retry backoff delay in milliseconds")
+@click.option(
+    "--retry-mode",
+    type=click.Choice(["fixed", "exponential"], case_sensitive=False),
+    default="exponential",
+    help="Retry backoff mode: fixed or exponential",
+)
 @click.option("--dry-run", is_flag=True, help="Preview entities to be updated without making changes")
 @click.option("--error-csv", type=click.Path(), help="CSV file to write failed rows (optional)")
 @click.option("--debug", is_flag=True, help="Enable debug mode for detailed logging")
 @click.pass_context
-def bulk_update_csv(ctx, csv_file, batch_size, dry_run, error_csv, debug):
-    """Bulk update entities from a CSV file (guid, attributes...)"""
+def bulk_update_csv(
+    ctx,
+    csv_file,
+    batch_size,
+    throttle_ms,
+    max_retries,
+    retry_backoff_ms,
+    retry_mode,
+    dry_run,
+    error_csv,
+    debug,
+):
+    """Bulk update entities from a CSV file (guid, attributes...)
+
+        \b
+    Preset configurations:
+            Fast:
+                --batch-size 100 --throttle-ms 50 --max-retries 3 --retry-backoff-ms 1000 --retry-mode fixed
+            Balanced:
+                --batch-size 50 --throttle-ms 200 --max-retries 4 --retry-backoff-ms 1500 --retry-mode exponential
+            Safe:
+                --batch-size 25 --throttle-ms 500 --max-retries 5 --retry-backoff-ms 2000 --retry-mode exponential
+
+        \b
+    Quick tuning:
+            Increase throughput: increase --batch-size or lower --throttle-ms
+            Reduce throttling: lower --batch-size or increase --throttle-ms
+    """
     import pandas as pd
     import tempfile
     import os
     import json
+    import time
     from purviewcli.client._entity import Entity
     try:
         if debug:
             console.print(f"[cyan][DEBUG] CSV File: {csv_file}[/cyan]")
             console.print(f"[cyan][DEBUG] Batch Size: {batch_size}[/cyan]")
+            console.print(f"[cyan][DEBUG] Throttle (ms): {throttle_ms}[/cyan]")
+            console.print(f"[cyan][DEBUG] Max Retries: {max_retries}[/cyan]")
+            console.print(f"[cyan][DEBUG] Retry Backoff (ms): {retry_backoff_ms}[/cyan]")
+            console.print(f"[cyan][DEBUG] Retry Mode: {retry_mode}[/cyan]")
             console.print(f"[cyan][DEBUG] Dry Run: {dry_run}[/cyan]")
             console.print(f"[cyan][DEBUG] Error CSV: {error_csv}[/cyan]")
         
@@ -2723,6 +2844,39 @@ def bulk_update_csv(ctx, csv_file, batch_size, dry_run, error_csv, debug):
         success, failed = 0, 0
         errors = []
         failed_rows = []
+
+        retry_mode = (retry_mode or "exponential").lower()
+
+        def _call_bulk_with_retry(args, batch_label):
+            last_error = None
+            total_attempts = max_retries + 1
+            for attempt in range(1, total_attempts + 1):
+                try:
+                    return entity_client.entityCreateBulk(args)
+                except Exception as exc:
+                    last_error = exc
+                    if attempt >= total_attempts:
+                        break
+
+                    if retry_mode == "fixed":
+                        delay_ms = retry_backoff_ms
+                    else:
+                        delay_ms = retry_backoff_ms * (2 ** (attempt - 1))
+
+                    if debug:
+                        console.print(
+                            f"[yellow][DEBUG] {batch_label} attempt {attempt}/{total_attempts} failed: {str(exc)}[/yellow]"
+                        )
+                        console.print(
+                            f"[yellow][DEBUG] Retrying in {delay_ms} ms[/yellow]"
+                        )
+
+                    if delay_ms > 0:
+                        time.sleep(delay_ms / 1000.0)
+
+            if last_error is not None:
+                raise last_error
+            raise RuntimeError(f"{batch_label} failed without exception details")
 
         # Determine mode:
         # - If CSV has both 'typeName' and 'qualifiedName' -> map rows to Purview entities and call bulk create-or-update
@@ -2769,7 +2923,7 @@ def bulk_update_csv(ctx, csv_file, batch_size, dry_run, error_csv, debug):
 
                 try:
                     args = {"--payloadFile": payload_file}
-                    result = entity_client.entityCreateBulk(args)
+                    result = _call_bulk_with_retry(args, f"Batch {i//batch_size+1}")
                     if debug:
                         console.print(f"[cyan][DEBUG] API Result: {result}[/cyan]")
                     if result and (not isinstance(result, dict) or result.get("status") != "error"):
@@ -2790,222 +2944,151 @@ def bulk_update_csv(ctx, csv_file, batch_size, dry_run, error_csv, debug):
                     except Exception:
                         pass
 
+                if throttle_ms > 0 and (i + batch_size) < total:
+                    if debug:
+                        console.print(
+                            f"[cyan][DEBUG] Throttling {throttle_ms} ms before next batch[/cyan]"
+                        )
+                    time.sleep(throttle_ms / 1000.0)
+
             elif has_guid:
-                # Build guid-based updates. If the CSV contains only guid + attr columns, we'll attempt to perform
-                # partial attribute updates by calling entityPartialUpdateAttribute where possible.
-                # If a row contains multiple attributes, we will call entityCreateBulk with a payload containing
-                # the guid and attributes (server supports bulk create-or-update by guid in some endpoints).
-
-                # Normalize rows into dicts
+                # Build guid-based updates in a bulk payload to avoid per-attribute API calls.
                 rows = [row.to_dict() for _, row in batch.iterrows()]
+                entities = []
 
-                # Attempt to detect single-attribute update pattern: columns [guid, attrName, attrValue]
-                if set(["guid", "attrName", "attrValue"]).issubset(set(batch.columns)):
-                    # perform per-guid partial updates in batch
-                    for r in rows:
-                        guid = str(r.get("guid"))
+                has_attr_name_value = set(["guid", "attrName", "attrValue"]).issubset(
+                    set(batch.columns)
+                )
+
+                for r in rows:
+                    guid_value = r.get("guid")
+                    if pd.isna(guid_value):
+                        failed += 1
+                        failed_rows.append(r)
+                        errors.append("Row missing required guid")
+                        continue
+
+                    guid = str(guid_value).strip()
+                    if not guid:
+                        failed += 1
+                        failed_rows.append(r)
+                        errors.append("Row has empty guid")
+                        continue
+
+                    entity: dict[str, object] = {"guid": guid}
+                    attributes: dict[str, str] = {}
+
+                    if has_attr_name_value:
                         attr_name = r.get("attrName")
                         attr_value = r.get("attrValue")
-                        if pd.isna(guid) or pd.isna(attr_name):
-                            failed += 1
-                            failed_rows.append(r)
-                            continue
-                        classification_value = None
-                        for col in classification_columns:
-                            if col in r and pd.notnull(r.get(col)):
-                                classification_value = r.get(col)
-                                break
-
-                        if classification_value is not None:
-                            if isinstance(classification_value, str):
-                                raw_items = [
-                                    v.strip()
-                                    for v in classification_value.replace(",", ";").split(";")
-                                ]
-                                classification_names = [v for v in raw_items if v]
-                            else:
-                                classification_names = [str(classification_value).strip()]
-
-                            if classification_names:
-                                if dry_run:
-                                    console.print(
-                                        f"[blue]DRY RUN: Would add classifications to GUID {guid}: {', '.join(classification_names)}[/blue]"
-                                    )
-                                else:
-                                    try:
-                                        payload = [{"typeName": name} for name in classification_names]
-                                        entity_client.entityCreateClassifications(
-                                            {"--guid": [guid], "--payloadFile": payload}
-                                        )
-                                    except Exception as e:
-                                        failed += 1
-                                        errors.append(
-                                            f"GUID {guid} classifications: {str(e)}"
-                                        )
-                                        failed_rows.append(r)
-                                        continue
-
-                        if dry_run:
-                            console.print(
-                                f"[blue]DRY RUN: Would update GUID {guid} set {attr_name}={attr_value}[/blue]"
-                            )
-                            success += 1
-                            continue
-                        try:
-                            args = {"--guid": [guid], "--attrName": attr_name, "--attrValue": attr_value}
-                            result = entity_client.entityPartialUpdateAttribute(args)
-                            if result and (not isinstance(result, dict) or result.get("status") != "error"):
-                                success += 1
-                            else:
-                                failed += 1
-                                errors.append(f"GUID {guid}: {result}")
-                                failed_rows.append(r)
-                        except Exception as e:
-                            failed += 1
-                            errors.append(f"GUID {guid}: {str(e)}")
-                            failed_rows.append(r)
-
-                else:
-                    # Fallback: Use partial attribute updates for each entity
-                    # This approach updates attributes without requiring qualifiedName
-                    for r in rows:
-                        guid = r.get("guid")
-                        if pd.isna(guid):
-                            failed_rows.append(r)
-                            failed += 1
-                            continue
-                        
-                        guid = str(guid)
-
-                        # Optional: apply classifications first (skip row on error)
-                        classification_value = None
-                        for col in classification_columns:
-                            if col in r and pd.notnull(r.get(col)):
-                                classification_value = r.get(col)
-                                break
-
-                        if classification_value is not None:
-                            if isinstance(classification_value, str):
-                                raw_items = [
-                                    v.strip()
-                                    for v in classification_value.replace(",", ";").split(";")
-                                ]
-                                classification_names = [v for v in raw_items if v]
-                            else:
-                                classification_names = [str(classification_value).strip()]
-
-                            if classification_names:
-                                if dry_run:
-                                    console.print(
-                                        f"[blue]DRY RUN: Would add classifications to GUID {guid}: {', '.join(classification_names)}[/blue]"
-                                    )
-                                else:
-                                    try:
-                                        payload = [{"typeName": name} for name in classification_names]
-                                        entity_client.entityCreateClassifications(
-                                            {"--guid": [guid], "--payloadFile": payload}
-                                        )
-                                    except Exception as e:
-                                        failed += 1
-                                        errors.append(
-                                            f"GUID {guid} classifications: {str(e)}"
-                                        )
-                                        failed_rows.append(r)
-                                        continue
-                        
-                        # Map CSV column names to Purview attribute names
+                        if pd.notna(attr_name) and str(attr_name).strip() and pd.notna(attr_value):
+                            attributes[str(attr_name).strip()] = str(attr_value)
+                    else:
                         column_mapping = {
                             "DisplayName": "displayName",
                             "Description": "description",
                         }
 
-                        skip_columns = set(column_mapping.keys()) | {"guid"} | set(
+                        skip_columns = {"guid", "attrName", "attrValue"} | set(
                             classification_columns
                         )
-                        
-                        # Update each attribute individually
+
                         for csv_col, purview_attr in column_mapping.items():
                             if csv_col in r and pd.notnull(r.get(csv_col)):
-                                attr_value = r.get(csv_col)
-                                
-                                if dry_run:
-                                    console.print(f"[blue]DRY RUN: Would update GUID {guid} set {purview_attr}={attr_value}[/blue]")
-                                    continue
-                                
-                                try:
-                                    args = {"--guid": [guid], "--attrName": purview_attr, "--attrValue": str(attr_value)}
-                                    result = entity_client.entityPartialUpdateAttribute(args)
-                                    if result and (not isinstance(result, dict) or result.get("status") != "error"):
-                                        success += 1
-                                    else:
-                                        failed += 1
-                                        errors.append(f"GUID {guid} attr {purview_attr}: {result}")
-                                        if r not in failed_rows:
-                                            failed_rows.append(r)
-                                except Exception as e:
-                                    failed += 1
-                                    errors.append(f"GUID {guid} attr {purview_attr}: {str(e)}")
-                                    if r not in failed_rows:
-                                        failed_rows.append(r)
-                        
-                        # Handle any other custom attributes
+                                attributes[purview_attr] = str(r.get(csv_col))
+
                         for k, v in r.items():
-                            if pd.notnull(v) and k not in skip_columns:
-                                if dry_run:
-                                    console.print(f"[blue]DRY RUN: Would update GUID {guid} set {k}={v}[/blue]")
-                                    continue
-                                
-                                try:
-                                    args = {"--guid": [guid], "--attrName": k, "--attrValue": str(v)}
-                                    result = entity_client.entityPartialUpdateAttribute(args)
-                                    if result and (not isinstance(result, dict) or result.get("status") != "error"):
-                                        success += 1
-                                    else:
-                                        failed += 1
-                                        errors.append(f"GUID {guid} attr {k}: {result}")
-                                        if r not in failed_rows:
-                                            failed_rows.append(r)
-                                except Exception as e:
-                                    failed += 1
-                                    errors.append(f"GUID {guid} attr {k}: {str(e)}")
-                                    if r not in failed_rows:
-                                        failed_rows.append(r)
-                    
-                    continue  # Skip the bulk payload creation below
+                            if k in skip_columns or k in column_mapping:
+                                continue
+                            if pd.notnull(v):
+                                attributes[str(k)] = str(v)
 
-                    if not entities:
-                        continue
+                    if attributes:
+                        entity["attributes"] = attributes
 
-                    payload = {"entities": entities}
-                    if dry_run:
-                        console.print(f"[blue]DRY RUN: Would bulk-update (by guid) batch {i//batch_size+1} with {len(entities)} entities[/blue]")
-                        success += len(entities)
-                        continue
+                    classification_value = None
+                    for col in classification_columns:
+                        if col in r and pd.notnull(r.get(col)):
+                            classification_value = r.get(col)
+                            break
 
-                    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False, encoding="utf-8") as tmpf:
-                        json.dump(payload, tmpf, indent=2)
-                        tmpf.flush()
-                        payload_file = tmpf.name
-
-                    try:
-                        args = {"--payloadFile": payload_file}
-                        # Use the create-or-update bulk endpoint - server will use guid when present
-                        result = entity_client.entityCreateBulk(args)
-                        if result and (not isinstance(result, dict) or result.get("status") != "error"):
-                            success += len(entities)
+                    if classification_value is not None:
+                        if isinstance(classification_value, str):
+                            raw_items = [
+                                v.strip() for v in classification_value.replace(",", ";").split(";")
+                            ]
+                            classification_names = [v for v in raw_items if v]
                         else:
-                            failed += len(entities)
-                            errors.append(f"Batch {i//batch_size+1}: {result}")
-                            failed_rows.extend(batch.to_dict(orient="records"))
-                    except Exception as e:
+                            classification_names = [str(classification_value).strip()]
+
+                        if classification_names:
+                            entity["classifications"] = [
+                                {"typeName": name} for name in classification_names
+                            ]
+
+                    if "attributes" not in entity and "classifications" not in entity:
+                        failed += 1
+                        failed_rows.append(r)
+                        errors.append(f"GUID {guid}: no updatable fields found")
+                        continue
+
+                    entities.append(entity)
+
+                if not entities:
+                    continue
+
+                payload = {"entities": entities}
+
+                if dry_run:
+                    console.print(
+                        f"[blue]DRY RUN: Would bulk-update (by guid) batch {i//batch_size+1} with {len(entities)} entities[/blue]"
+                    )
+                    success += len(entities)
+                    continue
+
+                with tempfile.NamedTemporaryFile(
+                    mode="w", suffix=".json", delete=False, encoding="utf-8"
+                ) as tmpf:
+                    json.dump(payload, tmpf, indent=2)
+                    tmpf.flush()
+                    payload_file = tmpf.name
+
+                if debug:
+                    console.print(f"[cyan][DEBUG] GUID bulk payload file: {payload_file}[/cyan]")
+                    console.print(
+                        f"[cyan][DEBUG] GUID bulk payload:\n{json.dumps(payload, indent=2, default=str)}[/cyan]"
+                    )
+
+                try:
+                    args = {"--payloadFile": payload_file}
+                    result = _call_bulk_with_retry(args, f"Batch {i//batch_size+1}")
+                    if debug:
+                        console.print(f"[cyan][DEBUG] API Result: {result}[/cyan]")
+
+                    if result and (
+                        not isinstance(result, dict) or result.get("status") != "error"
+                    ):
+                        success += len(entities)
+                    else:
                         failed += len(entities)
-                        errors.append(f"Batch {i//batch_size+1}: {str(e)}")
+                        errors.append(f"Batch {i//batch_size+1}: {result}")
                         failed_rows.extend(batch.to_dict(orient="records"))
-                    finally:
-                        try:
-                            os.remove(payload_file)
-                        except Exception:
-                            pass
+                except Exception as e:
+                    failed += len(entities)
+                    errors.append(f"Batch {i//batch_size+1}: {str(e)}")
+                    failed_rows.extend(batch.to_dict(orient="records"))
+                finally:
+                    try:
+                        os.remove(payload_file)
+                    except Exception:
+                        pass
+
+                if throttle_ms > 0 and (i + batch_size) < total:
+                    if debug:
+                        console.print(
+                            f"[cyan][DEBUG] Throttling {throttle_ms} ms before next batch[/cyan]"
+                        )
+                    time.sleep(throttle_ms / 1000.0)
 
             else:
                 console.print(f"[red][X] CSV must contain either (typeName and qualifiedName) or guid column[/red]")

@@ -30,6 +30,7 @@ validation:
 nav:
   - Home: readme.md
   - Getting Started: getting-started.md
+  - Entity Bulk CSV Guide: entity-bulk-csv-guide.md
   - Unified Catalog: unified-catalog.md
   - Full Documentation Catalog: documentation-catalog.md
   - Full Samples Catalog: samples-catalog.md

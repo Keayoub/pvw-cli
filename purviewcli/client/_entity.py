@@ -669,12 +669,20 @@ Use Cases:
     # === BULK OPERATIONS ===
 
     def _validate_entities_have_qualified_name(self, args):
-        """Ensure every entity in the payload has a non-empty attributes.qualifiedName."""
+        """Ensure every entity has either attributes.qualifiedName or guid."""
         payload = get_json(args, "--payloadFile")
         entities = payload.get("entities", [])
-        missing = [e for e in entities if not e.get("attributes", {}).get("qualifiedName")]
+        missing = [
+            e
+            for e in entities
+            if not e.get("attributes", {}).get("qualifiedName") and not e.get("guid")
+        ]
         if missing:
-            raise ValueError(f"The following entities are missing 'qualifiedName': {missing}")
+            raise ValueError(
+                "Each entity in bulk payload must include either "
+                "'attributes.qualifiedName' or 'guid'. "
+                f"Invalid entities: {missing}"
+            )
 
     @decorator
     def entityBulkCreateOrUpdate(self, args):

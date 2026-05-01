@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "builtin",
+      "description": "File system operations for Purview CLI project"
+    },
+    "mslearn": {
+      "command": "node",
+      "args": ["--experimental-require-module", "https://learn.microsoft.com/api/mcp"],
+      "url": "https://learn.microsoft.com/api/mcp",
+      "description": "Microsoft Learn documentation for Azure and Purview"
+    },
+    "markitdown": {
+      "command": "node",
+      "args": ["markitdown"],
+      "description": "Convert documents to markdown for processing"
+    }
+  }
+}
