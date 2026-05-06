@@ -10,14 +10,14 @@ This page covers common issues for:
 1. Confirm CLI version and help options:
 
 ```bash
-python -m purviewcli entity bulk-create-csv --help
-python -m purviewcli entity bulk-update-csv --help
+pvw entity bulk-create-csv --help
+pvw entity bulk-update-csv --help
 ```
 
 2. Run with an error output file:
 
 ```bash
-python -m purviewcli entity bulk-update-csv \
+pvw entity bulk-update-csv \
   --csv-file .\\update.csv \
   --error-csv .\\failed_rows.csv
 ```
@@ -92,7 +92,7 @@ Fix:
 Or run directly from source:
 
 ```bash
-python -m purviewcli entity bulk-update-csv --help
+pvw entity bulk-update-csv --help
 ```
 
 ## Recommended Defaults

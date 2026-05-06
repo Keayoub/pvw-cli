@@ -82,12 +82,12 @@ def _unsupported_result(feature):
             "Use the supported domain-scoped quality commands instead."
         ),
         "supported": [
-            "python -m purviewcli uc quality domains --output json",
-            "python -m purviewcli uc quality domain-report --domain-id <DOMAIN_ID> --output json",
-            "python -m purviewcli uc quality data-sources --domain-id <DOMAIN_ID> --output json",
-            "python -m purviewcli uc quality schedules --domain-id <DOMAIN_ID> --output json",
-            "python -m purviewcli uc quality alerts --domain-id <DOMAIN_ID> --output json",
-            "python -m purviewcli uc quality assets --domain-id <DOMAIN_ID> --output json",
+            "pvw uc quality domains --output json",
+            "pvw uc quality domain-report --domain-id <DOMAIN_ID> --output json",
+            "pvw uc quality data-sources --domain-id <DOMAIN_ID> --output json",
+            "pvw uc quality schedules --domain-id <DOMAIN_ID> --output json",
+            "pvw uc quality alerts --domain-id <DOMAIN_ID> --output json",
+            "pvw uc quality assets --domain-id <DOMAIN_ID> --output json",
         ],
     }
 
@@ -269,8 +269,8 @@ def rule_list(ctx, output, skip, top, filter_expr, domain_id):
                 "/datagovernance/quality/business-domains/{domainId}/report."
             ),
             "next": [
-                "python -m purviewcli uc domain list --output json",
-                "python -m purviewcli uc quality domain-report --domain-id <DOMAIN_ID> --output json",
+                "pvw uc domain list --output json",
+                "pvw uc quality domain-report --domain-id <DOMAIN_ID> --output json",
             ],
         }
         if domain_id:

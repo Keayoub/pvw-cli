@@ -6,13 +6,13 @@ This page gives practical guidance for running bulk create and bulk update at go
 
 ```bash
 # Bulk create from CSV
-python -m purviewcli entity bulk-create-csv --csv-file .\\create.csv
+pvw entity bulk-create-csv --csv-file .\\create.csv
 
 # Bulk update from CSV
-python -m purviewcli entity bulk-update-csv --csv-file .\\update.csv
+pvw entity bulk-update-csv --csv-file .\\update.csv
 ```
 
-Use `python -m purviewcli` to ensure you are running the latest source in this repo.
+Use `pvw` to ensure you are running the latest source in this repo.
 
 ## Performance Options
 
@@ -55,7 +55,7 @@ Use when your tenant is sensitive to burst traffic or you see frequent throttlin
 ### Balanced bulk create
 
 ```bash
-python -m purviewcli entity bulk-create-csv \
+pvw entity bulk-create-csv \
   --csv-file .\\create.csv \
   --batch-size 50 \
   --throttle-ms 200 \
@@ -68,7 +68,7 @@ python -m purviewcli entity bulk-create-csv \
 ### Balanced bulk update
 
 ```bash
-python -m purviewcli entity bulk-update-csv \
+pvw entity bulk-update-csv \
   --csv-file .\\update.csv \
   --batch-size 50 \
   --throttle-ms 200 \
