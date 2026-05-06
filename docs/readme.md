@@ -1,110 +1,32 @@
-# pvw-cli Documentation
+# pvw-cli Documentation Hub
 
-`pvw-cli` is a Python CLI and library for automating Microsoft Purview. It covers Data Map, Unified Catalog, Collections, Search, Lineage, Scan, and Management APIs.
+This page remains available for compatibility with older links, but the primary landing page is now [Home](index.md).
 
-## Install
+## Best Entry Points
 
-Install from PyPI:
+- [Home](index.md): overview, fast paths, and command-family routing
+- [Getting Started](getting-started.md): install, authenticate, and run your first successful command
+- [Which Command Should I Use?](which-command-should-i-use.md): choose the right command family before diving into reference pages
+- [Command Groups](command-groups.md): browse the major CLI areas by responsibility
+- [Common Workflows](common-workflows.md): follow task-oriented paths instead of reading the full catalog
+
+## High-Value Reference Pages
+
+- [Unified Catalog](unified-catalog.md)
+- [Quick Reference](quick-reference.md)
+- [Entity Bulk CSV Guide](entity-bulk-csv-guide.md)
+- [Bulk CSV Troubleshooting](bulk-csv-troubleshooting.md)
+- [Full Documentation Catalog](documentation-catalog.md)
+- [Full Samples Catalog](samples-catalog.md)
+
+## Quick Start
 
 ```bash
 pip install pvw-cli
-```
-
-Install from source:
-
-```bash
-git clone https://github.com/Keayoub/pvw-cli.git
-cd pvw-cli
-pip install -r requirements.txt
-pip install -e .
-```
-
-## Configure
-
-Set these required environment variables before running commands:
-
-| Variable | Description |
-|---|---|
-| `PURVIEW_ACCOUNT_NAME` | Your Purview account name |
-| `PURVIEW_ACCOUNT_ID` | Your Azure Tenant ID |
-| `PURVIEW_RESOURCE_GROUP` | Resource group containing the Purview account |
-
-PowerShell:
-
-```powershell
-$env:PURVIEW_ACCOUNT_NAME = "your-purview-account"
-$env:PURVIEW_ACCOUNT_ID = "your-tenant-id-guid"
-$env:PURVIEW_RESOURCE_GROUP = "your-resource-group"
-```
-
-Bash:
-
-```bash
-export PURVIEW_ACCOUNT_NAME=your-purview-account
-export PURVIEW_ACCOUNT_ID=your-tenant-id-guid
-export PURVIEW_RESOURCE_GROUP=your-resource-group
-```
-
-To find your tenant ID:
-
-```bash
-az account show --query tenantId -o tsv
-```
-
-## Authenticate
-
-`pvw-cli` uses `DefaultAzureCredential` and tries these authentication methods:
-
-1. Azure CLI via `az login`
-2. Service principal via `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, and `AZURE_CLIENT_SECRET`
-3. Managed identity when running on Azure
-
-If your tenant uses the older Purview resource principal, set:
-
-```bash
-export PURVIEW_AUTH_SCOPE=https://purview.azure.net/.default
-```
-
-## Start Using pvw-cli
-
-See the installed command groups:
-
-```bash
+az login
 pvw --help
-```
-
-Common command groups:
-
-```text
-pvw account
-pvw collections
-pvw entity
-pvw glossary
-pvw lineage
-pvw scan
-pvw search
-pvw types
-pvw uc
-pvw workflow
-pvw diagnostics
-```
-
-Examples:
-
-```bash
-pvw account getAccount
 pvw search query --keywords "customer"
-pvw glossary readTerms
 ```
-
-## Where to Go Next
-
-- [Getting Started](getting-started.md) for installation, configuration, and first commands
-- [Unified Catalog](unified-catalog.md) for domains, terms, data products, OKRs, and CDE workflows
-- [Full Documentation Catalog](documentation-catalog.md) to browse all documentation pages
-- [Full Samples Catalog](samples-catalog.md) to browse notebooks, PowerShell, JSON, and CSV samples
-- [Command Documentation](commands/) for per-command help
-- [Integrated Portal](integrated/readme.md) for organized guides and reference material
 
 ## Support
 

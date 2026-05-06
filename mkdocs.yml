@@ -6,6 +6,10 @@ repo_name: Keayoub/pvw-cli
 
 theme:
   name: material
+  language: en
+  font:
+    text: Segoe UI
+    code: Cascadia Code
   palette:
     - scheme: default
       primary: teal
@@ -13,32 +17,65 @@ theme:
   features:
     - navigation.sections
     - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - toc.follow
     - content.code.copy
+    - content.tabs.link
 
 markdown_extensions:
   - tables
   - toc:
       permalink: true
   - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.details
   - pymdownx.superfences
   - pymdownx.highlight
+  - pymdownx.tabbed:
+      alternate_style: true
+
+extra_css:
+  - stylesheets/extra.css
 
 validation:
   links:
     not_found: ignore
 
 nav:
-  - Home: readme.md
-  - Getting Started: getting-started.md
-  - Common Workflows: common-workflows.md
-  - Which Command Should I Use?: which-command-should-i-use.md
-  - Entity Bulk CSV Guide: entity-bulk-csv-guide.md
-  - Bulk CSV Troubleshooting: bulk-csv-troubleshooting.md
-  - Command Tasks:
+  - Home: index.md
+  - Start Here:
+      - Getting Started: getting-started.md
+      - Which Command Should I Use?: which-command-should-i-use.md
+      - Common Workflows: common-workflows.md
+      - Command Groups: command-groups.md
+  - Core Guides:
+      - Unified Catalog: unified-catalog.md
+      - Quick Reference: quick-reference.md
+      - Entity Bulk CSV Guide: entity-bulk-csv-guide.md
+      - Bulk CSV Troubleshooting: bulk-csv-troubleshooting.md
+      - Authentication Troubleshooting: authentication-troubleshooting.md
+  - Command Families:
+      - Account: commands/account/main.md
+      - Entity: commands/entity/main.md
+      - Glossary: commands/glossary/main.md
+      - Search: commands/search/main.md
+      - Scan: commands/scan/main.md
+      - Relationship: commands/relationship/main.md
+      - Lineage: commands/lineage/main.md
+      - Management: commands/management/main.md
+      - Policy Store: commands/policystore/main.md
+      - Share: commands/share/main.md
+      - Types: commands/types/main.md
+      - Insight: commands/insight/main.md
+      - Unified Catalog Commands: commands/unified-catalog.md
+  - Task Guides:
       - Create Tasks: commands/task-create.md
       - Update Tasks: commands/task-update.md
       - Delete Tasks: commands/task-delete.md
       - Import Tasks: commands/task-import.md
-  - Unified Catalog: unified-catalog.md
-  - Full Documentation Catalog: documentation-catalog.md
-  - Full Samples Catalog: samples-catalog.md
+  - Full Catalogs:
+      - Documentation Catalog: documentation-catalog.md
+      - Samples Catalog: samples-catalog.md
