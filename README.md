@@ -1,6 +1,6 @@
 # pvw-cli — Microsoft Purview Command-Line Interface
 
-[![Version](https://img.shields.io/badge/version-1.11.5-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.11.7)
+[![Version](https://img.shields.io/badge/version-1.11.5-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.11.8)
 [![Status](https://img.shields.io/badge/status-stable-success.svg)](https://github.com/Keayoub/pvw-cli)
 [![Docs](https://img.shields.io/badge/docs-github%20pages-0A8F84?logo=githubpages&logoColor=white)](https://keayoub.github.io/pvw-cli/)
 
