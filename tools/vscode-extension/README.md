@@ -1,6 +1,6 @@
 # Purview MCP Server Extension for Visual Studio Code
 
-**Version 2.0 - Now powered by FastMCP! 🚀**
+Version 2.0, now powered by FastMCP.
 
 Provides [Model Context Protocol (MCP)](https://modelcontextprotocol.io) integration and tooling for **Microsoft Purview** in Visual Studio Code.
 
@@ -14,6 +14,7 @@ All Purview MCP tools in a single server. The Purview MCP Server implements the 
   * [Getting Started](#getting-started)
   * [What can you do with the Purview MCP Server?](#what-can-you-do-with-the-purview-mcp-server)
   * [Configure Azure Authentication](#configure-azure-authentication)
+  * [Advanced Launch Options](#advanced-launch-options)
 * [Support and Reference](#support-and-reference)
 
 ## Overview
@@ -35,16 +36,17 @@ Purview MCP Server supercharges your agents with Purview context across a curate
 
 The extension bundles the MCP server and all required Python files - **no need to clone the repository!**
 
-> **Note:** Python dependencies (mcp, fastmcp, azure-identity, aiohttp, etc.) will be automatically installed when you first start the server.
+> **Note:** Python dependencies (`mcp`, `fastmcp`, `azure-identity`, `aiohttp`, etc.) will be automatically installed when you first start the server.
 >
 > **What's New in v2.0:**
-> - 🚀 Migrated to **FastMCP** for better performance and cleaner code
-> - ✅ Automatic parameter validation with Pydantic
-> - 📖 Auto-generated tool documentation
-> - 🔧 Simplified server architecture (30% less code)
-> - 🔄 Backward compatible with legacy MCP server (available as fallback)
+>
+> * Migrated to **FastMCP** for better performance and cleaner code
+> * Automatic parameter validation with `pydantic`
+> * Auto-generated tool documentation
+> * Simplified server architecture (30% less code)
+> * Backward compatible with legacy MCP server (available as fallback)
 
-### Enable Autostart
+### Enable Auto-start
 
 1. Open **Settings** in VS Code.
 2. Search for `chat.mcp.autostart`.
@@ -57,7 +59,7 @@ You can also set this from the refresh icon in the Chat view, which also shows w
 ### Getting Started
 
 1. Run `MCP: List Servers`.
-2. Select `Purview MCP Server`, ext, then click **Start Server**.
+2. Select `Purview MCP Server` (extension), then click **Start Server**.
 3. Go to the **Output** tab in VS Code.
 4. Look for log messages confirming the server can run the MCP settings.
 
@@ -81,7 +83,7 @@ The Purview MCP Server exposes over **40 tools** for interacting with Microsoft 
 
 #### Manual Configuration (Optional)
 
-In VS Code Settings, pre-configure (Settings → Search "purview-mcp"):
+In VS Code Settings, pre-configure (Settings -> search for the Purview MCP extension settings):
 
 * `purview-mcp.accountName`: Your Purview account name (required)
 * `purview-mcp.accountId`: Purview account ID for Unified Catalog (optional)
@@ -101,7 +103,7 @@ When you start the server for the first time, the extension will:
 
 1. Check if Python dependencies are installed
 2. Prompt you to install them automatically if missing
-3. Install `mcp`, `fastmcp`, `azure-identity`, `aiohttp`, `pandas`, and `purviewcli` from the bundled requirements.txt
+3. Install `mcp`, `fastmcp`, `azure-identity`, `aiohttp`, `pandas`, and `purviewcli` from the bundled requirements file
 
 ### FastMCP vs Legacy Server
 
@@ -112,6 +114,66 @@ Version 2.0 uses **FastMCP** by default for better performance and developer exp
 3. Uncheck to use the legacy server (`server_legacy.py`)
 
 Both servers provide the same curated tools, the live operation registry, and full functionality.
+
+### Advanced Launch Options
+
+If you run the server outside the extension, you can launch it with either `npx` or `uvx`.
+
+Run with `npx`:
+
+```bash
+npx -y chat.mcp.purview
+```
+
+Run with `uvx`:
+
+```bash
+uvx --from "git+https://github.com/Keayoub/pvw-cli.git#subdirectory=tools/PurviewMCPServer" pvw-mcp
+```
+
+Example MCP config for external clients:
+
+```json
+{
+  "mcpServers": {
+    "purview": {
+      "command": "npx",
+      "args": ["-y", "chat.mcp.purview"],
+      "env": {
+        "PURVIEW_ACCOUNT_NAME": "your-account"
+      }
+    }
+  }
+}
+```
+
+Optional override for the `npx` launcher source:
+
+```bash
+PVW_MCP_UV_FROM="pvw-mcp-server" npx -y chat.mcp.purview
+```
+
+Python SDK quick-start (with a `uvx`-backed standard input/output server):
+
+```python
+from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import stdio_client
+
+server = StdioServerParameters(
+  command="uvx",
+  args=[
+    "--from",
+    "git+https://github.com/Keayoub/pvw-cli.git#subdirectory=tools/PurviewMCPServer",
+    "pvw-mcp",
+  ],
+  env={"PURVIEW_ACCOUNT_NAME": "your-account"},
+)
+
+async with stdio_client(server) as (read_stream, write_stream):
+  async with ClientSession(read_stream, write_stream) as session:
+    await session.initialize()
+    print(await session.list_tools())
+```
 
 ## Support and Reference
 

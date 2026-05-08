@@ -68,4 +68,5 @@ README.md.bak.*
 .github/context-mode/
 
 .venv*/
-.vfs*/
+.vfsmeta/
+.vfscache/

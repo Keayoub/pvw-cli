@@ -159,11 +159,6 @@ async def update_entity(entity_data: Dict[str, Any]) -> Dict[str, Any]:
 async def delete_entity(guid: str) -> Dict[str, Any]:
     """
     Delete an entity from Purview catalog by GUID.
-    """
-    client = await get_client()
-    return await client.get_account_properties()
-    
-
     Args:
         guid: The unique GUID of the entity to delete
         

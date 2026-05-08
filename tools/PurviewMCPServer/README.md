@@ -2,17 +2,21 @@
 
 This folder contains the FastMCP server implementation for the Purview CLI and a set of resources to help LLMs interact with the server.
 
-Prompt instructions
+## Prompt Instructions
+
 - `prompt_instructions.md` — Curated prompt templates and best practices for prompting the MCP server.
-- The server exposes an mcp tool `get_prompt_instructions()` which returns the file contents so agents can fetch guidance programmatically.
+- The server exposes an MCP tool, `get_prompt_instructions()`, which returns the file contents so agents can fetch guidance programmatically.
 
-Fetching prompts (example)
- - Call the tool `get_prompt_instructions()` via the MCP server API to retrieve the latest prompt guidance.
+## Fetching Prompts (Example)
 
-Notes
- - Ensure environment variables (e.g., `PURVIEW_ACCOUNT_NAME`) are set before running the server.
- - See `server.py` for available mcp tools and their usage.
-# Purview MCP Server - Enhanced Version 2.0
+- Call the tool `get_prompt_instructions()` via the MCP server API to retrieve the latest prompt guidance.
+
+## Notes
+
+- Ensure environment variables (e.g., `PURVIEW_ACCOUNT_NAME`) are set before running the server.
+- See `server.py` for available MCP tools and their usage.
+
+## Purview MCP Server - Enhanced Version 2.0
 
 ## Overview
 
@@ -30,6 +34,7 @@ The MCP server now includes **comprehensive prompt instructions** automatically 
 The server also exposes `list_available_operations()` and `invoke_operation()` so new Purview client methods are reachable without waiting for a manual MCP refresh.
 
 **What's Included:**
+
 - ✅ Core capabilities overview for all 6 operation categories
 - ✅ Best practices for entity operations, glossary, lineage, search
 - ✅ Common workflows with step-by-step guidance
@@ -40,6 +45,7 @@ The server also exposes `list_available_operations()` and `invoke_operation()` s
 - ✅ Tips for LLM usage and chaining operations
 
 **Benefits:**
+
 - 🚀 AI assistants automatically understand Purview client capabilities
 - 📚 No need to manually explain CLI features to AI
 - 🎯 Best practices enforced from first interaction
@@ -47,6 +53,7 @@ The server also exposes `list_available_operations()` and `invoke_operation()` s
 - 🔧 Error handling guidance reduces troubleshooting time
 
 **Documentation:**
+
 - Embedded instructions: In FastMCP server initialization
 - Standalone reference: `PROMPT_INSTRUCTIONS.md` (comprehensive guide)
 - Quick reference: This README
@@ -54,6 +61,7 @@ The server also exposes `list_available_operations()` and `invoke_operation()` s
 ## Available Tools
 
 ### Entity Operations (8 tools)
+
 Core CRUD operations for data assets:
 
 1. **get_entity** - Retrieve entity by GUID with full details
@@ -66,133 +74,154 @@ Core CRUD operations for data assets:
 8. **import_entities_from_csv** - Import from CSV with mapping config
 
 **Use Cases:**
+
 - Asset registration and discovery
 - Metadata synchronization
 - Bulk data migration
 - Automated catalog maintenance
 
 ### Glossary Operations (3 tools)
+
 Business vocabulary management:
 
-9. **get_glossary_terms** - List all terms or from specific glossary
-10. **create_glossary_term** - Define new business term
-11. **assign_term_to_entities** - Tag assets with business terms
+1. **get_glossary_terms** - List all terms or from specific glossary
+2. **create_glossary_term** - Define new business term
+3. **assign_term_to_entities** - Tag assets with business terms
 
 **Use Cases:**
+
 - Business glossary management
 - Data asset semantic enrichment
 - Business-technical alignment
 
 ### Unified Catalog Operations (7 tools)
+
 Microsoft Purview Business Metadata (new in this version):
 
-12. **uc_list_domains** - List all governance domains
-13. **uc_get_domain** - Get domain details
-14. **uc_create_domain** - Create new governance domain
-15. **uc_list_terms** - List business metadata terms in domain
-16. **uc_get_term** - Get term details
-17. **uc_create_term** - Create new business metadata term
-18. **uc_search_terms** - Search terms across domains
+1. `uc_list_domains` - List all governance domains
+2. `uc_get_domain` - Get domain details
+3. `uc_create_domain` - Create new governance domain
+4. `uc_list_terms` - List business metadata terms in domain
+5. `uc_get_term` - Get term details
+6. `uc_create_term` - Create new business metadata term
+7. `uc_search_terms` - Search terms across domains
 
 **Use Cases:**
+
 - Hierarchical business term organization
 - Domain-driven data governance
 - Business metadata standardization
 - Cross-domain term discovery
 
 ### Collection Operations (5 tools)
+
 Hierarchical asset organization:
 
-19. **list_collections** - List all collections
-20. **get_collection** - Get collection details
-21. **create_collection** - Create new collection
-22. **delete_collection** - Remove collection
-23. **get_collection_path** - Get hierarchical path
+1. **list_collections** - List all collections
+2. **get_collection** - Get collection details
+3. **create_collection** - Create new collection
+4. **delete_collection** - Remove collection
+5. **get_collection_path** - Get hierarchical path
 
 **Use Cases:**
+
 - Multi-tenant data organization
 - Department/project isolation
 - Role-based access control
 - Collection hierarchy management
 
 ### Lineage Operations (2 tools)
+
 Data flow tracking:
 
-24. **get_lineage** - Get upstream/downstream lineage
-25. **create_lineage** - Create lineage relationship
+1. **get_lineage** - Get upstream/downstream lineage
+2. **create_lineage** - Create lineage relationship
 
 **Use Cases:**
+
 - Impact analysis
 - Data flow visualization
 - Compliance tracking
 - Root cause analysis
 
 ### Advanced Search Operations (2 tools - new)
+
 Enhanced discovery capabilities:
 
-26. **search_suggest** - Autocomplete/suggestions
-27. **search_browse** - Browse by entity type with aggregations
+1. **search_suggest** - Autocomplete/suggestions
+2. **search_browse** - Browse by entity type with aggregations
 
 **Use Cases:**
+
 - Search UI building
 - Type-based exploration
 - Classification discovery
 - Quick navigation
 
 ### Type Definition Operations (2 tools - new)
+
 Schema and metadata model management:
 
-28. **get_typedef** - Get type definition schema
-29. **list_typedefs** - List all type definitions
+1. **get_typedef** - Get type definition schema
+2. **list_typedefs** - List all type definitions
 
 **Use Cases:**
+
 - Understanding data models
 - Custom type creation
 - Schema validation
 - API integration
 
 ### Relationship Operations (3 tools - new)
+
 Entity connections and associations:
 
-30. **create_relationship** - Create entity relationships
-31. **get_relationship** - Get relationship details
-32. **delete_relationship** - Remove relationship
+1. **create_relationship** - Create entity relationships
+2. **get_relationship** - Get relationship details
+3. **delete_relationship** - Remove relationship
 
 **Use Cases:**
+
 - Parent-child relationships
 - Custom associations
 - Relationship management
 - Data modeling
 
 ### Account Operations (1 tool)
+
 Purview account management:
 
-33. **get_account_properties** - Get account configuration
+1. **get_account_properties** - Get account configuration
 
 ## New Capabilities in Version 2.0
 
 ### 1. Unified Catalog Integration
+
 - Full support for Microsoft Purview Business Metadata
 - Domain-based term organization
 - Hierarchical governance structure
 - Cross-domain search
 
 ### 2. Enhanced Search
+
 - Autocomplete suggestions for better UX
 - Browse by type with aggregations
 - Faceted navigation support
 
 ### 3. Type System Access
+
 - Type definition inspection
 - Schema discovery
 - Custom type support
 
 ### 4. Relationship Management
+
 - Create custom relationships
 - Manage entity connections
 - Support for parent-child hierarchies
 
 ### 5. Comprehensive Documentation
+
 - All operations have detailed docstrings
 - Real-world examples included
 - Business context provided
@@ -203,7 +232,9 @@ Purview account management:
 The MCP server leverages two client architectures:
 
 ### Async Client (PurviewClient)
+
 Used for high-level operations:
+
 - Entity CRUD
 - Batch operations
 - CSV import/export
@@ -212,7 +243,9 @@ Used for high-level operations:
 - Lineage (async operations)
 
 ### Synchronous Clients (Specialized)
+
 Used for specific operations:
+
 - **UnifiedCatalogClient** - UC domains and terms
 - **Search** - Advanced search operations
 - **Types** - Type definitions
@@ -221,7 +254,8 @@ Used for specific operations:
 
 ## Configuration
 
-### Environment Variables Required:
+### Environment Variables Required
+
 ```bash
 PURVIEW_ACCOUNT_NAME=<your-purview-account>    # Required
 AZURE_TENANT_ID=<tenant-id>                    # Optional
@@ -231,13 +265,15 @@ PURVIEW_TIMEOUT=30                             # Optional
 PURVIEW_BATCH_SIZE=100                         # Optional
 ```
 
-### Authentication:
+### Authentication
+
 - Uses Azure DefaultAzureCredential
 - Supports: Managed Identity, Service Principal, Azure CLI, VS Code
 
 ## Usage Examples
 
 ### Example 1: Create Domain and Terms
+
 ```json
 {
   "tool": "uc_create_domain",
@@ -252,6 +288,7 @@ PURVIEW_BATCH_SIZE=100                         # Optional
 ```
 
 ### Example 2: Search and Tag Entities
+
 ```json
 {
   "tool": "search_entities",
@@ -271,6 +308,7 @@ PURVIEW_BATCH_SIZE=100                         # Optional
 ```
 
 ### Example 3: Bulk Import from CSV
+
 ```json
 {
   "tool": "import_entities_from_csv",
@@ -288,6 +326,7 @@ PURVIEW_BATCH_SIZE=100                         # Optional
 ```
 
 ### Example 4: Browse by Type
+
 ```json
 {
   "tool": "search_browse",
@@ -300,25 +339,29 @@ PURVIEW_BATCH_SIZE=100                         # Optional
 
 ## LLM Integration Tips
 
-### For Entity Discovery:
+### For Entity Discovery
+
 1. Start with `search_suggest` for autocomplete
 2. Use `search_entities` with filters
 3. Drill down with `get_entity` for details
 4. Explore relationships with `get_lineage`
 
-### For Governance Setup:
+### For Governance Setup
+
 1. Create domains with `uc_create_domain`
 2. Define terms with `uc_create_term`
 3. Organize in collections with `create_collection`
 4. Tag assets with `assign_term_to_entities`
 
-### For Bulk Operations:
+### For Bulk Operations
+
 1. Use `batch_create_entities` for efficiency
-2. Monitor progress with callbacks
+2. Monitor progress with status updates
 3. Handle failures gracefully
 4. Use CSV operations for large datasets
 
-### For Exploration:
+### For Exploration
+
 1. Browse types with `list_typedefs`
 2. Understand schemas with `get_typedef`
 3. Navigate hierarchies with `get_collection_path`
@@ -329,6 +372,7 @@ PURVIEW_BATCH_SIZE=100                         # Optional
 All tools return structured responses:
 
 **Success:**
+
 ```json
 {
   "result": { ... },
@@ -337,6 +381,7 @@ All tools return structured responses:
 ```
 
 **Error:**
+
 ```json
 {
   "error": "Error message",
@@ -347,24 +392,28 @@ All tools return structured responses:
 
 ## Performance Considerations
 
-### Batch Operations:
+### Batch Operations
+
 - Default batch size: 100 entities
 - Automatic retry on failures
 - Progress tracking available
 
-### Rate Limiting:
+### Rate Limiting
+
 - Respects Purview API limits
 - Automatic backoff on 429 errors
 - Configurable retry count
 
-### Caching:
+### Caching
+
 - Type definitions cached
 - Collection paths cached
 - Reduces API calls
 
 ## Testing
 
-### Local Testing:
+### Local Testing
+
 ```bash
 # Install from source with pip
 pip install -e .
@@ -374,7 +423,8 @@ pip install -e tools/PurviewMCPServer
 pvw-mcp
 ```
 
-### Install with uv (recommended):
+### Install with `uv` (recommended)
+
 ```bash
 # Install as a persistent CLI tool
 uv tool install --from "git+https://github.com/Keayoub/pvw-cli.git#subdirectory=tools/PurviewMCPServer" pvw-mcp
@@ -383,18 +433,28 @@ uv tool install --from "git+https://github.com/Keayoub/pvw-cli.git#subdirectory=
 uvx --from "git+https://github.com/Keayoub/pvw-cli.git#subdirectory=tools/PurviewMCPServer" pvw-mcp
 ```
 
-### Run with npx:
+### Run with `npx`
+
 ```bash
 # npx launcher (uses pvw-mcp if already installed, otherwise uvx)
 npx -y chat.mcp.purview
 ```
 
-Optional: override the uv source used by the npx launcher.
+Optional: override the `uv` source used by the `npx` launcher.
+
 ```bash
 PVW_MCP_UV_FROM="pvw-mcp-server" npx -y chat.mcp.purview
 ```
 
-### MCP Client Testing:
+PowerShell equivalent:
+
+```powershell
+$env:PVW_MCP_UV_FROM = "pvw-mcp-server"
+npx -y chat.mcp.purview
+```
+
+### MCP Client Testing
+
 Use any MCP client (Claude Desktop, VS Code extension, custom client):
 
 ```json
@@ -411,7 +471,34 @@ Use any MCP client (Claude Desktop, VS Code extension, custom client):
 }
 ```
 
-### Python SDK (modelcontextprotocol) with uvx:
+Alternative configuration using `uvx` directly:
+
+```json
+{
+  "mcpServers": {
+    "purview": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/Keayoub/pvw-cli.git#subdirectory=tools/PurviewMCPServer",
+        "pvw-mcp"
+      ],
+      "env": {
+        "PURVIEW_ACCOUNT_NAME": "your-account"
+      }
+    }
+  }
+}
+```
+
+### Python SDK with `uvx`
+
+Install the Python MCP SDK first:
+
+```bash
+uv pip install mcp
+```
+
 ```python
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
@@ -438,6 +525,7 @@ async with stdio_client(server) as (read_stream, write_stream):
 The MCP server automatically provides these instructions to AI assistants:
 
 ### Core Capabilities Covered
+
 1. **Entity Operations** - CRUD, bulk operations, CSV import/export
 2. **Glossary Management** - Terms, categories, assignments
 3. **Unified Catalog** - Domains, business metadata, policies, relationships
@@ -446,6 +534,7 @@ The MCP server automatically provides these instructions to AI assistants:
 6. **Collections & Account** - Hierarchy, permissions, configuration
 
 ### Common Workflows Included
+
 - Catalog New Data Source (5 steps)
 - Build Business Glossary (5 steps)
 - Implement Data Governance (6 steps)
@@ -453,6 +542,7 @@ The MCP server automatically provides these instructions to AI assistants:
 - Bulk Data Onboarding (5 steps)
 
 ### Best Practices Embedded
+
 - ✅ Always use qualifiedName for updates
 - ✅ Preview CSV imports with dry-run
 - ✅ Appropriate batch sizes based on volume
@@ -462,11 +552,13 @@ The MCP server automatically provides these instructions to AI assistants:
 - ✅ Use Process entities for lineage
 
 ### QualifiedName Patterns
+
 - **Azure SQL**: `mssql://server/database/schema/table`
 - **ADLS Gen2**: `https://account.dfs.core.windows.net/container/path`
 - **Generic**: `//source/path/asset@account`
 
 ### For More Details
+
 - **Full Instructions**: See `PROMPT_INSTRUCTIONS.md` (comprehensive 650+ lines)
 - **Embedded**: Automatically provided to AI assistants via FastMCP
 - **Examples**: Real-world workflow patterns with tool calls
@@ -482,13 +574,15 @@ The MCP server automatically provides these instructions to AI assistants:
 
 ## Roadmap
 
-### Planned Additions (remaining 9.5%):
+### Planned Additions (remaining 9.5%)
+
 - Data sharing operations (31 methods from _share.py)
 - Scanning operations (14 methods from scanning_operations.py)
 - Data quality validation (6 methods from data_quality.py)
 - Additional utility methods
 
-### Future Enhancements:
+### Future Enhancements
+
 - Streaming responses for large datasets
 - Webhook support for events
 - Advanced filtering and faceting
@@ -498,6 +592,7 @@ The MCP server automatically provides these instructions to AI assistants:
 ## Changelog
 
 ### Version 2.0 (Current)
+
 - ✅ Added 7 Unified Catalog operations
 - ✅ Added 2 advanced search operations
 - ✅ Added 2 type definition operations
@@ -507,6 +602,7 @@ The MCP server automatically provides these instructions to AI assistants:
 - ✅ Support for both async and sync clients
 
 ### Version 1.0 (Initial)
+
 - Basic entity operations
 - Simple glossary support
 - Collection management
