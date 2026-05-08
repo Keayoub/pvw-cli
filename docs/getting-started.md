@@ -2,11 +2,38 @@
 
 This guide shows how to install, configure, authenticate, and run your first `pvw-cli` commands.
 
+## Prerequisites
+
+Before installing the CLI, make sure you have:
+
+- Python 3.8 or later
+- `pip` available in your Python environment
+- Access to a Microsoft Purview account
+- Azure credentials that can access that Purview account
+- Azure CLI installed if you want the simplest local sign-in flow
+
+Recommended before first use:
+
+- Run `az login` for local interactive authentication
+- Confirm your Purview account name, tenant ID, and resource group
+- Use a virtual environment so CLI dependencies stay isolated
+
+The packages declared in `pyproject.toml` are runtime dependencies and are installed automatically when you run `pip install pvw-cli`. You normally do not need to install them one by one unless you are debugging or developing the CLI itself.
+
 ## 1. Install
 
 Install from PyPI:
 
 ```bash
+pip install pvw-cli
+```
+
+Create and activate a virtual environment if you want an isolated install:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install --upgrade pip
 pip install pvw-cli
 ```
 
@@ -18,6 +45,21 @@ cd pvw-cli
 pip install -r requirements.txt
 pip install -e .
 ```
+
+### Runtime dependency summary
+
+`pvw-cli` installs these automatically:
+
+- `azure-identity`: authentication through `DefaultAzureCredential`
+- `azure-core`: Azure SDK pipeline primitives and shared client behavior
+- `click`: command-line parsing and command group registration
+- `rich`: formatted terminal output, tables, colors, and diagnostics
+- `requests`: synchronous HTTP calls to Purview REST APIs
+- `pandas`: CSV and tabular bulk-processing workflows
+- `aiohttp`: async HTTP support for high-throughput or concurrent operations
+- `pydantic`: typed configuration and validation models
+- `PyYAML`: YAML parsing for config and structured metadata inputs
+- `cryptography`: secure auth and token/certificate support used by the auth stack
 
 ## 2. Sign in to Azure
 

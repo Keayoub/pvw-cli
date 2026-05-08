@@ -187,7 +187,7 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 0.9rem;
   box-shadow: 0 18px 35px rgba(2, 6, 23, 0.24);
-  overflow: hidden;
+  overflow: auto;
   padding: 1rem 1.1rem;
   position: relative;
 }
@@ -202,10 +202,12 @@
 .md-typeset .highlight {
   position: relative;
   margin: 1.25rem 0 1.5rem;
+  overflow: visible;
 }
 
 .md-typeset .highlight pre {
   padding-top: 2.35rem;
+  padding-right: 4.75rem;
 }
 
 .md-typeset .highlight::before {
@@ -225,7 +227,7 @@
   content: "code";
   position: absolute;
   top: 0.62rem;
-  right: 3.4rem;
+  right: 4.4rem;
   padding: 0.22rem 0.55rem;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 999px;
@@ -256,13 +258,21 @@
 .md-typeset .highlight pre,
 .md-typeset .highlighttable td.code,
 .md-typeset .highlighttable td.linenos {
-  background: transparent;
+  background: linear-gradient(180deg, #111111 0%, #050505 100%);
 }
 
 .md-typeset .highlighttable td.linenos {
   color: #64748b;
   border-right: 1px solid rgba(255, 255, 255, 0.08);
   padding-right: 0.9rem;
+}
+
+.md-typeset .highlighttable {
+  overflow-x: auto;
+}
+
+.md-typeset .md-clipboard {
+  z-index: 3;
 }
 
 /* PVW CLI badge: any bash block whose first non-whitespace token is "pvw" */
