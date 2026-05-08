@@ -6,9 +6,11 @@ but with cleaner code, automatic validation, and better developer experience.
 
 """
 
+import inspect
 import logging
 import os
 import sys
+import re
 from typing import Optional, List, Dict, Any
 
 from fastmcp import FastMCP
@@ -157,7 +159,11 @@ async def update_entity(entity_data: Dict[str, Any]) -> Dict[str, Any]:
 async def delete_entity(guid: str) -> Dict[str, Any]:
     """
     Delete an entity from Purview catalog by GUID.
+    """
+    client = await get_client()
+    return await client.get_account_properties()
     
+
     Args:
         guid: The unique GUID of the entity to delete
         
@@ -208,6 +214,7 @@ async def batch_create_entities(entities: List[Dict[str, Any]]) -> Dict[str, Any
     """
     client = await get_client()
     return await client.batch_create_entities(entities)
+
 
 
 @mcp.tool()
@@ -455,6 +462,7 @@ def uc_create_domain(
         Created governance domain
     """
     uc_client = UnifiedCatalogClient()
+
     args = {
         "--name": name,
         "--description": description,
@@ -472,6 +480,7 @@ def uc_list_terms(domain_id: str) -> Dict[str, Any]:
     
     Args:
         domain_id: The governance domain ID to list terms from
+
         
     Returns:
         List of business metadata terms
@@ -501,6 +510,7 @@ def uc_get_term(domain_id: str, term_id: str) -> Dict[str, Any]:
 
 
 @mcp.tool()
+
 def uc_create_term(
     domain_id: str,
     name: str,
@@ -520,6 +530,7 @@ def uc_create_term(
         parent_term_id: Optional parent term ID for hierarchy
         description: Optional additional description
         
+
     Returns:
         Created business metadata term
     """
@@ -533,6 +544,7 @@ def uc_create_term(
     if parent_term_id:
         args["--parent-term-id"] = parent_term_id
     if description:
+
         args["--description"] = description
     return uc_client.create_term(args)
 
@@ -549,6 +561,7 @@ def uc_search_terms(search_query: str, limit: int = 50) -> Dict[str, Any]:
         limit: Maximum number of results (default: 50)
         
     Returns:
+
         Search results with matching terms
     """
     # Use general search for now - UC doesn't have dedicated term search yet
@@ -781,10 +794,207 @@ async def get_account_properties() -> Dict[str, Any]:
     return await client.get_account_properties()
 
 
-if __name__ == "__main__":
+# ============================================================================
+# OPERATION REGISTRY
+# ============================================================================
 
-    # register_microsoft_learn_tools(mcp)
-    
+_CLIENT_OPERATION_NAMESPACES = {
+    "purview": {
+        "label": "PurviewClient",
+        "factory": None,
+        "use_async_client": True,
+    },
+    "uc": {
+        "label": "UnifiedCatalogClient",
+        "factory": UnifiedCatalogClient,
+        "use_async_client": False,
+    },
+    "collections": {
+        "label": "Collections",
+        "factory": Collections,
+        "use_async_client": False,
+    },
+    "lineage": {
+        "label": "Lineage",
+        "factory": Lineage,
+        "use_async_client": False,
+    },
+    "search": {
+        "label": "Search",
+        "factory": Search,
+        "use_async_client": False,
+    },
+    "types": {
+        "label": "Types",
+        "factory": Types,
+        "use_async_client": False,
+    },
+    "relationship": {
+        "label": "Relationship",
+        "factory": Relationship,
+        "use_async_client": False,
+    },
+    "glossary": {
+        "label": "Glossary",
+        "factory": Glossary,
+        "use_async_client": False,
+    },
+    "entity": {
+        "label": "Entity",
+        "factory": Entity,
+        "use_async_client": False,
+    },
+}
+
+
+def _to_snake_case(name: str) -> str:
+    """Convert a method name to a stable tool-friendly snake_case name."""
+    name = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", name)
+    name = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", name)
+    return name.replace("-", "_").lower()
+
+
+def _summarize_docstring(docstring: Optional[str]) -> str:
+    """Return the first line of a docstring or a fallback summary."""
+    if not docstring:
+        return "No description available."
+    summary = docstring.strip().splitlines()[0].strip()
+    return summary or "No description available."
+
+
+def _get_call_style(method: Any) -> str:
+    """Summarize how a client method accepts arguments."""
+    parameters = list(inspect.signature(method).parameters.values())
+    if not parameters:
+        return "no-args"
+
+    if any(parameter.kind == inspect.Parameter.VAR_KEYWORD for parameter in parameters):
+        return "kwargs"
+
+    if any(parameter.kind == inspect.Parameter.VAR_POSITIONAL for parameter in parameters):
+        return "positional"
+
+    if len(parameters) == 1:
+        return "payload"
+
+    return "kwargs"
+
+
+def _build_operation_catalog() -> Dict[str, Any]:
+    """Build a live catalog of public client methods."""
+    catalog: Dict[str, Any] = {}
+    for namespace, namespace_info in _CLIENT_OPERATION_NAMESPACES.items():
+        method_source = PurviewClient if namespace_info["use_async_client"] else namespace_info["factory"]
+
+        operations = []
+        for method_name, method in inspect.getmembers(method_source, predicate=inspect.isfunction):
+            if method_name.startswith("_"):
+                continue
+
+            operations.append(
+                {
+                    "tool_name": f"{namespace}_{_to_snake_case(method_name)}",
+                    "method_name": method_name,
+                    "client": namespace_info["label"],
+                    "call_style": _get_call_style(method),
+                    "signature": str(inspect.signature(method)),
+                    "description": _summarize_docstring(inspect.getdoc(method)),
+                }
+            )
+
+        catalog[namespace] = {
+            "client": namespace_info["label"],
+            "operation_count": len(operations),
+            "operations": sorted(operations, key=lambda item: item["tool_name"]),
+        }
+
+    return catalog
+
+
+def _invoke_method(method: Any, arguments: Any) -> Any:
+    """Invoke a client method using the argument style it expects."""
+    if arguments is None:
+        return method()
+
+    if isinstance(arguments, dict):
+        if not arguments:
+            return method()
+
+        try:
+            return method(**arguments)
+        except TypeError:
+            return method(arguments)
+
+    if isinstance(arguments, (list, tuple)):
+        return method(*arguments)
+
+    return method(arguments)
+
+
+async def _resolve_namespace_client(namespace: str) -> Any:
+    """Get the client instance for a namespace."""
+    if namespace not in _CLIENT_OPERATION_NAMESPACES:
+        raise ValueError(
+            f"Unknown namespace '{namespace}'. Available namespaces: {', '.join(sorted(_CLIENT_OPERATION_NAMESPACES))}"
+        )
+
+    if namespace == "purview":
+        return await get_client()
+
+    factory = _CLIENT_OPERATION_NAMESPACES[namespace]["factory"]
+    return factory()
+
+
+@mcp.tool()
+def list_available_operations(namespace: Optional[str] = None) -> Dict[str, Any]:
+    """
+    List the live Purview client methods that can be invoked through the MCP server.
+
+    Use this when you need the full operation surface instead of the curated MCP tools.
+    """
+    catalog = _build_operation_catalog()
+    if namespace:
+        if namespace not in catalog:
+            raise ValueError(
+                f"Unknown namespace '{namespace}'. Available namespaces: {', '.join(sorted(catalog))}"
+            )
+        return {namespace: catalog[namespace]}
+    return catalog
+
+
+@mcp.tool()
+async def invoke_operation(
+    namespace: str,
+    method_name: str,
+    arguments: Any = None,
+) -> Any:
+    """
+    Invoke any public Purview client method by namespace and method name.
+
+    The `arguments` payload can be an object, a list, or a single scalar value depending on the method.
+    """
+    client = await _resolve_namespace_client(namespace)
+
+    if not hasattr(client, method_name):
+        raise ValueError(
+            f"Namespace '{namespace}' does not expose method '{method_name}'. "
+            f"Use list_available_operations() to inspect the current surface."
+        )
+
+    method = getattr(client, method_name)
+    result = _invoke_method(method, arguments)
+    if inspect.isawaitable(result):
+        result = await result
+    return result
+
+
+def main() -> None:
+    register_microsoft_learn_tools(mcp)
+
     # Run the FastMCP server
     logging.info("Starting Purview MCP Server")
     mcp.run()
+
+
+if __name__ == "__main__":
+    main()

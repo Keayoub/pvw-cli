@@ -4,20 +4,32 @@
   "description": "Model Context Protocol server for Microsoft Purview CLI - enables LLM-powered data governance workflows",
   "type": "module",
   "bin": {
-    "purview-mcp-server": "./server.py"
+    "purview-mcp-server": "./bin/pvw-mcp.cjs",
+    "pvw-mcp": "./bin/pvw-mcp.cjs"
   },
   "scripts": {
-    "start": "python server.py"
+    "start": "node ./bin/pvw-mcp.cjs",
+    "start:python": "python server.py"
   },
+  "files": [
+    "bin/",
+    "server.py",
+    "PROMPT_INSTRUCTIONS.md",
+    "README.md",
+    "pyproject.toml",
+    "requirements.txt",
+    "tools/"
+  ],
   "mcp": {
     "servers": {
       "chat.mcp.purview": {
-        "command": "python",
-        "args": ["server.py"],
+        "command": "npx",
+        "args": ["-y", "chat.mcp.purview"],
         "env": {
           "PURVIEW_ACCOUNT_NAME": "${PURVIEW_ACCOUNT_NAME}",
           "PURVIEW_ACCOUNT_ID": "${PURVIEW_ACCOUNT_ID}",
           "AZURE_TENANT_ID": "${AZURE_TENANT_ID}",
+          "PVW_MCP_UV_FROM": "${PVW_MCP_UV_FROM}",
           "PURVIEW_MAX_RETRIES": "${PURVIEW_MAX_RETRIES:-3}",
           "PURVIEW_TIMEOUT": "${PURVIEW_TIMEOUT:-30}",
           "PURVIEW_BATCH_SIZE": "${PURVIEW_BATCH_SIZE:-100}"

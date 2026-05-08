@@ -1,25 +1,18 @@
 FROM python:3.11-slim
 
-# Create app directory and copy repository
-
 WORKDIR /app
-# Copy whole repo into image (build context should be repository root)
-COPY .. /app
+
+# Copy the repository into the image (build context should be the repo root).
+COPY . /app
 
 # Upgrade pip and install build tools
 RUN python -m pip install --upgrade pip setuptools wheel
 
-# Ensure the mcp requirements file path exists and install dependencies
-RUN pip install -r /app/mcp/server/requirements.txt
-
-# Install the parent package (pvw-cli) in editable mode so the server
-# can import the library from the repo copy inside the image.
+# Install the CLI and the MCP server as separate local packages.
 RUN pip install -e /app
+RUN pip install -e /app/tools/PurviewMCPServer
 
 ENV PYTHONUNBUFFERED=1
 
-WORKDIR /app
-
-# By default run the MCP server. The server communicates over stdio, so
-# containers should be started with stdin attached (docker run -i).
-ENTRYPOINT ["python", "mcp/server/server.py"]
+# Run the MCP server over stdio.
+ENTRYPOINT ["pvw-mcp"]

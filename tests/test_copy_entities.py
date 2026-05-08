@@ -82,7 +82,7 @@ SAMPLE_DATA_PRODUCT = {
     },
     "contacts": {
         "Expert": [{"id": "user-obj-id-1", "info": "expert info"}],
-        "Owner":  [{"id": "user-obj-id-2", "info": "owner info"}],
+        "Owner":  [{"id": "9f64f894-884c-4c2e-83f5-245cf2b7d855", "info": "owner info"}],
     },
     "labels": ["dp-label"],
     "businessMetadata": {},

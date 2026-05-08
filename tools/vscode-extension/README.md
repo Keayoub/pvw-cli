@@ -4,7 +4,7 @@
 
 Provides [Model Context Protocol (MCP)](https://modelcontextprotocol.io) integration and tooling for **Microsoft Purview** in Visual Studio Code.
 
-All Purview MCP tools in a single server. The Purview MCP Server implements the [MCP specification](https://modelcontextprotocol.io/introduction) to create a seamless connection between AI agents and Purview services. **Version 2.0** uses **FastMCP** for cleaner code, automatic validation, and improved performance. Purview MCP Server can be used alone or with the [GitHub Copilot for Azure extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-github-copilot) in VS Code.
+All Purview MCP tools in a single server. The Purview MCP Server implements the [MCP specification](https://modelcontextprotocol.io/introduction) to create a seamless connection between AI agents and Purview services. **Version 2.0** uses **FastMCP** for cleaner code, automatic validation, and improved performance, and it now includes a live operation registry so the MCP surface stays aligned with the CLI client. Purview MCP Server can be used alone or with the [GitHub Copilot for Azure extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azure-github-copilot) in VS Code.
 
 ## Table of Contents
 
@@ -18,7 +18,7 @@ All Purview MCP tools in a single server. The Purview MCP Server implements the 
 
 ## Overview
 
-Purview MCP Server supercharges your agents with Purview context across **40+ different Azure Purview services**.
+Purview MCP Server supercharges your agents with Purview context across a curated tool set plus a live registry for the full CLI/client surface.
 
 ## Installation
 
@@ -111,7 +111,7 @@ Version 2.0 uses **FastMCP** by default for better performance and developer exp
 2. Search for `purview-mcp.useFastMCP`
 3. Uncheck to use the legacy server (`server_legacy.py`)
 
-Both servers provide the same 33 tools and full functionality.
+Both servers provide the same curated tools, the live operation registry, and full functionality.
 
 ## Support and Reference
 

@@ -271,10 +271,6 @@
   overflow-x: auto;
 }
 
-.md-typeset .md-clipboard {
-  z-index: 3;
-}
-
 /* PVW CLI badge: any bash block whose first non-whitespace token is "pvw" */
 .md-typeset .highlight.language-bash::after,
 .md-typeset .highlight.language-sh::after,
@@ -393,11 +389,19 @@
   top: 0.68rem;
   right: 0.9rem;
   color: #e2e8f0;
+  opacity: 0.75;
   z-index: 3;
 }
 
 .md-typeset .md-clipboard:hover {
   color: #ffffff;
+  opacity: 1;
+}
+
+.md-typeset .md-clipboard svg,
+.md-typeset .md-clipboard .md-icon {
+  fill: currentColor;
+  color: inherit;
 }
 
 .md-typeset .tabbed-set {

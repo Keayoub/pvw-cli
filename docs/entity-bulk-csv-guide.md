@@ -6,10 +6,24 @@ This page gives practical guidance for running bulk create and bulk update at go
 
 ```bash
 # Bulk create from CSV
-pvw entity bulk-create-csv --csv-file .\\create.csv
+pvw entity bulk-create-csv \
+  --csv-file .\\create.csv \
+  --batch-size 50 \
+  --throttle-ms 200 \
+  --max-retries 4 \
+  --retry-backoff-ms 1500 \
+  --retry-mode exponential \
+  --error-csv .\\create_failed.csv
 
 # Bulk update from CSV
-pvw entity bulk-update-csv --csv-file .\\update.csv
+pvw entity bulk-update-csv \
+  --csv-file .\\update.csv \
+  --batch-size 50 \
+  --throttle-ms 200 \
+  --max-retries 4 \
+  --retry-backoff-ms 1500 \
+  --retry-mode exponential \
+  --error-csv .\\update_failed.csv
 ```
 
 Use `pvw` to ensure you are running the latest source in this repo.
@@ -18,11 +32,14 @@ Use `pvw` to ensure you are running the latest source in this repo.
 
 Both commands support these options:
 
-- `--batch-size`
-- `--throttle-ms`
-- `--max-retries`
-- `--retry-backoff-ms`
-- `--retry-mode` (`fixed` or `exponential`)
+- `--batch-size` (default: `100`)
+- `--throttle-ms` (default: `0`)
+- `--max-retries` (default: `3`)
+- `--retry-backoff-ms` (default: `1000`)
+- `--retry-mode` (`fixed` or `exponential`, default: `exponential`)
+- `--dry-run`
+- `--error-csv`
+- `--debug`
 
 ## Preset Profiles
 
@@ -49,6 +66,8 @@ Recommended default for most tenants.
 ```
 
 Use when your tenant is sensitive to burst traffic or you see frequent throttling.
+
+The commands use the latest source from this repo when you run `pvw` from a local checkout, or the installed CLI if you already published it.
 
 ## Practical Examples
 
@@ -87,5 +106,6 @@ pvw entity bulk-update-csv \
 ## CSV Notes
 
 - `bulk-create-csv` expects `typeName` and `qualifiedName`.
-- `bulk-update-csv` supports GUID-driven rows and now uses bulk payload calls per batch.
+- `bulk-update-csv` supports GUID-driven rows or `typeName + qualifiedName` rows and now uses bulk payload calls per batch.
 - Use `--error-csv` to capture failed rows for reprocessing.
+- Use `--dry-run` to preview batch behavior without changing Purview.

@@ -19,6 +19,7 @@ pvw entity bulk-update-csv --help
 ```bash
 pvw entity bulk-update-csv \
   --csv-file .\\update.csv \
+  --dry-run \
   --error-csv .\\failed_rows.csv
 ```
 
@@ -39,6 +40,7 @@ Actions:
 - Increase `--throttle-ms` (for example 50 -> 200 -> 500)
 - Use `--retry-mode exponential`
 - Increase `--max-retries` for noisy environments
+- Use `--dry-run` first to validate CSV shape before making changes
 
 Safe baseline:
 
@@ -88,6 +90,8 @@ Fix:
 ```bash
 .\\.venv\\Scripts\\python.exe -m pip install -e .
 ```
+
+If you are running from a local checkout, `pvw` will use the editable install from the repo.
 
 Or run directly from source:
 

@@ -20,12 +20,14 @@ The Purview MCP Server now provides comprehensive access to Microsoft Purview op
 
 **Version:** 2.0 (Enhanced)  
 **Documentation Coverage:** 90.5% (565/624 methods)  
-**Total Tools:** 33 operations across 8 categories  
+**Total Tools:** 33 curated operations across 8 categories, plus the live operation registry  
 **🆕 Feature:** Comprehensive prompt instructions embedded in MCP server
 
 ## 🎯 New: Built-in Prompt Instructions
 
 The MCP server now includes **comprehensive prompt instructions** automatically provided to AI assistants through the FastMCP `instructions` parameter. This ensures optimal usage of the Purview CLI client.
+
+The server also exposes `list_available_operations()` and `invoke_operation()` so new Purview client methods are reachable without waiting for a manual MCP refresh.
 
 **What's Included:**
 - ✅ Core capabilities overview for all 6 operation categories
@@ -364,14 +366,32 @@ All tools return structured responses:
 
 ### Local Testing:
 ```bash
-# Install dependencies
-pip install mcp>=1.0.0
-
-# Set environment
-export PURVIEW_ACCOUNT_NAME=your-account
+# Install from source with pip
+pip install -e .
+pip install -e tools/PurviewMCPServer
 
 # Run server
-python mcp/server/server.py
+pvw-mcp
+```
+
+### Install with uv (recommended):
+```bash
+# Install as a persistent CLI tool
+uv tool install --from "git+https://github.com/Keayoub/pvw-cli.git#subdirectory=tools/PurviewMCPServer" pvw-mcp
+
+# Or run without installing
+uvx --from "git+https://github.com/Keayoub/pvw-cli.git#subdirectory=tools/PurviewMCPServer" pvw-mcp
+```
+
+### Run with npx:
+```bash
+# npx launcher (uses pvw-mcp if already installed, otherwise uvx)
+npx -y chat.mcp.purview
+```
+
+Optional: override the uv source used by the npx launcher.
+```bash
+PVW_MCP_UV_FROM="pvw-mcp-server" npx -y chat.mcp.purview
 ```
 
 ### MCP Client Testing:
@@ -381,14 +401,36 @@ Use any MCP client (Claude Desktop, VS Code extension, custom client):
 {
   "mcpServers": {
     "purview": {
-      "command": "python",
-      "args": ["path/to/mcp/server/server.py"],
+      "command": "npx",
+      "args": ["-y", "chat.mcp.purview"],
       "env": {
         "PURVIEW_ACCOUNT_NAME": "your-account"
       }
     }
   }
 }
+```
+
+### Python SDK (modelcontextprotocol) with uvx:
+```python
+from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import stdio_client
+
+server = StdioServerParameters(
+    command="uvx",
+    args=[
+        "--from",
+        "git+https://github.com/Keayoub/pvw-cli.git#subdirectory=tools/PurviewMCPServer",
+        "pvw-mcp",
+    ],
+    env={"PURVIEW_ACCOUNT_NAME": "your-account"},
+)
+
+async with stdio_client(server) as (read_stream, write_stream):
+    async with ClientSession(read_stream, write_stream) as session:
+        await session.initialize()
+        tools = await session.list_tools()
+        print(tools)
 ```
 
 ## Prompt Instructions Quick Reference

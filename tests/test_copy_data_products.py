@@ -21,7 +21,7 @@ SAMPLE_DATA_PRODUCT = {
     },
     "contacts": {
         "Expert": [{"id": "user-obj-id-1", "info": "expert"}],
-        "Owner":  [{"id": "user-obj-id-2", "info": "owner"}],
+        "Owner":  [{"id": "9f64f894-884c-4c2e-83f5-245cf2b7d855", "info": "owner"}],
     },
     "labels": ["dp-label"],
     "businessMetadata": {},

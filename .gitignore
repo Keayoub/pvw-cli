@@ -66,3 +66,6 @@ README.md.bak.*
 
 .work-folder-info
 .github/context-mode/
+
+.venv*/
+.vfs*/
