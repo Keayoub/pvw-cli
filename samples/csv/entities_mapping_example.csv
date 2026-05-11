@@ -1,0 +1,6 @@
+info_object_guid,target_entity_guid,target_entity_type,relationship_type
+d286692e-30bb-48ba-ac49-f7372b12d225,90d14acb-cf75-4729-9245-68f6f6f60000,mssql_table,Objet Information_Table_Has
+d286692e-30bb-48ba-ac49-f7372b12d225,8c680380-f21a-4a88-8651-06f6f6f60000,mssql_table,Objet Information_Table_Has
+guid-info-object-2,90d14acb-cf75-4729-9245-68f6f6f60000,mssql_table,Objet Information_Table_Has
+guid-info-object-3,guid-procedure-1,mssql_procedure,Objet Information_Process_Has
+guid-info-object-4,guid-view-1,mssql_view,Objet Information_Has
