@@ -8,6 +8,7 @@ Manage relationships and connections between entities and metadata objects in yo
 ## What You Can Do
 
 - Create relationships between entities
+- Bulk create relationships from a CSV file
 - Read and inspect existing relationships
 - Update relationship properties
 - Delete obsolete relationships
@@ -34,6 +35,11 @@ Manage relationships and connections between entities and metadata objects in yo
     pvw relationship delete --help
     ```
 
+=== "Bulk create from CSV"
+    ```bash
+    pvw relationship bulk-create-csv --csv-file mapping.csv --dry-run
+    ```
+
 ## Available Actions
 
 | Command | Purpose |
@@ -42,6 +48,7 @@ Manage relationships and connections between entities and metadata objects in yo
 | `read` | Get relationship details |
 | `put` | Create or update relationship |
 | `delete` | Remove relationship |
+| [`bulk-create-csv`](./bulk-create-csv.md) | Bulk create relationships from a CSV file |
 
 ## Relationship Types
 
