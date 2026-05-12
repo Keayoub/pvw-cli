@@ -47,6 +47,7 @@ See `doc/performance-optimization-guide.md` for implementation patterns and best
 - When the user says they are ready to publish, use the release script at `scripts/release.ps1` (case-insensitive path on Windows; user may refer to `scripts/Release.ps1`).
 - Prefer command pattern: `./scripts/release.ps1 -NewVersion <MAJOR.MINOR.PATCH> -Push -Build`.
 - The script is the source of truth for release automation and must be used instead of manual version/tag steps unless the user explicitly asks otherwise.
+- For full end-to-end release requests, prioritize skill `.github/skills/release-all/SKILL.md` and execute only the single release command.
 - Expected script behavior to rely on:
   - Validates semantic version format.
   - Requires clean git working tree unless `-Force` is provided.
@@ -59,6 +60,13 @@ See `doc/performance-optimization-guide.md` for implementation patterns and best
   - Runs build step when `-Build` is used.
 - For release requests, ask only for missing required input (`-NewVersion`) and then execute the script.
 - Do not create tags or perform separate manual commit/push steps before the script, because the script already handles those operations.
+
+## GitHub Release Publishing (tag already created)
+- When the user asks to create a GitHub Release from an existing tag, use `scripts/create_github_release.ps1`.
+- Preferred command pattern: `./scripts/create_github_release.ps1 -Version <MAJOR.MINOR.PATCH>`.
+- The script resolves release notes from `releases/v<version>.md` (fallback `releases/<version>.md`), validates that the tag exists locally and on origin, then creates the GitHub release.
+- Use `-Force` only when the user explicitly wants to replace an existing release for the same tag.
+- For tag-only release publication requests, prioritize skill `.github/skills/github-release-from-tag/SKILL.md`.
 
 ## Profiling and Performance Diagnosis
 - For startup performance: Time CLI invocation with `Measure-Command` in PowerShell; profile module imports using `python -m cProfile`.

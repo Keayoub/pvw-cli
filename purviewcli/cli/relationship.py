@@ -18,7 +18,6 @@ options:
 import click
 import json
 import csv
-from pathlib import Path
 from purviewcli.client._relationship import Relationship
 from rich.console import Console
 
@@ -94,17 +93,17 @@ def bulk_create_csv(csv_file, output_json, dry_run):
     d286692e-30bb-48ba-ac49-f7372b12d225,90d14acb-cf75-4729-9245-68f6f6f60000,mssql_table,Objet Information_Table_Has
     """
     try:
-        console.print("[bold cyan]🔗 Bulk Create Relationships from CSV[/bold cyan]")
+        console.print("[bold cyan]Bulk Create Relationships from CSV[/bold cyan]")
         console.print(f"[dim]CSV File: {csv_file}[/dim]\n")
         
         # Read CSV and generate relationships
         relationships = _read_csv_and_generate_relationships(csv_file)
         
         if not relationships:
-            console.print("[yellow]⚠ No valid relationships found in CSV[/yellow]")
+            console.print("[yellow]WARNING: No valid relationships found in CSV[/yellow]")
             return
         
-        console.print(f"[green]✓ Generated {len(relationships)} relationship(s)[/green]")
+        console.print(f"[green]OK: Generated {len(relationships)} relationship(s)[/green]")
         
         # Preview relationships
         _preview_relationships(relationships)
@@ -121,7 +120,7 @@ def bulk_create_csv(csv_file, output_json, dry_run):
             console.print("\n[dim][DRY RUN] Relationships would be created with the above data[/dim]")
             
     except Exception as e:
-        console.print(f"[red]✗ Error: {e}[/red]")
+        console.print(f"[red]ERROR: {e}[/red]")
 
 def _read_csv_and_generate_relationships(csv_file):
     """Read CSV file and generate relationship objects"""
@@ -134,7 +133,7 @@ def _read_csv_and_generate_relationships(csv_file):
             
             # Validate header
             if not reader.fieldnames or not required_columns.issubset(set(reader.fieldnames)):
-                console.print(f"[red]✗ CSV must contain columns: {', '.join(required_columns)}[/red]")
+                console.print(f"[red]ERROR: CSV must contain columns: {', '.join(required_columns)}[/red]")
                 return []
             
             for row_idx, row in enumerate(reader, start=2):
@@ -146,7 +145,7 @@ def _read_csv_and_generate_relationships(csv_file):
                     rel_type = row['relationship_type'].strip()
                     
                     if not all([info_guid, target_guid, target_type, rel_type]):
-                        console.print(f"[yellow]⚠ Row {row_idx}: Skipping due to empty fields[/yellow]")
+                        console.print(f"[yellow]WARNING: Row {row_idx}: Skipping due to empty fields[/yellow]")
                         continue
                     
                     relationship = {
@@ -163,23 +162,23 @@ def _read_csv_and_generate_relationships(csv_file):
                     relationships.append(relationship)
                     
                 except Exception as e:
-                    console.print(f"[yellow]⚠ Row {row_idx}: {e}[/yellow]")
+                    console.print(f"[yellow]WARNING: Row {row_idx}: {e}[/yellow]")
                     continue
         
         return relationships
         
     except FileNotFoundError:
-        console.print(f"[red]✗ File not found: {csv_file}[/red]")
+        console.print(f"[red]ERROR: File not found: {csv_file}[/red]")
         return []
     except Exception as e:
-        console.print(f"[red]✗ Error reading CSV: {e}[/red]")
+        console.print(f"[red]ERROR: Error reading CSV: {e}[/red]")
         return []
 
 def _preview_relationships(relationships, max_preview=5):
     """Display a preview of the relationships"""
     console.print("\n[bold blue]Preview:[/bold blue]")
     for idx, rel in enumerate(relationships[:max_preview], 1):
-        console.print(f"  {idx}. {rel['end1']['guid'][:8]}... → {rel['end2']['guid'][:8]}... ({rel['typeName']})")
+        console.print(f"  {idx}. {rel['end1']['guid'][:8]}... -> {rel['end2']['guid'][:8]}... ({rel['typeName']})")
     
     if len(relationships) > max_preview:
         console.print(f"  ... and {len(relationships) - max_preview} more")
@@ -189,45 +188,42 @@ def _save_relationships_json(relationships, output_file):
     try:
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(relationships, f, indent=2, ensure_ascii=False)
-        console.print(f"[green]✓ Saved to: {output_file}[/green]")
+        console.print(f"[green]OK: Saved to: {output_file}[/green]")
     except Exception as e:
-        console.print(f"[red]✗ Error saving JSON: {e}[/red]")
+        console.print(f"[red]ERROR: Error saving JSON: {e}[/red]")
 
 def _create_relationships_bulk(relationships):
     """Create relationships using the API"""
     try:
         client = Relationship()
-        
-        # Prepare payload - the API can accept an array of relationships
-        args = {'--payloadFile': None}  # We'll set payload directly
-        
-        # For bulk operations, we need to call the endpoint multiple times
-        # or use the bulk endpoint if available
-        created = 0
-        failed = 0
-        
-        for rel in relationships:
-            try:
-                # Create individual relationship
-                from purviewcli.client.endpoint import get_json_from_dict
-                
-                # Temporarily set payload
-                client.payload = rel
-                client.method = "POST"
-                from purviewcli.client.endpoints import ENDPOINTS, get_api_version_params
-                client.endpoint = ENDPOINTS["relationship"]["create"]
-                client.params = get_api_version_params("datamap")
-                
-                # Make the request
-                result = client.make_request()
-                
-                if result:
+
+        # Preferred path: use official bulk endpoint implementation.
+        bulk_args = {'--payloadFile': relationships}
+        try:
+            result = client.relationshipCreateBulk(bulk_args)
+            if isinstance(result, dict) and result.get("status") == "error":
+                raise RuntimeError(result.get("message", "Unknown bulk error"))
+
+            console.print("  [green]OK[/green] Bulk API call completed")
+            created = len(relationships)
+            failed = 0
+        except Exception as bulk_error:
+            console.print(f"  [yellow]WARNING[/yellow] Bulk endpoint failed, fallback to single create: {str(bulk_error)[:120]}")
+
+            created = 0
+            failed = 0
+            for rel in relationships:
+                try:
+                    single_args = {'--payloadFile': rel}
+                    result = client.relationshipCreate(single_args)
+                    if isinstance(result, dict) and result.get("status") == "error":
+                        raise RuntimeError(result.get("message", "Unknown create error"))
+
                     created += 1
-                    console.print(f"  [green]✓[/green] Created: {rel['typeName']}")
-                    
-            except Exception as e:
-                failed += 1
-                console.print(f"  [red]✗[/red] Failed: {rel['typeName']} - {str(e)[:50]}")
+                    console.print(f"  [green]OK[/green] Created: {rel['typeName']}")
+                except Exception as e:
+                    failed += 1
+                    console.print(f"  [red]FAILED[/red] {rel['typeName']} - {str(e)[:120]}")
         
         console.print(f"\n[bold green]Summary:[/bold green]")
         console.print(f"  Created: {created}/{len(relationships)}")
@@ -235,6 +231,6 @@ def _create_relationships_bulk(relationships):
             console.print(f"  [red]Failed: {failed}[/red]")
             
     except Exception as e:
-        console.print(f"[red]✗ Error creating relationships: {e}[/red]")
+        console.print(f"[red]ERROR: Error creating relationships: {e}[/red]")
 
 __all__ = ['relationship']
