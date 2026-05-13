@@ -105,7 +105,7 @@ Create `.env` in your project root:
 PURVIEW_ACCOUNT_NAME=your-purview-account
 PURVIEW_ACCOUNT_ID=your-tenant-id-guid
 PURVIEW_RESOURCE_GROUP=your-resource-group
-`````n
+```
 !!! warning "Keep .env out of source control"
     Your `.env` contains account identifiers. Add it to `.gitignore`:
 
