@@ -3295,42 +3295,137 @@ def audit(ctx, guid):
 
 
 @entity.command()
-@click.option('--type-name', required=False, help='Filter by entity typeName (e.g., DataSet, DataProduct)')
-@click.option('--limit', default=100, help='Maximum number of entities to return')
-def list(type_name, limit):
-    """List entities in Microsoft Purview."""
+@click.option('--collection-id', '--guid', 'collection_id', required=False,
+              help='Collection ID to list entities from (e.g. pp3hth). '
+                   'Found via: pvw collections list')
+@click.option('--type-name', required=False,
+              help='Filter by entity typeName (e.g. DataSet, azure_sql_table)')
+@click.option('--limit', default=100, type=int,
+              help='Maximum number of entities to return (default: 100)')
+@click.option('--offset', default=0, type=int,
+              help='Number of results to skip for pagination (default: 0)')
+@click.option('--output', 'output_format',
+              type=click.Choice(['table', 'json', 'jsonc'], case_sensitive=False),
+              default='table',
+              help='Output format: table (default), json, jsonc (coloured JSON)')
+@click.option('--show-qualified-name', is_flag=True,
+              help='Include qualifiedName column in table output')
+def list(collection_id, type_name, limit, offset, output_format, show_qualified_name):
+    """List entities in Microsoft Purview.
+
+    Without options, returns the first 100 entities across all collections.
+    Use --collection-id (or --guid) to scope results to a specific collection.
+
+    \b
+    Examples:
+      pvw entity list
+      pvw entity list --collection-id pp3hth --limit 200
+      pvw entity list --guid pp3hth --output json
+      pvw entity list --type-name azure_sql_table --limit 50
+      pvw entity list --collection-id pp3hth --type-name DataSet --output table
+    """
     try:
         from purviewcli.client._search import Search
+        from rich.console import Console
+        from rich.table import Table
+        from rich.syntax import Syntax
+
         search_client = Search()
-        
-        # Create search query payload with proper filter structure
-        # Use null keywords to return all entities (Purview API ignores "*" as a wildcard)
+        _console = Console()
+
+        # Build filter ---------------------------------------------------
+        filter_clauses = []
+        if collection_id:
+            filter_clauses.append({"collectionId": collection_id})
+        if type_name:
+            filter_clauses.append({"entityType": type_name})
+
         search_payload = {
             "keywords": None,
             "limit": limit,
+            "offset": offset,
         }
-        
-        # Only add filter if type_name is specified
-        if type_name:
-            search_payload["filter"] = {
-                "entityType": type_name  # Send as string, not array
-            }
-        # If no type specified, don't include filter at all
-        
-        # Convert to args format expected by searchQuery
+        if len(filter_clauses) == 1:
+            search_payload["filter"] = filter_clauses[0]
+        elif len(filter_clauses) > 1:
+            search_payload["filter"] = {"and": filter_clauses}
+
         search_args = {
             "--payloadFile": None,
-            "--payload": json.dumps(search_payload)
+            "--payload": json.dumps(search_payload),
         }
-        
+
         results = search_client.searchQuery(search_args)
-        from rich.console import Console
-        console = Console()
-        console.print(json.dumps(results, indent=2))
+
+        # Output ---------------------------------------------------------
+        if output_format == 'json':
+            _console.print(json.dumps(results, indent=2))
+            return
+
+        if output_format == 'jsonc':
+            _console.print(Syntax(json.dumps(results, indent=2), "json"))
+            return
+
+        # Table output
+        total = results.get("@search.count", 0)
+        items = results.get("value", [])
+
+        if not items:
+            scope = f"collection '{collection_id}'" if collection_id else "all collections"
+            _console.print(f"[yellow]No entities found in {scope}.[/yellow]")
+            return
+
+        title_parts = []
+        if collection_id:
+            title_parts.append(f"Collection: {collection_id}")
+        if type_name:
+            title_parts.append(f"Type: {type_name}")
+        title = f"Entities — {' | '.join(title_parts)}" if title_parts else "Entities"
+        title += f"  ({len(items)} of {total} total)"
+        if offset:
+            title += f"  [offset {offset}]"
+
+        table = Table(title=title, show_lines=False)
+        table.add_column("GUID", style="yellow", min_width=36, max_width=36, no_wrap=True)
+        table.add_column("Name", style="cyan", min_width=20, max_width=45)
+        table.add_column("Type", style="green", min_width=18, max_width=30)
+        table.add_column("Collection", style="blue", min_width=10, max_width=20)
+        if show_qualified_name:
+            table.add_column("Qualified Name", style="dim", min_width=20, max_width=60)
+
+        for item in items:
+            guid = item.get("id", "N/A")
+            name = item.get("name", "N/A")
+            entity_type = item.get("entityType", "N/A")
+
+            collection = "N/A"
+            coll_raw = item.get("collection")
+            if isinstance(coll_raw, dict):
+                collection = coll_raw.get("name") or coll_raw.get("id") or "N/A"
+            elif coll_raw:
+                collection = str(coll_raw)
+            elif item.get("collectionId"):
+                collection = item["collectionId"]
+
+            row = [guid, name, entity_type, collection]
+            if show_qualified_name:
+                row.append(item.get("qualifiedName", "N/A"))
+            table.add_row(*row)
+
+        _console.print(table)
+
+        # Pagination hint
+        if (offset + len(items)) < total:
+            remaining = total - offset - len(items)
+            next_offset = offset + limit
+            _console.print(
+                f"[dim]  {remaining} more result(s). "
+                f"Use --offset {next_offset} --limit {limit} to fetch the next page.[/dim]"
+            )
+
     except Exception as e:
         from rich.console import Console
-        console = Console()
-        console.print(f"[red][X] Error executing entity list: {str(e)}[/red]")
+        Console().print(f"[red][X] Error executing entity list: {str(e)}[/red]")
 
 
 @entity.command("bulk-delete-optimized")
@@ -3715,20 +3810,44 @@ def _continuous_collection_deletion(ctx, collection_name, bulk_size, max_paralle
 
 def _get_collection_assets_batch(collection_name, batch_size):
     """
-    Get a batch of asset GUIDs from a collection
-    (Would integrate with search API)
+    Get a batch of asset GUIDs from a collection using the Search API.
+    Returns a list of GUID strings or an empty list when the collection is empty.
     """
-    # Placeholder - would use search API to get actual asset GUIDs
-    # For testing, return mock data that decreases over iterations
-    import random
-    mock_count = random.randint(0, min(batch_size, 100))
-    return [f"mock-guid-{i}" for i in range(mock_count)]
+    try:
+        from purviewcli.client._search import Search
+        import json
+
+        search_client = Search()
+        payload = {
+            "keywords": None,
+            "limit": batch_size,
+            "filter": {"collectionId": collection_name},
+        }
+        args = {"--payloadFile": None, "--payload": json.dumps(payload)}
+        result = search_client.searchQuery(args)
+        items = result.get("value", []) if result else []
+        return [item.get("id") for item in items if item.get("id")]
+    except Exception:
+        return []
 
 
 def _get_collection_asset_count(collection_name):
-    """Get total asset count for a collection"""
-    # Placeholder - would use search API
-    return 1500  # Mock count
+    """Get total asset count for a collection using the Search API."""
+    try:
+        from purviewcli.client._search import Search
+        import json
+
+        search_client = Search()
+        payload = {
+            "keywords": None,
+            "limit": 0,
+            "filter": {"collectionId": collection_name},
+        }
+        args = {"--payloadFile": None, "--payload": json.dumps(payload)}
+        result = search_client.searchQuery(args)
+        return result.get("@search.count", 0) if result else 0
+    except Exception:
+        return 0
 
 
 def _get_asset_type_breakdown(collection_name):
