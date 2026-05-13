@@ -146,6 +146,63 @@ For business metadata lifecycle operations now exposed in MCP:
 - `uc_delete_metadata_definition`
 - `uc_delete_metadata_from_asset`
 
+## Prompt Examples
+
+Use these examples directly in GitHub Copilot, Cursor, Codex, or Claude Code after the MCP server is connected.
+
+### 1. Discover What The Server Can Do
+
+```text
+Use the Purview MCP server and list available operations. Group them by area (entity, glossary, unified catalog, lineage, relationship) and highlight the safest read-only operations to start with.
+```
+
+### 2. Find Assets By Keyword And Summarize
+
+```text
+Use Purview MCP to search for assets with keyword "customer" (limit 10). Return a concise table with entity GUID, name, typeName, and collection, then summarize the top 3 most relevant results.
+```
+
+### 3. Safe Metadata Cleanup Check (No Delete)
+
+```text
+Run uc_cleanup_metadata_definition for "MyBusinessMetadata" with check_only=true. Show whether this metadata is still assigned to assets. If assigned, list the impacted asset IDs before any delete action.
+```
+
+### 4. Remove Metadata From One Asset
+
+```text
+Use uc_delete_metadata_from_asset to remove business metadata "MyBusinessMetadata" from asset "<asset-guid>". Then read the asset again and confirm the metadata is no longer present.
+```
+
+### 5. Full Cleanup Then Delete Definition
+
+```text
+Safely clean up business metadata definition "MyBusinessMetadata":
+1) Run cleanup in check_only mode.
+2) If no active assignments remain, execute cleanup.
+3) Delete the definition.
+4) Confirm deletion by listing custom metadata definitions again.
+```
+
+### 6. Domain And Term Creation Workflow
+
+```text
+Use Purview MCP to:
+1) List unified catalog domains.
+2) Create term "Customer Health Score" in domain "<domain-id-or-name>" with a short description.
+3) Read the created term details and return term ID, name, and domain.
+```
+
+### 7. Troubleshooting Prompt Template
+
+```text
+I am getting a 403 from a Purview MCP write operation. Please:
+1) Re-run a related read-only operation to validate connectivity.
+2) Show the exact failing MCP operation name and input.
+3) Suggest the minimum permissions and identity checks needed.
+4) Propose a safe next command to continue without modifying data.
+```
+
 ## Example Workflow
 
 ```text
