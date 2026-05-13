@@ -27,7 +27,7 @@ Manage relationships and connections between entities and metadata objects in yo
 
 === "Update relationship"
     ```bash
-    pvw relationship put --guid "3e8f0a1b-2c4d-5e6f-7a8b-9c0d1e2f3a4b" \
+    pvw relationship put \
       --payload-file samples/json/relationship/update.json
     ```
 
