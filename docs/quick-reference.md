@@ -1,5 +1,5 @@
 # Purview CLI - Unified Catalog Quick Reference Guide
-**Version**: 1.10.25  
+**Version**: 1.11.10  
 **Date**: April 27, 2026
 
 This guide provides quick access to all Unified Catalog commands available in pvw-cli.
@@ -567,7 +567,8 @@ pvw search analytics --output json
 
 ---
 
-**Version**: 1.10.25+  
-**Last Updated**: April 27, 2026  
+**Version**: 1.11.10+  
+****Last Updated**: May 2026  
 **CLI Repository**: https://github.com/Keayoub/pvw-cli
+
 

@@ -95,6 +95,23 @@ To get your tenant ID:
 az account show --query tenantId -o tsv
 ```
 
+### Using a .env file
+
+For local development, store your configuration in a `.env` file instead of setting environment variables in every terminal session. `pvw-cli` automatically loads this file from the current working directory at startup.
+
+Create `.env` in your project root:
+
+```ini
+PURVIEW_ACCOUNT_NAME=your-purview-account
+PURVIEW_ACCOUNT_ID=your-tenant-id-guid
+PURVIEW_RESOURCE_GROUP=your-resource-group
+`````n
+!!! warning "Keep .env out of source control"
+    Your `.env` contains account identifiers. Add it to `.gitignore`:
+
+    `.env is already in the default .gitignore for this project.`   
+    If you use Service Principal credentials, **never** store `AZURE_CLIENT_SECRET` in a committed file. Use Azure Key Vault or CI/CD secrets instead.
+
 ## 4. Verify the CLI
 
 Check the available commands:

@@ -58,6 +58,9 @@ nav:
       - Entity Bulk CSV Guide: entity-bulk-csv-guide.md
       - Bulk CSV Troubleshooting: bulk-csv-troubleshooting.md
       - Authentication Troubleshooting: authentication-troubleshooting.md
+      - Performance Guide: performance-optimization-guide.md
+      - Relationship Automation: relationship-automation-guide.md
+      - Collections Permissions: collections-permissions.md
   - Command Families:
       - Account: commands/account/main.md
       - Entity: commands/entity/main.md
@@ -80,3 +83,5 @@ nav:
   - Full Catalogs:
       - Documentation Catalog: documentation-catalog.md
       - Samples Catalog: samples-catalog.md
+      - Templates & Downloads: templates.md
+
