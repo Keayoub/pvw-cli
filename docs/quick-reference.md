@@ -568,7 +568,7 @@ pvw search analytics --output json
 ---
 
 **Version**: 1.11.10+  
-****Last Updated**: May 2026  
+**Last Updated**: May 2026  
 **CLI Repository**: https://github.com/Keayoub/pvw-cli
 
 
