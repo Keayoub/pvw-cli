@@ -39,6 +39,76 @@ python tools/PurviewMCPServer/server.py
 
 The server starts with FastMCP and exposes tools declared in `server.py`.
 
+## MCP Server Config Template
+
+Most MCP clients use the same logical schema: server name, command, args, and env.
+
+Use this local Python config as the baseline:
+
+```json
+{
+  "mcpServers": {
+    "purview": {
+      "command": "python",
+      "args": ["tools/PurviewMCPServer/server.py"],
+      "env": {
+        "PURVIEW_ACCOUNT_NAME": "<your-purview-account>",
+        "PURVIEW_ACCOUNT_ID": "<your-tenant-id-guid>",
+        "AZURE_TENANT_ID": "<your-tenant-id-guid>"
+      }
+    }
+  }
+}
+```
+
+If your client supports npm-based MCP launchers, this package form is also available:
+
+```json
+{
+  "mcpServers": {
+    "purview": {
+      "command": "npx",
+      "args": ["-y", "chat.mcp.purview"],
+      "env": {
+        "PURVIEW_ACCOUNT_NAME": "<your-purview-account>",
+        "PURVIEW_ACCOUNT_ID": "<your-tenant-id-guid>",
+        "AZURE_TENANT_ID": "<your-tenant-id-guid>"
+      }
+    }
+  }
+}
+```
+
+## Client Setup
+
+### VS Code + GitHub Copilot
+
+1. Open MCP server settings from the VS Code MCP/Copilot UI.
+2. Add a server named `purview` using the config template above.
+3. Save, then restart the MCP connection.
+4. In Copilot Chat, verify the tools are available by asking for available MCP tools.
+
+### Cursor
+
+1. Open Cursor MCP settings.
+2. Add a new MCP server (`purview`) with the same command/args/env.
+3. Reconnect MCP in Cursor.
+4. Test with a read-only call such as listing available operations.
+
+### Codex
+
+1. Open Codex MCP configuration (UI or config file, depending on your Codex build).
+2. Register the `purview` server with the same MCP schema shown above.
+3. Restart the Codex agent session.
+4. Verify by calling `list_available_operations` first.
+
+### Claude Code
+
+1. Open Claude Code MCP configuration.
+2. Add `purview` with the same server configuration.
+3. Restart or reload MCP servers in Claude Code.
+4. Validate with read-only tools before write operations.
+
 ## How To Use It
 
 Use an MCP-capable client/agent and connect it to this server process. Then call tools directly, for example:
@@ -57,6 +127,24 @@ Recommended usage pattern:
 3. Validate IDs and names from read output.
 4. Apply write operations.
 5. Use bulk operations for large ingestion or migration.
+
+## Recommended First Commands
+
+Run these in order when testing a new MCP client setup:
+
+```text
+1) list_available_operations()
+2) invoke_operation("search", "searchQuery", {"--keywords": "customer", "--limit": 5})
+3) uc_list_custom_metadata_defs()
+4) uc_cleanup_metadata_definition("<definition-or-attribute-name>", check_only=true)
+```
+
+For business metadata lifecycle operations now exposed in MCP:
+
+- `uc_list_custom_metadata_defs`
+- `uc_cleanup_metadata_definition`
+- `uc_delete_metadata_definition`
+- `uc_delete_metadata_from_asset`
 
 ## Example Workflow
 
