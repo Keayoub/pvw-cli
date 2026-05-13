@@ -63,7 +63,7 @@ pvw lineage import lineage_example.csv
 
 **Import command:**
 ```bash
-pvw entity bulk-import --csv-file entity_bulk_update_example.csv
+pvw entity bulk-update-csv --csv-file entity_bulk_update_example.csv
 ```
 
 ---
