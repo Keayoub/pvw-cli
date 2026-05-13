@@ -212,7 +212,7 @@ pvw scan putDataSource --data-source-name "my-sql-db" --payload-file scan_source
 
 ```powershell
 # Download and customise the universal template
-$bm = Invoke-RestMethod "https://github.com/Keayoub/pvw-cli/raw/main/samples/json/business_metadata/business_metadata_universal.json"
+Invoke-WebRequest "https://github.com/Keayoub/pvw-cli/raw/main/samples/json/business_metadata/business_metadata_universal.json" -OutFile business_metadata_universal.json
 
 # Create the type definition
 pvw types createTypeDefs --payload-file business_metadata_universal.json
