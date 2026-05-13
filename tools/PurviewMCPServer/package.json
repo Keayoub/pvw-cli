@@ -1,6 +1,6 @@
 {
   "name": "chat.mcp.purview",
-  "version": "1.11.6",
+  "version": "1.11.13",
   "description": "Model Context Protocol server for Microsoft Purview CLI - enables LLM-powered data governance workflows",
   "type": "module",
   "bin": {

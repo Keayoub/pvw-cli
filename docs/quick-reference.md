@@ -139,6 +139,26 @@ pvw uc dataproduct list-relationships --product-id <guid>
 pvw uc dataproduct create-relationship --product-id <guid> --target-id <target-guid>
 ```
 
+### Business Metadata Cleanup
+
+```bash
+# List business metadata definitions and attributes
+pvw uc metadata list
+
+# Safe check (no delete)
+pvw uc metadata cleanup --name <definition-or-attribute-name> --check-only --verbose
+
+# Execute cleanup delete when safe
+pvw uc metadata cleanup --name <definition-or-attribute-name> --verbose
+
+# Delete definition directly (definition name)
+pvw uc metadata delete-definition --name <definition-name> --dry-run
+pvw uc metadata delete-definition --name <definition-name>
+
+# Remove definition assignment from one asset
+pvw uc metadata delete --asset-id <asset-guid> --group <definition-name>
+```
+
 ---
 
 ## 🔒 Critical Data Elements (CDE) Commands

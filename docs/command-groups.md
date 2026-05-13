@@ -39,6 +39,7 @@ Use this page when you already know the kind of object or operation you are look
 | --- | --- |
 | [Unified Catalog guide](unified-catalog.md) | Start here for domains, terms, data products, OKRs, CDEs, and governance workflows |
 | [Unified Catalog commands](commands/unified-catalog.md) | Jump directly into the UC command reference when you already know the area |
+| [Purview MCP Server](purview-mcp-server.md) | Run MCP tools for AI-driven Purview operations and workflow automation |
 | [Quick reference](quick-reference.md) | Use compact examples when you need command syntax without reading full guides |
 | [Samples catalog](samples-catalog.md) | Browse JSON, CSV, PowerShell, and notebook samples by use case |
 

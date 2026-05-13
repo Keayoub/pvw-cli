@@ -8,21 +8,26 @@ Use these as starting templates.
 
 ```bash
 # Delete entity resources
-python -m purviewcli entity delete --help
-python -m purviewcli entity bulk-delete --help
-python -m purviewcli entity bulk-delete-csv --help
+pvw entity delete --help
+pvw entity bulk-delete --help
+pvw entity bulk-delete-csv --help
 
 # Delete glossary resources
-python -m purviewcli glossary delete --help
-python -m purviewcli glossary delete-term --help
+pvw glossary delete --help
+pvw glossary delete-term --help
 
 # Delete relationships and shares
-python -m purviewcli relationship delete --help
-python -m purviewcli share delete-asset --help
+pvw relationship delete --help
+pvw share delete-asset --help
 
 # Delete scan resources
-python -m purviewcli scan deletescan --help
-python -m purviewcli scan deletedatasource --help
+pvw scan deletescan --help
+pvw scan deletedatasource --help
+
+# Cleanup expired business metadata definitions
+pvw uc metadata cleanup --name "SecteursActivite" --check-only --verbose
+pvw uc metadata cleanup --name "SecteursActivite" --verbose
+pvw uc metadata delete-definition --name "Glossaire" --dry-run
 ```
 
 ## Entity Delete
@@ -49,6 +54,13 @@ python -m purviewcli scan deletedatasource --help
 - [Delete asset mapping](share/deleteAssetMapping.md)
 - [Delete received share](share/deleteReceivedShare.md)
 - [Delete sent invitation](share/deleteSentInvitation.md)
+
+## Unified Catalog Metadata Cleanup
+
+- `pvw uc metadata cleanup --name <definition-or-attribute-name> --check-only --verbose`
+- `pvw uc metadata cleanup --name <definition-or-attribute-name> --verbose`
+- `pvw uc metadata delete-definition --name <definition-name> --dry-run`
+- `pvw uc metadata delete --asset-id <guid> --group <definition-name>`
 
 ## Account and Management Delete
 

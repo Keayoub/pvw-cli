@@ -48,14 +48,14 @@ All commands feature beautiful, colorized table output with:
 ### 💡 Pro Tips
 ```bash
 # Get help for any command
-pv uc --help
-pv uc domain --help
+pvw uc --help
+pvw uc domain --help
 
 # Use JSON output for scripting
-pv uc domain list --output json
+pvw uc domain list --output json
 
 # Filter results with search
-pv uc term search --query "finance"
+pvw uc term search --query "finance"
 ```
 
 ## Authentication
@@ -68,30 +68,30 @@ The UC client uses the same authentication as other Purview CLI commands:
 
 ## 📚 Complete Command Reference
 
-### 🏢 Governance Domains (`pv uc domain`)
+### 🏢 Governance Domains (`pvw uc domain`)
 
 Manage organizational contexts for data governance:
 
 ```bash
 # List all domains (with rich table output)
-pv uc domain list
+pvw uc domain list
 
 # Create a new domain
-pv uc domain create --name "Finance" --description "Financial data domain" 
+pvw uc domain create --name "Finance" --description "Financial data domain" 
                    --type "BusinessUnit" --owner-id "user@company.com"
 
 # Get domain details
-pv uc domain show --domain-id "abc-123"
+pvw uc domain show --domain-id "abc-123"
 
 # Update domain properties
-pv uc domain update --domain-id "abc-123" --name "Finance Analytics" 
+pvw uc domain update --domain-id "abc-123" --name "Finance Analytics" 
                    --status "Published"
 
 # Delete domain (with confirmation)
-pv uc domain delete --domain-id "abc-123" --confirm
+pvw uc domain delete --domain-id "abc-123" --confirm
 ```
 
-### 📖 Glossary Terms (`pv uc term`)
+### 📖 Glossary Terms (`pvw uc term`)
 
 Manage business terminology with comprehensive metadata:
 
@@ -148,7 +148,7 @@ pvw uc term sync-classic --domain-id "abc-123" --create-glossary
 > **Note:** `--delete-removed` is opt-in to prevent accidental data loss.
 > Always use `--dry-run` first when running against a production glossary.
 
-### 📦 Data Products (`pv uc dataproduct`)
+### 📦 Data Products (`pvw uc dataproduct`)
 
 Manage curated data asset collections with lifecycle tracking and full CRUD operations:
 
@@ -238,7 +238,7 @@ Cleanup behavior:
 - `--verbose`: prints endpoint path selection and raw error payloads.
 - Deletion is blocked when the definition is still referenced by assets. Remove assignments first, then rerun cleanup.
 
-### 🎯 Objectives & Key Results (`pv uc objective`)
+### 🎯 Objectives & Key Results (`pvw uc objective`)
 
 Track data governance goals and measure progress:
 
@@ -268,7 +268,7 @@ pvw uc objective update --objective-id "obj-123" --progress 75
 pvw uc objective delete --objective-id "obj-123" --confirm
 ```
 
-### 🔑 Critical Data Elements (`pv uc cde`)
+### 🔑 Critical Data Elements (`pvw uc cde`)
 
 Define and manage important data elements with type information:
 
@@ -484,7 +484,7 @@ pvw uc domain list
 └─────────────┴─────────────────┴──────────────┴─────────────┴──────────────┘
 
 Found 3 domains across 2 business units
-✨ Use 'pv uc domain show --domain-id <ID>' for detailed view
+✨ Use 'pvw uc domain show --domain-id <ID>' for detailed view
 ```
 
 ## 🔄 Migration & Compatibility
@@ -494,7 +494,7 @@ The original `data_product` command remains available for backward compatibility
 
 ```bash
 # These commands are equivalent:
-pv uc dataproduct list --domain-id "abc-123"
+pvw uc dataproduct list --domain-id "abc-123"
 pv data_product dataproduct list --domain-id "abc-123"  # Legacy syntax
 ```
 
@@ -526,7 +526,7 @@ This implementation provides **complete feature parity** with the popular [Unifi
 1. **Azure CLI** (Recommended)
    ```bash
    az login
-   pv uc domain list
+   pvw uc domain list
    ```
 
 2. **Service Principal**
@@ -534,13 +534,13 @@ This implementation provides **complete feature parity** with the popular [Unifi
    set AZURE_CLIENT_ID=your-client-id
    set AZURE_TENANT_ID=your-tenant-id  
    set AZURE_CLIENT_SECRET=your-secret
-   pv uc domain list
+   pvw uc domain list
    ```
 
 3. **Managed Identity** (Azure VMs/Functions)
    ```bash
    # Automatically detected in Azure environments
-   pv uc domain list
+   pvw uc domain list
    ```
 
 ## ⚠️ Error Handling & Troubleshooting
@@ -551,7 +551,7 @@ This implementation provides **complete feature parity** with the popular [Unifi
 |-------|-------|----------|
 | `Authentication failed` | No valid credentials | Run `az login` or set service principal env vars |
 | `Permission denied` | Missing UC access | Contact admin for Purview data governance permissions |
-| `Domain not found` | Invalid domain ID | Use `pv uc domain list` to get valid IDs |
+| `Domain not found` | Invalid domain ID | Use `pvw uc domain list` to get valid IDs |
 | `Rate limit exceeded` | Too many API calls | Built-in retry logic handles this automatically |
 | `Network timeout` | Connection issues | Check firewall and proxy settings |
 
@@ -571,8 +571,8 @@ Unified Catalog integrates seamlessly with the broader Purview CLI:
 
 ```bash
 # Export governance structure  
-pv uc domain list --output json > domains.json
-pv uc term list --domain-id "abc-123" --output json > terms.json
+pvw uc domain list --output json > domains.json
+pvw uc term list --domain-id "abc-123" --output json > terms.json
 
 # Search and link assets to data products
 pv search query --keywords "customer" --output json > assets.json
@@ -580,7 +580,7 @@ pv search query --keywords "customer" --output json > assets.json
 
 # Bulk domain creation from CSV
 cat domains.csv | while IFS=, read name desc type; do
-  pv uc domain create --name "$name" --description "$desc" --type "$type"
+  pvw uc domain create --name "$name" --description "$desc" --type "$type"
 done
 ```
 
@@ -589,28 +589,28 @@ done
 1. **📋 Setting Up Governance**
    ```bash
    # 1. Create governance domains
-   pv uc domain create --name "Finance" --type "BusinessUnit"
+   pvw uc domain create --name "Finance" --type "BusinessUnit"
    
    # 2. Define glossary terms  
-   pv uc term create --name "Revenue" --domain-id "fin-001"
+   pvw uc term create --name "Revenue" --domain-id "fin-001"
    
    # 3. Establish objectives
-   pv uc objective create --definition "95% data quality" --domain-id "fin-001"
+   pvw uc objective create --definition "95% data quality" --domain-id "fin-001"
    ```
 
 2. **📦 Data Product Lifecycle**
    ```bash
    # Draft → Review → Published → Deprecated
-   pv uc dataproduct create --name "Customer360" --status "Draft"
-   pv uc dataproduct update --product-id "dp-123" --status "Published"  
-   pv uc dataproduct update --product-id "dp-123" --status "Deprecated"
+   pvw uc dataproduct create --name "Customer360" --status "Draft"
+   pvw uc dataproduct update --product-id "dp-123" --status "Published"  
+   pvw uc dataproduct update --product-id "dp-123" --status "Deprecated"
    ```
 
 3. **📊 Progress Tracking**
    ```bash
    # Monitor OKR progress
-   pv uc objective list --status "Active"
-   pv uc objective update --objective-id "obj-123" --progress 75
+   pvw uc objective list --status "Active"
+   pvw uc objective update --objective-id "obj-123" --progress 75
    ```
 
 ---

@@ -40,6 +40,12 @@ Start from what you need to do: install the CLI, choose the correct command fami
 
   [Open guide](unified-catalog.md)
 
+- __Use Purview MCP Server__
+
+  Run the MCP server and connect AI clients to Purview tools for guided governance workflows.
+
+  [Open guide](purview-mcp-server.md)
+
 - __Open the full reference__
 
   Browse every documentation page only when you need exhaustive coverage.
@@ -67,6 +73,7 @@ Start from what you need to do: install the CLI, choose the correct command fami
 3. Need task-oriented guidance: [Common Workflows](common-workflows.md)
 4. Need exhaustive command coverage: [Full Documentation Catalog](documentation-catalog.md)
 5. Need examples and sample inputs: [Full Samples Catalog](samples-catalog.md)
+6. Need MCP setup and usage: [Purview MCP Server](purview-mcp-server.md)
 
 ## Five-Minute Start
 

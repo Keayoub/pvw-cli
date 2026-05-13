@@ -54,6 +54,7 @@ nav:
       - Command Groups: command-groups.md
   - Core Guides:
       - Unified Catalog: unified-catalog.md
+      - Purview MCP Server: purview-mcp-server.md
       - Quick Reference: quick-reference.md
       - Entity Bulk CSV Guide: entity-bulk-csv-guide.md
       - Bulk CSV Troubleshooting: bulk-csv-troubleshooting.md
