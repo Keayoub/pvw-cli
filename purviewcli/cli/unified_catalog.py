@@ -14,6 +14,7 @@ from rich.table import Table
 from rich.text import Text
 from rich.syntax import Syntax
 from purviewcli.client._unified_catalog import UnifiedCatalogClient
+from purviewcli.client._types import Types
 
 console = get_console()
 
@@ -4823,6 +4824,94 @@ def metadata():
     pass
 
 
+def _extract_error_message(response):
+    """Extract a readable error message from varied API response shapes."""
+    if not isinstance(response, dict):
+        return "Unknown error"
+
+    for key in ("message", "errorMessage", "error", "detail"):
+        value = response.get(key)
+        if isinstance(value, str) and value.strip():
+            return value
+
+    data = response.get("data")
+    if isinstance(data, dict):
+        for key in ("message", "errorMessage", "error", "detail"):
+            value = data.get(key)
+            if isinstance(value, str) and value.strip():
+                return value
+
+    return "Unknown error"
+
+
+def _delete_business_metadata_definition(types_client, name, verbose=False):
+    """Delete business metadata definition with robust endpoint fallback."""
+    args = {"--name": name}
+
+    # Primary path for Business Metadata defs in Purview Atlas.
+    if verbose:
+        console.print("[dim]Delete path: business metadata bulk delete endpoint[/dim]")
+    response = types_client.deleteBusinessMetadataDef(args)
+    if not (isinstance(response, dict) and response.get("status") == "error"):
+        return response
+
+    # Fallback to generic typedef delete for environments where primary endpoint is not accepted.
+    message = _extract_error_message(response).lower()
+    if any(token in message for token in ("not found", "invalid", "unsupported", "method", "404", "405")):
+        if verbose:
+            console.print("[dim]Delete path fallback: typedef delete-by-name endpoint[/dim]")
+        return types_client.typesDeleteDef(args)
+
+    return response
+
+
+def _resolve_business_metadata_definition_name(name):
+    """Resolve user-provided name to a business metadata definition name.
+
+    Accepts either:
+    - Definition/group name
+    - Attribute name (resolved to its parent group when unambiguous)
+    """
+    client = UnifiedCatalogClient()
+    response = client.list_custom_metadata({})
+
+    groups = []
+    if isinstance(response, dict):
+        groups = response.get("businessMetadataDefs", []) or []
+
+    input_lower = name.lower()
+
+    # Exact or case-insensitive definition name match.
+    for group in groups:
+        group_name = group.get("name")
+        if isinstance(group_name, str) and group_name.lower() == input_lower:
+            return group_name, None
+
+    # Resolve attribute name to parent definition name.
+    matched_groups = []
+    for group in groups:
+        group_name = group.get("name")
+        for attr in group.get("attributeDefs", []) or []:
+            attr_name = attr.get("name")
+            if isinstance(attr_name, str) and attr_name.lower() == input_lower and group_name:
+                matched_groups.append(group_name)
+
+    unique_groups = sorted(set(matched_groups))
+    if len(unique_groups) == 1:
+        resolved = unique_groups[0]
+        note = f"Resolved attribute '{name}' to business metadata definition '{resolved}'"
+        return resolved, note
+
+    if len(unique_groups) > 1:
+        groups_str = ", ".join(unique_groups)
+        raise ValueError(
+            f"Attribute name '{name}' exists in multiple definitions: {groups_str}. "
+            "Use the definition name instead."
+        )
+
+    return name, None
+
+
 @metadata.command(name="list")
 @click.option("--output", type=click.Choice(["table", "json"]), default="table", help="Output format")
 @click.option("--fallback/--no-fallback", default=True, help="Fallback to Business Metadata if UC is empty")
@@ -4897,6 +4986,15 @@ def list_custom_metadata(output, fallback):
                         except:
                             pass
                     
+                    if not attributes:
+                        table.add_row(
+                            "[dim](no attributes)[/dim]",
+                            group_name,
+                            "[dim]-[/dim]",
+                            group_scope,
+                            "[dim]-[/dim]"
+                        )
+
                     for attr in attributes:
                         total_attrs += 1
                         attr_name = attr.get('name', 'N/A')
@@ -5087,6 +5185,124 @@ def delete_custom_metadata(asset_id, group):
     response = client.delete_custom_metadata(args)
     
     console.print(f"[green]SUCCESS:[/green] Business metadata group '{group}' deleted from asset '{asset_id}'")
+
+
+@metadata.command(name="delete-definition")
+@click.option("--name", required=True, help="Business metadata definition name")
+@click.option("--dry-run/--no-dry-run", default=False, help="Simulate deletion without making changes")
+@click.confirmation_option(prompt="Are you sure you want to permanently delete this business metadata definition?")
+def delete_custom_metadata_definition(name, dry_run):
+    """Delete a business metadata type definition by name.
+
+    This deletes the business metadata definition from the catalog type system.
+    Purview rejects deletion when the definition is still assigned to assets.
+
+    Example: pvw uc metadata delete-definition --name Governance
+    """
+    if dry_run:
+        console.print(f"[yellow]DRY-RUN:[/yellow] Would delete business metadata definition '{name}'")
+        return
+
+    client = Types()
+    try:
+        resolved_name, resolution_note = _resolve_business_metadata_definition_name(name)
+    except ValueError as e:
+        console.print(f"[red]FAILED:[/red] {e}")
+        return
+
+    if resolution_note:
+        console.print(f"[cyan]INFO:[/cyan] {resolution_note}")
+
+    response = _delete_business_metadata_definition(client, resolved_name)
+
+    if isinstance(response, dict) and response.get("status") == "error":
+        message = _extract_error_message(response)
+        console.print(f"[red]FAILED:[/red] Unable to delete business metadata definition '{resolved_name}': {message}")
+        return
+
+    console.print(f"[green]SUCCESS:[/green] Business metadata definition '{resolved_name}' deleted")
+    if response:
+        _format_json_output(response)
+
+
+@metadata.command(name="cleanup")
+@click.option("--name", required=True, help="Business metadata definition name")
+@click.option("--check-only", is_flag=True, help="Only validate references and deletion readiness")
+@click.option("--dry-run/--no-dry-run", default=False, help="Simulate cleanup without deleting")
+@click.option("--verbose", is_flag=True, help="Show path selection and full API error payload")
+@click.confirmation_option(prompt="Proceed with cleanup attempt (check references, then delete if safe)?")
+def cleanup_custom_metadata_definition(name, check_only, dry_run, verbose):
+    """Clean up a business metadata definition by validating and deleting when safe.
+
+    Cleanup flow:
+    1) Verify the definition exists.
+    2) Attempt delete only when not in check-only/dry-run mode.
+    3) If deletion fails due to references, report that assets are still associated.
+
+    Example: pvw uc metadata cleanup --name Governance --check-only
+    """
+    types_client = Types()
+
+    try:
+        resolved_name, resolution_note = _resolve_business_metadata_definition_name(name)
+    except ValueError as e:
+        console.print(f"[red]FAILED:[/red] {e}")
+        return
+
+    if resolution_note:
+        console.print(f"[cyan]INFO:[/cyan] {resolution_note}")
+
+    # Step 1: Verify definition exists
+    read_args = {"--name": resolved_name}
+    definition = types_client.typesReadBusinessMetadataDefByName(read_args)
+
+    if isinstance(definition, dict) and definition.get("status") == "error":
+        message = _extract_error_message(definition)
+        console.print(f"[red]FAILED:[/red] Unable to read business metadata definition '{resolved_name}': {message}")
+        if verbose:
+            console.print("[dim]Raw read error payload:[/dim]")
+            _format_json_output(definition)
+        return
+
+    if not definition:
+        console.print(f"[red]FAILED:[/red] Business metadata definition '{resolved_name}' was not found")
+        return
+
+    console.print(f"[green]OK:[/green] Found business metadata definition '{resolved_name}'")
+
+    if check_only:
+        console.print("[cyan]CHECK-ONLY:[/cyan] Definition exists. Delete was not executed.")
+        console.print("[dim]Next step: run without --check-only to delete if no asset references exist.[/dim]")
+        return
+
+    if dry_run:
+        console.print(f"[yellow]DRY-RUN:[/yellow] Would attempt cleanup delete for '{resolved_name}'")
+        return
+
+    # Step 2: Guarded delete (server enforces no active references)
+    delete_response = _delete_business_metadata_definition(types_client, resolved_name, verbose=verbose)
+
+    if isinstance(delete_response, dict) and delete_response.get("status") == "error":
+        message = _extract_error_message(delete_response)
+        message_lower = message.lower()
+        if any(token in message_lower for token in ("reference", "referenced", "in use", "assigned", "constraint")):
+            console.print(f"[yellow]WARNING:[/yellow] '{resolved_name}' is still associated with one or more assets; delete was blocked")
+            console.print(f"[dim]Details:[/dim] {message}")
+            console.print("[dim]Remove asset assignments first, then rerun cleanup.[/dim]")
+            if verbose:
+                console.print("[dim]Raw delete error payload:[/dim]")
+                _format_json_output(delete_response)
+            return
+
+        console.print(f"[red]FAILED:[/red] Cleanup delete failed for '{resolved_name}': {message}")
+        if verbose:
+            console.print("[dim]Raw delete error payload:[/dim]")
+            _format_json_output(delete_response)
+        return
+
+    console.print(f"[green]SUCCESS:[/green] Cleanup completed. Business metadata definition '{resolved_name}' deleted")
+    if delete_response:
+        _format_json_output(delete_response)
 
 
 # ========================================

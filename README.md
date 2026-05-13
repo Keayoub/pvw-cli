@@ -232,6 +232,15 @@ pvw uc dataproduct link-entity \
   --entity-id "4fae348b-e960-42f7-834c-38f6f6f60000" \
   --type-name azure_sql_table
 
+# Business metadata cleanup
+pvw uc metadata list
+pvw uc metadata cleanup --name "SecteursActivite" --check-only --verbose
+pvw uc metadata cleanup --name "SecteursActivite" --verbose
+
+# Delete a definition directly (definition/group name)
+pvw uc metadata delete-definition --name "Glossaire" --dry-run
+pvw uc metadata delete-definition --name "Glossaire"
+
 # Objectives (OKRs)
 pvw uc objective list --domain-id "abc-123"
 pvw uc objective create --definition "Improve data quality score to 95%" --domain-id "abc-123"

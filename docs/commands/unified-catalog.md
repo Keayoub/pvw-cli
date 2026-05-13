@@ -14,6 +14,7 @@ The Unified Catalog (`uc`) command group provides comprehensive management of Mi
 - **✅ Health Management** - Automated governance health monitoring and recommendations (NEW)
 - **✅ Workflow Management** - Approval workflows and business process automation (NEW)
 - **ℹ️ Custom Attributes / Business Metadata** - User-defined metadata attributes. If the `datagovernance/catalog/attributes` endpoint is unavailable (HTTP 405), use Atlas business metadata via `pvw types putTypeDefs` with `businessMetadataDefs`.
+- **✅ Metadata Cleanup** - Resolve expired attribute names to their parent definition and safely clean up definitions.
 - **🚧 Access Requests** - Data access workflow management (coming soon)
 
 ## 🚀 Quick Start
@@ -203,6 +204,39 @@ pvw uc dataproduct delete --product-id "prod-789" --yes
 - ✅ **Full ID Display**: All list commands show complete UUIDs (no truncation)
 - ✅ **Safe Deletion**: Confirmation prompt by default, `--yes` to skip
 - ✅ **Rich Formatting**: Beautiful tables with status colors and proper alignment
+
+### 🧹 Custom Metadata Cleanup (`pvw uc metadata`)
+
+Manage business metadata assigned to assets and safely delete obsolete definitions.
+
+```bash
+# List business metadata definitions and attributes
+pvw uc metadata list
+pvw uc metadata list --output json
+
+# Remove business metadata group from a specific asset
+pvw uc metadata delete --asset-id "entity-guid" --group "Glossaire"
+
+# Delete a business metadata definition directly by definition name
+pvw uc metadata delete-definition --name "Glossaire" --dry-run
+pvw uc metadata delete-definition --name "Glossaire"
+
+# Cleanup flow (safe):
+# 1) Validate only (no delete)
+pvw uc metadata cleanup --name "Glossaire" --check-only --verbose
+
+# 2) Execute deletion when safe
+pvw uc metadata cleanup --name "Glossaire" --verbose
+
+# You can also pass an attribute name; CLI resolves it to parent definition name
+pvw uc metadata cleanup --name "SecteursActivite" --check-only --verbose
+```
+
+Cleanup behavior:
+- `--check-only`: verifies resolution and definition readability only.
+- `--dry-run`: shows intended delete action without execution.
+- `--verbose`: prints endpoint path selection and raw error payloads.
+- Deletion is blocked when the definition is still referenced by assets. Remove assignments first, then rerun cleanup.
 
 ### 🎯 Objectives & Key Results (`pv uc objective`)
 

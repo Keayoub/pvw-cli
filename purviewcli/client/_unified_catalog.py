@@ -5155,7 +5155,6 @@ Use Cases:
         self.endpoint = ENDPOINTS["unified_catalog"]["list_custom_metadata"]
         self.params = {
             "type": "business_metadata",
-            "includeTermTemplate": "true",
             "api-version": "2022-11-03"
         }
 
