@@ -61,6 +61,7 @@ You are interacting with the Microsoft Purview MCP Server, providing comprehensi
 - **Governance Domains** - Organizational contexts for data assets (86% API coverage)
 - **Data Products** - Curated data asset collections with lifecycle tracking
 - **Business Metadata Terms** - Business vocabulary with full metadata
+- **Business Metadata Cleanup** - List metadata defs, resolve attribute names, cleanup/delete definitions, remove asset assignments
 - **Objectives & Key Results (OKRs)** - Data governance goal tracking
 - **Critical Data Elements (CDEs)** - Important data element definitions
 - **Policies** - Governance and RBAC policies management
@@ -687,6 +688,248 @@ async def assign_term_to_entities(
 # ============================================================================
 # UNIFIED CATALOG OPERATIONS (Business Metadata)
 # ============================================================================
+
+def _mcp_extract_error_message(response: Any) -> str:
+    """Extract a readable error message from varied API response shapes."""
+    if not isinstance(response, dict):
+        return "Unknown error"
+
+    for key in ("message", "errorMessage", "error", "detail"):
+        value = response.get(key)
+        if isinstance(value, str) and value.strip():
+            return value
+
+    data = response.get("data")
+    if isinstance(data, dict):
+        for key in ("message", "errorMessage", "error", "detail"):
+            value = data.get(key)
+            if isinstance(value, str) and value.strip():
+                return value
+
+    return "Unknown error"
+
+
+def _mcp_resolve_business_metadata_definition_name(name: str) -> Dict[str, Any]:
+    """Resolve a user-provided name to a business metadata definition name."""
+    uc_client = UnifiedCatalogClient()
+    response = uc_client.list_custom_metadata({})
+
+    groups = []
+    if isinstance(response, dict):
+        groups = response.get("businessMetadataDefs", []) or []
+
+    name_lower = name.lower()
+
+    # Exact definition match
+    for group in groups:
+        group_name = group.get("name")
+        if isinstance(group_name, str) and group_name.lower() == name_lower:
+            return {
+                "resolved_name": group_name,
+                "resolution_type": "definition",
+                "note": None,
+            }
+
+    # Attribute-name match
+    matched_groups: List[str] = []
+    for group in groups:
+        group_name = group.get("name")
+        for attr in group.get("attributeDefs", []) or []:
+            attr_name = attr.get("name")
+            if isinstance(attr_name, str) and attr_name.lower() == name_lower and group_name:
+                matched_groups.append(group_name)
+
+    unique_groups = sorted(set(matched_groups))
+    if len(unique_groups) == 1:
+        resolved_name = unique_groups[0]
+        return {
+            "resolved_name": resolved_name,
+            "resolution_type": "attribute",
+            "note": f"Resolved attribute '{name}' to business metadata definition '{resolved_name}'",
+        }
+
+    if len(unique_groups) > 1:
+        groups_str = ", ".join(unique_groups)
+        raise ValueError(
+            f"Attribute name '{name}' exists in multiple definitions: {groups_str}. "
+            "Use the definition name instead."
+        )
+
+    return {
+        "resolved_name": name,
+        "resolution_type": "none",
+        "note": None,
+    }
+
+
+def _mcp_delete_business_metadata_definition(types_client: Types, name: str) -> Dict[str, Any]:
+    """Delete business metadata definition with robust endpoint fallback."""
+    args = {"--name": name}
+
+    # Primary path for Business Metadata definitions.
+    response = types_client.deleteBusinessMetadataDef(args)
+    if not (isinstance(response, dict) and response.get("status") == "error"):
+        return response
+
+    # Fallback to typedef delete-by-name in case endpoint behavior differs.
+    message = _mcp_extract_error_message(response).lower()
+    if any(token in message for token in ("not found", "invalid", "unsupported", "method", "404", "405")):
+        return types_client.typesDeleteDef(args)
+
+    return response
+
+
+@mcp.tool()
+def uc_list_custom_metadata_defs() -> Dict[str, Any]:
+    """List business metadata definitions and attributes."""
+    uc_client = UnifiedCatalogClient()
+    return uc_client.list_custom_metadata({})
+
+
+@mcp.tool()
+def uc_delete_metadata_from_asset(asset_id: str, group: str) -> Dict[str, Any]:
+    """Remove a business metadata group assignment from a specific asset."""
+    uc_client = UnifiedCatalogClient()
+    args = {
+        "--asset-id": [asset_id],
+        "--group": [group],
+    }
+    response = uc_client.delete_custom_metadata(args)
+    return {
+        "status": "success",
+        "asset_id": asset_id,
+        "group": group,
+        "response": response,
+    }
+
+
+@mcp.tool()
+def uc_delete_metadata_definition(
+    name: str,
+    dry_run: bool = False,
+    resolve_attribute_name: bool = True,
+) -> Dict[str, Any]:
+    """Delete a business metadata definition by name.
+
+    If resolve_attribute_name is true, an attribute name can be provided and will
+    be resolved to its parent definition when unambiguous.
+    """
+    resolved_name = name
+    resolution_note = None
+    if resolve_attribute_name:
+        resolution = _mcp_resolve_business_metadata_definition_name(name)
+        resolved_name = resolution["resolved_name"]
+        resolution_note = resolution.get("note")
+
+    if dry_run:
+        return {
+            "status": "dry-run",
+            "input_name": name,
+            "resolved_name": resolved_name,
+            "note": resolution_note,
+            "message": "Would delete business metadata definition",
+        }
+
+    types_client = Types()
+    response = _mcp_delete_business_metadata_definition(types_client, resolved_name)
+
+    if isinstance(response, dict) and response.get("status") == "error":
+        return {
+            "status": "error",
+            "input_name": name,
+            "resolved_name": resolved_name,
+            "note": resolution_note,
+            "message": _mcp_extract_error_message(response),
+            "raw": response,
+        }
+
+    return {
+        "status": "success",
+        "input_name": name,
+        "resolved_name": resolved_name,
+        "note": resolution_note,
+        "response": response,
+    }
+
+
+@mcp.tool()
+def uc_cleanup_metadata_definition(
+    name: str,
+    check_only: bool = False,
+    dry_run: bool = False,
+    resolve_attribute_name: bool = True,
+) -> Dict[str, Any]:
+    """Safely cleanup a business metadata definition.
+
+    Flow:
+    1) Resolve name (optionally from attribute to definition)
+    2) Verify definition exists/readable
+    3) Optionally delete when not check-only/dry-run
+    """
+    resolved_name = name
+    resolution_note = None
+    if resolve_attribute_name:
+        resolution = _mcp_resolve_business_metadata_definition_name(name)
+        resolved_name = resolution["resolved_name"]
+        resolution_note = resolution.get("note")
+
+    types_client = Types()
+
+    read_args = {"--name": resolved_name}
+    definition = types_client.typesReadBusinessMetadataDefByName(read_args)
+    if isinstance(definition, dict) and definition.get("status") == "error":
+        return {
+            "status": "error",
+            "input_name": name,
+            "resolved_name": resolved_name,
+            "note": resolution_note,
+            "message": _mcp_extract_error_message(definition),
+            "raw": definition,
+        }
+
+    if check_only:
+        return {
+            "status": "check-only",
+            "input_name": name,
+            "resolved_name": resolved_name,
+            "note": resolution_note,
+            "message": "Definition exists and delete was not executed",
+            "definition": definition,
+        }
+
+    if dry_run:
+        return {
+            "status": "dry-run",
+            "input_name": name,
+            "resolved_name": resolved_name,
+            "note": resolution_note,
+            "message": "Would attempt cleanup delete",
+        }
+
+    delete_response = _mcp_delete_business_metadata_definition(types_client, resolved_name)
+    if isinstance(delete_response, dict) and delete_response.get("status") == "error":
+        message = _mcp_extract_error_message(delete_response)
+        message_lower = message.lower()
+        blocked = any(
+            token in message_lower
+            for token in ("reference", "referenced", "in use", "assigned", "constraint")
+        )
+        return {
+            "status": "blocked" if blocked else "error",
+            "input_name": name,
+            "resolved_name": resolved_name,
+            "note": resolution_note,
+            "message": message,
+            "raw": delete_response,
+        }
+
+    return {
+        "status": "success",
+        "input_name": name,
+        "resolved_name": resolved_name,
+        "note": resolution_note,
+        "response": delete_response,
+    }
 
 @mcp.tool()
 def uc_list_domains() -> Dict[str, Any]:

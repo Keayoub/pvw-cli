@@ -24,7 +24,7 @@ The Purview MCP Server now provides comprehensive access to Microsoft Purview op
 
 **Version:** 2.0 (Enhanced)  
 **Documentation Coverage:** 90.5% (565/624 methods)  
-**Total Tools:** 33 curated operations across 8 categories, plus the live operation registry  
+**Total Tools:** 37 curated operations across 8 categories, plus the live operation registry  
 **🆕 Feature:** Comprehensive prompt instructions embedded in MCP server
 
 ## 🎯 New: Built-in Prompt Instructions
@@ -94,7 +94,7 @@ Business vocabulary management:
 - Data asset semantic enrichment
 - Business-technical alignment
 
-### Unified Catalog Operations (7 tools)
+### Unified Catalog Operations (11 tools)
 
 Microsoft Purview Business Metadata (new in this version):
 
@@ -105,6 +105,10 @@ Microsoft Purview Business Metadata (new in this version):
 5. `uc_get_term` - Get term details
 6. `uc_create_term` - Create new business metadata term
 7. `uc_search_terms` - Search terms across domains
+8. `uc_list_custom_metadata_defs` - List business metadata definitions and attributes
+9. `uc_cleanup_metadata_definition` - Resolve/check/delete metadata definition safely
+10. `uc_delete_metadata_definition` - Delete business metadata definition by name
+11. `uc_delete_metadata_from_asset` - Remove metadata group assignment from an asset
 
 **Use Cases:**
 
@@ -112,6 +116,7 @@ Microsoft Purview Business Metadata (new in this version):
 - Domain-driven data governance
 - Business metadata standardization
 - Cross-domain term discovery
+- Expired metadata cleanup and definition lifecycle management
 
 ### Collection Operations (5 tools)
 
