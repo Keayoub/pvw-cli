@@ -259,6 +259,18 @@ Used for specific operations:
 
 ## Configuration
 
+For detailed Claude Code setup instructions, including local-checkout and direct
+`uvx` launch examples, see `docs/purview-mcp-server.md`.
+
+When configuring any client, make sure these values are set in the MCP server
+environment:
+
+- `PURVIEW_ACCOUNT_NAME`
+- `PURVIEW_ACCOUNT_ID`
+- `AZURE_TENANT_ID`
+
+Prefer a read-only smoke test first, such as `list_available_operations()`.
+
 ### Environment Variables Required
 
 ```bash

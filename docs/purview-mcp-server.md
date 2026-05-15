@@ -104,10 +104,64 @@ If your client supports npm-based MCP launchers, this package form is also avail
 
 ### Claude Code
 
-1. Open Claude Code MCP configuration.
-2. Add `purview` with the same server configuration.
-3. Restart or reload MCP servers in Claude Code.
-4. Validate with read-only tools before write operations.
+Claude Code can connect to the server either from a local checkout of this repo
+or by launching the packaged server directly.
+
+#### Option A: Local checkout
+
+Use this when you already have the repository on disk:
+
+```json
+{
+  "mcpServers": {
+    "purview": {
+      "command": "python",
+      "args": ["tools/PurviewMCPServer/server.py"],
+      "cwd": "D:/Projects/Purview/Purview_cli",
+      "env": {
+        "PURVIEW_ACCOUNT_NAME": "<your-purview-account>",
+        "PURVIEW_ACCOUNT_ID": "<your-tenant-id-guid>",
+        "AZURE_TENANT_ID": "<your-tenant-id-guid>"
+      }
+    }
+  }
+}
+```
+
+#### Option B: Direct Git launch
+
+Use this when you want Claude Code to start the server straight from the repo:
+
+```json
+{
+  "mcpServers": {
+    "purview": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/Keayoub/pvw-cli.git#subdirectory=tools/PurviewMCPServer",
+        "pvw-mcp"
+      ],
+      "env": {
+        "PURVIEW_ACCOUNT_NAME": "<your-purview-account>",
+        "PURVIEW_ACCOUNT_ID": "<your-tenant-id-guid>",
+        "AZURE_TENANT_ID": "<your-tenant-id-guid>"
+      }
+    }
+  }
+}
+```
+
+#### Claude Code checklist
+
+1. Open Claude Code MCP settings/config.
+2. Add a server named `purview` with one of the configs above.
+3. Save the config and reload MCP servers in Claude Code.
+4. Run a read-only check first, such as `list_available_operations()`.
+5. Only after that, use write operations like `create_entity` or `uc_create_term`.
+
+Tip: if Claude Code keeps a cached MCP state, fully restart the session after
+editing the config.
 
 ## How To Use It
 
