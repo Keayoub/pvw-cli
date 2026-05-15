@@ -2555,7 +2555,8 @@ def update_terms_from_csv(csv_file, dry_run, debug):
 @term.command(name="update-json")
 @click.option("--json-file", required=True, type=click.Path(exists=True), help="Path to JSON file with term updates")
 @click.option("--dry-run", is_flag=True, help="Preview updates without applying them")
-def update_terms_from_json(json_file, dry_run):
+@click.option("--debug", is_flag=True, help="Enable debug logging for each update")
+def update_terms_from_json(json_file, dry_run, debug):
     """Bulk update glossary terms from a JSON file.
     
     JSON Format:
@@ -2621,7 +2622,9 @@ def update_terms_from_json(json_file, dry_run):
             
             # Build update arguments
             args = {"--term-id": [term_id]}
-            
+            if debug:
+                args["--debug"] = True
+
             # Add replace operations
             if update.get('name'):
                 args['--name'] = [update['name']]

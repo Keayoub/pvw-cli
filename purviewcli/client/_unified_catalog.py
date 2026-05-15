@@ -2000,14 +2000,16 @@ Use Cases:
         if not existing_term or (isinstance(existing_term, dict) and existing_term.get("error")):
             return {"error": f"Could not fetch existing term {term_id}"}
         
-        # Start with existing term data
-        payload = {
-            "id": term_id,
-            "name": existing_term.get("name", ""),
-            "description": existing_term.get("description", ""),
-            "domain": existing_term.get("domain", ""),
-            "status": existing_term.get("status", "Draft"),
-        }
+        # Start with the full existing term so updates do not accidentally
+        # drop server-returned fields that the API expects to preserve.
+        import copy
+
+        payload = copy.deepcopy(existing_term)
+        payload["id"] = term_id
+        payload["name"] = existing_term.get("name", "")
+        payload["description"] = existing_term.get("description", "")
+        payload["domain"] = existing_term.get("domain", "")
+        payload["status"] = existing_term.get("status", "Draft")
         
         # Update with provided values (only if explicitly provided)
         if args.get("--name"):
@@ -2022,12 +2024,15 @@ Use Cases:
             payload["status"] = args["--status"][0]
         
         # Handle owners - replace or add to existing
-        contacts = existing_term.get("contacts") or {}
+        contacts = payload.get("contacts") or {}
+        if not isinstance(contacts, dict):
+            contacts = {}
         existing_owners = contacts.get("owner", []) if isinstance(contacts, dict) else []
         if args.get("--owner-id"):
             # Replace owners
             owners = [{"id": oid} for oid in args["--owner-id"]]
-            payload["contacts"] = {"owner": owners}
+            contacts["owner"] = owners
+            payload["contacts"] = contacts
         elif args.get("--add-owner-id"):
             # Add to existing owners
             existing_owner_ids = set()
@@ -2038,10 +2043,8 @@ Use Cases:
             new_owner_ids = args["--add-owner-id"]
             combined_owner_ids = existing_owner_ids.union(set(new_owner_ids))
             owners = [{"id": oid} for oid in combined_owner_ids]
-            payload["contacts"] = {"owner": owners}
-        elif existing_owners:
-            # Keep existing owners
-            payload["contacts"] = {"owner": existing_owners}
+            contacts["owner"] = owners
+            payload["contacts"] = contacts
         
         # Handle acronyms - replace or add to existing
         existing_acronyms = existing_term.get("acronyms", []) or []
