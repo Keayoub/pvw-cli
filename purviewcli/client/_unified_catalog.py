@@ -4,7 +4,11 @@ Implements comprehensive Unified Catalog functionality
 """
 
 from .endpoint import Endpoint, decorator, get_json, no_api_call_decorator
-from .endpoints import ENDPOINTS, get_api_version_params
+from .endpoints import (
+    ENDPOINTS,
+    CATALOG_LIST_DEFAULT_API_VERSION,
+    get_api_version_params,
+)
 import os
 import json
 
@@ -5154,12 +5158,24 @@ Use Cases:
         - Compliance Auditing: Review metadata and classifications
         - Reporting: Generate catalog reports
     """
+        include_expired_raw = args.get("--include-expired", False)
+        if isinstance(include_expired_raw, list):
+            include_expired_raw = include_expired_raw[0] if include_expired_raw else False
+        include_expired = str(include_expired_raw).lower() in ("1", "true", "yes", "on")
+
+        api_version = args.get("--api-version", [CATALOG_LIST_DEFAULT_API_VERSION])[0]
+
         self.method = "GET"
-        self.endpoint = ENDPOINTS["unified_catalog"]["list_custom_metadata"]
-        self.params = {
-            "type": "business_metadata",
-            "api-version": "2022-11-03"
-        }
+        if include_expired:
+            # Preview catalog endpoint returns attribute IDs and expired entries.
+            self.endpoint = ENDPOINTS["unified_catalog"]["list_custom_metadata_catalog"]
+            self.params = {"api-version": api_version}
+        else:
+            self.endpoint = ENDPOINTS["unified_catalog"]["list_custom_metadata"]
+            self.params = {
+                "type": "business_metadata",
+                "api-version": "2022-11-03"
+            }
 
     @decorator
     def get_custom_metadata(self, args):

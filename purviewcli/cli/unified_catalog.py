@@ -4918,15 +4918,57 @@ def _resolve_business_metadata_definition_name(name):
 @metadata.command(name="list")
 @click.option("--output", type=click.Choice(["table", "json"]), default="table", help="Output format")
 @click.option("--fallback/--no-fallback", default=True, help="Fallback to Business Metadata if UC is empty")
-def list_custom_metadata(output, fallback):
+@click.option("--include-expired", is_flag=True, help="Use catalog preview endpoint to include expired attributes with IDs")
+@click.option("--api-version", default="2026-03-20-preview", show_default=True, help="API version used with --include-expired")
+def list_custom_metadata(output, fallback, include_expired, api_version):
     """List all custom metadata definitions.
     
     Uses Atlas API to get Business Metadata definitions. 
     With fallback enabled, shows user-friendly table format.
     """
     client = UnifiedCatalogClient()
-    response = client.list_custom_metadata({})
-    
+    response = client.list_custom_metadata(
+        {
+            "--include-expired": include_expired,
+            "--api-version": [api_version],
+        }
+    )
+
+    if include_expired:
+        if output == "json":
+            console.print_json(json.dumps(response))
+            return
+
+        rows = response.get("value", []) if isinstance(response, dict) else []
+        if not rows:
+            console.print("[yellow]No custom metadata attributes found from catalog preview endpoint[/yellow]")
+            return
+
+        table = Table(title="[bold green]Custom Metadata (Including Expired)[/bold green]", show_header=True)
+        table.add_column("Group", style="cyan")
+        table.add_column("GroupId", style="white")
+        table.add_column("GroupStatus", style="yellow")
+        table.add_column("GroupExpired", style="magenta")
+        table.add_column("Attribute", style="green")
+        table.add_column("AttrId", style="white")
+
+        for item in rows:
+            if not isinstance(item, dict):
+                continue
+
+            table.add_row(
+                str(item.get("groupName") or item.get("group") or "N/A"),
+                str(item.get("groupId") or "N/A"),
+                str(item.get("groupStatus") or item.get("status") or "N/A"),
+                "yes" if bool(item.get("groupExpired", item.get("expired", False))) else "no",
+                str(item.get("attributeName") or item.get("attribute") or item.get("name") or "N/A"),
+                str(item.get("attributeId") or item.get("attrId") or item.get("id") or "N/A"),
+            )
+
+        console.print(table)
+        console.print(f"\n[cyan]Total:[/cyan] {len(rows)} custom metadata row(s) (catalog preview)")
+        return
+
     # Check if UC API returned business metadata (Atlas returns businessMetadataDefs)
     has_uc_data = (response and "businessMetadataDefs" in response 
                    and response["businessMetadataDefs"])

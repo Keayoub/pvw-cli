@@ -23,6 +23,10 @@ API_VERSION = {
 
 USE_PREVIEW = os.getenv("USE_PREVIEW", "true").lower() in ("1", "true", "yes")
 
+# Catalog custom metadata list supports expired attributes in preview.
+CATALOG_CUSTOM_METADATA_PATH = "/datagovernance/catalog/customMetadata"
+CATALOG_LIST_DEFAULT_API_VERSION = "2026-03-20-preview"
+
 
 # Dynamic API version selection
 def get_api_version(service_type: str) -> str:
@@ -459,9 +463,9 @@ ENDPOINTS = {
         "get_policy": "/datagovernance/catalog/policies/{policyId}",
         "update_policy": "/datagovernance/catalog/policies/{policyId}",
         "delete_policy": "/datagovernance/catalog/policies/{policyId}",
-        # Custom Metadata (Business Metadata via Atlas API)
-        # Note: Both /catalog/api and /datamap/api work, but /datamap/api is for new portal
+        # Custom Metadata
         "list_custom_metadata": "/datamap/api/atlas/v2/types/typedefs",
+        "list_custom_metadata_catalog": CATALOG_CUSTOM_METADATA_PATH,
         "get_custom_metadata": "/datamap/api/atlas/v2/entity/guid/{guid}",
         "add_custom_metadata": "/datamap/api/atlas/v2/entity/guid/{guid}/businessmetadata",
         "update_custom_metadata": "/datamap/api/atlas/v2/entity/guid/{guid}/businessmetadata",
