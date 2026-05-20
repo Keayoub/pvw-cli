@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Microsoft Purview Insight Client - Complete API Coverage
 Handles Analytics, Reports, Asset Distribution, and Business Intelligence operations

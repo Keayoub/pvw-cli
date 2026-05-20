@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Account Management Client for Microsoft Purview Account Data Plane API
 Based on official API: https://learn.microsoft.com/en-us/rest/api/purview/accountdataplane/accounts

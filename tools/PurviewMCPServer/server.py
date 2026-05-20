@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 FastMCP Server for Microsoft Purview CLI
 

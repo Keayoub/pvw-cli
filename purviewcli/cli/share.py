@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 usage: 
     pvw share listAcceptedShares --sentShareName=<val> [--skipToken=<val>]

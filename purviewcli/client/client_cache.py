@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Client Singleton Caching System
 Provides module-level client instance management with weak references and auth-profile scoping.

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Data Quality and Validation Module
 Provides data quality checks and validation for Purview operations

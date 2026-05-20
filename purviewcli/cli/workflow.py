@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Microsoft Purview Workflow CLI Commands
 Provides command-line interface for workflow management operations

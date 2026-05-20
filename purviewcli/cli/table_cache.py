@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Rich Table Schema Caching
 Caches Rich table column definitions and styles for reuse across similar commands.

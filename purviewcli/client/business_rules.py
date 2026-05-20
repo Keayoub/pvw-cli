@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Business Rules Engine for Microsoft Purview
 Provides automated governance policy enforcement and compliance checking

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Microsoft Purview Unified Catalog API Client
 Implements comprehensive Unified Catalog functionality

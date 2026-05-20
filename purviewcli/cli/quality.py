@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """Data Quality CLI commands."""
 
 import json

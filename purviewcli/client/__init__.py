@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 from .api_client import PurviewClient
 from ._entity import Entity
 from ._glossary import Glossary

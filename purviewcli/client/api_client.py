@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
  Microsoft Purview API Client
 Supports the latest Microsoft Purview REST API specifications with comprehensive automation capabilities

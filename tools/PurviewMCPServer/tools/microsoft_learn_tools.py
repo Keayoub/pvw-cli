@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Microsoft Learn Tools for Semantic Model MCP Server
 

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Lineage Management Client for Microsoft Purview Data Map API
 Based on official API: https://learn.microsoft.com/en-us/rest/api/purview/datamapdataplane/lineage

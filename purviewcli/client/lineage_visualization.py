@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Advanced Lineage Visualization for Microsoft Purview
 Provides comprehensive data lineage analysis, visualization, and impact assessment

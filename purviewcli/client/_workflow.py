@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Microsoft Purview Workflow Client - Complete API Coverage
 Handles Workflow Management, Approval Processes, and Business Process Automation

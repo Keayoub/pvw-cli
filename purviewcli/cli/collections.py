@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Manage collections in Microsoft Purview using modular Click-based commands.
 

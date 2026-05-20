@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Microsoft Purview Unified Catalog CLI Commands
 Replaces data_product functionality with comprehensive Unified Catalog operations

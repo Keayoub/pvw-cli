@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Diagnostic and performance monitoring commands for the Purview CLI.
 Includes cache statistics, performance metrics, and optimization guidance.

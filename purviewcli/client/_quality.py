@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Microsoft Purview Data Quality API Client
 Data Quality operations for Unified Catalog quality namespace.

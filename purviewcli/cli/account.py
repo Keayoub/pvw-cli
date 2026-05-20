@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Manage Purview account and collections using modular Click-based commands.
 

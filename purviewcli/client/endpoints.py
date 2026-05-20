@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Microsoft Purview API Endpoints Configuration - Complete 100% Coverage
 Centralized endpoint management for ALL Purview services and operations
@@ -320,7 +322,19 @@ ENDPOINTS = {
         "delete_workflow": "/workflows/{workflowId}",
         "enable_workflow": "/workflows/{workflowId}/enable",
         "disable_workflow": "/workflows/{workflowId}/disable",
-        # Workflow execution
+        # Workflow execution / runs
+        "execute_workflow": "/workflows/{workflowId}/run",
+        "workflow_execution": "/workflowruns/{workflowRunId}",
+        "workflow_executions": "/workflows/{workflowId}/runs",
+        "cancel_workflow_execution": "/workflowruns/{workflowRunId}/cancel",
+        "workflow_runs": "/workflows/{workflowId}/runs",
+        "workflow_run": "/workflowruns/{workflowRunId}",
+        "workflow_history": "/workflows/{workflowId}/history",
+        # Workflow tasks
+        "workflow_tasks": "/workflowtasks",
+        "workflow_task": "/workflowtasks/{taskId}",
+        "complete_task": "/workflowtasks/{taskId}/complete",
+        # User requests
         "submit_user_requests": "/userrequests",
         "get_workflow_run": "/workflowruns/{workflowRunId}",
         "list_workflow_runs": "/workflows/{workflowId}/runs",
@@ -328,9 +342,39 @@ ENDPOINTS = {
         "approve_workflow_task": "/workflowtasks/{taskId}/approve",
         "reject_workflow_task": "/workflowtasks/{taskId}/reject",
         "reassign_workflow_task": "/workflowtasks/{taskId}/reassign",
-        # Workflow templates and analytics
+        # Approval workflows
+        "create_approval_workflow": "/workflows/approval",
+        "approval_requests": "/approvalrequests",
+        "approval_request": "/approvalrequests/{requestId}",
+        "approve_request": "/approvalrequests/{requestId}/approve",
+        "reject_request": "/approvalrequests/{requestId}/reject",
+        # Workflow templates
+        "workflow_templates": "/workflows/templates",
+        "workflow_template": "/workflows/templates/{templateId}",
+        "create_from_template": "/workflows/templates/{templateId}/create",
         "list_workflow_templates": "/workflows/templates",
+        # Workflow analytics and logs
         "get_workflow_analytics": "/workflows/{workflowId}/analytics",
+        "workflow_metrics": "/workflows/{workflowId}/metrics",
+        "workflow_logs": "/workflows/{workflowId}/logs",
+        "export_logs": "/workflows/{workflowId}/logs/export",
+        # Workflow triggers and schedules
+        "workflow_triggers": "/workflows/{workflowId}/triggers",
+        "create_trigger": "/workflows/{workflowId}/triggers",
+        "workflow_trigger": "/workflows/{workflowId}/triggers/{triggerId}",
+        "schedule_workflow": "/workflows/{workflowId}/schedules",
+        "workflow_schedules": "/workflows/{workflowId}/schedules",
+        "workflow_schedule": "/workflows/{workflowId}/schedules/{scheduleId}",
+        # Workflow actions, conditions, variables, versions
+        "workflow_actions": "/workflows/actions",
+        "workflow_conditions": "/workflows/conditions",
+        "validate_workflow": "/workflows/validate",
+        "workflow_variables": "/workflows/{workflowId}/variables",
+        "workflow_versions": "/workflows/{workflowId}/versions",
+        # Workflow integrations
+        "workflow_integrations": "/workflows/integrations",
+        "configure_integration": "/workflows/integrations/{integrationId}",
+        "test_integration": "/workflows/integrations/{integrationId}/test",
     },
     # ==================== POLICY API ENDPOINTS ====================
     "devops_policies": {
@@ -457,6 +501,9 @@ ENDPOINTS = {
         "delete_cde_relationship": "/datagovernance/catalog/criticalDataElements/{cdeId}/relationships",
         # CDE query
         "query_critical_data_elements": "/datagovernance/catalog/criticalDataElements/query",
+            # CDE convenience aliases (used by _unified_catalog.py)
+            "get_cde": "/datagovernance/catalog/criticalDataElements/{cdeId}",
+            "list_cdes": "/datagovernance/catalog/criticalDataElements",
         # Policies
         "list_policies": "/datagovernance/catalog/policies",
         "create_policy": "/datagovernance/catalog/policies",
@@ -535,6 +582,31 @@ ENDPOINTS = {
         "default_account": "/subscriptions/{subscriptionId}/providers/Microsoft.Purview/getDefaultAccount",
         "set_default_account": "/subscriptions/{subscriptionId}/providers/Microsoft.Purview/setDefaultAccount",
         "remove_default_account": "/subscriptions/{subscriptionId}/providers/Microsoft.Purview/removeDefaultAccount",
+        # Account keys
+        "access_keys": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Purview/accounts/{accountName}/listkeys",
+        "regenerate_access_key": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Purview/accounts/{accountName}/regeneratekeys",
+        # Private link resources
+        "private_link_resources": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Purview/accounts/{accountName}/privateLinkResources",
+        "private_link_resource": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Purview/accounts/{accountName}/privateLinkResources/{groupId}",
+        # Private endpoint connections
+        "private_endpoint_connections": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Purview/accounts/{accountName}/privateEndpointConnections",
+        "private_endpoint_connection": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Purview/accounts/{accountName}/privateEndpointConnections/{privateEndpointConnectionName}",
+        # Account features and settings
+        "account_features": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Purview/accounts/{accountName}/listFeatures",
+        "ingestion_status": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Purview/accounts/{accountName}/ingestionStatus",
+        "resource_sets": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Purview/accounts/{accountName}/resourceSetRuleConfigs/defaultResourceSetRuleConfig",
+        "security_settings": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Purview/accounts/{accountName}/networkPolicy",
+        # Diagnostic settings (Azure Monitor)
+        "diagnostic_settings": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Purview/accounts/{accountName}/providers/microsoft.insights/diagnosticSettings",
+        "diagnostic_setting": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Purview/accounts/{accountName}/providers/microsoft.insights/diagnosticSettings/{name}",
+        # Account usage, metrics, tags, status
+        "account_usage": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Purview/accounts/{accountName}/usages",
+        "account_metrics": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Purview/accounts/{accountName}/metrics",
+        "account_tags": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Purview/accounts/{accountName}/tags",
+        "account_status": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Purview/accounts/{accountName}/status",
+        "account_health": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Purview/accounts/{accountName}/health",
+        "subscription_usage": "/subscriptions/{subscriptionId}/providers/Microsoft.Purview/usages",
+        "validate_configuration": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Purview/accounts/{accountName}/validateConfiguration",
     },
     # ==================== LEGACY COMPATIBILITY ENDPOINTS ====================
     "scan": {
@@ -543,11 +615,142 @@ ENDPOINTS = {
         "status": "/scan/status",
         "results": "/scan/results",
     },
+    # ==================== SHARE (LEGACY) / ACCEPTED SHARES API ====================
     "share": {
-        # Legacy share endpoints for compatibility
-        "base": "/share",
-        "invitation": "/share/invitation",
-        "accept": "/share/accept",
+        # Accepted sent shares (legacy in-product sharing via /sentShares/{name}/acceptedSentShares)
+        "accepted_sent_shares": "/sentShares/{sentShareName}/acceptedSentShares",
+        "accepted_sent_share": "/sentShares/{sentShareName}/acceptedSentShares/{acceptedSentShareName}",
+        "reinstate_accepted_share": "/sentShares/{sentShareName}/acceptedSentShares/{acceptedSentShareName}:reinstate",
+        "revoke_accepted_share": "/sentShares/{sentShareName}/acceptedSentShares/{acceptedSentShareName}:revoke",
+        "update_expiration_accepted_share": "/sentShares/{sentShareName}/acceptedSentShares/{acceptedSentShareName}:updateExpiration",
+        # Asset mappings
+        "asset_mappings": "/receivedShares/{receivedShareName}/assetMappings",
+        "asset_mapping": "/receivedShares/{receivedShareName}/assetMappings/{assetMappingName}",
+        # Assets
+        "assets": "/sentShares/{sentShareName}/assets",
+        "asset": "/sentShares/{sentShareName}/assets/{assetName}",
+        # Email activation
+        "activate_email": "/receivedShares:activateEmail",
+        # Received share operations
+        "accepted_sent_shares_list": "/sentShares/{sentShareName}/acceptedSentShares",
+    },
+    # ==================== POLICYSTORE API ENDPOINTS ====================
+    "policystore": {
+        # Metadata policies (Account Data Plane)
+        "metadata_roles": "/metadataRoles",
+        "metadata_policies": "/metadataPolicies",
+        "metadata_policy_by_id": "/metadataPolicies/{policyId}",
+        "collection_metadata_policy": "/metadataPolicies",
+        # Data policies
+        "data_policies": "/policy/data-access-policies",
+        "data_policy_by_name": "/policy/data-access-policies/{policyName}",
+        "data_access_policy": "/policy/data-access-policies/{policyId}",
+        "data_access_policies": "/policy/data-access-policies",
+        # DevOps policies
+        "devops_policies": "/policies",
+        "devops_policy": "/policies/{policyId}",
+        # Self-service policies
+        "self_service_policies": "/policy/data-access-policies",
+        "self_service_policy": "/policy/data-access-policies/{policyId}",
+        # Advanced policy operations
+        "policy_collections": "/policy/collections",
+        "policy_assignments": "/policy/assignments",
+        "policy_assignment": "/policy/assignments/{assignmentId}",
+        "policy_effects": "/policy/effects",
+        "evaluate_policies": "/policy/evaluate",
+        "user_permissions": "/policy/users/{userId}/permissions",
+        "check_access": "/policy/check-access",
+        "policy_templates": "/policy/templates",
+        "policy_definitions": "/policy/definitions",
+        "policy_definition": "/policy/definitions/{definitionId}",
+        "role_assignments": "/policy/role-assignments",
+        "role_assignment": "/policy/role-assignments/{assignmentId}",
+        "role_definitions": "/policy/role-definitions",
+        "policy_audit_logs": "/policy/audit-logs",
+        "compliance_report": "/policy/compliance-report",
+        "bulk_policy_operations": "/policy/bulk-operations",
+        "validate_policy": "/policy/validate",
+        "simulate_policy": "/policy/simulate",
+        "policy_changes": "/policy/changes/{changeId}",
+        "export_policies": "/policy/export",
+        "import_policies": "/policy/import",
+    },
+    # ==================== INSIGHT / ANALYTICS API ENDPOINTS ====================
+    "insight": {
+        # Asset distribution analytics (Map & Discover)
+        "asset_distribution_by_data_source": "/mapanddiscover/reports/asset2/assetDistribution/dataSourceType/summary",
+        "asset_distribution_by_type": "/mapanddiscover/reports/asset2/assetDistribution/assetTypeSummary",
+        "asset_distribution_by_classification": "/mapanddiscover/reports/asset2/assetDistribution/classificationSummary",
+        "asset_distribution_by_collection": "/mapanddiscover/reports/asset2/assetDistribution/collectionSummary",
+        # File analytics
+        "files_without_resource_set": "/mapanddiscover/reports/asset2/files/filesByResourceSet",
+        "files_aggregation": "/mapanddiscover/reports/asset2/files/filesAggregation",
+        "resource_set_summary": "/mapanddiscover/reports/asset2/files/resourceSetSummary",
+        "resource_set_details": "/mapanddiscover/reports/asset2/files/resourceSetDetails",
+        # Scan analytics
+        "scan_status_summary": "/mapanddiscover/reports/asset2/scans/scanStatusSummary",
+        "scan_status_summary_by_ts": "/mapanddiscover/reports/asset2/scans/scanStatusSummaryByTs",
+        "scan_history": "/mapanddiscover/reports/asset2/scans/scanHistory",
+        "active_scans": "/mapanddiscover/reports/asset2/scans/activeScans",
+        "scan_performance": "/mapanddiscover/reports/asset2/scans/scanPerformance",
+        # Sensitivity label analytics
+        "sensitivity_labels": "/mapanddiscover/reports/asset2/sensitivityLabel/labelSummary",
+        "label_insight": "/mapanddiscover/reports/asset2/sensitivityLabel/labelInsights",
+        # Glossary / term analytics
+        "glossary_usage": "/mapanddiscover/reports/asset2/glossary/glossaryUsage",
+        "business_glossary_health": "/mapanddiscover/reports/asset2/glossary/glossaryHealth",
+        "term_assignment_coverage": "/mapanddiscover/reports/asset2/glossary/termAssignment",
+        # Data profile analytics
+        "data_profile_summary": "/mapanddiscover/reports/asset2/dataProfile/dataProfileSummary",
+        # User / activity analytics
+        "user_activity": "/mapanddiscover/reports/asset2/userActivity/userActivitySummary",
+        "collection_activity": "/mapanddiscover/reports/asset2/userActivity/collectionActivity",
+        # Version history
+        "version_history": "/mapanddiscover/reports/asset2/assetHealth/versionHistory",
+        # Scheduled reports
+        "scheduled_reports": "/mapanddiscover/reports/scheduled",
+        "create_scheduled_report": "/mapanddiscover/reports/scheduled",
+        # Asset popularity
+        "asset_popularity": "/mapanddiscover/reports/asset2/assetHealth/assetPopularity",
+        # Tags time series
+        "tags_time_series": "/mapanddiscover/reports/asset2/tags/tagsTimeSeries",
+        # Data quality insights
+        "data_quality_overview": "/mapanddiscover/reports/asset2/dataQuality/dataQualityOverview",
+        "data_quality_trends": "/mapanddiscover/reports/asset2/dataQuality/dataQualityTrends",
+        "data_quality_by_source": "/mapanddiscover/reports/asset2/dataQuality/dataQualityBySource",
+        # Classification distribution
+        "classification_distribution": "/mapanddiscover/reports/asset2/classification/classificationDistribution",
+        # Lineage analytics
+        "lineage_coverage": "/mapanddiscover/reports/asset2/lineage/lineageCoverage",
+        "lineage_complexity": "/mapanddiscover/reports/asset2/lineage/lineageComplexity",
+        # Compliance and security
+        "compliance_metrics": "/mapanddiscover/reports/asset2/compliance/complianceMetrics",
+        "data_stewardship_health": "/mapanddiscover/reports/asset2/compliance/dataStewardshipHealth",
+        "asset_health_score": "/mapanddiscover/reports/asset2/assetHealth/assetHealthScore",
+        # System performance
+        "system_performance": "/mapanddiscover/reports/asset2/system/systemPerformance",
+        "real_time_metrics": "/mapanddiscover/reports/asset2/system/realTimeMetrics",
+        # Optimization
+        "optimization_recommendations": "/mapanddiscover/reports/asset2/optimization/recommendations",
+        # Resource utilization
+        "resource_utilization": "/mapanddiscover/reports/asset2/system/resourceUtilization",
+        # Historical trends
+        "historical_trends": "/mapanddiscover/reports/asset2/assetHealth/historicalTrends",
+        "data_growth_trends": "/mapanddiscover/reports/asset2/assetHealth/dataGrowthTrends",
+        # Search patterns
+        "search_patterns": "/mapanddiscover/reports/asset2/userActivity/searchPatterns",
+        # Data archival / movement
+        "data_archival": "/mapanddiscover/reports/asset2/dataManagement/dataArchival",
+        "data_movement_patterns": "/mapanddiscover/reports/asset2/dataManagement/dataMovement",
+        # Access patterns
+        "access_patterns": "/mapanddiscover/reports/asset2/userActivity/accessPatterns",
+        "permission_usage": "/mapanddiscover/reports/asset2/userActivity/permissionUsage",
+        # Live activity feed
+        "live_activity_feed": "/mapanddiscover/reports/asset2/userActivity/liveActivityFeed",
+        # Export
+        "export_data": "/mapanddiscover/reports/asset2/export",
+        # Custom report
+        "custom_report": "/mapanddiscover/reports/custom",
     },
 }
 

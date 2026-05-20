@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Microsoft Purview Policy Store Client - Complete API Coverage
 Handles Metadata Policies, Data Policies, DevOps Policies, Self-Service Policies, and more

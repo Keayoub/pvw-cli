@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Real-time Monitoring Dashboard for Microsoft Purview
 Provides live monitoring, metrics collection, and alerting capabilities

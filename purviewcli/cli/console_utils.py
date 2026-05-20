@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Console utility for consistent Rich Console initialization across all CLI modules.
 

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Configuration Management for  Purview CLI
 Handles environment configuration, profiles, and settings

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Plugin System for  Purview CLI
 Provides extensible architecture for third-party integrations and custom functionality

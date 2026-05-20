@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Manage Purview glossaries, categories, and terms using modular Click-based commands.
 

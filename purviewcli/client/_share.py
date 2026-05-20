@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 from .endpoint import Endpoint, decorator, get_json
 from .endpoints import ENDPOINTS, DATAMAP_API_VERSION, format_endpoint, get_api_version_params
 

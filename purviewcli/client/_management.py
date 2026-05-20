@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Microsoft Purview Management Client - Complete API Coverage
 Handles all Account Management, Resource Provider, and Azure Management operations

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 MCP Server for Microsoft Purview CLI
 Enables LLM-powered data governance workflows through the Model Context Protocol

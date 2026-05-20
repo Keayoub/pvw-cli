@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Manage entities in Microsoft Purview using modular Click-based commands.
 

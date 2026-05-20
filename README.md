@@ -1,12 +1,55 @@
 # pvw-cli — Microsoft Purview Command-Line Interface
 
-[![Version](https://img.shields.io/badge/version-1.11.18-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.11.19)
+[![Version](https://img.shields.io/badge/version-1.11.18-blue.svg)](https://github.com/Keayoub/pvw-cli/releases/tag/v1.12.0)
 [![Status](https://img.shields.io/badge/status-stable-success.svg)](https://github.com/Keayoub/pvw-cli)
 [![Docs](https://img.shields.io/badge/docs-github%20pages-0A8F84?logo=githubpages&logoColor=white)](https://keayoub.github.io/pvw-cli/)
 
 A Python CLI and library for automating Microsoft Purview. Covers the Data Map, Unified Catalog, Collections, Search, Lineage, Scan, and Management APIs.
 
 ---
+
+
+<!-- API_COVERAGE_START -->
+
+## 📊 API Coverage  *(auto-updated 2026-05-20)*
+
+### Static Coverage — Defined vs Implemented
+
+| Metric | Value |
+|--------|-------|
+| Service groups defined in `endpoints.py` | **17** |
+| Groups with a CLI file | **17 / 17** (100%) |
+| Total operations defined | **415** |
+| Total CLI commands wired | **383** (~92% op-level) |
+
+| Group | Defined ops | CLI file(s) | Commands |
+|-------|-------------|-------------|----------|
+| `account` | 10 | ✅ `account.py` | 9 |
+| `collections` | 12 | ✅ `collections.py` | 11 |
+| `data_quality` | 35 | ✅ `quality.py` | 35 |
+| `devops_policies` | 7 | ✅ `policystore.py` | 10 |
+| `discovery` | 11 | ✅ `search.py` | 8 |
+| `entity` | 40 | ✅ `entity.py` | 56 |
+| `glossary` | 44 | ✅ `glossary.py` | 32 |
+| `lineage` | 12 | ✅ `lineage.py` | 22 |
+| `management` | 28 | ✅ `management.py` | 11 |
+| `metadata_policies` | 6 | ✅ `policystore.py` | 10 |
+| `relationship` | 9 | ✅ `relationship.py` | 5 |
+| `scanning` | 36 | ✅ `scan.py` | 23 |
+| `self_service_policies` | 5 | ✅ `policystore.py` | 10 |
+| `sharing` | 16 | ✅ `share.py` | 31 |
+| `types` | 27 | ✅ `types.py` | 23 |
+| `unified_catalog` | 66 | ✅ `unified_catalog.py`, `domain.py` | 76 |
+| `workflow` | 51 | ✅ `workflow.py` | 11 |
+
+### Live Probe Results
+
+| Endpoint | Method | Status | Result |
+|----------|--------|--------|--------|
+
+> Live probe summary: **0 live**, **0 deployed (needs payload/auth fix)**, **0 missing/404**
+
+<!-- API_COVERAGE_END -->
 
 ## Install
 
@@ -385,5 +428,7 @@ Notes:
 
 ## License
 
-See [LICENSE](LICENSE) for details.
+This project is licensed under the Apache License 2.0.
+
+See [LICENSE](LICENSE) for the full license text.
 

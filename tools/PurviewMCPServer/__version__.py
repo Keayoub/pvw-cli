@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """Version information for Purview MCP Server."""
 
 __version__ = "1.11.13"

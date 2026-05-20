@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Synchronous Purview Client for CLI compatibility
 """

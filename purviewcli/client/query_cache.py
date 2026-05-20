@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Read-Query Caching System
 Optional in-memory cache with TTL for read-only operations (search, list, read).

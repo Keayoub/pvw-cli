@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
  Scanning Operations Module for Microsoft Purview
 Provides comprehensive scanning automation and management capabilities

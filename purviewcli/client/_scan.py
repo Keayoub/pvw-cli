@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Scanning Management Client for Microsoft Purview Scanning API
 Based on official API: https://learn.microsoft.com/en-us/rest/api/purview/scanningdataplane/

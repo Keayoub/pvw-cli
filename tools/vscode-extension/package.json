@@ -116,7 +116,7 @@
     "bugs": {
         "url": "https://github.com/Keayoub/pvw-cli/issues"
     },
-    "license": "MIT",
+    "license": "Apache-2.0",
     "mcp": {
         "servers": {
             "chat.mcp.purview": {
