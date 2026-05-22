@@ -10,7 +10,7 @@ RUN python -m pip install --upgrade pip setuptools wheel
 
 # Install the CLI and the MCP server as separate local packages.
 RUN pip install -e /app
-RUN pip install -e /app/tools/PurviewMCPServer
+RUN pip install -e /app/tools/mcp
 
 ENV PYTHONUNBUFFERED=1
 

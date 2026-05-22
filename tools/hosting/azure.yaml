@@ -1,0 +1,20 @@
+# azure.yaml — Azure Developer CLI (azd) configuration
+# Deploys the Purview MCP Server as a self-hosted Azure Functions app.
+#
+# Usage:
+#   cd tools/hosting
+#   azd auth login
+#   azd env new purview-mcp-dev
+#   azd env set PURVIEW_ACCOUNT_NAME <your-purview-account>
+#   azd up
+
+name: purview-mcp-server
+
+services:
+  mcp-server:
+    project: ./app
+    language: py
+    host: function
+
+# No preprovision hooks needed: the function app installs pvw-mcp-server
+# directly from PyPI via requirements.txt.  No local file staging required.

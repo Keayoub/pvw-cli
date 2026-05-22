@@ -88,11 +88,11 @@ Write-Host "   Purview MCP Extension Builder" -ForegroundColor Magenta
 Write-Host "═══════════════════════════════════════════════════`n" -ForegroundColor Magenta
 
 # Step 1: Copy server files to bundled/
-Write-Step "Copying server files from tools/PurviewMCPServer/ to bundled/"
+Write-Step "Copying server files from tools/mcp/ to bundled/"
 
-$serverSource = Join-Path $scriptDir "..\PurviewMCPServer\server.py"
-$requirementsSource = Join-Path $scriptDir "..\PurviewMCPServer\requirements.txt"
-$diagnoseScriptSource = Join-Path $scriptDir "..\PurviewMCPServer\diagnose.ps1"
+$serverSource = Join-Path $scriptDir "..\mcp\pvw_mcp_server\server.py"
+$requirementsSource = Join-Path $scriptDir "..\mcp\requirements.txt"
+$diagnoseScriptSource = Join-Path $scriptDir "..\mcp\diagnose.ps1"
 $registerScriptSource = Join-Path $scriptDir "scripts\register-mcp-server.ps1"
 $checkMcpScriptSource = Join-Path $scriptDir "scripts\check-mcp-feature.ps1"
 $bundledDir = Join-Path $scriptDir "bundled"

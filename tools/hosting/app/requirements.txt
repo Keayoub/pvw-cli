@@ -1,0 +1,4 @@
+# Azure Functions runtime
+azure-functions>=1.24.0
+pvw-mcp-server>=1.12.0
+fastmcp>=2.0.0

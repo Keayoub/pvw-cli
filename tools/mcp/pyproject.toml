@@ -30,8 +30,8 @@ classifiers = [
     "Topic :: Utilities",
 ]
 dependencies = [
-    "pvw-cli>=1.11.13",
-    "fastmcp>=0.2.0",
+    "pvw-cli>=1.12.0",
+    "fastmcp>=2.0.0",
     "pydantic>=2.5.0,<3.0.0",
     "aiohttp>=3.8.0",
     "azure-identity>=1.12.0",
@@ -39,11 +39,11 @@ dependencies = [
 ]
 
 [project.scripts]
-pvw-mcp = "server:main"
+pvw-mcp = "pvw_mcp_server.server:main"
 
-[tool.setuptools]
-py-modules = ["server", "__version__"]
-packages = ["tools"]
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pvw_mcp_server*"]
 
 [tool.setuptools.dynamic]
-version = {attr = "__version__.__version__"}
+version = {attr = "pvw_mcp_server.__version__.__version__"}

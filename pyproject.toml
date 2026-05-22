@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pvw-cli"
-version = "1.12.0"
+dynamic = ["version"]
 description = "Microsoft Purview CLI with comprehensive automation capabilities"
 readme = "README.md"
 license = "Apache-2.0"
@@ -83,6 +83,9 @@ pvw-cli = "purviewcli.cli.cli:main"
 packages = ["purviewcli", "purviewcli.cli", "purviewcli.client", "purviewcli.plugins"]
 include-package-data = true
 zip-safe = false
+
+[tool.setuptools.dynamic]
+version = {attr = "purviewcli.__version__"}
 
 [tool.setuptools.package-data]
 purviewcli = [

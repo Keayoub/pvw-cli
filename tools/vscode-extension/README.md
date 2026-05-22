@@ -128,7 +128,7 @@ npx -y chat.mcp.purview
 Run with `uvx`:
 
 ```bash
-uvx --from "git+https://github.com/Keayoub/pvw-cli.git#subdirectory=tools/PurviewMCPServer" pvw-mcp
+uvx --from "git+https://github.com/Keayoub/pvw-cli.git#subdirectory=tools/mcp" pvw-mcp
 ```
 
 Example MCP config for external clients:
@@ -163,7 +163,7 @@ server = StdioServerParameters(
   command="uvx",
   args=[
     "--from",
-    "git+https://github.com/Keayoub/pvw-cli.git#subdirectory=tools/PurviewMCPServer",
+    "git+https://github.com/Keayoub/pvw-cli.git#subdirectory=tools/mcp",
     "pvw-mcp",
   ],
   env={"PURVIEW_ACCOUNT_NAME": "your-account"},

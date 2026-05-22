@@ -20,6 +20,9 @@
   # Bump, commit, tag, push and run build_pypi.bat
   .\release.ps1 -NewVersion 1.0.13 -Push -Build
 
+  # Bump, build pvw-cli AND publish pvw-mcp-server to PyPI in one step
+  .\release.ps1 -NewVersion 1.0.13 -Push -Build -McpPublish
+
   # Bump/push but skip GitHub release creation
   .\release.ps1 -NewVersion 1.0.13 -Push -SkipGitHubRelease
 
@@ -39,6 +42,7 @@ param(
     [Parameter(Mandatory=$true, Position=0)][string]$NewVersion,
     [switch]$Push,
     [switch]$Build,
+    [switch]$McpPublish,
   [switch]$CreateGitHubRelease,
   [switch]$SkipGitHubRelease,
     [switch]$Force
@@ -191,19 +195,13 @@ $releaseNotesFile = Join-Path (Join-Path $repoRoot 'releases') ("v{0}.md" -f $Ne
 if (-not (Test-Path $pyproject -PathType Leaf)) { Write-Err "pyproject.toml not found at $pyproject"; exit 6 }
 if (-not (Test-Path $initFile -PathType Leaf)) { Write-Err "__init__.py not found at $initFile"; exit 6 }
 
-Write-Info "Reading current version from pyproject.toml..."
-$pytext = Get-Content -Raw -Path $pyproject
-# Try a resilient match: look for a line like: version = "1.2.3"
-$matchInfo = Select-String -Path $pyproject -Pattern '^[ \t]*version[ \t]*=[ \t]*"([^\"]+)"' -AllMatches
-if (-not $matchInfo -or $matchInfo.Count -eq 0) {
-  Write-Err "Could not find current version in pyproject.toml"
-  Write-Info "Showing the first 20 lines of pyproject.toml for debugging:"
-  Get-Content -Path $pyproject -TotalCount 20 | ForEach-Object { Write-Host "  $_" }
+Write-Info "Reading current version from purviewcli/__init__.py..."
+$versionMatch = [regex]::Match((Get-Content -Raw -Path $initFile), '__version__\s*=\s*"([^"]+)"')
+if (-not $versionMatch.Success) {
+  Write-Err "Could not find __version__ in $initFile"
   exit 7
 }
-# Select-String returns MatchInfo objects; take the first match group's capture
-$firstMatch = $matchInfo[0].Matches[0]
-$oldVersion = $firstMatch.Groups[1].Value
+$oldVersion = $versionMatch.Groups[1].Value
 Write-Info "Current version: $oldVersion -> New version: $NewVersion"
 
 if ($oldVersion -eq $NewVersion) { Write-Warn "New version is identical to current version. Nothing to do."; exit 0 }
@@ -218,20 +216,8 @@ function Backup-File($path) {
   Write-Info "Backup created: $bak"
 }
 
-Backup-File $pyproject
 Backup-File $initFile
 if (Test-Path $readme) { Backup-File $readme }
-
-Write-Info "Updating pyproject.toml..."
-# Use a MatchEvaluator to avoid PowerShell string interpolation issues
-$patternPy = '(version\s*=\s*")([^"]+)(")'
-$newPy = [regex]::Replace($pytext, $patternPy, {
-    param($match)
-    return $match.Groups[1].Value + $NewVersion + $match.Groups[3].Value
-}, [System.Text.RegularExpressions.RegexOptions]::Multiline)
-# Write without BOM to avoid TOML parsing issues
-$Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
-[System.IO.File]::WriteAllText($pyproject, $newPy, $Utf8NoBomEncoding)
 
 Write-Info "Updating purviewcli/__init__.py..."
 # Read file as lines and replace the __version__ line or insert at top if missing
@@ -265,6 +251,49 @@ if (Test-Path $readme) {
     [System.IO.File]::WriteAllText($readme, $r, $Utf8NoBomEncoding)
 }
 
+# ---------------------------------------------------------------------------
+# MCP server version sync (always runs, commit included in the same release commit)
+# ---------------------------------------------------------------------------
+$mcpRoot = Join-Path $repoRoot 'tools\PurviewMCPServer'
+$mcpVersionFile  = Join-Path $mcpRoot '__version__.py'
+$mcpPyproject    = Join-Path $mcpRoot 'pyproject.toml'
+$mcpFilesChanged = @()
+
+if (Test-Path $mcpVersionFile -PathType Leaf) {
+    Write-Info "Updating MCP server __version__.py to $NewVersion..."
+    $mcpVerLines = Get-Content -Path $mcpVersionFile -Encoding UTF8
+    $mcpVerFound = $false
+    for ($i = 0; $i -lt $mcpVerLines.Count; $i++) {
+        if ($mcpVerLines[$i] -match '^[ \t]*__version__\s*=') {
+            $mcpVerLines[$i] = "__version__ = `"$NewVersion`""
+            $mcpVerFound = $true
+            break
+        }
+    }
+    if ($mcpVerFound) {
+        $mcpVerContent = $mcpVerLines -join "`n"
+        $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
+        [System.IO.File]::WriteAllText($mcpVersionFile, $mcpVerContent, $Utf8NoBomEncoding)
+        $mcpFilesChanged += $mcpVersionFile
+        Write-Info "MCP __version__.py updated."
+    } else {
+        Write-Warn "Could not find __version__ line in $mcpVersionFile — skipping."
+    }
+} else {
+    Write-Warn "MCP __version__.py not found at $mcpVersionFile — skipping version sync."
+}
+
+if (Test-Path $mcpPyproject -PathType Leaf) {
+    Write-Info "Updating pvw-cli dependency in MCP pyproject.toml to >=$NewVersion..."
+    $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
+    $mcpToml = [System.IO.File]::ReadAllText($mcpPyproject, $Utf8NoBomEncoding)
+    # Replace pvw-cli>=<any version> with pvw-cli>=$NewVersion
+    $mcpToml = $mcpToml -replace 'pvw-cli>=([0-9]+\.[0-9]+\.[0-9]+)', "pvw-cli>=$NewVersion"
+    [System.IO.File]::WriteAllText($mcpPyproject, $mcpToml, $Utf8NoBomEncoding)
+    $mcpFilesChanged += $mcpPyproject
+    Write-Info "MCP pyproject.toml pvw-cli dependency updated."
+}
+
   $releaseNotesFile = New-ReleaseNotesFile -repoRoot $repoRoot -newVersion $NewVersion -oldVersion $oldVersion
 
 # Verify package builds before committing
@@ -290,11 +319,9 @@ if (Test-Path $buildScriptPS) {
 }
 
 Write-Info "Staging changes..."
-if (Test-Path $readme) {
-  git add $pyproject $initFile $readme $releaseNotesFile
-} else {
-  git add $pyproject $initFile $releaseNotesFile
-}
+$filesToStage = @($initFile, $releaseNotesFile) + $mcpFilesChanged
+if (Test-Path $readme) { $filesToStage += $readme }
+git add $filesToStage
 if ($LASTEXITCODE -ne 0) { Write-Err "git add failed"; exit 8 }
 
 $commitMsg = "Bump version to $NewVersion"
@@ -338,6 +365,29 @@ if ($Build) {
       Write-Warn "No build script found: checked scripts\build_pypi.ps1 and build_pypi.bat"
     }
   }
+}
+
+# ---------------------------------------------------------------------------
+# MCP server PyPI publish (runs after the main pvw-cli build, when -McpPublish)
+# ---------------------------------------------------------------------------
+if ($McpPublish) {
+    $mcpBuildScript = Join-Path $mcpRoot 'build_pypi.ps1'
+    if (-not (Test-Path $mcpBuildScript -PathType Leaf)) {
+        Write-Err "MCP build script not found at $mcpBuildScript"
+        exit 18
+    }
+    Write-Info "Building and publishing pvw-mcp-server $NewVersion to PyPI..."
+    $pwshCmd = Get-Command pwsh -ErrorAction SilentlyContinue
+    if ($pwshCmd) {
+        & $pwshCmd.Source -NoProfile -ExecutionPolicy Bypass -File $mcpBuildScript -Publish
+    } else {
+        & $mcpBuildScript -Publish
+    }
+    if ($LASTEXITCODE -ne 0) {
+        Write-Err "MCP server publish failed with exit code $LASTEXITCODE"
+        exit 19
+    }
+    Write-Info "pvw-mcp-server $NewVersion published to PyPI successfully."
 }
 
 if ($shouldCreateGitHubRelease) {

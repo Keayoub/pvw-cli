@@ -19,11 +19,7 @@ from pathlib import Path
 from fastmcp import FastMCP
 from pydantic import BaseModel, Field
 
-from tools.microsoft_learn_tools import register_microsoft_learn_tools
-
-# Add parent directory to path to import purviewcli
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
+from .config import PurviewMCPConfig
 from purviewcli.client.api_client import PurviewClient, PurviewConfig
 from purviewcli.client import (
     Entity,
@@ -34,268 +30,32 @@ from purviewcli.client import (
     Search,
     Types,
     Relationship,
+    DataQuality,
 )
+from purviewcli.client._account import Account
+from purviewcli.client._insight import Insight
+from purviewcli.client._scan import Scan as ScanClient
+from purviewcli.client._management import Management
+from purviewcli.client._policystore import Policystore
+from purviewcli.client._workflow import Workflow
+from purviewcli.client._share import Share
+from purviewcli.client._health import Health
+
+def _load_instructions() -> str:
+    """Load MCP server instructions from PROMPT_INSTRUCTIONS.md."""
+    path = Path(__file__).parent / "prompt_instructions.md"
+    try:
+        return path.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        return "Purview MCP Server — see prompt_instructions.md for usage guidelines."
+
 
 # Initialize FastMCP
 mcp = FastMCP(
     "purview-mcp-server",
-    instructions="""
-# Microsoft Purview MCP Server - Usage Guidelines
-
-You are interacting with the Microsoft Purview MCP Server, providing comprehensive access to Microsoft Purview's data governance and catalog capabilities. Follow these guidelines to maximize effectiveness.
-
-## Core Capabilities
-
-### 1. Data Catalog Management (Entity Operations)
-- **Create, Read, Update, Delete entities** (datasets, tables, processes, columns)
-- **Bulk operations** - Import/export entities from CSV files with templates
-- **Entity types**: DataSet, azure_sql_table, azure_datalake_gen2_path, Process, Column
-- **Classifications & Labels** - Add PII, Confidential, and custom tags
-- **Business Metadata** - Attach custom business context to entities
-
-### 2. Business Glossary (Glossary Operations)
-- **Manage business terminology** - Create terms, categories, hierarchies
-- **Term relationships** - Related terms, synonyms, acronyms
-- **Bulk import** - Import glossary terms from CSV files
-- **Term assignments** - Link glossary terms to entities and columns
-
-### 3. Unified Catalog (Modern Governance Features)
-- **Governance Domains** - Organizational contexts for data assets (86% API coverage)
-- **Data Products** - Curated data asset collections with lifecycle tracking
-- **Business Metadata Terms** - Business vocabulary with full metadata
-- **Business Metadata Cleanup** - List metadata defs, resolve attribute names, cleanup/delete definitions, remove asset assignments
-- **Objectives & Key Results (OKRs)** - Data governance goal tracking
-- **Critical Data Elements (CDEs)** - Important data element definitions
-- **Policies** - Governance and RBAC policies management
-- **Relationships** - Link data products/CDEs/terms to entities
-- **Query APIs** - Advanced OData filtering with multi-criteria search
-
-### 4. Data Lineage
-- **Trace data flow** - Upstream and downstream lineage analysis
-- **Create lineage** - Define process entities with inputs/outputs
-- **CSV Import** - Bulk lineage creation from CSV files
-- **Impact analysis** - Understand data dependencies
-
-### 5. Search & Discovery
-- **Keyword search** - Find entities across the catalog
-- **Faceted search** - Filter by type, classification, collection
-- **Autocomplete & Suggest** - Search suggestions for entity discovery
-- **Browse catalog** - Navigate by entity type and hierarchy
-
-### 6. Collections & Account
-- **Collection hierarchy** - Organize assets in collections
-- **Access management** - Collection-based permissions
-- **Account properties** - Get Purview account configuration
-
-## Best Practices
-
-### Entity Operations
-1. **Always use qualifiedName for updates** - It's the unique identifier
-   - Format varies by type: `mssql://server/db/schema/table`, `https://account.dfs.core.windows.net/container/path/`
-2. **Specify typeName** - Required for entity creation (e.g., `DataSet`, `azure_sql_table`)
-3. **Use batch operations for bulk work** - More efficient than individual calls
-4. **Preview with dry-run** - Test CSV imports before applying changes
-5. **Use appropriate batch sizes**:
-   - Small (< 100 entities): 50-100
-   - Medium (100-1000): 100-200
-   - Large (> 1000): 200-500
-
-### Glossary Terms
-1. **Create hierarchies** - Use parent-child relationships for term organization
-2. **Add rich metadata** - Include acronyms, resources, contacts for context
-3. **Link to entities** - Connect terms to data assets for discoverability
-4. **Use status workflow** - Draft → Approved → Alert → Expired
-
-### Unified Catalog Operations
-1. **Start with domains** - Organize governance by business domain
-2. **Use business metadata terms** - Create standardized vocabulary
-3. **Define data products** - Curate and track data asset collections
-4. **Link relationships** - Connect data products/CDEs to physical entities
-5. **Query with filters** - Use advanced OData queries for precise searches
-6. **Manage policies** - Define governance and RBAC policies
-
-### Lineage Creation
-1. **Use Process entities** - Represent ETL jobs, transformations, pipelines
-2. **Define inputs and outputs** - Link source entities to target entities
-3. **Include meaningful names** - Process names should describe the transformation
-4. **CSV import for bulk** - Efficient for creating multiple lineage relationships
-5. **Validate lineage paths** - Ensure entities exist before creating lineage
-
-### Search & Discovery
-1. **Start broad, then filter** - Use keyword search + filters for precision
-2. **Use entity types for scoping** - Filter by DataSet, Table, Column, etc.
-3. **Leverage classifications** - Find PII, Confidential data by classification
-4. **Browse for exploration** - Use browse API for hierarchical navigation
-
-### CSV Bulk Operations
-1. **Use templates** - Predefined CSV structures for common operations
-   - `basic` - Basic entity attributes
-   - `etl` - ETL process entities
-   - `column-mapping` - Column-level mapping
-2. **Validate before import** - Check CSV format matches template
-3. **Use error handling** - Save failed rows to error CSV for retry
-4. **Test with small batches first** - Validate logic before full import
-
-## Common Workflows
-
-### Workflow 1: Catalog New Data Source
-```
-1. search_entities - Check if assets already exist
-2. create_entity or batch_create_entities - Register data assets
-3. create_glossary_term (if needed) - Define business terms
-4. assign_term_to_entities - Link terms to entities
-5. create_lineage (if applicable) - Define data flow
-```
-
-### Workflow 2: Build Business Glossary
-```
-1. uc_create_domain - Create governance domain
-2. uc_create_term - Add business metadata terms
-3. search_entities - Find related data assets
-4. Assign terms to entities via relationships
-```
-
-### Workflow 3: Implement Data Governance
-```
-1. uc_list_domains - Review existing domains
-2. uc_create_domain (if needed) - Create new domain
-3. uc_create_term - Define governance terminology
-4. uc_policy_create - Define governance policies
-5. uc_dataproduct_create - Curate data products
-6. Link relationships to physical entities
-```
-
-### Workflow 4: Data Discovery
-```
-1. search_entities - Keyword search
-2. search_browse - Browse by type hierarchy
-3. get_entity - Get detailed entity information
-4. get_lineage - Understand data flow
-5. get_glossary_terms - View assigned terms
-```
-
-### Workflow 5: Bulk Data Onboarding
-```
-1. Prepare CSV with entity data
-2. import_entities_from_csv - Preview with dry-run
-3. import_entities_from_csv - Execute import
-4. import_lineage_from_csv (if applicable) - Add lineage
-5. Export results for validation
-```
-
-## Entity Type Reference
-
-### Common Entity Types
-- **DataSet** - Generic dataset/file
-- **azure_sql_table** - Azure SQL table
-- **azure_sql_column** - Azure SQL column
-- **azure_datalake_gen2_path** - ADLS Gen2 folder/file
-- **azure_datalake_gen2_resource_set** - ADLS Gen2 resource set
-- **Process** - ETL job, transformation, pipeline
-- **Column** - Generic column
-- **ColumnLineage** - Column-level lineage
-
-### QualifiedName Patterns
-- **SQL**: `mssql://server.database.windows.net/database/schema/table`
-- **ADLS Gen2**: `https://account.dfs.core.windows.net/container/path/to/file`
-- **Generic**: `//source/path/to/asset@account`
-
-## Advanced Features
-
-### Business Metadata
-- Use `add_or_update_business_metadata` for custom attributes
-- Supported scopes: Entity, Column, Classification
-- Proper applicableEntityTypes configuration required
-
-### Custom Attributes
-- Create extensible attribute definitions
-- Define custom properties for UC resources
-- Use for organization-specific metadata
-
-### Relationships API
-- Link data products to physical entities
-- Connect CDEs to columns with qualified names
-- Create associations between UC and Atlas resources
-
-### Query APIs
-- Advanced OData filtering: `$filter`, `$top`, `$skip`
-- Multi-criteria searches across resources
-- Pagination support for large result sets
-
-## Error Handling
-
-### Common Issues
-1. **404 Not Found** - Entity/term doesn't exist, check GUID/ID
-2. **400 Bad Request** - Invalid payload, check required fields
-3. **403 Forbidden** - Insufficient permissions, check RBAC
-4. **409 Conflict** - Entity already exists, use update instead
-5. **429 Too Many Requests** - Rate limited, reduce batch size
-
-### Recovery Strategies
-- Use error CSV files to track failed operations
-- Retry with smaller batch sizes
-- Validate entity existence before updates
-- Check RBAC permissions for operations
-
-## Output Formats
-
-- **JSON** - Structured data for programmatic processing
-- **JSONC** - JSON with comments for readability
-- **Table** - Human-readable console output
-- **CSV** - Bulk data export for Excel/analysis
-
-## API Coverage
-
-The server provides 86% coverage of Purview Unified Catalog APIs (45/52 operations):
-- ✅ Business Domains: 100% (5/5)
-- ✅ Data Products: 90% (9/10)
-- ✅ Glossary Terms: 73% (8/11)
-- ✅ OKRs: 92% (11/12)
-- ✅ CDEs: 90% (9/10)
-- ✅ Policies: 100% (5/5)
-- ✅ Relationships: 100% (6/6)
-- ✅ Query: 100% (4/4)
-- ✅ Custom Metadata: 100% (5/5)
-- ✅ Custom Attributes: 100% (5/5)
-
-## Tips for LLM Usage
-
-1. **Chain operations** - Combine search → get → update workflows
-2. **Use bulk operations** - More efficient than individual calls
-3. **Validate assumptions** - Check entity existence before operations
-4. **Leverage search first** - Discover before creating duplicates
-5. **Use UC for modern governance** - Unified Catalog provides richer features
-6. **Preview with dry-run** - Always test bulk operations first
-7. **Export for analysis** - Use CSV exports for data validation
-8. **Follow naming conventions** - Consistent qualifiedNames for reliability
-
-## Microsoft Learn Integration
-
-The server includes Microsoft Learn documentation tools:
-- `search_learn_microsoft_content` - Search official docs
-- `get_learn_microsoft_content` - Get specific documentation
-- `get_learn_microsoft_modules` - Browse learning modules
-- `get_learn_microsoft_paths` - Explore learning paths
-
-Use these to supplement Purview operations with official Microsoft guidance.
-
-## Authentication
-
-Set these environment variables:
-- `PURVIEW_ACCOUNT_NAME` - Your Purview account name (required)
-- `AZURE_TENANT_ID` - Azure tenant ID (optional)
-- `AZURE_REGION` - Azure region for special clouds (optional)
-- `PURVIEW_MAX_RETRIES` - Max retry attempts (default: 3)
-- `PURVIEW_TIMEOUT` - Request timeout in seconds (default: 30)
-- `PURVIEW_BATCH_SIZE` - Default batch size (default: 100)
-
-The client uses Azure DefaultAzureCredential for authentication (supports Azure CLI, Service Principal, Managed Identity).
-
----
-
-For detailed documentation, refer to the comprehensive guides in the `doc/` folder of the Purview CLI repository.
-"""
+    instructions=_load_instructions(),
 )
+
 
 # Global client instance
 _purview_client: Optional[PurviewClient] = None
@@ -341,40 +101,21 @@ class UCTermRequest(BaseModel):
 # Helper Functions
 def get_config() -> PurviewConfig:
     """Get Purview configuration from environment variables"""
-    account_name = os.getenv("PURVIEW_ACCOUNT_NAME")
-    if not account_name:
-        raise ValueError("PURVIEW_ACCOUNT_NAME environment variable is required")
-
+    cfg = PurviewMCPConfig.from_env()
     return PurviewConfig(
-        account_name=account_name,
-        tenant_id=os.getenv("AZURE_TENANT_ID"),
-        azure_region=os.getenv("AZURE_REGION"),
-        max_retries=int(os.getenv("PURVIEW_MAX_RETRIES", "3")),
-        timeout=int(os.getenv("PURVIEW_TIMEOUT", "30")),
-        batch_size=int(os.getenv("PURVIEW_BATCH_SIZE", "100")),
+        account_name=cfg.account_name,
+        tenant_id=cfg.tenant_id,
+        azure_region=cfg.azure_region,
+        max_retries=cfg.max_retries,
+        timeout=cfg.timeout,
+        batch_size=cfg.batch_size,
     )
 
 
 @mcp.tool()
 def get_prompt_instructions() -> str:
-    """
-    Return the curated prompt instructions to guide LLMs when calling the Purview MCP Server.
-
-    This reads `prompt_instructions.md` distributed with the server tools and returns its
-    contents as a string so remote agents can fetch guidance programmatically.
-    """
-    try:
-        root = Path(__file__).parent
-        prompt_file = root / "prompt_instructions.md"
-        if prompt_file.exists():
-            return prompt_file.read_text(encoding="utf-8")
-        return """
-        Prompt instructions file not found. Please ensure `prompt_instructions.md` is present
-        in the PurviewMCPServer tools directory.
-        """
-    except Exception as e:
-        logging.exception("Failed to read prompt instructions")
-        return f"Error reading prompt instructions: {e}"
+    """Return the curated prompt instructions for the Purview MCP Server."""
+    return _load_instructions()
 
 
 async def get_client() -> PurviewClient:
@@ -1358,6 +1099,51 @@ _CLIENT_OPERATION_NAMESPACES = {
         "factory": Entity,
         "use_async_client": False,
     },
+    "account": {
+        "label": "Account",
+        "factory": Account,
+        "use_async_client": False,
+    },
+    "insight": {
+        "label": "Insight",
+        "factory": Insight,
+        "use_async_client": False,
+    },
+    "scan": {
+        "label": "Scan",
+        "factory": ScanClient,
+        "use_async_client": False,
+    },
+    "management": {
+        "label": "Management",
+        "factory": Management,
+        "use_async_client": False,
+    },
+    "policystore": {
+        "label": "Policystore",
+        "factory": Policystore,
+        "use_async_client": False,
+    },
+    "workflow": {
+        "label": "Workflow",
+        "factory": Workflow,
+        "use_async_client": False,
+    },
+    "share": {
+        "label": "Share",
+        "factory": Share,
+        "use_async_client": False,
+    },
+    "health": {
+        "label": "Health",
+        "factory": Health,
+        "use_async_client": False,
+    },
+    "quality": {
+        "label": "DataQuality",
+        "factory": DataQuality,
+        "use_async_client": False,
+    },
 }
 
 
@@ -1501,42 +1287,443 @@ async def invoke_operation(
         result = await result
     return result
 
+
+# ============================================================================
+# SCAN OPERATIONS
+# ============================================================================
+
+@mcp.tool()
+def list_data_sources() -> Dict[str, Any]:
+    """List all registered data sources in Purview."""
+    return ScanClient().scanDataSourcesRead({})
+
+
+@mcp.tool()
+def get_data_source(data_source_name: str) -> Dict[str, Any]:
+    """Get details of a specific registered data source.
+
+    Args:
+        data_source_name: The name of the data source
+    """
+    return ScanClient().scanDataSourceRead({"--dataSourceName": data_source_name})
+
+
+@mcp.tool()
+def create_data_source(data_source_name: str, data_source_data: Dict[str, Any]) -> Dict[str, Any]:
+    """Register a new data source for scanning.
+
+    Args:
+        data_source_name: Unique name for the data source
+        data_source_data: Data source definition (kind, properties, collection)
+    """
+    return ScanClient().scanDataSourceCreate({"--dataSourceName": data_source_name, "--payload": data_source_data})
+
+
+@mcp.tool()
+def delete_data_source(data_source_name: str) -> Dict[str, Any]:
+    """Delete a registered data source.
+
+    Args:
+        data_source_name: Name of the data source to delete
+    """
+    return ScanClient().scanDataSourceDelete({"--dataSourceName": data_source_name})
+
+
+@mcp.tool()
+def list_scans(data_source_name: str) -> Dict[str, Any]:
+    """List all scans configured for a data source.
+
+    Args:
+        data_source_name: The name of the data source
+    """
+    from purviewcli.client._scan import Scan as _Scan
+    return _Scan().scanRead({"--dataSourceName": data_source_name})
+
+
+@mcp.tool()
+def run_scan(data_source_name: str, scan_name: str, scan_level: str = "Full") -> Dict[str, Any]:
+    """Trigger a scan run for a data source.
+
+    Args:
+        data_source_name: The name of the data source
+        scan_name: The name of the scan to run
+        scan_level: Scan level: Full or Incremental (default: Full)
+    """
+    return ScanClient().scanRun({"--dataSourceName": data_source_name, "--scanName": scan_name, "--scanLevel": scan_level})
+
+
+@mcp.tool()
+def get_scan_history(data_source_name: str, scan_name: str) -> Dict[str, Any]:
+    """Get the run history of a scan.
+
+    Args:
+        data_source_name: The name of the data source
+        scan_name: The name of the scan
+    """
+    return ScanClient().scanReadHistory({"--dataSourceName": data_source_name, "--scanName": scan_name})
+
+
+@mcp.tool()
+def list_scan_rulesets() -> Dict[str, Any]:
+    """List all custom scan rulesets defined in the account."""
+    return ScanClient().scanReadRuleset({})
+
+
+# ============================================================================
+# INSIGHT OPERATIONS
+# ============================================================================
+
+@mcp.tool()
+def get_asset_distribution() -> Dict[str, Any]:
+    """Get asset counts distributed by type, classification, and collection."""
+    return Insight().insightAssetDistribution({})
+
+
+@mcp.tool()
+def get_asset_distribution_by_type() -> Dict[str, Any]:
+    """Get asset counts grouped by entity type."""
+    return Insight().insightAssetDistributionByType({})
+
+
+@mcp.tool()
+def get_asset_distribution_by_classification() -> Dict[str, Any]:
+    """Get asset counts grouped by classification label."""
+    return Insight().insightAssetDistributionByClassification({})
+
+
+@mcp.tool()
+def get_scan_status_summary() -> Dict[str, Any]:
+    """Get a summary of recent scan statuses across all data sources."""
+    return Insight().insightScanStatusSummary({})
+
+
+@mcp.tool()
+def get_tags_summary() -> Dict[str, Any]:
+    """Get a summary of classification/tag usage across the catalog."""
+    return Insight().insightTags({})
+
+
+@mcp.tool()
+def get_data_quality_overview() -> Dict[str, Any]:
+    """Get a high-level overview of data quality scores across the account."""
+    return Insight().insightDataQualityOverview({})
+
+
+@mcp.tool()
+def get_lineage_coverage() -> Dict[str, Any]:
+    """Get lineage coverage statistics showing how many assets have tracked lineage."""
+    return Insight().insightLineageCoverage({})
+
+
+@mcp.tool()
+def get_glossary_usage() -> Dict[str, Any]:
+    """Get statistics on glossary term assignment coverage across assets."""
+    return Insight().insightGlossaryUsage({})
+
+
+# ============================================================================
+# ACCOUNT OPERATIONS (extended)
+# ============================================================================
+
+@mcp.tool()
+def get_account_details() -> Dict[str, Any]:
+    """Get full details of the Purview account including configuration and status."""
+    return Account().accountRead({})
+
+
+@mcp.tool()
+def get_account_usage() -> Dict[str, Any]:
+    """Get current resource usage statistics for the Purview account."""
+    return Account().accountReadUsage({})
+
+
+@mcp.tool()
+def get_account_limits() -> Dict[str, Any]:
+    """Get resource limits and quotas for the Purview account."""
+    return Account().accountReadLimits({})
+
+
+@mcp.tool()
+def get_account_access_keys() -> Dict[str, Any]:
+    """Get the access keys for the Purview account (Atlas API authentication)."""
+    return Account().accountReadAccessKeys({})
+
+
+# ============================================================================
+# WORKFLOW OPERATIONS
+# ============================================================================
+
+@mcp.tool()
+def list_workflows() -> Dict[str, Any]:
+    """List all approval workflows defined in the Purview account."""
+    return Workflow().workflowListWorkflows({})
+
+
+@mcp.tool()
+def get_workflow(workflow_id: str) -> Dict[str, Any]:
+    """Get details of a specific workflow.
+
+    Args:
+        workflow_id: The workflow ID
+    """
+    return Workflow().workflowGetWorkflow({"--workflow-id": workflow_id})
+
+
+@mcp.tool()
+def list_workflow_runs(workflow_id: str) -> Dict[str, Any]:
+    """List all execution runs for a workflow.
+
+    Args:
+        workflow_id: The workflow ID
+    """
+    return Workflow().workflowGetWorkflowRuns({"--workflow-id": workflow_id})
+
+
+@mcp.tool()
+def get_approval_requests() -> Dict[str, Any]:
+    """List all pending approval requests requiring action."""
+    return Workflow().workflowGetApprovalRequests({})
+
+
+@mcp.tool()
+def approve_workflow_request(request_id: str, comment: Optional[str] = None) -> Dict[str, Any]:
+    """Approve a pending workflow approval request.
+
+    Args:
+        request_id: The approval request ID
+        comment: Optional approval comment
+    """
+    args: Dict[str, Any] = {"--request-id": request_id}
+    if comment:
+        args["--comment"] = comment
+    return Workflow().workflowApproveRequest(args)
+
+
+@mcp.tool()
+def reject_workflow_request(request_id: str, comment: Optional[str] = None) -> Dict[str, Any]:
+    """Reject a pending workflow approval request.
+
+    Args:
+        request_id: The approval request ID
+        comment: Optional rejection comment
+    """
+    args: Dict[str, Any] = {"--request-id": request_id}
+    if comment:
+        args["--comment"] = comment
+    return Workflow().workflowRejectRequest(args)
+
+
+@mcp.tool()
+def list_workflow_templates() -> Dict[str, Any]:
+    """List all available workflow templates for creating new workflows."""
+    return Workflow().workflowListWorkflowTemplates({})
+
+
+# ============================================================================
+# POLICY STORE OPERATIONS
+# ============================================================================
+
+@mcp.tool()
+def list_data_access_policies() -> Dict[str, Any]:
+    """List all data access policies defined in the Purview policy store."""
+    return Policystore().policystoreListDataAccessPolicies({})
+
+
+@mcp.tool()
+def list_metadata_policies() -> Dict[str, Any]:
+    """List all metadata policies (collection-level role assignments)."""
+    return Policystore().policystoreReadMetadataPolicies({})
+
+
+@mcp.tool()
+def get_metadata_policy(policy_id: str) -> Dict[str, Any]:
+    """Get a specific metadata policy by ID.
+
+    Args:
+        policy_id: The metadata policy ID
+    """
+    return Policystore().policystoreReadMetadataPolicy({"--policy-id": policy_id})
+
+
+@mcp.tool()
+def list_metadata_roles() -> Dict[str, Any]:
+    """List all available metadata roles that can be assigned in policies."""
+    return Policystore().policystoreReadMetadataRoles({})
+
+
+@mcp.tool()
+def get_user_permissions() -> Dict[str, Any]:
+    """Get the effective permissions for the currently authenticated user."""
+    return Policystore().policystoreGetUserPermissions({})
+
+
+# ============================================================================
+# HEALTH OPERATIONS
+# ============================================================================
+
+@mcp.tool()
+def get_health_summary() -> Dict[str, Any]:
+    """Get a summary of Purview account health and service status."""
+    return Health().get_health_summary({})
+
+
+@mcp.tool()
+def query_health_actions(
+    filter_status: Optional[str] = None,
+    filter_type: Optional[str] = None
+) -> Dict[str, Any]:
+    """Query health actions and recommendations for the Purview account.
+
+    Args:
+        filter_status: Optional status filter (e.g., Active, Resolved)
+        filter_type: Optional type filter
+    """
+    args: Dict[str, Any] = {}
+    if filter_status:
+        args["--status"] = filter_status
+    if filter_type:
+        args["--type"] = filter_type
+    return Health().query_health_actions(args)
+
+
+# ============================================================================
+# SHARE OPERATIONS (Purview Data Sharing)
+# ============================================================================
+
+@mcp.tool()
+def list_sent_shares() -> Dict[str, Any]:
+    """List all data shares you have sent to other recipients."""
+    return Share().shareListSentShares({})
+
+
+@mcp.tool()
+def list_received_shares() -> Dict[str, Any]:
+    """List all data shares you have received from other senders."""
+    return Share().shareListReceivedShares({})
+
+
+@mcp.tool()
+def get_sent_share(sent_share_id: str) -> Dict[str, Any]:
+    """Get details of a specific sent share.
+
+    Args:
+        sent_share_id: The sent share ID
+    """
+    return Share().shareGetSentShare({"--sent-share-id": sent_share_id})
+
+
+@mcp.tool()
+def get_received_share(received_share_id: str) -> Dict[str, Any]:
+    """Get details of a specific received share.
+
+    Args:
+        received_share_id: The received share ID
+    """
+    return Share().shareGetReceivedShare({"--received-share-id": received_share_id})
+
+
+@mcp.tool()
+def list_sent_invitations(sent_share_id: str) -> Dict[str, Any]:
+    """List invitations sent for a specific data share.
+
+    Args:
+        sent_share_id: The sent share ID
+    """
+    return Share().shareListSentInvitations({"--sent-share-id": sent_share_id})
+
+
+@mcp.tool()
+def list_received_invitations() -> Dict[str, Any]:
+    """List all pending data share invitations you have received."""
+    return Share().shareListReceivedInvitations({})
+
+
+# ============================================================================
+# DATA QUALITY OPERATIONS
+# ============================================================================
+
+@mcp.tool()
+def list_quality_domains() -> Dict[str, Any]:
+    """List all data quality domains configured in the account."""
+    return DataQuality().list_domains({})
+
+
+@mcp.tool()
+def get_quality_domain_report(domain_id: str) -> Dict[str, Any]:
+    """Get a quality report for a specific data quality domain.
+
+    Args:
+        domain_id: The data quality domain ID
+    """
+    return DataQuality().get_domain_report({"--domain-id": domain_id})
+
+
+@mcp.tool()
+def list_quality_connections(domain_id: str) -> Dict[str, Any]:
+    """List all data source connections in a quality domain.
+
+    Args:
+        domain_id: The data quality domain ID
+    """
+    return DataQuality().list_connections({"--domain-id": domain_id})
+
+
+@mcp.tool()
+def list_quality_rules(domain_id: str) -> Dict[str, Any]:
+    """List all data quality rules defined in a domain.
+
+    Args:
+        domain_id: The data quality domain ID
+    """
+    return DataQuality().list_rules({"--domain-id": domain_id})
+
+
+@mcp.tool()
+def get_quality_score(domain_id: str) -> Dict[str, Any]:
+    """Get the overall data quality score for a domain.
+
+    Args:
+        domain_id: The data quality domain ID
+    """
+    return DataQuality().get_quality_score({"--domain-id": domain_id})
+
+
+@mcp.tool()
+def run_quality_scan(domain_id: str, scan_id: str) -> Dict[str, Any]:
+    """Trigger a data quality scan run.
+
+    Args:
+        domain_id: The data quality domain ID
+        scan_id: The scan configuration ID to run
+    """
+    return DataQuality().run_scan({"--domain-id": domain_id, "--scan-id": scan_id})
+
+
+@mcp.tool()
+def list_quality_scans(domain_id: str) -> Dict[str, Any]:
+    """List all data quality scan configurations in a domain.
+
+    Args:
+        domain_id: The data quality domain ID
+    """
+    return DataQuality().list_scans({"--domain-id": domain_id})
+
+
 def main() -> None:
-    register_microsoft_learn_tools(mcp)
+    cfg = PurviewMCPConfig.from_env()
 
-    # Transport selection is env-driven so local stdio clients keep working,
-    # while HTTP transports can be enabled for remote/server deployments.
-    transport = os.getenv("PURVIEW_MCP_TRANSPORT", "stdio").strip().lower()
-    if transport == "http":
-        transport = "streamable-http"
-
-    if transport == "stdio":
+    if cfg.transport == "stdio":
         logging.info("Starting Purview MCP Server (transport=stdio)")
         mcp.run()
         return
 
-    if transport not in {"sse", "streamable-http"}:
-        raise ValueError(
-            "Invalid PURVIEW_MCP_TRANSPORT value. "
-            "Use one of: stdio, sse, streamable-http, http"
-        )
-
-    host = os.getenv("PURVIEW_MCP_HOST", "127.0.0.1").strip()
-    port_raw = os.getenv("PURVIEW_MCP_PORT", "8000").strip()
-    try:
-        port = int(port_raw)
-    except ValueError as exc:
-        raise ValueError(
-            f"Invalid PURVIEW_MCP_PORT value '{port_raw}'. It must be an integer."
-        ) from exc
-
     logging.info(
         "Starting Purview MCP Server (transport=%s, host=%s, port=%s)",
-        transport,
-        host,
-        port,
+        cfg.transport,
+        cfg.host,
+        cfg.port,
     )
-    mcp.run(transport=transport, host=host, port=port)
+    mcp.run(transport=cfg.transport, host=cfg.host, port=cfg.port)
 
 
 if __name__ == "__main__":

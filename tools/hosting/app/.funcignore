@@ -1,0 +1,19 @@
+# Azure Functions deployment exclusions
+.git
+.venv
+.vscode
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+*.egg-info
+local.settings.json
+.python_packages
+tests/
+docs/
+*.md
+Dockerfile
+docker-compose.yml
+diagnose.ps1
+deploy.ps1
