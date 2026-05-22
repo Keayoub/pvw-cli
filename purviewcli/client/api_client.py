@@ -109,7 +109,8 @@ class PurviewClient:
         """Make HTTP request with retry logic"""
         url = f"{self.purview_endpoint}{endpoint}"
         params = kwargs.get("params", {})
-        params["api-version"] = DATAMAP_API_VERSION
+        if "api-version" not in params:
+            params["api-version"] = DATAMAP_API_VERSION
         kwargs["params"] = params
 
         for attempt in range(self.config.max_retries):
