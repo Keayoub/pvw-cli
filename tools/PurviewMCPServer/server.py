@@ -1504,9 +1504,39 @@ async def invoke_operation(
 def main() -> None:
     register_microsoft_learn_tools(mcp)
 
-    # Run the FastMCP server
-    logging.info("Starting Purview MCP Server")
-    mcp.run()
+    # Transport selection is env-driven so local stdio clients keep working,
+    # while HTTP transports can be enabled for remote/server deployments.
+    transport = os.getenv("PURVIEW_MCP_TRANSPORT", "stdio").strip().lower()
+    if transport == "http":
+        transport = "streamable-http"
+
+    if transport == "stdio":
+        logging.info("Starting Purview MCP Server (transport=stdio)")
+        mcp.run()
+        return
+
+    if transport not in {"sse", "streamable-http"}:
+        raise ValueError(
+            "Invalid PURVIEW_MCP_TRANSPORT value. "
+            "Use one of: stdio, sse, streamable-http, http"
+        )
+
+    host = os.getenv("PURVIEW_MCP_HOST", "127.0.0.1").strip()
+    port_raw = os.getenv("PURVIEW_MCP_PORT", "8000").strip()
+    try:
+        port = int(port_raw)
+    except ValueError as exc:
+        raise ValueError(
+            f"Invalid PURVIEW_MCP_PORT value '{port_raw}'. It must be an integer."
+        ) from exc
+
+    logging.info(
+        "Starting Purview MCP Server (transport=%s, host=%s, port=%s)",
+        transport,
+        host,
+        port,
+    )
+    mcp.run(transport=transport, host=host, port=port)
 
 
 if __name__ == "__main__":
