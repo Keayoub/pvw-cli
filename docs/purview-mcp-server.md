@@ -96,7 +96,7 @@ VS Code --[POST /api/mcp]--> Azure Functions host (port 7073)
 |---|---|
 | Python 3.11+ | `python --version` |
 | `pvw-cli` dependencies | `pip install -e .` from repo root |
-| `pvw-mcp-server` package | `pip install -e tools/PurviewMCPServer` |
+| `purview-mcp-server` package | `pip install -e tools/mcp` |
 | Azure authentication | `az login` or service principal env vars |
 | Purview account | `PURVIEW_ACCOUNT_NAME` env var |
 | Azure Functions Core Tools v4 | Only for Azure Functions hosting mode |

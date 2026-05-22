@@ -116,7 +116,7 @@ Copy `.env.example` to `.env` and fill in your values. Never commit `.env`.
 | `__version__.py` | Package version |
 | `.env.example` | Environment variable template |
 | `PROMPT_INSTRUCTIONS.md` | Detailed prompt guidance for AI assistants |
-| `pyproject.toml` | Package metadata (`pvw-mcp-server`) |
+| `pyproject.toml` | Package metadata (`purview-mcp-server`) |
 | `Dockerfile` | Container image for standalone deployment |
 | `docker-compose.yml` | Local container stack |
 

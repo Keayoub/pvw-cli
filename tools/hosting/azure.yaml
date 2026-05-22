@@ -16,5 +16,5 @@ services:
     language: py
     host: function
 
-# No preprovision hooks needed: the function app installs pvw-mcp-server
+# No preprovision hooks needed: the function app installs purview-mcp-server
 # directly from PyPI via requirements.txt.  No local file staging required.

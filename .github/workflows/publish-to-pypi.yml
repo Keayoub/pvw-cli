@@ -53,11 +53,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install build
 
-      - name: Build pvw-mcp-server
+      - name: Build purview-mcp-server
         working-directory: tools/mcp
         run: python -m build
 
-      - name: Publish pvw-mcp-server to PyPI
+      - name: Publish purview-mcp-server to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: tools/mcp/dist/

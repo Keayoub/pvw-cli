@@ -64,7 +64,7 @@ MCP Client  ──POST /api/mcp──▶  Azure Functions host
 | `app/function_app.py` | ASGI entry point — wraps `mcp.streamable_http_app()` |
 | `app/host.json` | Extension bundle v4 config |
 | `app/local.settings.json` | Local env vars (`AzureWebJobsStorage: ""`) |
-| `app/requirements.txt` | `azure-functions`, `fastmcp>=2.0.0`, `pvw-mcp-server` |
+| `app/requirements.txt` | `azure-functions`, `fastmcp>=2.0.0`, `purview-mcp-server` |
 
 ### VS Code mcp.json (remote)
 

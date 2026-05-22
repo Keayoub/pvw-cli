@@ -150,7 +150,7 @@ Example MCP config for external clients:
 Optional override for the `npx` launcher source:
 
 ```bash
-PVW_MCP_UV_FROM="pvw-mcp-server" npx -y chat.mcp.purview
+PVW_MCP_UV_FROM="purview-mcp-server" npx -y chat.mcp.purview
 ```
 
 Python SDK quick-start (with a `uvx`-backed standard input/output server):

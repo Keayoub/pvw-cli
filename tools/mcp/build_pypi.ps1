@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-    Build and optionally publish pvw-mcp-server to PyPI.
+    Build and optionally publish purview-mcp-server to PyPI.
 
 .DESCRIPTION
-    Builds the pvw-mcp-server package (sdist + wheel) from tools/PurviewMCPServer/
+    Builds the purview-mcp-server package (sdist + wheel) from tools/mcp/
     and optionally uploads to PyPI (or TestPyPI for dry-run validation).
 
 .PARAMETER Publish
@@ -58,7 +58,7 @@ Push-Location $PackageRoot
 
 try {
     Write-Host "`n========================================"
-    Write-Host " Building pvw-mcp-server"
+    Write-Host " Building purview-mcp-server"
     Write-Host "========================================`n"
 
     # ------------------------------------------------------------------
@@ -82,7 +82,7 @@ try {
     # 3. Clean previous build artefacts
     # ------------------------------------------------------------------
     Write-Step "Cleaning"
-    @("build", "dist", "pvw_mcp_server.egg-info", "pvw-mcp-server.egg-info") | ForEach-Object {
+    @("build", "dist", "pvw_mcp_server.egg-info", "pvw-mcp-server.egg-info", "purview-mcp-server.egg-info") | ForEach-Object {
         if (Test-Path $_) { Remove-Item -Recurse -Force $_; Write-Info "Removed $_" }
     }
     Write-Success "Working tree clean"
@@ -142,14 +142,14 @@ try {
         if ($LASTEXITCODE -ne 0) { Fail "Upload failed" 9 }
         Write-Success "Upload complete"
 
-        $index = if ($TestPyPI) { "https://test.pypi.org/project/pvw-mcp-server/$version/" } else { "https://pypi.org/project/pvw-mcp-server/$version/" }
+        $index = if ($TestPyPI) { "https://test.pypi.org/project/purview-mcp-server/$version/" } else { "https://pypi.org/project/purview-mcp-server/$version/" }
         Write-Host "`nPackage URL: $index" -ForegroundColor Cyan
     } else {
         Write-Host "`n[SKIP] Upload skipped. Re-run with -Publish or -TestPyPI to upload." -ForegroundColor DarkGray
         Write-Host "       Manual upload:  uv run python -m twine upload dist/*" -ForegroundColor DarkGray
     }
 
-    Write-Host "`n[DONE] pvw-mcp-server $version built successfully.`n" -ForegroundColor Green
+    Write-Host "`n[DONE] purview-mcp-server $version built successfully.`n" -ForegroundColor Green
 
 } finally {
     Pop-Location
