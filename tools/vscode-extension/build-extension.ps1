@@ -90,7 +90,7 @@ Write-Host "══════════════════════�
 # Step 1: Copy server files to bundled/
 Write-Step "Copying server files from tools/mcp/ to bundled/"
 
-$serverSource = Join-Path $scriptDir "..\mcp\pvw_mcp_server\server.py"
+$serverSource = Join-Path $scriptDir "..\mcp\purview_mcp_server\server.py"
 $requirementsSource = Join-Path $scriptDir "..\mcp\requirements.txt"
 $diagnoseScriptSource = Join-Path $scriptDir "..\mcp\diagnose.ps1"
 $registerScriptSource = Join-Path $scriptDir "scripts\register-mcp-server.ps1"

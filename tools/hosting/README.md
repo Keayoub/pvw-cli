@@ -12,7 +12,7 @@ Run FastMCP directly as a network server. No Azure Functions required. Best for 
 $env:PURVIEW_ACCOUNT_NAME  = "your-account"
 $env:PURVIEW_MCP_TRANSPORT = "streamable-http"
 $env:PURVIEW_MCP_PORT      = "8000"
-python -m pvw_mcp_server.server
+python -m purview_mcp_server.server
 ```
 
 | Property | Value |

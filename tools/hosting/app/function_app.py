@@ -7,7 +7,7 @@ import logging
 
 import azure.functions as func
 
-from pvw_mcp_server.server import mcp  # FastMCP instance — all Purview tools registered
+from purview_mcp_server.server import mcp  # FastMCP instance — all Purview tools registered
 
 logger = logging.getLogger("purview-mcp-functions")
 
@@ -98,7 +98,7 @@ async def mcp_handler(req: func.HttpRequest) -> func.HttpResponse:
 @app.route(route="health", methods=["GET"])
 async def health_check(req: func.HttpRequest) -> func.HttpResponse:
     """Liveness probe — returns 200 if the Function is running."""
-    from pvw_mcp_server.__version__ import __version__ as _ver
+    from purview_mcp_server.__version__ import __version__ as _ver
     tools = await mcp.list_tools()
     return func.HttpResponse(
         json.dumps({"status": "ok", "version": _ver, "tools": len(tools)}),

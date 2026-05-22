@@ -39,11 +39,11 @@ dependencies = [
 ]
 
 [project.scripts]
-pvw-mcp = "pvw_mcp_server.server:main"
+purview-mcp = "purview_mcp_server.server:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["pvw_mcp_server*"]
+include = ["purview_mcp_server*"]
 
 [tool.setuptools.dynamic]
-version = {attr = "pvw_mcp_server.__version__.__version__"}
+version = {attr = "purview_mcp_server.__version__.__version__"}

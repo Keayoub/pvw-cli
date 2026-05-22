@@ -8,14 +8,22 @@ All Purview MCP tools in a single server. The Purview MCP Server implements the 
 
 ## Table of Contents
 
-* [Overview](#overview)
-* [Installation](#installation)
-* [Usage](#usage)
-  * [Getting Started](#getting-started)
-  * [What can you do with the Purview MCP Server?](#what-can-you-do-with-the-purview-mcp-server)
-  * [Configure Azure Authentication](#configure-azure-authentication)
-  * [Advanced Launch Options](#advanced-launch-options)
-* [Support and Reference](#support-and-reference)
+- [Purview MCP Server Extension for Visual Studio Code](#purview-mcp-server-extension-for-visual-studio-code)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Installation](#installation)
+    - [Requirements](#requirements)
+    - [Install Extension](#install-extension)
+    - [Enable Auto-start](#enable-auto-start)
+  - [Usage](#usage)
+    - [Getting Started](#getting-started)
+    - [What can you do with the Purview MCP Server?](#what-can-you-do-with-the-purview-mcp-server)
+    - [Configure Azure Authentication](#configure-azure-authentication)
+      - [Manual Configuration (Optional)](#manual-configuration-optional)
+      - [First Run: Automatic Dependency Installation](#first-run-automatic-dependency-installation)
+    - [FastMCP vs Legacy Server](#fastmcp-vs-legacy-server)
+    - [Advanced Launch Options](#advanced-launch-options)
+  - [Support and Reference](#support-and-reference)
 
 ## Overview
 

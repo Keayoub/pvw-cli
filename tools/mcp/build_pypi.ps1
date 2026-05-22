@@ -82,7 +82,7 @@ try {
     # 3. Clean previous build artefacts
     # ------------------------------------------------------------------
     Write-Step "Cleaning"
-    @("build", "dist", "pvw_mcp_server.egg-info", "pvw-mcp-server.egg-info", "purview-mcp-server.egg-info") | ForEach-Object {
+    @("build", "dist", "pvw_mcp_server.egg-info", "purview_mcp_server.egg-info", "pvw-mcp-server.egg-info", "purview-mcp-server.egg-info") | ForEach-Object {
         if (Test-Path $_) { Remove-Item -Recurse -Force $_; Write-Info "Removed $_" }
     }
     Write-Success "Working tree clean"
