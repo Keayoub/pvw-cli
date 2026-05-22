@@ -254,8 +254,8 @@ if (Test-Path $readme) {
 # ---------------------------------------------------------------------------
 # MCP server version sync (always runs, commit included in the same release commit)
 # ---------------------------------------------------------------------------
-$mcpRoot = Join-Path $repoRoot 'tools\PurviewMCPServer'
-$mcpVersionFile  = Join-Path $mcpRoot '__version__.py'
+$mcpRoot = Join-Path $repoRoot 'tools\mcp'
+$mcpVersionFile  = Join-Path $mcpRoot 'purview_mcp_server\__version__.py'
 $mcpPyproject    = Join-Path $mcpRoot 'pyproject.toml'
 $mcpFilesChanged = @()
 
