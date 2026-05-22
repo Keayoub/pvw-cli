@@ -39,11 +39,45 @@ python tools/PurviewMCPServer/server.py
 
 The server starts with FastMCP and exposes tools declared in `server.py`.
 
+Default transport is `stdio`.
+
+### Transport Modes
+
+The server supports these transports through environment variables:
+
+- `PURVIEW_MCP_TRANSPORT=stdio` (default)
+- `PURVIEW_MCP_TRANSPORT=streamable-http`
+- `PURVIEW_MCP_TRANSPORT=sse`
+- `PURVIEW_MCP_TRANSPORT=http` (alias for `streamable-http`)
+
+Optional network settings for HTTP transports:
+
+- `PURVIEW_MCP_HOST` (default: `127.0.0.1`)
+- `PURVIEW_MCP_PORT` (default: `8000`)
+
+Example (PowerShell) for Streamable HTTP:
+
+```powershell
+$env:PURVIEW_MCP_TRANSPORT="streamable-http"
+$env:PURVIEW_MCP_HOST="127.0.0.1"
+$env:PURVIEW_MCP_PORT="8000"
+python tools/PurviewMCPServer/server.py
+```
+
+Example (PowerShell) for SSE:
+
+```powershell
+$env:PURVIEW_MCP_TRANSPORT="sse"
+$env:PURVIEW_MCP_HOST="127.0.0.1"
+$env:PURVIEW_MCP_PORT="8000"
+python tools/PurviewMCPServer/server.py
+```
+
 ## MCP Server Config Template
 
 Most MCP clients use the same logical schema: server name, command, args, and env.
 
-Use this local Python config as the baseline:
+Use this local Python config as the baseline for `stdio`:
 
 ```json
 {
@@ -56,6 +90,32 @@ Use this local Python config as the baseline:
         "PURVIEW_ACCOUNT_ID": "<your-tenant-id-guid>",
         "AZURE_TENANT_ID": "<your-tenant-id-guid>"
       }
+    }
+  }
+}
+```
+
+For HTTP clients, point to the local MCP endpoint when the server runs with
+`PURVIEW_MCP_TRANSPORT=streamable-http`:
+
+```json
+{
+  "mcpServers": {
+    "purview": {
+      "url": "http://127.0.0.1:8000/mcp"
+    }
+  }
+}
+```
+
+For SSE clients, point to the SSE endpoint when the server runs with
+`PURVIEW_MCP_TRANSPORT=sse`:
+
+```json
+{
+  "mcpServers": {
+    "purview": {
+      "url": "http://127.0.0.1:8000/sse"
     }
   }
 }

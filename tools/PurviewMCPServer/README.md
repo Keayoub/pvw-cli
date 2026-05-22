@@ -269,6 +269,15 @@ environment:
 - `PURVIEW_ACCOUNT_ID`
 - `AZURE_TENANT_ID`
 
+Transport configuration is environment-driven:
+
+- `PURVIEW_MCP_TRANSPORT` (default: `stdio`; supported: `stdio`, `streamable-http`, `sse`, `http`)
+- `PURVIEW_MCP_HOST` (default: `127.0.0.1`)
+- `PURVIEW_MCP_PORT` (default: `8000`)
+
+For Streamable HTTP clients, use `http://127.0.0.1:8000/mcp`.
+For SSE clients, use `http://127.0.0.1:8000/sse`.
+
 Prefer a read-only smoke test first, such as `list_available_operations()`.
 
 ### Environment Variables Required
