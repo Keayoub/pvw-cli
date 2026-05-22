@@ -70,3 +70,4 @@ README.md.bak.*
 .venv*/
 .vfsmeta/
 .vfscache/
+pvw_mcp_server.egg-info/
