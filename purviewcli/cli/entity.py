@@ -324,7 +324,7 @@ def bulk_read(ctx, guid, ignore_relationships, min_ext_info):
             return
 
         args = {
-            "--guid": list(guid),
+            "--guid": _builtin_list(guid),
             "--ignoreRelationships": ignore_relationships,
             "--minExtInfo": min_ext_info,
         }
@@ -335,13 +335,144 @@ def bulk_read(ctx, guid, ignore_relationships, min_ext_info):
         result = entity_client.entityReadBulk(args)
 
         if result:
-            console.print("[green][OK] Entity bulk-read completed successfully[/green]")
-            console.print(json.dumps(result, indent=2))
+            print(json.dumps(result, indent=2))
         else:
             console.print("[yellow][!] Entity bulk-read completed with no result[/yellow]")
 
     except Exception as e:
         console.print(f"[red][X] Error executing entity bulk-read: {str(e)}[/red]")
+
+
+@entity.command()
+@click.option(
+    "--guid", required=True, multiple=True, help="Table entity GUIDs (can specify multiple)"
+)
+@click.option(
+    "--output",
+    type=click.Choice(["table", "json", "csv"], case_sensitive=False),
+    default="table",
+    show_default=True,
+    help="Output format",
+)
+@click.option("--json", "as_json", is_flag=True, default=False, help="Shortcut for --output json")
+@click.pass_context
+def bulk_read_tables(ctx, guid, output, as_json):
+    """List columns for one or more table entities (reads entities.relationshipAttributes.columns)"""
+    if as_json:
+        output = "json"
+    try:
+        if ctx.obj.get("mock"):
+            console.print("[yellow][MOCK] entity bulk-read-tables command[/yellow]")
+            console.print(f"[dim]GUIDs: {', '.join(guid)}[/dim]")
+            console.print("[green][OK] Mock entity bulk-read-tables completed successfully[/green]")
+            return
+
+        args = {
+            "--guid": _builtin_list(guid),
+            "--ignoreRelationships": False,
+            "--minExtInfo": False,
+        }
+
+        from purviewcli.client._entity import Entity
+
+        entity_client = Entity()
+        result = entity_client.entityReadBulk(args)
+
+        if not result:
+            console.print("[yellow][!] Entity bulk-read-tables completed with no result[/yellow]")
+            return
+
+        referred = result.get("referredEntities", {})
+        rows = []
+        for tbl in result.get("entities", []):
+            table_guid = tbl.get("guid", "")
+            table_name = tbl.get("attributes", {}).get("name") or tbl.get("displayText", "")
+            columns = tbl.get("relationshipAttributes", {}).get("columns", [])
+            for col in columns:
+                col_guid = col.get("guid", "")
+                col_name = col.get("displayText", "")
+                # enrich with data_type from referredEntities when available
+                ref = referred.get(col_guid, {})
+                data_type = ref.get("attributes", {}).get("data_type", "") or ""
+                rows.append(
+                    {
+                        "table_guid": table_guid,
+                        "table_name": table_name,
+                        "column_guid": col_guid,
+                        "column_name": col_name,
+                        "data_type": data_type,
+                    }
+                )
+
+        if not rows:
+            console.print("[yellow][!] No columns found for the provided table GUIDs[/yellow]")
+            return
+
+        if output == "json":
+            print(json.dumps(rows, indent=2))
+        elif output == "csv":
+            import csv
+            import sys
+            writer = csv.DictWriter(
+                sys.stdout,
+                fieldnames=["table_guid", "table_name", "column_guid", "column_name", "data_type"],
+            )
+            writer.writeheader()
+            writer.writerows(rows)
+        else:
+            from rich.table import Table as RichTable
+            from rich.panel import Panel
+            from rich.text import Text
+            from collections import OrderedDict
+
+            # group rows by table preserving entity order
+            tables_map: OrderedDict = OrderedDict()
+            for row in rows:
+                tables_map.setdefault(row["table_guid"], []).append(row)
+
+            nb_tables = len(tables_map)
+            total_cols = len(rows)
+
+            for t_idx, (t_guid, t_rows) in enumerate(tables_map.items(), start=1):
+                t_name = t_rows[0]["table_name"] or t_guid
+                has_types = any(r["data_type"] for r in t_rows)
+
+                tbl_display = RichTable(
+                    show_header=True,
+                    header_style="bold white on dark_blue",
+                    border_style="blue",
+                    row_styles=["", "dim"],
+                    expand=False,
+                    padding=(0, 1),
+                )
+                tbl_display.add_column("#", style="bold cyan", justify="right", width=4)
+                tbl_display.add_column("Column Name", style="bold white")
+                if has_types:
+                    tbl_display.add_column("Data Type", style="yellow")
+                tbl_display.add_column("Column GUID", style="dim cyan")
+
+                for i, row in enumerate(t_rows, start=1):
+                    cells = [str(i), row["column_name"]]
+                    if has_types:
+                        cells.append(row["data_type"] or "-")
+                    cells.append(row["column_guid"])
+                    tbl_display.add_row(*cells)
+
+                title_text = Text()
+                title_text.append(f"[{t_idx}/{nb_tables}] ", style="dim")
+                title_text.append(t_name, style="bold green")
+                title_text.append(f"  ({len(t_rows)} column(s))", style="dim")
+                title_text.append(f"\n{t_guid}", style="dim cyan")
+
+                console.print(Panel(tbl_display, title=title_text, title_align="left", border_style="blue"))
+
+            console.print(
+                f"[green][OK][/green] [bold]{total_cols}[/bold] column(s) across "
+                f"[bold]{nb_tables}[/bold] table(s)"
+            )
+
+    except Exception as e:
+        console.print(f"[red][X] Error executing entity bulk-read-tables: {str(e)}[/red]")
 
 
 @entity.command()
@@ -358,7 +489,7 @@ def bulk_delete(ctx, guid):
             console.print("[green][OK] Mock entity bulk-delete completed successfully[/green]")
             return
 
-        args = {"--guid": list(guid)}
+        args = {"--guid": _builtin_list(guid)}
 
         from purviewcli.client._entity import Entity
 
@@ -450,7 +581,7 @@ def bulk_read_by_attribute(ctx, type_name, qualified_name, ignore_relationships,
 
         args = {
             "--typeName": type_name,
-            "--qualifiedName": list(qualified_name),
+            "--qualifiedName": _builtin_list(qualified_name),
             "--ignoreRelationships": ignore_relationships,
             "--minExtInfo": min_ext_info,
         }
@@ -3494,7 +3625,7 @@ def bulk_delete_optimized(ctx, guids, bulk_size, max_parallel, throttle_ms,
             )
         else:
             deleted_count = _execute_optimized_bulk_delete(
-                ctx, list(guids), bulk_size, max_parallel, 
+                ctx, _builtin_list(guids), bulk_size, max_parallel, 
                 throttle_ms, batch_throttle_ms, dry_run
             )
         

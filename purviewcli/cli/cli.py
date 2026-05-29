@@ -71,6 +71,22 @@ class LazyGroup(click.Group):
         super().__init__(*args, **kwargs)
         self._lazy_modules = _MODULE_MAP.copy()
         self._loaded_modules = set()
+
+    def invoke(self, ctx):
+        """Invoke the group callback and then dispatch the resolved subcommand."""
+        # Run the group callback first so global options populate ctx.obj.
+        click.Command.invoke(self, ctx)
+
+        remaining_args = list(getattr(ctx, "_protected_args", [])) + list(ctx.args)
+        if not remaining_args:
+            return None
+
+        cmd_name, cmd, args = self.resolve_command(ctx, remaining_args)
+        ctx.invoked_subcommand = cmd_name
+
+        sub_ctx = cmd.make_context(cmd_name, args, parent=ctx, obj=ctx.obj)
+        with sub_ctx:
+            return cmd.invoke(sub_ctx)
     
     def list_commands(self, ctx):
         """List all available commands (triggers lazy loads for help)"""
