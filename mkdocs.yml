@@ -76,6 +76,10 @@ nav:
       - Types: commands/types/main.md
       - Insight: commands/insight/main.md
       - Unified Catalog Commands: commands/unified-catalog.md
+      - Data Assets: commands/unified-catalog/data-assets.md
+      - Data Columns: commands/unified-catalog/data-columns.md
+      - Term Bulk Import: commands/unified-catalog/term-bulk-import.md
+      - Term Bulk Update: commands/unified-catalog/term-bulk-update.md
   - Task Guides:
       - Create Tasks: commands/task-create.md
       - Update Tasks: commands/task-update.md

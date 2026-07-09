@@ -5904,6 +5904,172 @@ Use Cases:
         self.params = {}
 
     # ========================================
+    # DATA ASSETS  (new in 2026-03-20-preview)
+    # ========================================
+
+    @decorator
+    def list_data_assets(self, args):
+        self.method = "GET"
+        self.endpoint = ENDPOINTS["unified_catalog"]["list_data_assets"]
+        params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
+        domain_id = args.get("--domain-id", [""])[0] if isinstance(args.get("--domain-id"), list) else args.get("--domain-id", "")
+        if domain_id:
+            params["domainId"] = domain_id
+        keyword = args.get("--keyword", [""])[0] if isinstance(args.get("--keyword"), list) else args.get("--keyword", "")
+        if keyword:
+            params["keyword"] = keyword
+        skip = args.get("--skip")
+        top = args.get("--top")
+        if skip:
+            params["skip"] = skip
+        if top:
+            params["top"] = top
+        self.params = params
+
+    @decorator
+    def create_data_asset(self, args):
+        self.method = "POST"
+        self.endpoint = ENDPOINTS["unified_catalog"]["create_data_asset"]
+        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
+        payload = get_json(args, "--payloadFile") or {}
+        source = args.get("--source", [""])[0] if isinstance(args.get("--source"), list) else args.get("--source", "")
+        if source and not payload.get("source"):
+            payload["source"] = json.loads(source) if isinstance(source, str) and source.startswith("{") else {"qualifiedName": source}
+        self.payload = payload
+
+    @decorator
+    def get_data_asset(self, args):
+        asset_id = args.get("--asset-id", [""])[0] if isinstance(args.get("--asset-id"), list) else args.get("--asset-id", "")
+        self.method = "GET"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_data_asset"].format(dataAssetId=asset_id)
+        self.params = {
+            "api-version": CATALOG_LIST_DEFAULT_API_VERSION,
+            "includeExtendedProperties": "true",
+            "includeLineage": str(args.get("--lineage", "false")).lower(),
+        }
+
+    @decorator
+    def update_data_asset(self, args):
+        asset_id = args.get("--asset-id", [""])[0] if isinstance(args.get("--asset-id"), list) else args.get("--asset-id", "")
+        self.method = "PATCH"
+        self.endpoint = ENDPOINTS["unified_catalog"]["update_data_asset"].format(dataAssetId=asset_id)
+        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
+        self.payload = get_json(args, "--payloadFile") or {}
+
+    @decorator
+    def delete_data_asset(self, args):
+        asset_id = args.get("--asset-id", [""])[0] if isinstance(args.get("--asset-id"), list) else args.get("--asset-id", "")
+        self.method = "DELETE"
+        self.endpoint = ENDPOINTS["unified_catalog"]["delete_data_asset"].format(dataAssetId=asset_id)
+        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
+
+    @decorator
+    def query_data_assets(self, args):
+        self.method = "POST"
+        self.endpoint = ENDPOINTS["unified_catalog"]["query_data_assets"]
+        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
+        self.payload = get_json(args, "--payloadFile") or {}
+
+    @decorator
+    def create_data_asset_relationship(self, args):
+        asset_id = args.get("--asset-id", [""])[0] if isinstance(args.get("--asset-id"), list) else args.get("--asset-id", "")
+        self.method = "POST"
+        self.endpoint = ENDPOINTS["unified_catalog"]["create_data_asset_relationship"].format(dataAssetId=asset_id)
+        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
+        self.payload = get_json(args, "--payloadFile") or {}
+
+    @decorator
+    def list_data_asset_relationships(self, args):
+        asset_id = args.get("--asset-id", [""])[0] if isinstance(args.get("--asset-id"), list) else args.get("--asset-id", "")
+        self.method = "GET"
+        self.endpoint = ENDPOINTS["unified_catalog"]["list_data_asset_relationships"].format(dataAssetId=asset_id)
+        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
+
+    @decorator
+    def delete_data_asset_relationship(self, args):
+        asset_id = args.get("--asset-id", [""])[0] if isinstance(args.get("--asset-id"), list) else args.get("--asset-id", "")
+        self.method = "DELETE"
+        self.endpoint = ENDPOINTS["unified_catalog"]["delete_data_asset_relationship"].format(dataAssetId=asset_id)
+        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
+        self.payload = get_json(args, "--payloadFile") or {}
+
+    # ========================================
+    # DATA COLUMNS  (new in 2026-03-20-preview)
+    # ========================================
+
+    @decorator
+    def get_data_column(self, args):
+        column_id = args.get("--column-id", [""])[0] if isinstance(args.get("--column-id"), list) else args.get("--column-id", "")
+        self.method = "GET"
+        self.endpoint = ENDPOINTS["unified_catalog"]["get_data_column"].format(id=column_id)
+        self.params = {
+            "api-version": CATALOG_LIST_DEFAULT_API_VERSION,
+            "includeColumnDetails": "true",
+            "includeAssetDetails": "true",
+        }
+
+    @decorator
+    def ingest_data_column(self, args):
+        self.method = "POST"
+        self.endpoint = ENDPOINTS["unified_catalog"]["ingest_data_column"]
+        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
+        self.payload = get_json(args, "--payloadFile") or {}
+
+    @decorator
+    def query_data_columns(self, args):
+        self.method = "POST"
+        self.endpoint = ENDPOINTS["unified_catalog"]["query_data_columns"]
+        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
+        self.payload = get_json(args, "--payloadFile") or {}
+
+    @decorator
+    def add_data_column_related_entity(self, args):
+        column_id = args.get("--column-id", [""])[0] if isinstance(args.get("--column-id"), list) else args.get("--column-id", "")
+        self.method = "POST"
+        self.endpoint = ENDPOINTS["unified_catalog"]["add_data_column_related_entity"].format(id=column_id)
+        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
+        self.payload = get_json(args, "--payloadFile") or {}
+
+    @decorator
+    def list_data_column_related_entities(self, args):
+        column_id = args.get("--column-id", [""])[0] if isinstance(args.get("--column-id"), list) else args.get("--column-id", "")
+        self.method = "GET"
+        self.endpoint = ENDPOINTS["unified_catalog"]["list_data_column_related_entities"].format(id=column_id)
+        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
+
+    # ========================================
+    # COUNT OPERATIONS  (new in 2026-03-20-preview)
+    # ========================================
+
+    @decorator
+    def count_terms(self, args):
+        keyword = args.get("--keyword", [""])[0] if isinstance(args.get("--keyword"), list) else args.get("--keyword", "")
+        self.method = "GET"
+        self.endpoint = ENDPOINTS["unified_catalog"]["count_terms"]
+        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION, "nameKeyword": keyword}
+
+    @decorator
+    def count_critical_data_elements(self, args):
+        keyword = args.get("--keyword", [""])[0] if isinstance(args.get("--keyword"), list) else args.get("--keyword", "")
+        self.method = "GET"
+        self.endpoint = ENDPOINTS["unified_catalog"]["count_critical_data_elements"]
+        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION, "nameKeyword": keyword}
+
+    @decorator
+    def count_data_products(self, args):
+        keyword = args.get("--keyword", [""])[0] if isinstance(args.get("--keyword"), list) else args.get("--keyword", "")
+        self.method = "GET"
+        self.endpoint = ENDPOINTS["unified_catalog"]["count_data_products"]
+        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION, "nameKeyword": keyword}
+
+    @decorator
+    def count_objectives(self, args):
+        keyword = args.get("--keyword", [""])[0] if isinstance(args.get("--keyword"), list) else args.get("--keyword", "")
+        self.method = "GET"
+        self.endpoint = ENDPOINTS["unified_catalog"]["count_objectives"]
+        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION, "nameKeyword": keyword}
+
+    # ========================================
     # UTILITY METHODS
     # ========================================
 

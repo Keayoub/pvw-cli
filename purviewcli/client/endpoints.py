@@ -21,6 +21,12 @@ API_VERSION = {
     "sharing": {"preview": "2023-05-30-preview"},
     "metadata_policies": {"preview": "2021-07-01-preview"},
     "pds": {"preview": "2023-02-15-preview"},
+    # Unified Catalog API — https://learn.microsoft.com/rest/api/purview/unified-catalog-api-overview
+    # 2026-03-20-preview adds Data Assets and Data Columns groups, plus Count operations.
+    "unified_catalog": {"preview": "2026-03-20-preview"},
+    # Data Quality API — https://learn.microsoft.com/rest/api/purview/unified-catalog-data-quality
+    # 2026-01-12-preview is current GA-feature preview (alerts, asset DQ, observations).
+    "data_quality": {"preview": "2026-01-12-preview"},
 }
 
 USE_PREVIEW = os.getenv("USE_PREVIEW", "true").lower() in ("1", "true", "yes")
@@ -28,6 +34,8 @@ USE_PREVIEW = os.getenv("USE_PREVIEW", "true").lower() in ("1", "true", "yes")
 # Catalog custom metadata list supports expired attributes in preview.
 CATALOG_CUSTOM_METADATA_PATH = "/datagovernance/catalog/customMetadata"
 CATALOG_LIST_DEFAULT_API_VERSION = "2026-03-20-preview"
+# Convenience alias used by UC client code
+UC_API_VERSION = CATALOG_LIST_DEFAULT_API_VERSION
 
 
 # Dynamic API version selection
@@ -45,6 +53,7 @@ DATAMAP_API_VERSION = get_api_version("datamap")
 ACCOUNT_API_VERSION = get_api_version("account")
 SCANNING_API_VERSION = get_api_version("scanning")
 WORKFLOW_API_VERSION = get_api_version("workflow")
+DATAQUALITY_API_VERSION = get_api_version("data_quality")
 
 # Complete endpoint definitions for 100% API coverage
 ENDPOINTS = {
@@ -523,10 +532,38 @@ ENDPOINTS = {
         "get_custom_attribute": "/datagovernance/catalog/attributes/{attributeId}",
         "update_custom_attribute": "/datagovernance/catalog/attributes/{attributeId}",
         "delete_custom_attribute": "/datagovernance/catalog/attributes/{attributeId}",
+        # ── NEW in 2026-03-20-preview ─────────────────────────────────────────
+        # Count operations (duplicate-name validation)
+        # https://learn.microsoft.com/rest/api/purview/purview-unified-catalog
+        "count_terms": "/datagovernance/catalog/terms/count",
+        "count_critical_data_elements": "/datagovernance/catalog/criticalDataElements/count",
+        "count_data_products": "/datagovernance/catalog/dataProducts/count",
+        "count_objectives": "/datagovernance/catalog/objectives/count",
+        # Data Assets  (full group, new in 2026-03-20-preview)
+        "list_data_assets": "/datagovernance/catalog/dataAssets",
+        "create_data_asset": "/datagovernance/catalog/dataAssets",
+        "get_data_asset": "/datagovernance/catalog/dataAssets/{dataAssetId}",
+        "update_data_asset": "/datagovernance/catalog/dataAssets/{dataAssetId}",
+        "delete_data_asset": "/datagovernance/catalog/dataAssets/{dataAssetId}",
+        "query_data_assets": "/datagovernance/catalog/dataAssets/query",
+        "create_data_asset_relationship": "/datagovernance/catalog/dataAssets/{dataAssetId}/relationships",
+        "list_data_asset_relationships": "/datagovernance/catalog/dataAssets/{dataAssetId}/relationships",
+        "delete_data_asset_relationship": "/datagovernance/catalog/dataAssets/{dataAssetId}/relationships",
+        # Data Columns  (full group, new in 2026-03-20-preview)
+        "get_data_column": "/datagovernance/catalog/dataColumns/{id}",
+        "ingest_data_column": "/datagovernance/catalog/dataColumns",
+        "query_data_columns": "/datagovernance/catalog/dataColumns/query",
+        "add_data_column_related_entity": "/datagovernance/catalog/dataColumns/{id}/relationships",
+        "list_data_column_related_entities": "/datagovernance/catalog/dataColumns/{id}/relationships",
+        "delete_data_column_related": "/datagovernance/catalog/dataColumns/{id}/relationships",
     },
     # ==================== DATA QUALITY API ENDPOINTS ====================
-    # Separate quality namespace discovered in repo diagnostics scripts.
-    # See scripts/test_new_endpoints.py
+    # https://learn.microsoft.com/rest/api/purview/unified-catalog-data-quality
+    # API version: 2026-01-12-preview
+    # NOTE: Data Quality endpoints are scoped under business domains.
+    # Data sources use domain-scoped paths:
+    #   PUT /datagovernance/quality/business-domains/{domainId}/data-sources/{dataSourceId}
+    # (The flat /connections aliases below are kept for backward compat but point to wrong paths.)
     "data_quality": {
         # Domain quality reporting
         "list_business_domains": "/datagovernance/quality/business-domains",
@@ -535,40 +572,73 @@ ENDPOINTS = {
         "list_domain_schedules": "/datagovernance/quality/business-domains/{domainId}/schedules",
         "list_domain_alerts": "/datagovernance/quality/business-domains/{domainId}/alerts",
         "list_domain_assets": "/datagovernance/quality/business-domains/{domainId}/assets",
-        # Data source connections
-        "list_connections": "/datagovernance/quality/connections",
-        "create_connection": "/datagovernance/quality/connections",
-        "get_connection": "/datagovernance/quality/connections/{connectionId}",
-        "update_connection": "/datagovernance/quality/connections/{connectionId}",
-        "delete_connection": "/datagovernance/quality/connections/{connectionId}",
-        # Quality rules
-        "list_rules": "/datagovernance/quality/rules",
+        # Data source connections (domain-scoped — correct paths per 2026-01-12-preview spec)
+        "create_data_source": "/datagovernance/quality/business-domains/{domainId}/data-sources/{dataSourceId}",
+        "get_data_source": "/datagovernance/quality/business-domains/{domainId}/data-sources/{dataSourceId}",
+        "update_data_source": "/datagovernance/quality/business-domains/{domainId}/data-sources/{dataSourceId}",
+        "delete_data_source": "/datagovernance/quality/business-domains/{domainId}/data-sources/{dataSourceId}",
+        # Quality rules (domain-scoped)
+        "list_rules": "/datagovernance/quality/business-domains/{domainId}/rules",
         "list_rules_by_domain": "/datagovernance/quality/business-domains/{domainId}/rules",
-        "create_rule": "/datagovernance/quality/rules",
-        "get_rule": "/datagovernance/quality/rules/{ruleId}",
-        "update_rule": "/datagovernance/quality/rules/{ruleId}",
-        "delete_rule": "/datagovernance/quality/rules/{ruleId}",
-        "apply_rule": "/datagovernance/quality/rules/{ruleId}/apply",
+        "create_rule": "/datagovernance/quality/business-domains/{domainId}/rules",
+        "get_rule": "/datagovernance/quality/business-domains/{domainId}/rules/{ruleId}",
+        "update_rule": "/datagovernance/quality/business-domains/{domainId}/rules/{ruleId}",
+        "delete_rule": "/datagovernance/quality/business-domains/{domainId}/rules/{ruleId}",
+        "apply_rule": "/datagovernance/quality/business-domains/{domainId}/rules/{ruleId}/apply",
+        # Schedules
+        "list_scans": "/datagovernance/quality/business-domains/{domainId}/schedules",
+        "create_scan": "/datagovernance/quality/business-domains/{domainId}/schedules",
+        "get_scan": "/datagovernance/quality/business-domains/{domainId}/schedules/{scheduleId}",
+        "update_scan": "/datagovernance/quality/business-domains/{domainId}/schedules/{scheduleId}",
+        "delete_scan": "/datagovernance/quality/business-domains/{domainId}/schedules/{scheduleId}",
+        "run_scan": "/datagovernance/quality/business-domains/{domainId}/schedules/{scheduleId}/run",
+        "stop_scan": "/datagovernance/quality/business-domains/{domainId}/schedules/{scheduleId}/stop",
+        "get_scan_results": "/datagovernance/quality/business-domains/{domainId}/schedules/{scheduleId}/results",
+        # Scan runs
+        "get_run_status": "/datagovernance/quality/runs/{runId}",
+        "get_runs_for_schedule": "/datagovernance/quality/business-domains/{domainId}/schedules/{scheduleId}/runs",
+        "cancel_scan_run": "/datagovernance/quality/runs/{runId}/cancel",
+        # Alerts (new in 2026-01-12-preview)
+        "get_alerts": "/datagovernance/quality/business-domains/{domainId}/alerts",
+        "get_alert": "/datagovernance/quality/business-domains/{domainId}/alerts/{alertId}",
+        "update_alert": "/datagovernance/quality/business-domains/{domainId}/alerts/{alertId}",
+        "update_alert_status": "/datagovernance/quality/business-domains/{domainId}/alerts/{alertId}/status",
+        "delete_alert": "/datagovernance/quality/business-domains/{domainId}/alerts/{alertId}",
         # Data profiling
-        "list_profiles": "/datagovernance/quality/profiles",
-        "create_profile": "/datagovernance/quality/profiles",
-        "get_profile": "/datagovernance/quality/profiles/{profileId}",
-        "update_profile": "/datagovernance/quality/profiles/{profileId}",
-        "delete_profile": "/datagovernance/quality/profiles/{profileId}",
-        "run_profile": "/datagovernance/quality/profiles/{profileId}/run",
-        "get_profile_results": "/datagovernance/quality/profiles/{profileId}/results",
-        # Quality scans
-        "list_scans": "/datagovernance/quality/scans",
-        "create_scan": "/datagovernance/quality/scans",
-        "get_scan": "/datagovernance/quality/scans/{scanId}",
-        "update_scan": "/datagovernance/quality/scans/{scanId}",
-        "delete_scan": "/datagovernance/quality/scans/{scanId}",
-        "run_scan": "/datagovernance/quality/scans/{scanId}/run",
-        "get_scan_results": "/datagovernance/quality/scans/{scanId}/results",
-        "stop_scan": "/datagovernance/quality/scans/{scanId}/stop",
+        "run_profile": "/datagovernance/quality/business-domains/{domainId}/data-sources/{dataSourceId}/profile",
+        "get_profile_results": "/datagovernance/quality/business-domains/{domainId}/data-sources/{dataSourceId}/profile/results",
+        # Observations
+        "list_observations": "/datagovernance/quality/business-domains/{domainId}/observations",
+        "create_observation": "/datagovernance/quality/business-domains/{domainId}/observations",
+        "delete_observation": "/datagovernance/quality/business-domains/{domainId}/observations/{observationId}",
+        # Opinion trend (new in 2026-01-12-preview)
+        "get_opinion_trend": "/datagovernance/quality/business-domains/{domainId}/opinionTrend",
         # Quality scores
         "get_quality_score": "/datagovernance/quality/assets/{assetId}/score",
         "list_asset_scores": "/datagovernance/quality/scores",
+        "get_latest_snapshot": "/datagovernance/quality/business-domains/{domainId}/snapshots/latest",
+        # Standalone Asset DQ (new in 2026-01-12-preview — no data product required)
+        "create_asset_dq": "/datagovernance/quality/assetDQ",
+        "get_asset_dq": "/datagovernance/quality/assetDQ/{assetDQId}",
+        "clone_asset_dq": "/datagovernance/quality/assetDQ/{assetDQId}/clone",
+        "delete_asset_dq": "/datagovernance/quality/assetDQ/{assetDQId}",
+        "list_asset_dq": "/datagovernance/quality/assetDQ",
+        "get_asset_dq_scores": "/datagovernance/quality/assetDQ/{assetDQId}/scores",
+        "get_asset_dq_rules": "/datagovernance/quality/assetDQ/{assetDQId}/rules",
+        "create_asset_dq_rule": "/datagovernance/quality/assetDQ/{assetDQId}/rules",
+        "update_asset_dq_rule": "/datagovernance/quality/assetDQ/{assetDQId}/rules/{ruleId}",
+        "delete_asset_dq_rule": "/datagovernance/quality/assetDQ/{assetDQId}/rules/{ruleId}",
+        "get_asset_dq_latest_snapshot": "/datagovernance/quality/assetDQ/{assetDQId}/snapshots/latest",
+        "list_asset_dq_runs": "/datagovernance/quality/assetDQ/{assetDQId}/runs",
+        # Bulk / scoped asset metadata
+        "get_bulk_asset_metadata": "/datagovernance/quality/bulkAssetMetadata",
+        "create_bulk_asset_metadata": "/datagovernance/quality/bulkAssetMetadata",
+        "get_scoped_asset_metadata": "/datagovernance/quality/scopedAssetMetadata/{assetId}",
+        "update_scoped_asset_metadata": "/datagovernance/quality/scopedAssetMetadata/{assetId}",
+        "delete_scoped_asset_metadata": "/datagovernance/quality/scopedAssetMetadata/{assetId}",
+        # Observer
+        "get_observer": "/datagovernance/quality/observers/{observerId}",
+        "update_observer": "/datagovernance/quality/observers/{observerId}",
     },
     # ==================== AZURE RESOURCE MANAGER ENDPOINTS ====================
     "management": {
@@ -790,6 +860,8 @@ def get_api_version_params(api_type: str = "datamap") -> dict:
         "self_service_policies": get_api_version("self_service_policies"),
         "sharing": get_api_version("sharing"),
         "metadata_policies": get_api_version("metadata_policies"),
+        "unified_catalog": get_api_version("unified_catalog"),
+        "data_quality": get_api_version("data_quality"),
         "management": "2021-07-01",  # ARM API version
     }
 
@@ -823,8 +895,8 @@ def get_endpoint_category(endpoint_name: str) -> str:
         "self_service_policies": "self_service_policies",
         "sharing": "sharing",
         "metadata_policies": "metadata_policies",
-        "unified_catalog": "datamap",
-        "data_quality": "quality",
+        "unified_catalog": "unified_catalog",
+        "data_quality": "data_quality",
         "management": "management",
     }
 

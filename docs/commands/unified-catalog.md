@@ -6,13 +6,16 @@
 
 The Unified Catalog (`uc`) command group provides comprehensive management of Microsoft Purview's modern data governance features:
 
-- **✅ Governance Domains** - Organizational contexts for data assets
+- **✅ Governance Domains** - Organisational contexts for data assets
 - **✅ Glossary Terms** - Business terminology and definitions with full metadata
-- **✅ Data Products** - Curated data asset collections with full CRUD lifecycle management (NEW: update & delete)
+- **✅ Data Products** - Curated data asset collections with full CRUD lifecycle management
 - **✅ Objectives & Key Results (OKRs)** - Data governance goal tracking and measurement
 - **✅ Critical Data Elements (CDEs)** - Important data element definitions with data types
-- **✅ Health Management** - Automated governance health monitoring and recommendations (NEW)
-- **✅ Workflow Management** - Approval workflows and business process automation (NEW)
+- **✅ Health Management** - Automated governance health monitoring and recommendations
+- **✅ Workflow Management** - Approval workflows and business process automation
+- **✅ Data Assets** - UC-native data asset management *(new — API 2026-03-20-preview)*
+- **✅ Data Columns** - UC-native column management with CDE/term linking *(new — API 2026-03-20-preview)*
+- **✅ Count Operations** - Duplicate-name validation for all entity types *(new — API 2026-03-20-preview)*
 - **ℹ️ Custom Attributes / Business Metadata** - User-defined metadata attributes. If the `datagovernance/catalog/attributes` endpoint is unavailable (HTTP 405), use Atlas business metadata via `pvw types putTypeDefs` with `businessMetadataDefs`.
 - **✅ Metadata Cleanup** - Resolve expired attribute names to their parent definition and safely clean up definitions.
 - **🚧 Access Requests** - Data access workflow management (coming soon)
@@ -457,6 +460,88 @@ pvw workflow list --json
 - ✅ **Flexible Definition**: JSON-based workflow configuration
 - ✅ **Rich Formatting**: Beautiful table display with full workflow IDs visible
 
+---
+
+### 🗂️ Data Assets (`pvw uc data-asset`) — *New in API 2026-03-20-preview*
+
+Manage Unified Catalog data assets — the authoritative asset records in the new UC API (separate from Data Map entities):
+
+```bash
+# List data assets (optionally filter by domain or keyword)
+pvw uc data-asset list
+pvw uc data-asset list --domain-id "abc-123"
+pvw uc data-asset list --keyword "sales" --top 20
+
+# Get a specific data asset (includes lineage by default)
+pvw uc data-asset get --asset-id "da-guid-1234"
+pvw uc data-asset get --asset-id "da-guid-1234" --lineage
+
+# Create a data asset (requires JSON payload file)
+pvw uc data-asset create --payload-file asset.json
+
+# Update a data asset
+pvw uc data-asset update --asset-id "da-guid-1234" --payload-file update.json
+
+# Delete a data asset (with confirmation)
+pvw uc data-asset delete --asset-id "da-guid-1234"
+pvw uc data-asset delete --asset-id "da-guid-1234" --yes
+
+# Query data assets with advanced filters
+pvw uc data-asset query --payload-file query.json
+
+# Manage relationships
+pvw uc data-asset add-relationship --asset-id "da-guid-1234" --payload-file rel.json
+pvw uc data-asset list-relationships --asset-id "da-guid-1234"
+```
+
+> See [Data Assets Reference](unified-catalog/data-assets.md) for full payload schemas and examples.
+
+### 🔢 Data Columns (`pvw uc data-column`) — *New in API 2026-03-20-preview*
+
+Manage UC-native data columns and link them to CDEs and glossary terms:
+
+```bash
+# Get a specific column by GUID
+pvw uc data-column get --column-id "col-guid-5678"
+
+# Ingest a data column (upsert)
+pvw uc data-column ingest --payload-file column.json
+
+# Query columns with filters (domain, asset, keyword)
+pvw uc data-column query --payload-file query.json
+
+# Add a related entity (e.g. link to a CDE or term)
+pvw uc data-column add-related --column-id "col-guid-5678" --payload-file rel.json
+
+# List related entities for a column
+pvw uc data-column list-related --column-id "col-guid-5678"
+```
+
+> See [Data Columns Reference](unified-catalog/data-columns.md) for full payload schemas and examples.
+
+### 🔢 Count Operations (`pvw uc count`) — *New in API 2026-03-20-preview*
+
+Check how many entities share a given name — useful for duplicate-name validation before creating new items:
+
+```bash
+# Count terms matching a name keyword
+pvw uc count terms --keyword "Customer"
+
+# Count CDEs matching a name keyword
+pvw uc count cdes --keyword "SSN"
+
+# Count data products matching a name keyword
+pvw uc count data-products --keyword "Finance"
+
+# Count objectives matching a name keyword
+pvw uc count objectives --keyword "Quality"
+```
+
+All count commands return a simple JSON response: `{"count": <n>}`.  
+A count > 0 before a create operation signals a potential duplicate.
+
+---
+
 ## 🎨 Beautiful Console Output
 
 Experience professional-grade CLI formatting with:
@@ -511,15 +596,19 @@ This implementation provides **complete feature parity** with the popular [Unifi
 
 ### Purview REST Endpoints
 
-| Feature | Endpoint | Methods |
-|---------|----------|---------|
-| **Governance Domains** | `/datagovernance/governanceDomains` | GET, POST, PUT, DELETE |
-| **Glossary Terms** | `/datagovernance/terms` | GET, POST, PUT, DELETE |
-| **Data Products** | `/datagovernance/dataProducts` | GET, POST, PUT, DELETE |
-| **Objectives** | `/datagovernance/objectives` | GET, POST, PUT, DELETE |
-| **Key Results** | `/datagovernance/objectives/{id}/keyResults` | GET, POST, PUT, DELETE |
-| **Critical Data Elements** | `/datagovernance/criticalDataElements` | GET, POST, PUT, DELETE |
-| **Health Management** | `/datagovernance/health` | GET, POST *(Coming Soon)* |
+| Feature | Endpoint | API Version | Methods |
+|---------|----------|-------------|---------|
+| **Governance Domains** | `/datagovernance/catalog/businessdomains` | 2026-03-20-preview | GET, POST, PUT, DELETE |
+| **Glossary Terms** | `/datagovernance/catalog/terms` | 2026-03-20-preview | GET, POST, PUT, DELETE |
+| **Data Products** | `/datagovernance/catalog/dataproducts` | 2026-03-20-preview | GET, POST, PUT, DELETE |
+| **Objectives** | `/datagovernance/catalog/objectives` | 2026-03-20-preview | GET, POST, PUT, DELETE |
+| **Key Results** | `/datagovernance/catalog/objectives/{id}/keyResults` | 2026-03-20-preview | GET, POST, PUT, DELETE |
+| **Critical Data Elements** | `/datagovernance/catalog/criticalDataElements` | 2026-03-20-preview | GET, POST, PUT, DELETE |
+| **Data Assets** *(new)* | `/datagovernance/catalog/dataAssets` | 2026-03-20-preview | GET, POST, PATCH, DELETE |
+| **Data Columns** *(new)* | `/datagovernance/catalog/dataColumns` | 2026-03-20-preview | GET, POST |
+| **Count** *(new)* | `/datagovernance/catalog/{type}/count` | 2026-03-20-preview | GET |
+| **Policies** | `/datagovernance/catalog/policies` | 2026-03-20-preview | GET, POST, PUT, DELETE |
+| **Health Management** | `/mapanddiscover/reports/asset2/…` | 2023-09-01 | GET, POST |
 
 ### Authentication Methods
 

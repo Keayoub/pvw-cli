@@ -5494,6 +5494,304 @@ def delete_custom_attribute(attribute_id):
     console.print(f"[green]SUCCESS:[/green] Custom attribute '{attribute_id}' deleted")
 
 
+def _uc_render(result, output, title="Result"):
+    """Simple output helper for new UC commands."""
+    if output == "json":
+        print(json.dumps(result, indent=2))
+    elif output == "jsonc":
+        _format_json_output(result)
+    else:
+        if isinstance(result, dict):
+            table = Table(title=title)
+            table.add_column("Field", style="cyan")
+            table.add_column("Value", style="magenta")
+            for k, v in result.items():
+                table.add_row(str(k), json.dumps(v, default=str)[:200])
+            console.print(table)
+        elif isinstance(result, list):
+            table = Table(title=title)
+            table.add_column("#", style="cyan")
+            table.add_column("Data", style="magenta")
+            for i, item in enumerate(result, 1):
+                table.add_row(str(i), json.dumps(item, default=str)[:200])
+            console.print(table)
+        else:
+            console.print(str(result))
+
+
+# ========================================
+# COUNT OPERATIONS  (new in 2026-03-20-preview)
+# ========================================
+
+
+@uc.group()
+def count():
+    """Count catalog entities for duplicate-name validation (2026-03-20-preview)."""
+    pass
+
+
+@count.command(name="terms")
+@click.option("--keyword", default="", help="Name keyword to check for duplicates")
+@click.option("--output", default="json", type=click.Choice(["table", "json", "jsonc"]))
+@click.pass_context
+def count_terms(ctx, keyword, output):
+    """Count terms matching a name keyword."""
+    from purviewcli.client._unified_catalog import UnifiedCatalogClient
+    from purviewcli.client.client_cache import get_cached_client
+    client = get_cached_client(UnifiedCatalogClient, profile=ctx.obj.get("profile", "default"))
+    result = client.count_terms({"--keyword": keyword})
+    _uc_render(result, output, "Term Count")
+
+
+@count.command(name="cdes")
+@click.option("--keyword", default="", help="Name keyword to check for duplicates")
+@click.option("--output", default="json", type=click.Choice(["table", "json", "jsonc"]))
+@click.pass_context
+def count_cdes(ctx, keyword, output):
+    """Count critical data elements matching a name keyword."""
+    from purviewcli.client._unified_catalog import UnifiedCatalogClient
+    from purviewcli.client.client_cache import get_cached_client
+    client = get_cached_client(UnifiedCatalogClient, profile=ctx.obj.get("profile", "default"))
+    result = client.count_critical_data_elements({"--keyword": keyword})
+    _uc_render(result, output, "CDE Count")
+
+
+@count.command(name="data-products")
+@click.option("--keyword", default="", help="Name keyword to check for duplicates")
+@click.option("--output", default="json", type=click.Choice(["table", "json", "jsonc"]))
+@click.pass_context
+def count_data_products(ctx, keyword, output):
+    """Count data products matching a name keyword."""
+    from purviewcli.client._unified_catalog import UnifiedCatalogClient
+    from purviewcli.client.client_cache import get_cached_client
+    client = get_cached_client(UnifiedCatalogClient, profile=ctx.obj.get("profile", "default"))
+    result = client.count_data_products({"--keyword": keyword})
+    _uc_render(result, output, "Data Product Count")
+
+
+@count.command(name="objectives")
+@click.option("--keyword", default="", help="Name keyword to check for duplicates")
+@click.option("--output", default="json", type=click.Choice(["table", "json", "jsonc"]))
+@click.pass_context
+def count_objectives_cmd(ctx, keyword, output):
+    """Count objectives matching a name keyword."""
+    from purviewcli.client._unified_catalog import UnifiedCatalogClient
+    from purviewcli.client.client_cache import get_cached_client
+    client = get_cached_client(UnifiedCatalogClient, profile=ctx.obj.get("profile", "default"))
+    result = client.count_objectives({"--keyword": keyword})
+    _uc_render(result, output, "Objective Count")
+
+
+# ========================================
+# DATA ASSETS  (new in 2026-03-20-preview)
+# ========================================
+
+
+@uc.group()
+def data_asset():
+    """Manage Unified Catalog Data Assets (2026-03-20-preview)."""
+    pass
+
+
+@data_asset.command(name="list")
+@click.option("--domain-id", default="", help="Filter by governance domain ID")
+@click.option("--keyword", default="", help="Filter by keyword")
+@click.option("--skip", type=int, default=None)
+@click.option("--top", type=int, default=None)
+@click.option("--output", default="json", type=click.Choice(["table", "json", "jsonc"]))
+@click.pass_context
+def data_asset_list(ctx, domain_id, keyword, skip, top, output):
+    """List data assets."""
+    from purviewcli.client._unified_catalog import UnifiedCatalogClient
+    from purviewcli.client.client_cache import get_cached_client
+    client = get_cached_client(UnifiedCatalogClient, profile=ctx.obj.get("profile", "default"))
+    args = {}
+    if domain_id:
+        args["--domain-id"] = domain_id
+    if keyword:
+        args["--keyword"] = keyword
+    if skip is not None:
+        args["--skip"] = skip
+    if top is not None:
+        args["--top"] = top
+    result = client.list_data_assets(args)
+    _uc_render(result, output, "Data Assets")
+
+
+@data_asset.command(name="get")
+@click.option("--asset-id", required=True, help="Data asset GUID")
+@click.option("--lineage", is_flag=True, default=False, help="Include lineage in response")
+@click.option("--output", default="json", type=click.Choice(["table", "json", "jsonc"]))
+@click.pass_context
+def data_asset_get(ctx, asset_id, lineage, output):
+    """Get a data asset by ID."""
+    from purviewcli.client._unified_catalog import UnifiedCatalogClient
+    from purviewcli.client.client_cache import get_cached_client
+    client = get_cached_client(UnifiedCatalogClient, profile=ctx.obj.get("profile", "default"))
+    args = {"--asset-id": asset_id, "--lineage": str(lineage).lower()}
+    result = client.get_data_asset(args)
+    _uc_render(result, output, "Data Asset")
+
+
+@data_asset.command(name="create")
+@click.option("--payload-file", required=True, help="JSON file with asset payload")
+@click.option("--output", default="json", type=click.Choice(["table", "json", "jsonc"]))
+@click.pass_context
+def data_asset_create(ctx, payload_file, output):
+    """Create a new data asset."""
+    from purviewcli.client._unified_catalog import UnifiedCatalogClient
+    from purviewcli.client.client_cache import get_cached_client
+    client = get_cached_client(UnifiedCatalogClient, profile=ctx.obj.get("profile", "default"))
+    result = client.create_data_asset({"--payloadFile": payload_file})
+    _uc_render(result, output, "Data Asset Created")
+
+
+@data_asset.command(name="update")
+@click.option("--asset-id", required=True, help="Data asset GUID")
+@click.option("--payload-file", required=True, help="JSON file with update payload")
+@click.option("--output", default="json", type=click.Choice(["table", "json", "jsonc"]))
+@click.pass_context
+def data_asset_update(ctx, asset_id, payload_file, output):
+    """Update a data asset."""
+    from purviewcli.client._unified_catalog import UnifiedCatalogClient
+    from purviewcli.client.client_cache import get_cached_client
+    client = get_cached_client(UnifiedCatalogClient, profile=ctx.obj.get("profile", "default"))
+    result = client.update_data_asset({"--asset-id": asset_id, "--payloadFile": payload_file})
+    _uc_render(result, output, "Data Asset Updated")
+
+
+@data_asset.command(name="delete")
+@click.option("--asset-id", required=True, help="Data asset GUID")
+@click.option("--yes", is_flag=True, help="Skip confirmation")
+@click.pass_context
+def data_asset_delete(ctx, asset_id, yes):
+    """Delete a data asset."""
+    from purviewcli.client._unified_catalog import UnifiedCatalogClient
+    from purviewcli.client.client_cache import get_cached_client
+    if not yes:
+        click.confirm(f"Delete data asset '{asset_id}'?", abort=True)
+    client = get_cached_client(UnifiedCatalogClient, profile=ctx.obj.get("profile", "default"))
+    result = client.delete_data_asset({"--asset-id": asset_id})
+    console.print(f"[green]SUCCESS:[/green] Data asset '{asset_id}' deleted")
+
+
+@data_asset.command(name="query")
+@click.option("--payload-file", required=True, help="JSON file with query payload")
+@click.option("--output", default="json", type=click.Choice(["table", "json", "jsonc"]))
+@click.pass_context
+def data_asset_query(ctx, payload_file, output):
+    """Query data assets with filter payload."""
+    from purviewcli.client._unified_catalog import UnifiedCatalogClient
+    from purviewcli.client.client_cache import get_cached_client
+    client = get_cached_client(UnifiedCatalogClient, profile=ctx.obj.get("profile", "default"))
+    result = client.query_data_assets({"--payloadFile": payload_file})
+    _uc_render(result, output, "Data Assets Query")
+
+
+@data_asset.command(name="add-relationship")
+@click.option("--asset-id", required=True, help="Data asset GUID")
+@click.option("--payload-file", required=True, help="JSON file with relationship payload")
+@click.option("--output", default="json", type=click.Choice(["table", "json", "jsonc"]))
+@click.pass_context
+def data_asset_add_relationship(ctx, asset_id, payload_file, output):
+    """Add a relationship to a data asset."""
+    from purviewcli.client._unified_catalog import UnifiedCatalogClient
+    from purviewcli.client.client_cache import get_cached_client
+    client = get_cached_client(UnifiedCatalogClient, profile=ctx.obj.get("profile", "default"))
+    result = client.create_data_asset_relationship({"--asset-id": asset_id, "--payloadFile": payload_file})
+    _uc_render(result, output, "Data Asset Relationship")
+
+
+@data_asset.command(name="list-relationships")
+@click.option("--asset-id", required=True, help="Data asset GUID")
+@click.option("--output", default="json", type=click.Choice(["table", "json", "jsonc"]))
+@click.pass_context
+def data_asset_list_relationships(ctx, asset_id, output):
+    """List relationships of a data asset."""
+    from purviewcli.client._unified_catalog import UnifiedCatalogClient
+    from purviewcli.client.client_cache import get_cached_client
+    client = get_cached_client(UnifiedCatalogClient, profile=ctx.obj.get("profile", "default"))
+    result = client.list_data_asset_relationships({"--asset-id": asset_id})
+    _uc_render(result, output, "Data Asset Relationships")
+
+
+# ========================================
+# DATA COLUMNS  (new in 2026-03-20-preview)
+# ========================================
+
+
+@uc.group()
+def data_column():
+    """Manage Unified Catalog Data Columns (2026-03-20-preview)."""
+    pass
+
+
+@data_column.command(name="get")
+@click.option("--column-id", required=True, help="Data column GUID")
+@click.option("--output", default="json", type=click.Choice(["table", "json", "jsonc"]))
+@click.pass_context
+def data_column_get(ctx, column_id, output):
+    """Get a data column by ID."""
+    from purviewcli.client._unified_catalog import UnifiedCatalogClient
+    from purviewcli.client.client_cache import get_cached_client
+    client = get_cached_client(UnifiedCatalogClient, profile=ctx.obj.get("profile", "default"))
+    result = client.get_data_column({"--column-id": column_id})
+    _uc_render(result, output, "Data Column")
+
+
+@data_column.command(name="ingest")
+@click.option("--payload-file", required=True, help="JSON file with column payload")
+@click.option("--output", default="json", type=click.Choice(["table", "json", "jsonc"]))
+@click.pass_context
+def data_column_ingest(ctx, payload_file, output):
+    """Ingest a data column."""
+    from purviewcli.client._unified_catalog import UnifiedCatalogClient
+    from purviewcli.client.client_cache import get_cached_client
+    client = get_cached_client(UnifiedCatalogClient, profile=ctx.obj.get("profile", "default"))
+    result = client.ingest_data_column({"--payloadFile": payload_file})
+    _uc_render(result, output, "Data Column Ingested")
+
+
+@data_column.command(name="query")
+@click.option("--payload-file", required=True, help="JSON file with query payload")
+@click.option("--output", default="json", type=click.Choice(["table", "json", "jsonc"]))
+@click.pass_context
+def data_column_query(ctx, payload_file, output):
+    """Query data columns with filter payload."""
+    from purviewcli.client._unified_catalog import UnifiedCatalogClient
+    from purviewcli.client.client_cache import get_cached_client
+    client = get_cached_client(UnifiedCatalogClient, profile=ctx.obj.get("profile", "default"))
+    result = client.query_data_columns({"--payloadFile": payload_file})
+    _uc_render(result, output, "Data Columns Query")
+
+
+@data_column.command(name="add-related")
+@click.option("--column-id", required=True, help="Data column GUID")
+@click.option("--payload-file", required=True, help="JSON file with relationship payload")
+@click.option("--output", default="json", type=click.Choice(["table", "json", "jsonc"]))
+@click.pass_context
+def data_column_add_related(ctx, column_id, payload_file, output):
+    """Add a related entity to a data column."""
+    from purviewcli.client._unified_catalog import UnifiedCatalogClient
+    from purviewcli.client.client_cache import get_cached_client
+    client = get_cached_client(UnifiedCatalogClient, profile=ctx.obj.get("profile", "default"))
+    result = client.add_data_column_related_entity({"--column-id": column_id, "--payloadFile": payload_file})
+    _uc_render(result, output, "Data Column Related Entity")
+
+
+@data_column.command(name="list-related")
+@click.option("--column-id", required=True, help="Data column GUID")
+@click.option("--output", default="json", type=click.Choice(["table", "json", "jsonc"]))
+@click.pass_context
+def data_column_list_related(ctx, column_id, output):
+    """List related entities of a data column."""
+    from purviewcli.client._unified_catalog import UnifiedCatalogClient
+    from purviewcli.client.client_cache import get_cached_client
+    client = get_cached_client(UnifiedCatalogClient, profile=ctx.obj.get("profile", "default"))
+    result = client.list_data_column_related_entities({"--column-id": column_id})
+    _uc_render(result, output, "Data Column Related Entities")
+
+
 # ========================================
 # REQUESTS (Coming Soon)
 # ========================================

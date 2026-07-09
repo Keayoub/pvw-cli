@@ -145,89 +145,108 @@ class DataQuality(Endpoint):
         )
         self.params = self._base_params(args)
 
-    # Connections
+    # Data Sources / Connections (domain-scoped — 2026-01-12-preview)
+    # All data source operations require --domain-id and --data-source-id.
+    # The old flat /connections path no longer exists in the API.
     @decorator
     def list_connections(self, args):
+        """List data sources for a domain (alias for list_domain_data_sources)."""
         self._reset_request_state()
+        domain_id = self._first(args, "--domain-id", self._first(args, "domainId", ""))
         self.method = "GET"
-        self.endpoint = ENDPOINTS["data_quality"]["list_connections"]
+        self.endpoint = format_endpoint(
+            ENDPOINTS["data_quality"]["list_domain_data_sources"], domainId=domain_id
+        )
         self.params = self._base_params(args)
 
     @decorator
     def create_connection(self, args):
         self._reset_request_state()
-        self.method = "POST"
-        self.endpoint = ENDPOINTS["data_quality"]["create_connection"]
-        self.params = get_api_version_params("quality")
+        domain_id = self._first(args, "--domain-id", self._first(args, "domainId", ""))
+        data_source_id = self._first(args, "--data-source-id", self._first(args, "--connection-id", ""))
+        self.method = "PUT"
+        self.endpoint = format_endpoint(
+            ENDPOINTS["data_quality"]["create_data_source"],
+            domainId=domain_id,
+            dataSourceId=data_source_id,
+        )
+        self.params = get_api_version_params("data_quality")
         self.payload = self._body_from_args(
             args,
             {
                 "--name": "name",
-                "--type": "type",
+                "--type": "dataSourceType",
                 "--description": "description",
-                "--connection-string": "connectionString",
             },
         )
 
     @decorator
     def get_connection(self, args):
         self._reset_request_state()
-        connection_id = self._first(args, "--connection-id", self._first(args, "connectionId", ""))
+        domain_id = self._first(args, "--domain-id", self._first(args, "domainId", ""))
+        data_source_id = self._first(args, "--data-source-id", self._first(args, "--connection-id", ""))
         self.method = "GET"
         self.endpoint = format_endpoint(
-            ENDPOINTS["data_quality"]["get_connection"], connectionId=connection_id
+            ENDPOINTS["data_quality"]["get_data_source"],
+            domainId=domain_id,
+            dataSourceId=data_source_id,
         )
-        self.params = get_api_version_params("quality")
+        self.params = get_api_version_params("data_quality")
 
     @decorator
     def update_connection(self, args):
         self._reset_request_state()
-        connection_id = self._first(args, "--connection-id", self._first(args, "connectionId", ""))
+        domain_id = self._first(args, "--domain-id", self._first(args, "domainId", ""))
+        data_source_id = self._first(args, "--data-source-id", self._first(args, "--connection-id", ""))
         self.method = "PUT"
         self.endpoint = format_endpoint(
-            ENDPOINTS["data_quality"]["update_connection"], connectionId=connection_id
+            ENDPOINTS["data_quality"]["update_data_source"],
+            domainId=domain_id,
+            dataSourceId=data_source_id,
         )
-        self.params = get_api_version_params("quality")
+        self.params = get_api_version_params("data_quality")
         self.payload = self._body_from_args(
             args,
             {
                 "--name": "name",
-                "--type": "type",
+                "--type": "dataSourceType",
                 "--description": "description",
-                "--connection-string": "connectionString",
             },
         )
 
     @decorator
     def delete_connection(self, args):
         self._reset_request_state()
-        connection_id = self._first(args, "--connection-id", self._first(args, "connectionId", ""))
+        domain_id = self._first(args, "--domain-id", self._first(args, "domainId", ""))
+        data_source_id = self._first(args, "--data-source-id", self._first(args, "--connection-id", ""))
         self.method = "DELETE"
         self.endpoint = format_endpoint(
-            ENDPOINTS["data_quality"]["delete_connection"], connectionId=connection_id
+            ENDPOINTS["data_quality"]["delete_data_source"],
+            domainId=domain_id,
+            dataSourceId=data_source_id,
         )
-        self.params = get_api_version_params("quality")
+        self.params = get_api_version_params("data_quality")
 
-    # Rules
+    # Rules (domain-scoped — 2026-01-12-preview)
     @decorator
     def list_rules(self, args):
         self._reset_request_state()
-        self.method = "GET"
         domain_id = self._first(args, "--domain-id", "")
-        if domain_id:
-            self.endpoint = format_endpoint(
-                ENDPOINTS["data_quality"]["list_rules_by_domain"], domainId=domain_id
-            )
-        else:
-            self.endpoint = ENDPOINTS["data_quality"]["list_rules"]
+        self.method = "GET"
+        self.endpoint = format_endpoint(
+            ENDPOINTS["data_quality"]["list_rules_by_domain"], domainId=domain_id
+        )
         self.params = self._base_params(args)
 
     @decorator
     def create_rule(self, args):
         self._reset_request_state()
+        domain_id = self._first(args, "--domain-id", "")
         self.method = "POST"
-        self.endpoint = ENDPOINTS["data_quality"]["create_rule"]
-        self.params = get_api_version_params("quality")
+        self.endpoint = format_endpoint(
+            ENDPOINTS["data_quality"]["create_rule"], domainId=domain_id
+        )
+        self.params = get_api_version_params("data_quality")
         payload = self._body_from_args(
             args,
             {
@@ -246,18 +265,24 @@ class DataQuality(Endpoint):
     @decorator
     def get_rule(self, args):
         self._reset_request_state()
+        domain_id = self._first(args, "--domain-id", "")
         rule_id = self._first(args, "--rule-id", self._first(args, "ruleId", ""))
         self.method = "GET"
-        self.endpoint = format_endpoint(ENDPOINTS["data_quality"]["get_rule"], ruleId=rule_id)
-        self.params = get_api_version_params("quality")
+        self.endpoint = format_endpoint(
+            ENDPOINTS["data_quality"]["get_rule"], domainId=domain_id, ruleId=rule_id
+        )
+        self.params = get_api_version_params("data_quality")
 
     @decorator
     def update_rule(self, args):
         self._reset_request_state()
+        domain_id = self._first(args, "--domain-id", "")
         rule_id = self._first(args, "--rule-id", self._first(args, "ruleId", ""))
         self.method = "PUT"
-        self.endpoint = format_endpoint(ENDPOINTS["data_quality"]["update_rule"], ruleId=rule_id)
-        self.params = get_api_version_params("quality")
+        self.endpoint = format_endpoint(
+            ENDPOINTS["data_quality"]["update_rule"], domainId=domain_id, ruleId=rule_id
+        )
+        self.params = get_api_version_params("data_quality")
         payload = self._body_from_args(
             args,
             {
@@ -276,133 +301,84 @@ class DataQuality(Endpoint):
     @decorator
     def delete_rule(self, args):
         self._reset_request_state()
+        domain_id = self._first(args, "--domain-id", "")
         rule_id = self._first(args, "--rule-id", self._first(args, "ruleId", ""))
         self.method = "DELETE"
-        self.endpoint = format_endpoint(ENDPOINTS["data_quality"]["delete_rule"], ruleId=rule_id)
-        self.params = get_api_version_params("quality")
+        self.endpoint = format_endpoint(
+            ENDPOINTS["data_quality"]["delete_rule"], domainId=domain_id, ruleId=rule_id
+        )
+        self.params = get_api_version_params("data_quality")
 
     @decorator
     def apply_rule(self, args):
         self._reset_request_state()
+        domain_id = self._first(args, "--domain-id", "")
         rule_id = self._first(args, "--rule-id", self._first(args, "ruleId", ""))
         self.method = "POST"
-        self.endpoint = format_endpoint(ENDPOINTS["data_quality"]["apply_rule"], ruleId=rule_id)
-        self.params = get_api_version_params("quality")
+        self.endpoint = format_endpoint(
+            ENDPOINTS["data_quality"]["apply_rule"], domainId=domain_id, ruleId=rule_id
+        )
+        self.params = get_api_version_params("data_quality")
         payload = self._body_from_args(args) or {}
         asset_ids = self._list_param(args, "--asset-id")
         if asset_ids:
             payload["assetIds"] = asset_ids
         self.payload = payload
 
-    # Profiles
-    @decorator
-    def list_profiles(self, args):
-        self._reset_request_state()
-        self.method = "GET"
-        self.endpoint = ENDPOINTS["data_quality"]["list_profiles"]
-        self.params = self._base_params(args)
-
-    @decorator
-    def create_profile(self, args):
-        self._reset_request_state()
-        self.method = "POST"
-        self.endpoint = ENDPOINTS["data_quality"]["create_profile"]
-        self.params = get_api_version_params("quality")
-        self.payload = self._body_from_args(
-            args,
-            {
-                "--name": "name",
-                "--asset-id": "assetId",
-                "--connection-id": "connectionId",
-                "--scope": "scope",
-            },
-        )
-
-    @decorator
-    def get_profile(self, args):
-        self._reset_request_state()
-        profile_id = self._first(args, "--profile-id", self._first(args, "profileId", ""))
-        self.method = "GET"
-        self.endpoint = format_endpoint(
-            ENDPOINTS["data_quality"]["get_profile"], profileId=profile_id
-        )
-        self.params = get_api_version_params("quality")
-
-    @decorator
-    def update_profile(self, args):
-        self._reset_request_state()
-        profile_id = self._first(args, "--profile-id", self._first(args, "profileId", ""))
-        self.method = "PUT"
-        self.endpoint = format_endpoint(
-            ENDPOINTS["data_quality"]["update_profile"], profileId=profile_id
-        )
-        self.params = get_api_version_params("quality")
-        self.payload = self._body_from_args(
-            args,
-            {
-                "--name": "name",
-                "--asset-id": "assetId",
-                "--connection-id": "connectionId",
-                "--scope": "scope",
-            },
-        )
-
-    @decorator
-    def delete_profile(self, args):
-        self._reset_request_state()
-        profile_id = self._first(args, "--profile-id", self._first(args, "profileId", ""))
-        self.method = "DELETE"
-        self.endpoint = format_endpoint(
-            ENDPOINTS["data_quality"]["delete_profile"], profileId=profile_id
-        )
-        self.params = get_api_version_params("quality")
-
+    # Profiles (domain/data-source scoped — 2026-01-12-preview)
+    # Flat profile CRUD no longer exists. Profile = running data profiling on a data source.
     @decorator
     def run_profile(self, args):
         self._reset_request_state()
-        profile_id = self._first(args, "--profile-id", self._first(args, "profileId", ""))
+        domain_id = self._first(args, "--domain-id", "")
+        data_source_id = self._first(args, "--data-source-id", self._first(args, "--profile-id", ""))
         self.method = "POST"
         self.endpoint = format_endpoint(
-            ENDPOINTS["data_quality"]["run_profile"], profileId=profile_id
+            ENDPOINTS["data_quality"]["run_profile"],
+            domainId=domain_id,
+            dataSourceId=data_source_id,
         )
-        self.params = get_api_version_params("quality")
+        self.params = get_api_version_params("data_quality")
         self.payload = self._body_from_args(args)
 
     @decorator
     def get_profile_results(self, args):
         self._reset_request_state()
-        profile_id = self._first(args, "--profile-id", self._first(args, "profileId", ""))
+        domain_id = self._first(args, "--domain-id", "")
+        data_source_id = self._first(args, "--data-source-id", self._first(args, "--profile-id", ""))
         self.method = "GET"
         self.endpoint = format_endpoint(
-            ENDPOINTS["data_quality"]["get_profile_results"], profileId=profile_id
+            ENDPOINTS["data_quality"]["get_profile_results"],
+            domainId=domain_id,
+            dataSourceId=data_source_id,
         )
         self.params = self._base_params(args)
 
-    # Scans
+    # Schedules/Scans (domain-scoped — 2026-01-12-preview)
+    # Scans are now schedules. All operations require --domain-id.
+    # --scan-id is treated as --schedule-id for backward compat.
     @decorator
     def list_scans(self, args):
         self._reset_request_state()
+        domain_id = self._first(args, "--domain-id", "")
         self.method = "GET"
-        self.endpoint = ENDPOINTS["data_quality"]["list_scans"]
+        self.endpoint = format_endpoint(
+            ENDPOINTS["data_quality"]["list_scans"], domainId=domain_id
+        )
         self.params = self._base_params(args)
 
     @decorator
     def create_scan(self, args):
         self._reset_request_state()
+        domain_id = self._first(args, "--domain-id", "")
         self.method = "POST"
-        self.endpoint = ENDPOINTS["data_quality"]["create_scan"]
-        self.params = get_api_version_params("quality")
+        self.endpoint = format_endpoint(
+            ENDPOINTS["data_quality"]["create_scan"], domainId=domain_id
+        )
+        self.params = get_api_version_params("data_quality")
         payload = self._body_from_args(
-            args,
-            {
-                "--name": "name",
-                "--product-id": "productId",
-                "--schedule": "schedule",
-            },
+            args, {"--name": "name", "--schedule": "schedule"}
         ) or {}
-        threshold = self._float_param(args, "--threshold")
-        if threshold is not None:
-            payload["thresholdPercentage"] = threshold
         rule_ids = self._list_param(args, "--rule-id")
         if rule_ids:
             payload["ruleIds"] = rule_ids
@@ -411,29 +387,27 @@ class DataQuality(Endpoint):
     @decorator
     def get_scan(self, args):
         self._reset_request_state()
-        scan_id = self._first(args, "--scan-id", self._first(args, "scanId", ""))
+        domain_id = self._first(args, "--domain-id", "")
+        schedule_id = self._first(args, "--schedule-id", self._first(args, "--scan-id", ""))
         self.method = "GET"
-        self.endpoint = format_endpoint(ENDPOINTS["data_quality"]["get_scan"], scanId=scan_id)
-        self.params = get_api_version_params("quality")
+        self.endpoint = format_endpoint(
+            ENDPOINTS["data_quality"]["get_scan"], domainId=domain_id, scheduleId=schedule_id
+        )
+        self.params = get_api_version_params("data_quality")
 
     @decorator
     def update_scan(self, args):
         self._reset_request_state()
-        scan_id = self._first(args, "--scan-id", self._first(args, "scanId", ""))
+        domain_id = self._first(args, "--domain-id", "")
+        schedule_id = self._first(args, "--schedule-id", self._first(args, "--scan-id", ""))
         self.method = "PUT"
-        self.endpoint = format_endpoint(ENDPOINTS["data_quality"]["update_scan"], scanId=scan_id)
-        self.params = get_api_version_params("quality")
+        self.endpoint = format_endpoint(
+            ENDPOINTS["data_quality"]["update_scan"], domainId=domain_id, scheduleId=schedule_id
+        )
+        self.params = get_api_version_params("data_quality")
         payload = self._body_from_args(
-            args,
-            {
-                "--name": "name",
-                "--product-id": "productId",
-                "--schedule": "schedule",
-            },
+            args, {"--name": "name", "--schedule": "schedule"}
         ) or {}
-        threshold = self._float_param(args, "--threshold")
-        if threshold is not None:
-            payload["thresholdPercentage"] = threshold
         rule_ids = self._list_param(args, "--rule-id")
         if rule_ids:
             payload["ruleIds"] = rule_ids
@@ -442,37 +416,47 @@ class DataQuality(Endpoint):
     @decorator
     def delete_scan(self, args):
         self._reset_request_state()
-        scan_id = self._first(args, "--scan-id", self._first(args, "scanId", ""))
+        domain_id = self._first(args, "--domain-id", "")
+        schedule_id = self._first(args, "--schedule-id", self._first(args, "--scan-id", ""))
         self.method = "DELETE"
-        self.endpoint = format_endpoint(ENDPOINTS["data_quality"]["delete_scan"], scanId=scan_id)
-        self.params = get_api_version_params("quality")
+        self.endpoint = format_endpoint(
+            ENDPOINTS["data_quality"]["delete_scan"], domainId=domain_id, scheduleId=schedule_id
+        )
+        self.params = get_api_version_params("data_quality")
 
     @decorator
     def run_scan(self, args):
         self._reset_request_state()
-        scan_id = self._first(args, "--scan-id", self._first(args, "scanId", ""))
+        domain_id = self._first(args, "--domain-id", "")
+        schedule_id = self._first(args, "--schedule-id", self._first(args, "--scan-id", ""))
         self.method = "POST"
-        self.endpoint = format_endpoint(ENDPOINTS["data_quality"]["run_scan"], scanId=scan_id)
-        self.params = get_api_version_params("quality")
+        self.endpoint = format_endpoint(
+            ENDPOINTS["data_quality"]["run_scan"], domainId=domain_id, scheduleId=schedule_id
+        )
+        self.params = get_api_version_params("data_quality")
         self.payload = self._body_from_args(args)
 
     @decorator
     def get_scan_results(self, args):
         self._reset_request_state()
-        scan_id = self._first(args, "--scan-id", self._first(args, "scanId", ""))
+        domain_id = self._first(args, "--domain-id", "")
+        schedule_id = self._first(args, "--schedule-id", self._first(args, "--scan-id", ""))
         self.method = "GET"
         self.endpoint = format_endpoint(
-            ENDPOINTS["data_quality"]["get_scan_results"], scanId=scan_id
+            ENDPOINTS["data_quality"]["get_scan_results"], domainId=domain_id, scheduleId=schedule_id
         )
         self.params = self._base_params(args)
 
     @decorator
     def stop_scan(self, args):
         self._reset_request_state()
-        scan_id = self._first(args, "--scan-id", self._first(args, "scanId", ""))
+        domain_id = self._first(args, "--domain-id", "")
+        schedule_id = self._first(args, "--schedule-id", self._first(args, "--scan-id", ""))
         self.method = "POST"
-        self.endpoint = format_endpoint(ENDPOINTS["data_quality"]["stop_scan"], scanId=scan_id)
-        self.params = get_api_version_params("quality")
+        self.endpoint = format_endpoint(
+            ENDPOINTS["data_quality"]["stop_scan"], domainId=domain_id, scheduleId=schedule_id
+        )
+        self.params = get_api_version_params("data_quality")
         self.payload = self._body_from_args(args)
 
     # Scores
