@@ -5715,6 +5715,39 @@ def data_asset_list_relationships(ctx, asset_id, output):
     _uc_render(result, output, "Data Asset Relationships")
 
 
+@data_asset.command(name="remove-relationship")
+@click.option("--asset-id", required=True, help="Data asset GUID")
+@click.option("--entity-id", required=True, help="GUID of the entity to unlink (e.g. Data Product)")
+@click.option("--yes", is_flag=True, help="Skip confirmation")
+@click.pass_context
+def data_asset_remove_relationship(ctx, asset_id, entity_id, yes):
+    """Remove a relationship between a data asset and another entity.
+
+    Example — unlink from a Data Product:
+
+        pvw uc data-asset remove-relationship --asset-id <ASSET_GUID> --entity-id <PRODUCT_GUID>
+
+    The symmetric operation from the product side is also available:
+
+        pvw uc dataproduct remove-relationship --product-id <PRODUCT_GUID> --entity-type DATAASSET --entity-id <ASSET_GUID>
+    """
+    from purviewcli.client._unified_catalog import UnifiedCatalogClient
+    from purviewcli.client.client_cache import get_cached_client
+    if not yes:
+        click.confirm(
+            f"Remove relationship between asset '{asset_id}' and entity '{entity_id}'?",
+            abort=True,
+        )
+    client = get_cached_client(UnifiedCatalogClient, profile=ctx.obj.get("profile", "default"))
+    result = client.delete_data_asset_relationship(
+        {"--asset-id": asset_id, "--payloadFile": None, "_entity_id": entity_id}
+    )
+    if result is None or (isinstance(result, dict) and not result.get("error")):
+        console.print(f"[green]SUCCESS:[/green] Relationship removed.")
+    else:
+        _uc_render(result, "json", "Remove Relationship")
+
+
 # ========================================
 # DATA COLUMNS  (new in 2026-03-20-preview)
 # ========================================
