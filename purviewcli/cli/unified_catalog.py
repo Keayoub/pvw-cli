@@ -652,13 +652,21 @@ def remove_relationship(product_id, entity_type, entity_id, confirm):
         
         result = client.delete_data_product_relationship(args)
         
-        # DELETE returns 204 No Content on success
-        if result is None or (isinstance(result, dict) and not result.get("error")):
+        # DELETE returns 204 No Content on success.
+        # Error responses carry {"status": "error", "message": "..."} — NOT an "error" key —
+        # so we must check result.get("status") to avoid treating every error as SUCCESS.
+        is_error = isinstance(result, dict) and (
+            result.get("status") == "error"
+            or "error" in result
+        )
+        if result is None or not is_error:
             console.print(f"[green]SUCCESS:[/green] Deleted relationship to {entity_type} '{entity_id}'")
-        elif isinstance(result, dict) and "error" in result:
-            console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
         else:
-            console.print(f"[green]SUCCESS:[/green] Deleted relationship")
+            error_msg = result.get("message") or result.get("error") or "Unknown error"
+            status_code = result.get("status_code", "")
+            detail = f" (HTTP {status_code})" if status_code else ""
+            console.print(f"[red]ERROR:[/red] {error_msg}{detail}")
+            console.print("[dim]Tip: set env var PURVIEWCLI_DEBUG=1 to see the full request/response.[/dim]")
             
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")

@@ -459,7 +459,8 @@ ENDPOINTS = {
         # Data product relationships
         "create_data_product_relationship": "/datagovernance/catalog/dataproducts/{productId}/relationships",
         "list_data_product_relationships": "/datagovernance/catalog/dataproducts/{productId}/relationships",
-        "delete_data_product_relationship": "/datagovernance/catalog/dataproducts/{productId}/relationships",
+        # entityId must be in the URL path (not a query param) for the DELETE to hit the correct resource
+        "delete_data_product_relationship": "/datagovernance/catalog/dataproducts/{productId}/relationships/{entityId}",
         # Data product query
         "query_data_products": "/datagovernance/catalog/dataproducts/query",
         # Terms (UC specific)

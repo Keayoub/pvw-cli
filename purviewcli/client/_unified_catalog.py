@@ -1148,12 +1148,13 @@ Use Cases:
         entity_id = args.get("--entity-id", [""])[0]
         
         self.method = "DELETE"
+        # entityId is part of the URL path; entityType is the only query param
         self.endpoint = ENDPOINTS["unified_catalog"]["delete_data_product_relationship"].format(
-            productId=product_id
+            productId=product_id,
+            entityId=entity_id,
         )
         self.params = {
             "entityType": entity_type.upper(),
-            "entityId": entity_id
         }
 
     @decorator

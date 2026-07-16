@@ -811,11 +811,17 @@ def resources(collection_name, format, output_json, sort_by, asset_type, data_so
             return
         
         # Build collection map and filter if needed
+        # --collection-name matches against technical name OR friendly name
         target_collections = {}
         for coll in collections_list:
             coll_name = coll.get('name', 'Unknown')
-            if collection_name is None or coll_name == collection_name:
+            friendly_name = coll.get('friendlyName', '')
+            if collection_name is None or coll_name == collection_name or friendly_name == collection_name:
                 target_collections[coll_name] = coll
+
+        if collection_name is not None and not target_collections:
+            click.echo(f"[WARN] No collection found matching '{collection_name}' (checked technical name and friendly name)", err=True)
+            return
         
         # Fetch assets for each target collection
         collections_assets = {}
@@ -824,13 +830,19 @@ def resources(collection_name, format, output_json, sort_by, asset_type, data_so
             click.echo(f"[FETCH] Fetching assets from '{coll_name}'...", err=True)
             
             try:
-                # Build API filter with collectionId and optional entityType
-                filter_dict = {"collectionId": coll_name}
-                
-                # Add entityType filter to API request if specified
+                # Build API filter using the compound AND syntax required by Purview Search API.
+                # A flat dict like {"collectionId": "x", "entityType": "y"} is NOT valid;
+                # multiple conditions must be wrapped in an {"and": [...]} array.
                 if asset_type:
-                    filter_dict["entityType"] = asset_type
-                
+                    filter_dict = {
+                        "and": [
+                            {"collectionId": coll_name},
+                            {"entityType": asset_type}
+                        ]
+                    }
+                else:
+                    filter_dict = {"collectionId": coll_name}
+
                 # Fetch up to 1000 assets per collection (API limit)
                 search_args = {
                     '--filter': json.dumps(filter_dict),
