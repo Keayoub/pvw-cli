@@ -1,0 +1,29 @@
+{
+  "servers": {
+    // "m365agentstoolkit": {
+    //   "command": "npx",
+    //   "args": [
+    //     "@microsoft/m365agentstoolkit-mcp@latest",
+    //     "server",
+    //     "start"
+    //   ]
+    // },
+    "context-mode": {
+      "command": "context-mode"
+    },
+    // "purview-mcp-server-stdio": {
+    //   "command": "${workspacefolder}/.venv/scripts/python.exe",
+    //   "args": [
+    //     "-m",
+    //     "purview_mcp_server.server",
+    //     "--transport",
+    //     "stdio"
+    //   ],
+    //   "cwd": "${workspacefolder}/tools/mcp"
+    // },
+    "purview-mcp-server-http": {
+      "type": "http",
+      "url": "http://localhost:7079/api/mcp"
+    }
+  }
+}

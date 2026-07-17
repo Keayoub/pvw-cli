@@ -1,0 +1,96 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "release-1.11.7",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-NoProfile",
+				"-ExecutionPolicy",
+				"Bypass",
+				"-File",
+				"./scripts/release.ps1",
+				"-NewVersion",
+				"1.11.7",
+				"-Push",
+				"-Build",
+				"-Force"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "release-1.11.7-direct",
+			"type": "shell",
+			"command": "./scripts/release.ps1",
+			"args": [
+				"-NewVersion",
+				"1.11.7",
+				"-Push",
+				"-Build",
+				"-Force"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "release-1.11.7-cmd-wrapper",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\release.ps1 -NewVersion 1.11.7 -Push -Build -Force"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "test-uc-metadata-list-cli",
+			"type": "shell",
+			"command": "python",
+			"args": [
+				"-m",
+				"pytest",
+				"-q",
+				"tests/test_uc_metadata_list_cli.py"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "test-uc-metadata-list-cli-cmd",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"python -m pytest -q tests/test_uc_metadata_list_cli.py"
+			],
+			"isBackground": false
+		},
+		{
+			"type": "func",
+			"label": "func: host start",
+			"command": "host start",
+			"problemMatcher": "$func-python-watch",
+			"isBackground": true,
+			"dependsOn": "pip install (functions)",
+			"options": {
+				"cwd": "${workspaceFolder}/tools\\hosting\\app"
+			}
+		},
+		{
+			"label": "pip install (functions)",
+			"type": "shell",
+			"osx": {
+				"command": "${config:azureFunctions.pythonVenv}/bin/python -m pip install -r requirements.txt"
+			},
+			"windows": {
+				"command": "${config:azureFunctions.pythonVenv}\\Scripts\\python -m pip install -r requirements.txt"
+			},
+			"linux": {
+				"command": "${config:azureFunctions.pythonVenv}/bin/python -m pip install -r requirements.txt"
+			},
+			"problemMatcher": [],
+			"options": {
+				"cwd": "${workspaceFolder}/tools\\hosting\\app"
+			}
+		}
+	]
+}

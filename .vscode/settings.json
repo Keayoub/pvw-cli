@@ -1,0 +1,36 @@
+{
+    "editor.fontSize": 14,
+    "terminal.integrated.profiles.windows": {
+        "PowerShell venv": {
+            "source": "PowerShell",
+            "args": ["-NoExit", "-Command", "& './.venv/Scripts/Activate.ps1'"]
+        }
+    },
+    "terminal.integrated.defaultProfile.windows": "PowerShell venv",
+    
+    // Shell Integration Settings - Improved command detection and terminal features
+    "terminal.integrated.shellIntegration.enabled": true,
+    "terminal.integrated.shellIntegration.decorationsEnabled": "both",
+    "terminal.integrated.shellIntegration.suggestEnabled": true,
+    "terminal.integrated.shellIntegration.history": 100,
+    
+    // Python environment activation
+    "python.terminal.activateEnvironment": true,
+    "chat.agentSkillsLocations": {
+        ".agents/skills": true,
+        ".github/skills": true,
+        ".claude/skills": true,
+        "~/.agents/skills": true,
+        "~/.copilot/skills": true,
+        "~/.claude/skills": true,
+        "~/.vscode/extensions/synapsevscode.synapse-1.21.0/copilot/skills": true,
+        "~/.vscode/extensions/synapsevscode.synapse-1.25.0/copilot/skills": true
+    },
+    "azureFunctions.deploySubpath": "tools\\hosting\\app",
+    "azureFunctions.scmDoBuildDuringDeployment": true,
+    "azureFunctions.pythonVenv": ".venv",
+    "azureFunctions.projectLanguage": "Python",
+    "azureFunctions.projectRuntime": "~4",
+    "debug.internalConsoleOptions": "neverOpen",
+    "azureFunctions.projectLanguageModel": 2
+}
