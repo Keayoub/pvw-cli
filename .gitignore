@@ -71,3 +71,4 @@ README.md.bak.*
 .vfsmeta/
 .vfscache/
 pvw_mcp_server.egg-info/
+mkdocs_build_log.txt

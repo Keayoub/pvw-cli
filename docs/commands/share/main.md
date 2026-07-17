@@ -1,93 +1,120 @@
-# Share Commands
+# pvw share
+[Command Reference](../../README.md#command-reference) > share
 
-Manage data sharing artifacts and workflows for sharing catalogs and assets with internal and external stakeholders.
+## Description
+Commands for managing share operations in Microsoft Purview.
 
-!!! tip "Quick Start"
-    Work with data sharing artifacts including share creation, asset mapping, and share activation.
-
-## What You Can Do
-
-- Create and manage data shares
-- Configure share assets and mappings
-- Manage share invitations
-- Control share lifecycles
-- Track received shares
+## Syntax
+```
+pvw share <action> [options]
+```
 
 ## Available Actions
 
-### Sent Shares
+### [activateemail](./activateemail.md)
+Activate data share.
 
-| Command | Purpose |
-| --- | --- |
-| `createsentshare` | Create outbound share |
-| `deletesentshare` | Remove share |
-| `getsentshare` | Get share details |
-| `listsentshares` | List all sent shares |
-| `createsentinvitation` | Send share invitation |
-| `deletesentinvitation` | Revoke invitation |
-| `getsentinvitation` | Get invitation details |
-| `listsentinvitations` | List sent invitations |
+### [createasset](./createasset.md)
+Create a new data share.
 
-### Received Shares
+### [createassetmapping](./createassetmapping.md)
+Create a new data share.
 
-| Command | Purpose |
-| --- | --- |
-| `createreceivedshare` | Accept received share |
-| `deletereceivedshare` | Reject or remove share |
-| `getreceivedshare` | Get received share details |
-| `listreceivedshares` | List received shares |
-| `listacceptedshares` | List accepted shares |
-| `getacceptedshare` | Get accepted share |
-| `reinstateacceptedshare` | Restore share |
-| `revokeacceptedshare` | Revoke accepted share |
-| `updateexpirationacceptedshare` | Update expiration |
+### [createreceivedshare](./createreceivedshare.md)
+Create a new data share.
 
-### Share Assets
+### [createsentinvitation](./createsentinvitation.md)
+Create a new data share.
 
-| Command | Purpose |
-| --- | --- |
-| `createasset` | Add asset to share |
-| `deleteasset` | Remove asset from share |
-| `getasset` | Get asset details |
-| `listassets` | List assets in share |
-| `listreceivedassets` | List received assets |
-| `createassetmapping` | Map asset to recipient |
-| `deleteassetmapping` | Remove mapping |
-| `getassetmapping` | Get mapping details |
-| `listassetmappings` | List mappings |
+### [createsentshare](./createsentshare.md)
+Create a new data share.
 
-### Email Management
+### [deleteasset](./deleteasset.md)
+Delete data share.
 
-| Command | Purpose |
-| --- | --- |
-| `activateemail` | Activate share via email |
-| `registeremail` | Register email address |
+### [deleteassetmapping](./deleteassetmapping.md)
+Delete data share.
 
-### Invitations
+### [deletereceivedshare](./deletereceivedshare.md)
+Delete data share.
 
-| Command | Purpose |
-| --- | --- |
-| `getreceivedinvitation` | Get invitation details |
-| `listreceivedinvitations` | List received invitations |
-| `rejectreceivedinvitation` | Reject invitation |
+### [deletesentinvitation](./deletesentinvitation.md)
+Delete data share.
 
-## Common Workflows
+### [deletesentshare](./deletesentshare.md)
+Delete data share.
 
-### Share Assets Internally
+### [getacceptedshare](./getacceptedshare.md)
+Get data share.
+
+### [getasset](./getasset.md)
+Get data share.
+
+### [getassetmapping](./getassetmapping.md)
+Get data share.
+
+### [getreceivedinvitation](./getreceivedinvitation.md)
+Get data share.
+
+### [getreceivedshare](./getreceivedshare.md)
+Get data share.
+
+### [getsentinvitation](./getsentinvitation.md)
+Get data share.
+
+### [getsentshare](./getsentshare.md)
+Get data share.
+
+### [listacceptedshares](./listacceptedshares.md)
+List all data shares.
+
+### [listassetmappings](./listassetmappings.md)
+List all data shares.
+
+### [listassets](./listassets.md)
+List all data shares.
+
+### [listreceivedassets](./listreceivedassets.md)
+List all data shares.
+
+### [listreceivedinvitations](./listreceivedinvitations.md)
+List all data shares.
+
+### [listreceivedshares](./listreceivedshares.md)
+List all data shares.
+
+### [listsentinvitations](./listsentinvitations.md)
+List all data shares.
+
+### [listsentshares](./listsentshares.md)
+List all data shares.
+
+### [registeremail](./registeremail.md)
+Register data share.
+
+### [reinstateacceptedshare](./reinstateacceptedshare.md)
+Reinstate data share.
+
+### [rejectreceivedinvitation](./rejectreceivedinvitation.md)
+Reject data share.
+
+### [revokeacceptedshare](./revokeacceptedshare.md)
+Revoke data share.
+
+### [updateexpirationacceptedshare](./updateexpirationacceptedshare.md)
+Update an existing data share.
+
+## Examples
 
 ```bash
-# Create share
-pvw share createsentshare --help
+# List available actions
+pvw share --help
 
-# Add assets
-pvw share createasset --help
-
-# Send invitation
-pvw share createsentinvitation --help
+# Get help for specific action
+pvw share <action> --help
 ```
 
-## Related Topics
+## See Also
 
-- [Entity commands](../entity/main.md)
-- [Account commands](../account/main.md)
-- [Create Tasks](../task-create.md)
+- [Command Reference](../../README.md#command-reference)
+- [API Documentation](../api/index.html)

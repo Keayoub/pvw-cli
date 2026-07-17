@@ -1,87 +1,39 @@
-# Search Commands
+# pvw search
+[Command Reference](../../README.md#command-reference) > search
 
-Query and explore the Purview catalog with powerful search, browse, autocomplete, and suggestion capabilities.
+## Description
+Commands for performing search operations in Microsoft Purview.
 
-!!! tip "Quick Start"
-    Find, browse, and discover assets in your catalog using keyword search, facets, and intelligent suggestions.
-
-## What You Can Do
-
-- Search assets by keyword, type, or classification
-- Browse the catalog by entity type
-- Get autocomplete suggestions
-- Discover related assets
-- Filter by facets (type, status, owner, etc.)
-
-## Quick Examples
-
-=== "Search by keyword"
-    ```bash
-    pvw search query --keywords "customer"
-    ```
-
-=== "Browse by entity type"
-    ```bash
-    pvw search browse --help
-    ```
-
-=== "Get suggestions"
-    ```bash
-    pvw search suggest --help
-    ```
-
-=== "Autocomplete"
-    ```bash
-    pvw search autocomplete --help
-    ```
+## Syntax
+```
+pvw search <action> [options]
+```
 
 ## Available Actions
 
-| Command | Purpose |
-| --- | --- |
-| `query` | Search catalog by keywords, filters, and facets |
-| `browse` | Browse assets by entity type |
-| `autocomplete` | Get autocomplete suggestions while typing |
-| `suggest` | Get suggestions for search terms |
+### [autocomplete](./autocomplete.md)
+Perform operation on catalog.
 
-## Search Capabilities
+### [browse](./browse.md)
+Browse catalog.
 
-### Keyword Search
+### [query](./query.md)
+Query catalog.
 
-Find assets by name, description, or content:
+### [suggest](./suggest.md)
+Get suggestions for catalog.
 
-```bash
-pvw search query --keywords "customer data"
-```
-
-### Faceted Search
-
-Filter by classifications, owner, entity type, and more.
-
-### Browse
-
-Explore catalog structure by entity type without keyword search.
-
-## Common Workflows
-
-### Find Assets To Classify
+## Examples
 
 ```bash
-pvw search query --keywords "unclassified"
+# List available actions
+pvw search --help
+
+# Get help for specific action
+pvw search <action> --help
 ```
 
-### Discover Related Assets
+## See Also
 
-```bash
-pvw search browse --help
-```
-
-### Build Search Queries
-
-Use autocomplete to discover available search terms and facets.
-
-## Related Topics
-
-- [Entity commands](../entity/main.md)
-- [Common Workflows](../../common-workflows.md)
-- [Entity Bulk CSV Guide](../../entity-bulk-csv-guide.md)
+- [Command Reference](../../README.md#command-reference)
+- [API Documentation](../api/index.html)

@@ -1,111 +1,78 @@
-# Management Commands
+# pvw management
+[Command Reference](../../README.md#command-reference) > management
 
-Manage Purview accounts and control-plane resources including account creation, private endpoints, and default account settings.
+## Description
+Commands for managing metastore operations in Microsoft Purview.
 
-!!! tip "Quick Start"
-    Manage control-plane resources such as Purview accounts, access keys, private endpoints, and default account settings.
-
-## What You Can Do
-
-- Create and manage Purview accounts
-- Manage access keys and authentication
-- Set up and manage private link endpoints
-- Configure default account for CLI operations
-- Add root collection administrators
-- Verify account name availability
-
-## Quick Examples
-
-=== "List accounts"
-    ```bash
-    pvw management readaccounts
-    ```
-
-=== "Create account"
-    ```bash
-    pvw management createaccount --help
-    ```
-
-=== "Set default account"
-    ```bash
-    pvw management setdefaultaccount --help
-    ```
-
-=== "List private endpoints"
-    ```bash
-    pvw management readprivateendpoints
-    ```
+## Syntax
+```
+pvw management <action> [options]
+```
 
 ## Available Actions
 
-### Account Management
+### [addrootcollectionadmin](./addrootcollectionadmin.md)
+Add RootCollectionAdmin for Purview account.
 
-| Command | Purpose |
-| --- | --- |
-| `readaccounts` | List all Purview accounts in subscription |
-| `readaccount` | Get specific account details |
-| `createaccount` | Create new Purview account |
-| `updateaccount` | Update account configuration |
-| `deleteaccount` | Delete account |
-| `checknameavailability` | Verify account name is available |
+### [checknameavailability](./checknameavailability.md)
+Check Purview account.
 
-### Default Account
+### [createaccount](./createaccount.md)
+Create a new Purview account.
 
-| Command | Purpose |
-| --- | --- |
-| `setdefaultaccount` | Set default account for CLI |
-| `defaultaccount` | Get current default account |
-| `removedefaultaccount` | Clear default account |
+### [defaultaccount](./defaultaccount.md)
+Perform operation on Purview account.
 
-### Access & Security
+### [deleteaccount](./deleteaccount.md)
+Delete Purview account.
 
-| Command | Purpose |
-| --- | --- |
-| `listkeys` | Get account access keys |
-| `addrootcollectionadmin` | Add root collection administrator |
+### [deleteprivateendpoint](./deleteprivateendpoint.md)
+Delete Purview account.
 
-### Private Link
+### [listkeys](./listkeys.md)
+List all Purview accounts.
 
-| Command | Purpose |
-| --- | --- |
-| `readprivateendpoints` | List private endpoints |
-| `readprivateendpoint` | Get endpoint details |
-| `putprivateendpoint` | Create or update endpoint |
-| `deleteprivateendpoint` | Remove endpoint |
-| `listprivatelinkresources` | List private link resources |
+### [listoperations](./listoperations.md)
+List all Purview accounts.
 
-### Operations
+### [listprivatelinkresources](./listprivatelinkresources.md)
+List all Purview accounts.
 
-| Command | Purpose |
-| --- | --- |
-| `listoperations` | List available operations |
+### [putprivateendpoint](./putprivateendpoint.md)
+Create or update Purview account.
 
-## Common Workflows
+### [readaccount](./readaccount.md)
+Retrieve Purview account.
 
-### Set Up Default Account
+### [readaccounts](./readaccounts.md)
+Retrieve Purview account.
 
-```bash
-# Get available accounts
-pvw management readaccounts
+### [readprivateendpoint](./readprivateendpoint.md)
+Retrieve Purview account.
 
-# Set default
-pvw management setdefaultaccount --help
-```
+### [readprivateendpoints](./readprivateendpoints.md)
+Retrieve Purview account.
 
-### Configure Private Endpoints
+### [removedefaultaccount](./removedefaultaccount.md)
+Remove DefaultAccount for Purview account.
 
-For secure, private connectivity to Purview:
+### [setdefaultaccount](./setdefaultaccount.md)
+Set DefaultAccount for Purview account.
+
+### [updateaccount](./updateaccount.md)
+Update an existing Purview account.
+
+## Examples
 
 ```bash
-# Get available resources
-pvw management listprivatelinkresources --help
+# List available actions
+pvw management --help
 
-# Create private endpoint
-pvw management putprivateendpoint --help
+# Get help for specific action
+pvw management <action> --help
 ```
 
-## Related Topics
+## See Also
 
-- [Account commands](../account/main.md)
-- [Create Tasks](../task-create.md)
-- [Update Tasks](../task-update.md)
+- [Command Reference](../../README.md#command-reference)
+- [API Documentation](../api/index.html)

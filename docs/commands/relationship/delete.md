@@ -10,10 +10,11 @@ pvw relationship delete --guid=<val>
 ```
 
 ## Required Arguments
-- `--guid`: The globally unique identifier (GUID) of the relationship to delete.
+- `--guid`: guid parameter
 
 ## Optional Arguments
 - `--purviewName`: Microsoft Purview account name. (string)
+- `--payloadFile`: File path to a valid JSON document. (string)
 
 ## API Mapping
 Catalog Data Plane > Relationship > [Delete]()
@@ -22,31 +23,15 @@ Catalog Data Plane > Relationship > [Delete]()
 ```
 
 ## Examples
-
-=== "Delete relationship"
-    ```powershell
-    pvw relationship delete --guid d286692e-30bb-48ba-ac49-f7372b12d225
-    ```
-
-## Response
-
-Returns success status:
-```json
-{
-  "status": "success"
-}
+DESCRIBE_EXAMPLE.
+```powershell
+EXAMPLE_COMMAND
 ```
+<details><summary>Example payload.</summary>
+<p>
 
-Or on error:
 ```json
-{
-  "status": "error",
-  "message": "Relationship not found"
-}
+PASTE_JSON_HERE
 ```
-
-## Related Commands
-
-- [`pvw relationship read`](./read.md) — Read a relationship by GUID
-- [`pvw relationship create`](./create.md) — Create a new relationship
-- [`pvw search query`](../search/main.md) — Find relationship GUIDs
+</p>
+</details>

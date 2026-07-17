@@ -1,64 +1,72 @@
-# Types Commands
+# pvw types
+[Command Reference](../../README.md#command-reference) > types
 
-Manage type definitions that control the schema for entities, classifications, and other metadata objects in Purview.
+## Description
+Commands for managing type operations in Microsoft Purview.
 
-!!! tip "Quick Start"
-    Inspect and manage type definitions and schema metadata for custom entity types, classifications, and business metadata.
-
-## What You Can Do
-
-- View type definitions and schemas
-- Create custom entity types
-- Define classification types
-- Manage business metadata definitions
-- Configure relationship types
-- Define enumeration types
+## Syntax
+```
+pvw types <action> [options]
+```
 
 ## Available Actions
 
-### Read Type Definitions
+### [createtypedefs](./createtypedefs.md)
+Create a new type definition.
 
-| Command | Purpose |
-| --- | --- |
-| `readentitydef` | Get entity type definition |
-| `readclassificationdef` | Get classification type definition |
-| `readbusinessmetadatadef` | Get business metadata definition |
-| `readrelationshipdef` | Get relationship type definition |
-| `readenumdef` | Get enumeration definition |
-| `readstructdef` | Get structure definition |
-| `readtermtemplatedef` | Get term template definition |
-| `readtypedef` | Get specific type definition |
-| `readtypedefs` | Get all type definitions |
-| `readtypedefsheaders` | Get type definition headers |
-| `readstatistics` | Get type statistics |
+### [deletetypedef](./deletetypedef.md)
+Delete type definition.
 
-### Create & Update Types
+### [deletetypedefs](./deletetypedefs.md)
+Delete type definition.
 
-| Command | Purpose |
-| --- | --- |
-| `createtypedefs` | Create new type definitions |
-| `puttypedefs` | Create or update types |
+### [puttypedefs](./puttypedefs.md)
+Create or update type definition.
 
-### Delete Types
+### [readbusinessmetadatadef](./readbusinessmetadatadef.md)
+Retrieve type definition.
 
-| Command | Purpose |
-| --- | --- |
-| `deletetypedef` | Delete single type |
-| `deletetypedefs` | Delete multiple types |
+### [readclassificationdef](./readclassificationdef.md)
+Retrieve type definition.
 
-## Type Definitions
+### [readentitydef](./readentitydef.md)
+Retrieve type definition.
 
-Type definitions control:
+### [readenumdef](./readenumdef.md)
+Retrieve type definition.
 
-- **Entity Types**: Structure and properties of assets
-- **Classification Types**: Tagging and labeling schemas
-- **Business Metadata**: Custom metadata structures
-- **Relationships**: Connections between entities
-- **Enumerations**: Predefined value lists
-- **Structures**: Complex object types
+### [readrelationshipdef](./readrelationshipdef.md)
+Retrieve type definition.
 
-## Related Topics
+### [readstatistics](./readstatistics.md)
+Retrieve type definition.
 
-- [Entity commands](../entity/main.md)
-- [Glossary commands](../glossary/main.md)
-- [Create Tasks](../task-create.md)
+### [readstructdef](./readstructdef.md)
+Retrieve type definition.
+
+### [readtermtemplatedef](./readtermtemplatedef.md)
+Retrieve type definition.
+
+### [readtypedef](./readtypedef.md)
+Retrieve type definition.
+
+### [readtypedefs](./readtypedefs.md)
+Retrieve type definition.
+
+### [readtypedefsheaders](./readtypedefsheaders.md)
+Retrieve type definition.
+
+## Examples
+
+```bash
+# List available actions
+pvw types --help
+
+# Get help for specific action
+pvw types <action> --help
+```
+
+## See Also
+
+- [Command Reference](../../README.md#command-reference)
+- [API Documentation](../api/index.html)
