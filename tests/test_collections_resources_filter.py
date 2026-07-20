@@ -194,6 +194,83 @@ class TestAssetTypeFilterUsesAndSyntax:
         # searchQuery called exactly once — only for col1, not col2
         assert mock_search.searchQuery.call_count == 1
 
+    @patch("purviewcli.cli.collections.Collections")
+    @patch("purviewcli.client._search.Search")
+    def test_multiple_asset_types_repeat_option_builds_or_filter(
+        self, mock_search_cls, mock_collections_cls
+    ):
+        """Repeated --asset-type flags should build an OR clause under collection scoping."""
+        mock_collections = MagicMock()
+        mock_collections_cls.return_value = mock_collections
+        mock_collections.collectionsRead.return_value = COLLECTIONS_RESPONSE
+
+        mock_search = MagicMock()
+        mock_search_cls.return_value = mock_search
+        mock_search.searchQuery.return_value = {"value": [ASSET_FABRIC_TABLE, ASSET_POWERBI]}
+
+        result = invoke(
+            "collections",
+            "resources",
+            "--collection-name",
+            "col1",
+            "--asset-type",
+            "fabric_lakehouse_table",
+            "--asset-type",
+            "powerbi_report",
+            "--format",
+            "json",
+        )
+
+        assert result.exit_code == 0, result.output
+        call_args = mock_search.searchQuery.call_args[0][0]
+        sent_filter = json.loads(call_args["--filter"])
+
+        assert "and" in sent_filter
+        conditions = sent_filter["and"]
+        assert any(c.get("collectionId") == "col1" for c in conditions if isinstance(c, dict))
+
+        or_condition = next((c for c in conditions if isinstance(c, dict) and "or" in c), None)
+        assert or_condition is not None, f"Expected OR condition in filter, got: {sent_filter}"
+        entity_types = [item.get("entityType") for item in or_condition["or"]]
+        assert entity_types == ["fabric_lakehouse_table", "powerbi_report"]
+
+    @patch("purviewcli.cli.collections.Collections")
+    @patch("purviewcli.client._search.Search")
+    def test_multiple_asset_types_csv_builds_or_filter(
+        self, mock_search_cls, mock_collections_cls
+    ):
+        """Comma-separated --asset-type value should parse into multiple entityType filters."""
+        mock_collections = MagicMock()
+        mock_collections_cls.return_value = mock_collections
+        mock_collections.collectionsRead.return_value = COLLECTIONS_RESPONSE
+
+        mock_search = MagicMock()
+        mock_search_cls.return_value = mock_search
+        mock_search.searchQuery.return_value = {"value": [ASSET_FABRIC_TABLE, ASSET_POWERBI]}
+
+        result = invoke(
+            "collections",
+            "resources",
+            "--collection-name",
+            "col1",
+            "--asset-type",
+            "fabric_lakehouse_table,powerbi_report",
+            "--format",
+            "json",
+        )
+
+        assert result.exit_code == 0, result.output
+        call_args = mock_search.searchQuery.call_args[0][0]
+        sent_filter = json.loads(call_args["--filter"])
+
+        or_condition = next(
+            (c for c in sent_filter.get("and", []) if isinstance(c, dict) and "or" in c),
+            None,
+        )
+        assert or_condition is not None
+        entity_types = [item.get("entityType") for item in or_condition["or"]]
+        assert entity_types == ["fabric_lakehouse_table", "powerbi_report"]
+
 
 # ---------------------------------------------------------------------------
 # Bug 2: --collection-name resolves friendly name

@@ -170,9 +170,18 @@ def delete(domain_name, force):
         args = {'--domainName': domain_name}
         client = Domain()
         result = client.domainsDelete(args)
-        
-        if result.get("status") == "not_available":
+
+        is_error = isinstance(result, dict) and (
+            result.get("status") == "error" or "error" in result
+        )
+        if isinstance(result, dict) and result.get("status") == "not_available":
             console.print(f"[yellow]LIMITATION:[/yellow] {result['message']}")
+        elif is_error:
+            error_msg = result.get("message") or result.get("error") or "Unknown error"
+            status_code = result.get("status_code", "")
+            detail = f" (HTTP {status_code})" if status_code else ""
+            console.print(f"[red]ERROR:[/red] {error_msg}{detail}")
+            console.print("[dim]Tip: set env var PURVIEWCLI_DEBUG=1 to see the full request/response.[/dim]")
         else:
             console.print(f"[green]SUCCESS:[/green] Deleted governance domain: {domain_name}")
             console.print(json.dumps(result, indent=2))

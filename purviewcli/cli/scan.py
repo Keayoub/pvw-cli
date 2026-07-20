@@ -269,8 +269,19 @@ def deleteintegrationruntimesafe(integrationruntimename, delete_dependent_scans,
                 f"[OK] Deleted dependent scan: dataSource={item['dataSourceName']} scan={item['scanName']}"
             )
 
-    scan_client.scanIntegrationRuntimeDelete({'--integrationRuntimeName': integrationruntimename})
-    click.echo(f"[OK] Deleted integration runtime '{integrationruntimename}'")
+    delete_result = scan_client.scanIntegrationRuntimeDelete({'--integrationRuntimeName': integrationruntimename})
+    is_error = isinstance(delete_result, dict) and (
+        delete_result.get("status") == "error" or "error" in delete_result
+    )
+    if delete_result is None or not is_error:
+        click.echo(f"[OK] Deleted integration runtime '{integrationruntimename}'")
+    else:
+        error_msg = delete_result.get("message") or delete_result.get("error") or "Unknown error"
+        status_code = delete_result.get("status_code", "")
+        detail = f" (HTTP {status_code})" if status_code else ""
+        raise click.ClickException(
+            f"Failed to delete integration runtime '{integrationruntimename}': {error_msg}{detail}"
+        )
 
 # === SCAN RULESETS ===
 

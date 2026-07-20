@@ -5989,10 +5989,18 @@ Use Cases:
     @decorator
     def delete_data_asset_relationship(self, args):
         asset_id = args.get("--asset-id", [""])[0] if isinstance(args.get("--asset-id"), list) else args.get("--asset-id", "")
+        entity_id = args.get("--entity-id", [""])[0] if isinstance(args.get("--entity-id"), list) else args.get("--entity-id", "")
+        entity_type = args.get("--entity-type", [""])[0] if isinstance(args.get("--entity-type"), list) else args.get("--entity-type", "")
         self.method = "DELETE"
-        self.endpoint = ENDPOINTS["unified_catalog"]["delete_data_asset_relationship"].format(dataAssetId=asset_id)
-        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
-        self.payload = get_json(args, "--payloadFile") or {}
+        self.endpoint = ENDPOINTS["unified_catalog"]["delete_data_asset_relationship"].format(
+            dataAssetId=asset_id,
+            entityId=entity_id,
+        )
+        self.params = {
+            "api-version": CATALOG_LIST_DEFAULT_API_VERSION,
+            "entityType": entity_type.upper() if entity_type else "DATAPRODUCT",
+        }
+        self.payload = None
 
     # ========================================
     # DATA COLUMNS  (new in 2026-03-20-preview)

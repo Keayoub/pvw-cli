@@ -29,6 +29,21 @@ def collections():
     pass
 
 
+def _split_csv_multi_option(_ctx, _param, values):
+    """Normalize a click multiple option and also split comma-separated values."""
+    if not values:
+        return tuple()
+
+    normalized = []
+    for raw in tuple(values):
+        if raw is None:
+            continue
+        parts = [item.strip() for item in str(raw).split(",")]
+        normalized.extend([item for item in parts if item])
+
+    return tuple(normalized)
+
+
 @collections.command()
 @click.option("--collection-name", required=True, help="The unique name of the collection")
 @click.option("--friendly-name", help="The friendly name of the collection")
@@ -410,8 +425,18 @@ def force_delete(ctx, collection_name, delete_assets, delete_data_sources,
         if not dry_run:
             console.print(f"[blue][DEL] Deleting collection '{collection_name}'...[/blue]")
             result = collections_client.collectionsDelete({"--collectionName": collection_name})
-            if result:
+            is_error = isinstance(result, dict) and (
+                result.get("status") == "error" or "error" in result
+            )
+            if result is not None and not is_error:
                 console.print(f"[green][OK] Collection '{collection_name}' deleted successfully[/green]")
+            elif is_error:
+                result_dict = result if isinstance(result, dict) else {}
+                error_msg = result_dict.get("message") or result_dict.get("error") or "Unknown error"
+                status_code = result_dict.get("status_code", "")
+                detail = f" (HTTP {status_code})" if status_code else ""
+                console.print(f"[red][X] Failed to delete collection '{collection_name}': {error_msg}{detail}[/red]")
+                console.print("[dim]Tip: set env var PURVIEWCLI_DEBUG=1 to see the full request/response.[/dim]")
             else:
                 console.print(f"[yellow][!] Collection deletion completed with no result[/yellow]")
         else:
@@ -769,7 +794,10 @@ def _delete_entities_with_relationship_cleanup(entity_client, relationship_clien
 )
 @click.option(
     "--asset-type",
-    help="Filter by asset type (e.g., azure_sql_table, powerbi_dataset)"
+    "asset_types",
+    multiple=True,
+    callback=_split_csv_multi_option,
+    help="Filter by asset type. Supports repeated options or comma-separated values (e.g., --asset-type a --asset-type b or --asset-type a,b)"
 )
 @click.option(
     "--data-source",
@@ -781,7 +809,7 @@ def _delete_entities_with_relationship_cleanup(entity_client, relationship_clien
     default=1000,
     help="Maximum number of assets to retrieve per collection (default: 1000)"
 )
-def resources(collection_name, format, output_json, sort_by, asset_type, data_source, limit):
+def resources(collection_name, format, output_json, sort_by, asset_types, data_source, limit):
     """List assets in collections with filtering options"""
     try:
         from rich.console import Console
@@ -833,13 +861,21 @@ def resources(collection_name, format, output_json, sort_by, asset_type, data_so
                 # Build API filter using the compound AND syntax required by Purview Search API.
                 # A flat dict like {"collectionId": "x", "entityType": "y"} is NOT valid;
                 # multiple conditions must be wrapped in an {"and": [...]} array.
-                if asset_type:
-                    filter_dict = {
-                        "and": [
-                            {"collectionId": coll_name},
-                            {"entityType": asset_type}
-                        ]
-                    }
+                if asset_types:
+                    if len(asset_types) == 1:
+                        filter_dict = {
+                            "and": [
+                                {"collectionId": coll_name},
+                                {"entityType": asset_types[0]}
+                            ]
+                        }
+                    else:
+                        filter_dict = {
+                            "and": [
+                                {"collectionId": coll_name},
+                                {"or": [{"entityType": asset_type} for asset_type in asset_types]}
+                            ]
+                        }
                 else:
                     filter_dict = {"collectionId": coll_name}
 

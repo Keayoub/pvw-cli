@@ -115,8 +115,15 @@ def create(name, description, type, owner_id, status, parent_id, payload_file):
         if not result:
             console.print("[red]ERROR:[/red] No response received")
             return
-        if isinstance(result, dict) and "error" in result:
-            console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
+        is_error = isinstance(result, dict) and (
+            result.get("status") == "error" or "error" in result
+        )
+        if is_error:
+            error_msg = result.get("message") or result.get("error") or "Unknown error"
+            status_code = result.get("status_code", "")
+            detail = f" (HTTP {status_code})" if status_code else ""
+            console.print(f"[red]ERROR:[/red] {error_msg}{detail}")
+            console.print("[dim]Tip: set env var PURVIEWCLI_DEBUG=1 to see the full request/response.[/dim]")
             return
 
         console.print(f"[green] SUCCESS:[/green] Created governance domain '{name}'")
@@ -290,8 +297,15 @@ def create(
         if not result:
             console.print("[red]ERROR:[/red] No response received")
             return
-        if isinstance(result, dict) and "error" in result:
-            console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
+        is_error = isinstance(result, dict) and (
+            result.get("status") == "error" or "error" in result
+        )
+        if is_error:
+            error_msg = result.get("message") or result.get("error") or "Unknown error"
+            status_code = result.get("status_code", "")
+            detail = f" (HTTP {status_code})" if status_code else ""
+            console.print(f"[red]ERROR:[/red] {error_msg}{detail}")
+            console.print("[dim]Tip: set env var PURVIEWCLI_DEBUG=1 to see the full request/response.[/dim]")
             return
 
         console.print(f"[green] SUCCESS:[/green] Created data product '{name}'")
@@ -460,8 +474,15 @@ def update(
         if not result:
             console.print("[red]ERROR:[/red] No response received")
             return
-        if isinstance(result, dict) and "error" in result:
-            console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
+        is_error = isinstance(result, dict) and (
+            result.get("status") == "error" or "error" in result
+        )
+        if is_error:
+            error_msg = result.get("message") or result.get("error") or "Unknown error"
+            status_code = result.get("status_code", "")
+            detail = f" (HTTP {status_code})" if status_code else ""
+            console.print(f"[red]ERROR:[/red] {error_msg}{detail}")
+            console.print("[dim]Tip: set env var PURVIEWCLI_DEBUG=1 to see the full request/response.[/dim]")
             return
 
         console.print(f"[green] SUCCESS:[/green] Updated data product '{product_id}'")
@@ -490,15 +511,17 @@ def delete(product_id, yes):
         args = {"--product-id": [product_id]}
         result = client.delete_data_product(args)
 
-        # DELETE operations may return empty response on success
-        if result is None or (isinstance(result, dict) and not result.get("error")):
+        is_error = isinstance(result, dict) and (
+            result.get("status") == "error" or "error" in result
+        )
+        if result is None or not is_error:
             console.print(f"[green] SUCCESS:[/green] Deleted data product '{product_id}'")
-        elif isinstance(result, dict) and "error" in result:
-                console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
         else:
-            console.print(f"[green] SUCCESS:[/green] Deleted data product '{product_id}'")
-            if result:
-                console.print(json.dumps(result, indent=2))
+            error_msg = result.get("message") or result.get("error") or "Unknown error"
+            status_code = result.get("status_code", "")
+            detail = f" (HTTP {status_code})" if status_code else ""
+            console.print(f"[red]ERROR:[/red] {error_msg}{detail}")
+            console.print("[dim]Tip: set env var PURVIEWCLI_DEBUG=1 to see the full request/response.[/dim]")
 
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
@@ -1283,8 +1306,15 @@ def create(name, description, domain_id, parent_id, status, acronym, owner_id, r
         if not result:
             console.print("[red]ERROR:[/red] No response received")
             return
-        if isinstance(result, dict) and "error" in result:
-            console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
+        is_error = isinstance(result, dict) and (
+            result.get("status") == "error" or "error" in result
+        )
+        if is_error:
+            error_msg = result.get("message") or result.get("error") or "Unknown error"
+            status_code = result.get("status_code", "")
+            detail = f" (HTTP {status_code})" if status_code else ""
+            console.print(f"[red]ERROR:[/red] {error_msg}{detail}")
+            console.print("[dim]Tip: set env var PURVIEWCLI_DEBUG=1 to see the full request/response.[/dim]")
             return
 
         console.print(f"[green] SUCCESS:[/green] Created glossary term '{name}'")
@@ -3104,13 +3134,20 @@ def delete_relationship(term_id, entity_id, confirm):
         }
         
         result = client.delete_term_relationship(args)
-        
-        if result:
-            console.print("[green]✓[/green] Relationship deleted successfully")
+
+        is_error = isinstance(result, dict) and (
+            result.get("status") == "error" or "error" in result
+        )
+        if result is None or not is_error:
+            console.print("[green]SUCCESS:[/green] Relationship deleted")
             if isinstance(result, dict) and result.get("message"):
-                console.print(f"  {result['message']}")
+                console.print(f"{result['message']}")
         else:
-            console.print("[green]✓[/green] Relationship deleted (no response from server)")
+            error_msg = result.get("message") or result.get("error") or "Unknown error"
+            status_code = result.get("status_code", "")
+            detail = f" (HTTP {status_code})" if status_code else ""
+            console.print(f"[red]ERROR:[/red] {error_msg}{detail}")
+            console.print("[dim]Tip: set env var PURVIEWCLI_DEBUG=1 to see the full request/response.[/dim]")
     
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
@@ -4157,14 +4194,18 @@ def remove_cde_relationship(cde_id, entity_type, entity_id, confirm):
         }
         
         result = client.delete_cde_relationship(args)
-        
-        # DELETE returns 204 No Content on success
-        if result is None or (isinstance(result, dict) and not result.get("error")):
+
+        is_error = isinstance(result, dict) and (
+            result.get("status") == "error" or "error" in result
+        )
+        if result is None or not is_error:
             console.print(f"[green]SUCCESS:[/green] Deleted CDE relationship to {entity_type} '{entity_id}'")
-        elif isinstance(result, dict) and "error" in result:
-            console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
         else:
-            console.print(f"[green]SUCCESS:[/green] Deleted CDE relationship")
+            error_msg = result.get("message") or result.get("error") or "Unknown error"
+            status_code = result.get("status_code", "")
+            detail = f" (HTTP {status_code})" if status_code else ""
+            console.print(f"[red]ERROR:[/red] {error_msg}{detail}")
+            console.print("[dim]Tip: set env var PURVIEWCLI_DEBUG=1 to see the full request/response.[/dim]")
             
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
@@ -4622,15 +4663,17 @@ def delete(objective_id, key_result_id, yes):
         }
         result = client.delete_key_result(args)
 
-        # DELETE operations may return empty response on success
-        if result is None or (isinstance(result, dict) and not result.get("error")):
+        is_error = isinstance(result, dict) and (
+            result.get("status") == "error" or "error" in result
+        )
+        if result is None or not is_error:
             console.print(f"[green]SUCCESS:[/green] Deleted key result '{key_result_id}'")
-        elif isinstance(result, dict) and "error" in result:
-            console.print(f"[red]ERROR:[/red] {result.get('error', 'Unknown error')}")
         else:
-            console.print(f"[green]SUCCESS:[/green] Deleted key result")
-            if result:
-                console.print(json.dumps(result, indent=2))
+            error_msg = result.get("message") or result.get("error") or "Unknown error"
+            status_code = result.get("status_code", "")
+            detail = f" (HTTP {status_code})" if status_code else ""
+            console.print(f"[red]ERROR:[/red] {error_msg}{detail}")
+            console.print("[dim]Tip: set env var PURVIEWCLI_DEBUG=1 to see the full request/response.[/dim]")
 
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
@@ -5502,8 +5545,23 @@ def delete_custom_attribute(attribute_id):
     console.print(f"[green]SUCCESS:[/green] Custom attribute '{attribute_id}' deleted")
 
 
+def _is_api_error(result):
+    """Return True if result is an API error dict."""
+    return isinstance(result, dict) and (
+        result.get("status") == "error" or "error" in result
+    )
+
+
 def _uc_render(result, output, title="Result"):
     """Simple output helper for new UC commands."""
+    if _is_api_error(result):
+        r = result if isinstance(result, dict) else {}
+        error_msg = r.get("message") or r.get("error") or "Unknown error"
+        status_code = r.get("status_code", "")
+        detail = f" (HTTP {status_code})" if status_code else ""
+        console.print(f"[red][X] {title} failed: {error_msg}{detail}[/red]")
+        console.print("[dim]Tip: set env var PURVIEWCLI_DEBUG=1 to see the full request/response.[/dim]")
+        return
     if output == "json":
         print(json.dumps(result, indent=2))
     elif output == "jsonc":
@@ -5680,7 +5738,17 @@ def data_asset_delete(ctx, asset_id, yes):
         click.confirm(f"Delete data asset '{asset_id}'?", abort=True)
     client = get_cached_client(UnifiedCatalogClient, profile=ctx.obj.get("profile", "default"))
     result = client.delete_data_asset({"--asset-id": asset_id})
-    console.print(f"[green]SUCCESS:[/green] Data asset '{asset_id}' deleted")
+    is_error = isinstance(result, dict) and (
+        result.get("status") == "error" or "error" in result
+    )
+    if result is None or not is_error:
+        console.print(f"[green]SUCCESS:[/green] Data asset '{asset_id}' deleted")
+    else:
+        error_msg = (result if isinstance(result, dict) else {}).get("message") or (result if isinstance(result, dict) else {}).get("error") or "Unknown error"
+        status_code = (result if isinstance(result, dict) else {}).get("status_code", "")
+        detail = f" (HTTP {status_code})" if status_code else ""
+        console.print(f"[red][X] Failed to delete data asset '{asset_id}': {error_msg}{detail}[/red]")
+        console.print("[dim]Tip: set env var PURVIEWCLI_DEBUG=1 to see the full request/response.[/dim]")
 
 
 @data_asset.command(name="query")
@@ -5726,9 +5794,16 @@ def data_asset_list_relationships(ctx, asset_id, output):
 @data_asset.command(name="remove-relationship")
 @click.option("--asset-id", required=True, help="Data asset GUID")
 @click.option("--entity-id", required=True, help="GUID of the entity to unlink (e.g. Data Product)")
+@click.option(
+    "--entity-type",
+    type=click.Choice(["DATAPRODUCT", "TERM", "CRITICALDATACOLUMN", "CRITICALDATAELEMENT"], case_sensitive=False),
+    default="DATAPRODUCT",
+    show_default=True,
+    help="Type of entity to unlink",
+)
 @click.option("--yes", is_flag=True, help="Skip confirmation")
 @click.pass_context
-def data_asset_remove_relationship(ctx, asset_id, entity_id, yes):
+def data_asset_remove_relationship(ctx, asset_id, entity_id, entity_type, yes):
     """Remove a relationship between a data asset and another entity.
 
     Example — unlink from a Data Product:
@@ -5747,13 +5822,23 @@ def data_asset_remove_relationship(ctx, asset_id, entity_id, yes):
             abort=True,
         )
     client = get_cached_client(UnifiedCatalogClient, profile=ctx.obj.get("profile", "default"))
-    result = client.delete_data_asset_relationship(
-        {"--asset-id": asset_id, "--payloadFile": None, "_entity_id": entity_id}
+    result = client.delete_data_asset_relationship({
+        "--asset-id": asset_id,
+        "--entity-id": entity_id,
+        "--entity-type": entity_type,
+    })
+
+    is_error = isinstance(result, dict) and (
+        result.get("status") == "error" or "error" in result
     )
-    if result is None or (isinstance(result, dict) and not result.get("error")):
+    if result is None or not is_error:
         console.print(f"[green]SUCCESS:[/green] Relationship removed.")
     else:
-        _uc_render(result, "json", "Remove Relationship")
+        error_msg = result.get("message") or result.get("error") or "Unknown error"
+        status_code = result.get("status_code", "")
+        detail = f" (HTTP {status_code})" if status_code else ""
+        console.print(f"[red]ERROR:[/red] {error_msg}{detail}")
+        console.print("[dim]Tip: set env var PURVIEWCLI_DEBUG=1 to see the full request/response.[/dim]")
 
 
 # ========================================

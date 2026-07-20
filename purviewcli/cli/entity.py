@@ -211,9 +211,18 @@ def delete(ctx, guid, cascade):
 
         result = entity_client.entityDelete({"--guid": [guid]})
 
-        if result:
+        is_error = isinstance(result, dict) and (
+            result.get("status") == "error" or "error" in result
+        )
+        if result is not None and not is_error:
             console.print("[green][OK] Entity delete completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
+        elif is_error:
+            error_msg = result.get("message") or result.get("error") or "Unknown error"
+            status_code = result.get("status_code", "")
+            detail = f" (HTTP {status_code})" if status_code else ""
+            console.print(f"[red][X] Entity delete failed: {error_msg}{detail}[/red]")
+            console.print("[dim]Tip: set env var PURVIEWCLI_DEBUG=1 to see the full request/response.[/dim]")
         else:
             console.print("[yellow][!] Entity delete completed with no result[/yellow]")
 
@@ -496,9 +505,18 @@ def bulk_delete(ctx, guid):
         entity_client = Entity()
         result = entity_client.entityDeleteBulk(args)
 
-        if result:
+        is_error = isinstance(result, dict) and (
+            result.get("status") == "error" or "error" in result
+        )
+        if result is not None and not is_error:
             console.print("[green][OK] Entity bulk-delete completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
+        elif is_error:
+            error_msg = result.get("message") or result.get("error") or "Unknown error"
+            status_code = result.get("status_code", "")
+            detail = f" (HTTP {status_code})" if status_code else ""
+            console.print(f"[red][X] Entity bulk-delete failed: {error_msg}{detail}[/red]")
+            console.print("[dim]Tip: set env var PURVIEWCLI_DEBUG=1 to see the full request/response.[/dim]")
         else:
             console.print("[yellow][!] Entity bulk-delete completed with no result[/yellow]")
 
@@ -626,9 +644,18 @@ def delete_by_attribute(ctx, type_name, qualified_name):
         entity_client = Entity()
         result = entity_client.entityDeleteUniqueAttribute(args)
 
-        if result:
+        is_error = isinstance(result, dict) and (
+            result.get("status") == "error" or "error" in result
+        )
+        if result is not None and not is_error:
             console.print("[green][OK] Entity delete-by-attribute completed successfully[/green]")
             console.print(json.dumps(result, indent=2))
+        elif is_error:
+            error_msg = result.get("message") or result.get("error") or "Unknown error"
+            status_code = result.get("status_code", "")
+            detail = f" (HTTP {status_code})" if status_code else ""
+            console.print(f"[red][X] Entity delete-by-attribute failed: {error_msg}{detail}[/red]")
+            console.print("[dim]Tip: set env var PURVIEWCLI_DEBUG=1 to see the full request/response.[/dim]")
         else:
             console.print("[yellow][!] Entity delete-by-attribute completed with no result[/yellow]")
 
@@ -3876,8 +3903,11 @@ def _delete_batch_job(entity_client, guid_batch, bulk_size, throttle_ms, job_id)
             # Execute bulk delete API call
             args = {"--guid": bulk_guids}
             result = entity_client.entityDeleteBulk(args)
-            
-            if result:
+
+            is_error = isinstance(result, dict) and (
+                result.get("status") == "error" or "error" in result
+            )
+            if result is not None and not is_error:
                 deleted_in_job += len(bulk_guids)
             
             # Throttle between API calls

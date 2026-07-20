@@ -924,8 +924,11 @@ def delete_column_lineage(process_guid, force):
             "endpoint": f"/datamap/api/atlas/v2/entity/guid/{process_guid}",
             "params": get_api_version_params("datamap")
         })
-        
-        if delete_result:
+
+        is_error = isinstance(delete_result, dict) and (
+            delete_result.get("status") == "error" or "error" in delete_result
+        )
+        if delete_result is not None and not is_error:
             console.print(f"[green]SUCCESS: Column lineage deleted[/green]")
             console.print(f"Process GUID: {process_guid}")
             
@@ -936,6 +939,12 @@ def delete_column_lineage(process_guid, force):
                     console.print(f"\nDeleted {len(deleted)} entity(ies):")
                     for entity in deleted:
                         console.print(f"  - {entity.get('displayText', 'N/A')} ({entity.get('guid', 'N/A')[:8]}...)")
+        elif is_error:
+            error_msg = delete_result.get("message") or delete_result.get("error") or "Unknown error"
+            status_code = delete_result.get("status_code", "")
+            detail = f" (HTTP {status_code})" if status_code else ""
+            console.print(f"[red]ERROR: Failed to delete Process entity: {error_msg}{detail}[/red]")
+            console.print("[dim]Tip: set env var PURVIEWCLI_DEBUG=1 to see the full request/response.[/dim]")
         else:
             console.print(f"[red]ERROR: Failed to delete Process entity[/red]")
             

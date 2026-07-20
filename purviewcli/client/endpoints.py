@@ -549,7 +549,7 @@ ENDPOINTS = {
         "query_data_assets": "/datagovernance/catalog/dataAssets/query",
         "create_data_asset_relationship": "/datagovernance/catalog/dataAssets/{dataAssetId}/relationships",
         "list_data_asset_relationships": "/datagovernance/catalog/dataAssets/{dataAssetId}/relationships",
-        "delete_data_asset_relationship": "/datagovernance/catalog/dataAssets/{dataAssetId}/relationships",
+        "delete_data_asset_relationship": "/datagovernance/catalog/dataAssets/{dataAssetId}/relationships/{entityId}",
         # Data Columns  (full group, new in 2026-03-20-preview)
         "get_data_column": "/datagovernance/catalog/dataColumns/{id}",
         "ingest_data_column": "/datagovernance/catalog/dataColumns",
