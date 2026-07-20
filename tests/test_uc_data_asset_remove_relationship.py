@@ -101,3 +101,71 @@ class TestDataAssetDeleteRelationshipCli:
         assert "ERROR" in result.output
         assert "SUCCESS" not in result.output
         assert "404" in result.output
+
+    @patch("purviewcli.client.client_cache.get_cached_client")
+    def test_cli_fallback_to_dataproduct_delete_on_404(self, mock_get_cached_client):
+        mock_client = MagicMock()
+        mock_client.delete_data_asset_relationship.return_value = {
+            "status": "error",
+            "message": "HTTP 404:",
+            "status_code": 404,
+        }
+        mock_client.delete_data_product_relationship.return_value = None
+        mock_get_cached_client.return_value = mock_client
+
+        result = invoke(
+            "uc",
+            "data-asset",
+            "remove-relationship",
+            "--asset-id",
+            ASSET_ID,
+            "--entity-id",
+            ENTITY_ID,
+            "--entity-type",
+            "DATAPRODUCT",
+            "--yes",
+        )
+
+        assert result.exit_code == 0, result.output
+        assert "SUCCESS" in result.output
+        assert "ERROR" not in result.output
+
+        mock_client.delete_data_product_relationship.assert_called_once_with(
+            {
+                "--product-id": [ENTITY_ID],
+                "--entity-type": ["DATAASSET"],
+                "--entity-id": [ASSET_ID],
+            }
+        )
+
+    @patch("purviewcli.client.client_cache.get_cached_client")
+    def test_cli_fallback_error_still_prints_error(self, mock_get_cached_client):
+        mock_client = MagicMock()
+        mock_client.delete_data_asset_relationship.return_value = {
+            "status": "error",
+            "message": "HTTP 404:",
+            "status_code": 404,
+        }
+        mock_client.delete_data_product_relationship.return_value = {
+            "status": "error",
+            "message": "HTTP 404:",
+            "status_code": 404,
+        }
+        mock_get_cached_client.return_value = mock_client
+
+        result = invoke(
+            "uc",
+            "data-asset",
+            "remove-relationship",
+            "--asset-id",
+            ASSET_ID,
+            "--entity-id",
+            ENTITY_ID,
+            "--entity-type",
+            "DATAPRODUCT",
+            "--yes",
+        )
+
+        assert result.exit_code == 0, result.output
+        assert "ERROR" in result.output
+        assert "SUCCESS" not in result.output

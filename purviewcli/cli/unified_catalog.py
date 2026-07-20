@@ -5828,6 +5828,24 @@ def data_asset_remove_relationship(ctx, asset_id, entity_id, entity_type, yes):
         "--entity-type": entity_type,
     })
 
+    # Some tenants persist Data Product <-> Data Asset links under the
+    # dataproduct-side relationship endpoint only. In that case, deleting from
+    # the data-asset endpoint can return 404 even when the relationship exists.
+    # Retry once via the symmetric dataproduct delete shape.
+    if (
+        isinstance(result, dict)
+        and result.get("status") == "error"
+        and result.get("status_code") == 404
+        and (entity_type or "").upper() == "DATAPRODUCT"
+    ):
+        result = client.delete_data_product_relationship(
+            {
+                "--product-id": [entity_id],
+                "--entity-type": ["DATAASSET"],
+                "--entity-id": [asset_id],
+            }
+        )
+
     is_error = isinstance(result, dict) and (
         result.get("status") == "error" or "error" in result
     )

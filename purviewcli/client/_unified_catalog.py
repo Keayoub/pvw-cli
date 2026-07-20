@@ -1002,14 +1002,12 @@ Use Cases:
         relationship_type = args.get("--relationship-type", ["Related"])[0]
         description = args.get("--description", [""])[0]
         
-        # Build request body
+        # Build request body — fields at root level; do NOT wrap in a named key
         payload = {
-            "relationship1": {
-                "description": description,
-                "relationshipType": relationship_type,
-                "assetId": asset_id,
-                "entityId": entity_id
-            }
+            "entityId": entity_id,
+            "assetId": asset_id,
+            "relationshipType": relationship_type,
+            "description": description,
         }
         
         self.method = "POST"
@@ -4336,14 +4334,12 @@ Use Cases:
         relationship_type = args.get("--relationship-type", ["Related"])[0]
         description = args.get("--description", [""])[0]
         
-        # Build request body (same structure as data product relationships)
+        # Build request body — fields at root level; do NOT wrap in a named key
         payload = {
-            "relationship1": {
-                "description": description,
-                "relationshipType": relationship_type,
-                "assetId": asset_id,
-                "entityId": entity_id
-            }
+            "entityId": entity_id,
+            "assetId": asset_id,
+            "relationshipType": relationship_type,
+            "description": description,
         }
         
         self.method = "POST"
