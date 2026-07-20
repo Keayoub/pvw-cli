@@ -2,7 +2,7 @@
 
 """Version information for Purview MCP Server."""
 
-__version__ = "1.14.3"
+__version__ = "1.14.4"
 __author__ = "Ayoub KEBAILI"
 __description__ = (
     "A Model Context Protocol server for Microsoft Purview enabling LLM-powered data governance workflows."
