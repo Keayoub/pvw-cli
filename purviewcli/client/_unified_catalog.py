@@ -1152,6 +1152,7 @@ Use Cases:
             entityId=entity_id,
         )
         self.params = {
+            "api-version": CATALOG_LIST_DEFAULT_API_VERSION,
             "entityType": entity_type.upper(),
         }
 
@@ -5966,6 +5967,19 @@ Use Cases:
         self.endpoint = ENDPOINTS["unified_catalog"]["query_data_assets"]
         self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
         self.payload = get_json(args, "--payloadFile") or {}
+
+    @decorator
+    def find_data_asset_by_entity_guid(self, args):
+        """Find a UC data asset by its Atlas/Data Map entity GUID.
+
+        The entity GUID is the 'tid' query parameter in the Purview portal URL.
+        The returned asset record contains the UC asset ID (the 'guid' parameter).
+        """
+        entity_guid = args.get("--entity-guid", [""])[0] if isinstance(args.get("--entity-guid"), list) else args.get("--entity-guid", "")
+        self.method = "POST"
+        self.endpoint = ENDPOINTS["unified_catalog"]["query_data_assets"]
+        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
+        self.payload = {"entityGuids": [entity_guid]}
 
     @decorator
     def create_data_asset_relationship(self, args):

@@ -1,7 +1,7 @@
 ---
 name: "PurviewCli"
 description: "Coding assistant for the pvw-cli repository. Specializes in Microsoft Purview CLI tooling, Python Click commands, REST client abstractions, bulk operations, and Azure/Purview API integrations."
-tools: [vscode, execute, read, agent, edit, search, web, 'context-mode/*', 'azure-mcp/*', 'microsoft-learn-mcp/*', 'git-mcp-server/*', browser, 'microsoft/markitdown/*', 'microsoftdocs/mcp/*', todo]
+tools: [vscode, execute, read, agent, edit, search, web, 'context-mode/*', azure-mcp/search, 'microsoft-learn-mcp/*', browser, todo]
 ---
 
 ## pvw-cli Unified Agent Profile

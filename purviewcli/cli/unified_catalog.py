@@ -5764,6 +5764,38 @@ def data_asset_query(ctx, payload_file, output):
     _uc_render(result, output, "Data Assets Query")
 
 
+@data_asset.command(name="find")
+@click.option(
+    "--entity-guid",
+    required=True,
+    help=(
+        "Atlas / Data Map entity GUID to look up (the 'tid' parameter in the Purview portal URL). "
+        "Returns the UC data asset record including its asset ID (the 'guid' parameter)."
+    ),
+)
+@click.option("--output", default="json", type=click.Choice(["table", "json", "jsonc"]))
+@click.pass_context
+def data_asset_find(ctx, entity_guid, output):
+    """Find a UC data asset by its entity GUID (the 'tid' in the portal URL).
+
+    When you open a Lakehouse Table in the Purview portal the URL contains two IDs:
+
+    \b
+      tid=<ENTITY_GUID>   - the Atlas/Data Map entity GUID
+      guid=<ASSET_ID>     - the UC data asset ID used by relationship commands
+
+    Use this command to retrieve the asset ID and full asset record when you
+    only have the entity GUID:
+
+        pvw uc data-asset find --entity-guid 006c1e48-e342-47e9-ab5d-0dd9ff89bd96
+    """
+    from purviewcli.client._unified_catalog import UnifiedCatalogClient
+    from purviewcli.client.client_cache import get_cached_client
+    client = get_cached_client(UnifiedCatalogClient, profile=ctx.obj.get("profile", "default"))
+    result = client.find_data_asset_by_entity_guid({"--entity-guid": entity_guid})
+    _uc_render(result, output, "Data Asset")
+
+
 @data_asset.command(name="add-relationship")
 @click.option("--asset-id", required=True, help="Data asset GUID")
 @click.option("--payload-file", required=True, help="JSON file with relationship payload")
@@ -5792,8 +5824,8 @@ def data_asset_list_relationships(ctx, asset_id, output):
 
 
 @data_asset.command(name="remove-relationship")
-@click.option("--asset-id", required=True, help="Data asset GUID")
-@click.option("--entity-id", required=True, help="GUID of the entity to unlink (e.g. Data Product)")
+@click.option("--asset-id", required=True, help="UC data asset ID (the 'guid' in the Purview portal URL)")
+@click.option("--entity-id", required=True, help="GUID of the entity to unlink (e.g. Data Product ID)")
 @click.option(
     "--entity-type",
     type=click.Choice(["DATAPRODUCT", "TERM", "CRITICALDATACOLUMN", "CRITICALDATAELEMENT"], case_sensitive=False),
@@ -5801,18 +5833,34 @@ def data_asset_list_relationships(ctx, asset_id, output):
     show_default=True,
     help="Type of entity to unlink",
 )
+@click.option(
+    "--entity-guid",
+    default=None,
+    help=(
+        "Entity GUID used when the relationship was created (the 'tid' in the Purview portal URL). "
+        "Required when the UC asset ID differs from the entity GUID stored in the Data Product relationship. "
+        "If omitted, --asset-id is used as the entity GUID for the product-side fallback."
+    ),
+)
 @click.option("--yes", is_flag=True, help="Skip confirmation")
 @click.pass_context
-def data_asset_remove_relationship(ctx, asset_id, entity_id, entity_type, yes):
+def data_asset_remove_relationship(ctx, asset_id, entity_id, entity_type, entity_guid, yes):
     """Remove a relationship between a data asset and another entity.
 
-    Example — unlink from a Data Product:
+    Purview stores Data Product <-> Data Asset relationships using the entity GUID (the
+    'tid' parameter in the portal URL), which may differ from the UC data asset ID (the
+    'guid' parameter).  When you added the asset via:
 
-        pvw uc data-asset remove-relationship --asset-id <ASSET_GUID> --entity-id <PRODUCT_GUID>
+        pvw uc dataproduct add-relationship --product-id <PRODUCT> --entity-type DATAASSET \\
+            --entity-id <TID> --asset-id <GUID>
 
-    The symmetric operation from the product side is also available:
+    you must supply --entity-guid <TID> here so the product-side deletion uses the correct key:
 
-        pvw uc dataproduct remove-relationship --product-id <PRODUCT_GUID> --entity-type DATAASSET --entity-id <ASSET_GUID>
+        pvw uc data-asset remove-relationship --asset-id <GUID> --entity-id <PRODUCT> \\
+            --entity-guid <TID>
+
+    If --entity-guid is omitted, the command falls back to using --asset-id as the
+    product-side entity GUID (works when both IDs are identical).
     """
     from purviewcli.client._unified_catalog import UnifiedCatalogClient
     from purviewcli.client.client_cache import get_cached_client
@@ -5829,20 +5877,22 @@ def data_asset_remove_relationship(ctx, asset_id, entity_id, entity_type, yes):
     })
 
     # Some tenants persist Data Product <-> Data Asset links under the
-    # dataproduct-side relationship endpoint only. In that case, deleting from
-    # the data-asset endpoint can return 404 even when the relationship exists.
-    # Retry once via the symmetric dataproduct delete shape.
+    # dataproduct-side relationship endpoint only.  Fall back to the symmetric
+    # product-side delete.  The relationship key on the product is the entity GUID
+    # (--entity-guid / the 'tid' in the portal URL), which may differ from the UC
+    # asset ID (--asset-id / the 'guid' in the portal URL).
     if (
         isinstance(result, dict)
         and result.get("status") == "error"
         and result.get("status_code") == 404
         and (entity_type or "").upper() == "DATAPRODUCT"
     ):
+        product_side_entity_id = entity_guid if entity_guid else asset_id
         result = client.delete_data_product_relationship(
             {
                 "--product-id": [entity_id],
                 "--entity-type": ["DATAASSET"],
-                "--entity-id": [asset_id],
+                "--entity-id": [product_side_entity_id],
             }
         )
 
@@ -5856,7 +5906,13 @@ def data_asset_remove_relationship(ctx, asset_id, entity_id, entity_type, yes):
         status_code = result.get("status_code", "")
         detail = f" (HTTP {status_code})" if status_code else ""
         console.print(f"[red]ERROR:[/red] {error_msg}{detail}")
-        console.print("[dim]Tip: set env var PURVIEWCLI_DEBUG=1 to see the full request/response.[/dim]")
+        if (entity_type or "").upper() == "DATAPRODUCT" and not entity_guid:
+            console.print(
+                "[dim]Hint: if the asset was added with a separate --entity-id (the 'tid' in the portal URL), "
+                "re-run with --entity-guid <TID> to target the correct relationship key.[/dim]"
+            )
+        else:
+            console.print("[dim]Tip: set env var PURVIEWCLI_DEBUG=1 to see the full request/response.[/dim]")
 
 
 # ========================================

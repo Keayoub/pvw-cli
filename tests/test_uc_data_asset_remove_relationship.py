@@ -23,6 +23,7 @@ RUNNER = CliRunner()
 
 ASSET_ID = "asset-aaaa-1111"
 ENTITY_ID = "product-bbbb-2222"
+ENTITY_GUID = "entity-guid-cccc-3333"
 
 
 def invoke(*args, **kwargs):
@@ -84,6 +85,11 @@ class TestDataAssetDeleteRelationshipCli:
             "message": "HTTP 404: Relationship not found",
             "status_code": 404,
         }
+        mock_client.delete_data_product_relationship.return_value = {
+            "status": "error",
+            "message": "HTTP 404:",
+            "status_code": 404,
+        }
         mock_get_cached_client.return_value = mock_client
 
         result = invoke(
@@ -135,6 +141,44 @@ class TestDataAssetDeleteRelationshipCli:
                 "--product-id": [ENTITY_ID],
                 "--entity-type": ["DATAASSET"],
                 "--entity-id": [ASSET_ID],
+            }
+        )
+
+    @patch("purviewcli.client.client_cache.get_cached_client")
+    def test_cli_fallback_uses_entity_guid_when_provided(self, mock_get_cached_client):
+        mock_client = MagicMock()
+        mock_client.delete_data_asset_relationship.return_value = {
+            "status": "error",
+            "message": "HTTP 404:",
+            "status_code": 404,
+        }
+        mock_client.delete_data_product_relationship.return_value = None
+        mock_get_cached_client.return_value = mock_client
+
+        result = invoke(
+            "uc",
+            "data-asset",
+            "remove-relationship",
+            "--asset-id",
+            ASSET_ID,
+            "--entity-id",
+            ENTITY_ID,
+            "--entity-type",
+            "DATAPRODUCT",
+            "--entity-guid",
+            ENTITY_GUID,
+            "--yes",
+        )
+
+        assert result.exit_code == 0, result.output
+        assert "SUCCESS" in result.output
+        assert "ERROR" not in result.output
+
+        mock_client.delete_data_product_relationship.assert_called_once_with(
+            {
+                "--product-id": [ENTITY_ID],
+                "--entity-type": ["DATAASSET"],
+                "--entity-id": [ENTITY_GUID],
             }
         )
 
