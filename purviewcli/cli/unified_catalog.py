@@ -5769,25 +5769,32 @@ def data_asset_query(ctx, payload_file, output):
     "--entity-guid",
     required=True,
     help=(
-        "Atlas / Data Map entity GUID to look up (the 'tid' parameter in the Purview portal URL). "
-        "Returns the UC data asset record including its asset ID (the 'guid' parameter)."
+        "Data Map entity GUID to look up. "
+        "This is the 'guid' parameter in the Purview portal URL (NOT 'tid', which is the "
+        "Azure tenant ID shared by all assets). "
+        "Returns the UC data asset record including its 'id' field needed by add-relationship."
     ),
 )
 @click.option("--output", default="json", type=click.Choice(["table", "json", "jsonc"]))
 @click.pass_context
 def data_asset_find(ctx, entity_guid, output):
-    """Find a UC data asset by its entity GUID (the 'tid' in the portal URL).
+    """Find a UC data asset by its Data Map entity GUID.
 
-    When you open a Lakehouse Table in the Purview portal the URL contains two IDs:
+    When you open a Lakehouse Table in the Purview portal the URL contains:
 
     \b
-      tid=<ENTITY_GUID>   - the Atlas/Data Map entity GUID
-      guid=<ASSET_ID>     - the UC data asset ID used by relationship commands
+      tid=<TENANT_ID>     - Azure AD tenant ID, shared by ALL assets (do NOT use this)
+      guid=<ENTITY_GUID>  - per-asset Data Map entity GUID (pass THIS value)
 
-    Use this command to retrieve the asset ID and full asset record when you
-    only have the entity GUID:
+    The command returns the UC data asset record whose 'id' field is the
+    asset ID required by the add-relationship and remove-relationship commands.
 
-        pvw uc data-asset find --entity-guid 006c1e48-e342-47e9-ab5d-0dd9ff89bd96
+    Example:
+
+    \b
+      URL:  ?tid=006c1e48-e342-47e9-ab5d-0dd9ff89bd96&guid=c1214688-dbd7-4aac-991b-28f6f6f60000
+      Use:  pvw uc data-asset find --entity-guid c1214688-dbd7-4aac-991b-28f6f6f60000
+      Gets: id = 9cf5592e-96ad-485a-b25b-10985035723b  (use this for add-relationship)
     """
     from purviewcli.client._unified_catalog import UnifiedCatalogClient
     from purviewcli.client.client_cache import get_cached_client

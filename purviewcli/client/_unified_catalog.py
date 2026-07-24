@@ -5970,10 +5970,11 @@ Use Cases:
 
     @decorator
     def find_data_asset_by_entity_guid(self, args):
-        """Find a UC data asset by its Atlas/Data Map entity GUID.
+        """Find a UC data asset by its per-asset Data Map entity GUID.
 
-        The entity GUID is the 'tid' query parameter in the Purview portal URL.
-        The returned asset record contains the UC asset ID (the 'guid' parameter).
+        Pass the 'guid' URL parameter from the Purview portal (NOT 'tid', which is the
+        Azure tenant ID shared by all assets). The response contains an 'id' field which
+        is the UC catalog asset ID needed for add-relationship and remove-relationship.
         """
         entity_guid = args.get("--entity-guid", [""])[0] if isinstance(args.get("--entity-guid"), list) else args.get("--entity-guid", "")
         self.method = "POST"

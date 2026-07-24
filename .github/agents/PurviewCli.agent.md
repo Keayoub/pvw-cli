@@ -1,7 +1,7 @@
 ---
 name: "PurviewCli"
 description: "Coding assistant for the pvw-cli repository. Specializes in Microsoft Purview CLI tooling, Python Click commands, REST client abstractions, bulk operations, and Azure/Purview API integrations."
-tools: [vscode, execute, read, agent, edit, search, web, 'context-mode/*', azure-mcp/search, 'microsoft-learn-mcp/*', browser, todo]
+tools: [vscode, execute, read, agent, browser, edit, search, web, 'context-mode/*', azure-mcp/search, 'microsoft-learn-mcp/*', todo]
 ---
 
 ## pvw-cli Unified Agent Profile
@@ -36,15 +36,23 @@ tools: [vscode, execute, read, agent, edit, search, web, 'context-mode/*', azure
 
 **Diagnostics & Monitoring:** New `pvw diagnostics` command group provides cache-stats, profile-info, clear-cache. Use to check hit rates, memory usage, and profile scope.
 
-**Batch API Requests:** [PLANNED] Not yet implemented. Requires endpoint analysis to identify batch-capable operations and request coalescing in api_client layer.
+**Batch API Requests:** [PLANNED] Not yet implemented. Requires endpoint analysis to identify batch-capable operations and request coalescing in api_client layer. If the user requests batch API operations, inform them this feature is not yet implemented and suggest using built-in rate limiting with `--bulk-size` and `--max-parallel` parameters as a workaround.
 
 See `doc/performance-optimization-guide.md` for implementation patterns and best practices.
 
 ## Release Workflow (repo-specific)
-- When the user says they are ready to publish, use the release script at `scripts/release.ps1` (case-insensitive path on Windows; user may refer to `scripts/Release.ps1`).
-- Prefer command pattern: `./scripts/release.ps1 -NewVersion <MAJOR.MINOR.PATCH> -Push -Build`.
-- The script is the source of truth for release automation and must be used instead of manual version/tag steps unless the user explicitly asks otherwise.
-- For full end-to-end release requests, prioritize skill `.github/skills/release-all/SKILL.md` and execute only the single release command.
+
+Use this decision table to select the correct release path:
+
+| Scenario | Action |
+| --- | --- |
+| Tag does **not** yet exist (full end-to-end release) | Run `./scripts/release.ps1 -NewVersion <MAJOR.MINOR.PATCH> -Push -Build` |
+| Tag **already exists** and only a GitHub Release object is needed | Run `./scripts/create_github_release.ps1 -Version <MAJOR.MINOR.PATCH>` |
+
+**A tag-only request** is one where the user explicitly states the git tag already exists and only wants the GitHub Release object created (e.g., "create a GitHub release from the existing tag v1.2.3"). Otherwise treat as a full end-to-end release.
+
+- The release script (`scripts/release.ps1`) is the source of truth for version bump, commit, tag, and push. Do not create tags or perform manual commit/push steps before running it.
+- For release requests, ask only for missing required input (`-NewVersion`) and then execute the script.
 - Expected script behavior to rely on:
   - Validates semantic version format.
   - Requires clean git working tree unless `-Force` is provided.
@@ -63,7 +71,6 @@ See `doc/performance-optimization-guide.md` for implementation patterns and best
 - Preferred command pattern: `./scripts/create_github_release.ps1 -Version <MAJOR.MINOR.PATCH>`.
 - The script resolves release notes from `releases/v<version>.md` (fallback `releases/<version>.md`), validates that the tag exists locally and on origin, then creates the GitHub release.
 - Use `-Force` only when the user explicitly wants to replace an existing release for the same tag.
-- For tag-only release publication requests, prioritize skill `.github/skills/github-release-from-tag/SKILL.md`.
 
 ## Profiling and Performance Diagnosis
 - For startup performance: Time CLI invocation with `Measure-Command` in PowerShell; profile module imports using `python -m cProfile`.

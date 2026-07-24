@@ -14,7 +14,9 @@ from purviewcli.client._unified_catalog import UnifiedCatalogClient
 
 RUNNER = CliRunner()
 
-ENTITY_GUID = "006c1e48-e342-47e9-ab5d-0dd9ff89bd96"
+# This is the per-asset Data Map entity GUID (the 'guid' URL param in the portal).
+# Do NOT use the 'tid' URL param - that is the Azure tenant ID shared by all assets.
+ENTITY_GUID = "c1214688-dbd7-4aac-991b-28f6f6f60000"
 
 
 def invoke(*args, **kwargs):
