@@ -4,6 +4,7 @@
 from click.testing import CliRunner
 
 from purviewcli.cli.cli import main
+from purviewcli.cli.unified_catalog import DATA_PRODUCT_TYPES
 
 
 def test_dataproduct_create_accepts_current_type():
@@ -35,3 +36,19 @@ def test_dataproduct_create_accepts_yearly_frequency():
     )
 
     assert result.exit_code == 0
+
+
+def test_dataproduct_types_match_tenant_confirmed_values():
+    assert DATA_PRODUCT_TYPES == [
+        "Dataset",
+        "MasterDataAndReferenceData",
+        "BusinessSystemOrApplication",
+        "ModelTypes",
+        "DashboardsOrReports",
+        "Operational",
+        "MLAITrainingDataSet",
+        "MLAITestingDataSet",
+        "TransactionalDataset",
+        "AnalyticsModel",
+        "SemanticModel",
+    ]

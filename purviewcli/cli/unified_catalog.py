@@ -20,6 +20,20 @@ from purviewcli.client._types import Types
 
 console = get_console()
 
+DATA_PRODUCT_TYPES = [
+    "Dataset",
+    "MasterDataAndReferenceData",
+    "BusinessSystemOrApplication",
+    "ModelTypes",
+    "DashboardsOrReports",
+    "Operational",
+    "MLAITrainingDataSet",
+    "MLAITestingDataSet",
+    "TransactionalDataset",
+    "AnalyticsModel",
+    "SemanticModel",
+]
+
 
 def _format_json_output(data):
     """Format JSON output with syntax highlighting using Rich"""
@@ -244,12 +258,7 @@ def dataproduct():
     "--type",
     required=False,
     default="Operational",
-    type=click.Choice([
-        "Master", "Reference", "Analytical", "AI", "MasterDataAndReferenceData",
-        "BusinessSystemOrApplication", "ModelTypes", "DashboardsOrReports",
-        "Operational", "MLAITrainingDataSet", "MLAITestingDataSet",
-        "TransactionalDataset", "AnalyticsModel", "SemanticModel",
-    ]),
+    type=click.Choice(DATA_PRODUCT_TYPES),
     help="Type of data product",
 )
 @click.option(
@@ -422,12 +431,7 @@ def show(product_id):
 @click.option(
     "--type",
     required=False,
-    type=click.Choice([
-        "Master", "Reference", "Analytical", "AI", "MasterDataAndReferenceData",
-        "BusinessSystemOrApplication", "ModelTypes", "DashboardsOrReports",
-        "Operational", "MLAITrainingDataSet", "MLAITestingDataSet",
-        "TransactionalDataset", "AnalyticsModel", "SemanticModel",
-    ]),
+    type=click.Choice(DATA_PRODUCT_TYPES),
     help="Type of data product",
 )
 @click.option(
@@ -548,10 +552,25 @@ def delete(product_id, yes):
     "--source-asset-id",
     help="Data Map asset GUID; resolves the Unified Catalog asset ID automatically",
 )
+@click.option(
+    "--create-if-missing",
+    is_flag=True,
+    help="Create a UC data asset from --source-asset-id when no UC asset exists",
+)
 @click.option("--relationship-type", default="Related", help="Relationship type (default: Related)")
 @click.option("--description", default="", help="Description of the relationship")
 @click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
-def add_relationship(product_id, entity_type, entity_id, asset_id, source_asset_id, relationship_type, description, output):
+def add_relationship(
+    product_id,
+    entity_type,
+    entity_id,
+    asset_id,
+    source_asset_id,
+    create_if_missing,
+    relationship_type,
+    description,
+    output,
+):
     """Create a relationship for a data product.
     
     Links a data product to another entity like a critical data column, term, or asset.
@@ -568,11 +587,26 @@ def add_relationship(product_id, entity_type, entity_id, asset_id, source_asset_
         if source_asset_id:
             resolved = client.find_data_asset_by_entity_guid({"--entity-guid": source_asset_id})
             assets = resolved.get("value", []) if isinstance(resolved, dict) else []
-            if len(assets) != 1 or not assets[0].get("id"):
+            if len(assets) > 1:
                 raise click.ClickException(
-                    f"Data Map asset '{source_asset_id}' did not resolve to exactly one Unified Catalog asset"
+                    f"Data Map asset '{source_asset_id}' resolved to multiple Unified Catalog assets"
                 )
-            asset_id = assets[0]["id"]
+            if assets and assets[0].get("id"):
+                asset_id = assets[0]["id"]
+            elif create_if_missing:
+                created = client.create_data_asset(
+                    {"--source": [json.dumps({"assetId": source_asset_id})]}
+                )
+                asset_id = created.get("id") if isinstance(created, dict) else None
+                if not asset_id:
+                    raise click.ClickException(
+                        f"Failed to create a Unified Catalog asset for Data Map asset '{source_asset_id}'"
+                    )
+            else:
+                raise click.ClickException(
+                    f"Data Map asset '{source_asset_id}' is not materialized in Unified Catalog; "
+                    "rerun with --create-if-missing"
+                )
             entity_id = entity_id or source_asset_id
 
         args = {

@@ -14,6 +14,7 @@ are now sent directly at root level.
 
 import os
 import sys
+import json
 from unittest.mock import MagicMock, patch
 
 from click.testing import CliRunner
@@ -196,4 +197,34 @@ class TestAddRelationshipPayload:
         )
         payload = mock_client.create_data_product_relationship.call_args[0][0]
         assert payload["--entity-id"] == [ENTITY_ID]
+        assert payload["--asset-id"] == [ASSET_ID]
+
+    @patch("purviewcli.cli.unified_catalog.UnifiedCatalogClient")
+    def test_cli_materializes_missing_source_asset_before_relationship(self, mock_client_cls):
+        """The opt-in fallback creates the UC asset from the Data Map source ID."""
+        mock_client = MagicMock()
+        mock_client.find_data_asset_by_entity_guid.return_value = {"value": []}
+        mock_client.create_data_asset.return_value = {"id": ASSET_ID}
+        mock_client.create_data_product_relationship.return_value = {
+            "entityId": ENTITY_ID,
+            "relationshipType": "Related",
+        }
+        mock_client_cls.return_value = mock_client
+
+        result = invoke(
+            "uc",
+            "dataproduct",
+            "add-relationship",
+            "--product-id", PRODUCT_ID,
+            "--entity-type", "DATAASSET",
+            "--source-asset-id", ENTITY_ID,
+            "--create-if-missing",
+            "--output", "json",
+        )
+
+        assert result.exit_code == 0, result.output
+        mock_client.create_data_asset.assert_called_once_with(
+            {"--source": [json.dumps({"assetId": ENTITY_ID})]}
+        )
+        payload = mock_client.create_data_product_relationship.call_args[0][0]
         assert payload["--asset-id"] == [ASSET_ID]
