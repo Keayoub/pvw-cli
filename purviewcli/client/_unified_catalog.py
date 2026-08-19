@@ -5929,7 +5929,7 @@ Use Cases:
         self.method = "POST"
         self.endpoint = ENDPOINTS["unified_catalog"]["create_data_asset"]
         self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
-        payload = get_json(args, "--payloadFile") or {}
+        payload = args.get("--payload") or get_json(args, "--payloadFile") or {}
         source = args.get("--source", [""])[0] if isinstance(args.get("--source"), list) else args.get("--source", "")
         if source and not payload.get("source"):
             payload["source"] = json.loads(source) if isinstance(source, str) and source.startswith("{") else {"qualifiedName": source}

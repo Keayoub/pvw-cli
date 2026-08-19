@@ -219,12 +219,20 @@ class TestAddRelationshipPayload:
             "--entity-type", "DATAASSET",
             "--source-asset-id", ENTITY_ID,
             "--create-if-missing",
+            "--asset-name", "asset-name",
             "--output", "json",
         )
 
         assert result.exit_code == 0, result.output
         mock_client.create_data_asset.assert_called_once_with(
-            {"--source": [json.dumps({"assetId": ENTITY_ID})]}
+            {
+                "--payload": {
+                    "name": "asset-name",
+                    "source": {"type": "DataMap", "assetId": ENTITY_ID},
+                    "type": "",
+                    "typeProperties": {},
+                }
+            }
         )
         payload = mock_client.create_data_product_relationship.call_args[0][0]
         assert payload["--asset-id"] == [ASSET_ID]

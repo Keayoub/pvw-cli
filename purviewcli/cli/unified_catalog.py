@@ -557,6 +557,20 @@ def delete(product_id, yes):
     is_flag=True,
     help="Create a UC data asset from --source-asset-id when no UC asset exists",
 )
+@click.option(
+    "--asset-name",
+    help="Data asset name required when --create-if-missing creates the asset",
+)
+@click.option(
+    "--asset-type",
+    default="",
+    help="Data asset type included when creating the asset",
+)
+@click.option(
+    "--type-properties",
+    default="{}",
+    help="JSON object for typeProperties when creating the asset",
+)
 @click.option("--relationship-type", default="Related", help="Relationship type (default: Related)")
 @click.option("--description", default="", help="Description of the relationship")
 @click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
@@ -567,6 +581,9 @@ def add_relationship(
     asset_id,
     source_asset_id,
     create_if_missing,
+    asset_name,
+    asset_type,
+    type_properties,
     relationship_type,
     description,
     output,
@@ -594,8 +611,29 @@ def add_relationship(
             if assets and assets[0].get("id"):
                 asset_id = assets[0]["id"]
             elif create_if_missing:
+                if not asset_name:
+                    raise click.UsageError(
+                        "--asset-name is required when --create-if-missing is used"
+                    )
+                try:
+                    parsed_type_properties = json.loads(type_properties)
+                except json.JSONDecodeError as exc:
+                    raise click.UsageError(
+                        f"--type-properties must be valid JSON: {exc.msg}"
+                    ) from exc
+                if not isinstance(parsed_type_properties, dict):
+                    raise click.UsageError("--type-properties must contain a JSON object")
+                create_payload = {
+                    "name": asset_name,
+                    "source": {
+                        "type": "DataMap",
+                        "assetId": source_asset_id,
+                    },
+                    "type": asset_type,
+                    "typeProperties": parsed_type_properties,
+                }
                 created = client.create_data_asset(
-                    {"--source": [json.dumps({"assetId": source_asset_id})]}
+                    {"--payload": create_payload}
                 )
                 asset_id = created.get("id") if isinstance(created, dict) else None
                 if not asset_id:
