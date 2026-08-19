@@ -244,7 +244,12 @@ def dataproduct():
     "--type",
     required=False,
     default="Operational",
-    type=click.Choice(["Operational", "Analytical", "Reference"]),
+    type=click.Choice([
+        "Master", "Reference", "Analytical", "AI", "MasterDataAndReferenceData",
+        "BusinessSystemOrApplication", "ModelTypes", "DashboardsOrReports",
+        "Operational", "MLAITrainingDataSet", "MLAITestingDataSet",
+        "TransactionalDataset", "AnalyticsModel", "SemanticModel",
+    ]),
     help="Type of data product",
 )
 @click.option(
@@ -258,7 +263,7 @@ def dataproduct():
     "--update-frequency",
     required=False,
     default="Weekly",
-    type=click.Choice(["Daily", "Weekly", "Monthly", "Quarterly", "Annually"]),
+    type=click.Choice(["Hourly", "Daily", "Weekly", "Monthly", "Quarterly", "Yearly"]),
     help="Update frequency",
 )
 @click.option("--endorsed", is_flag=True, help="Mark as endorsed")
@@ -417,7 +422,12 @@ def show(product_id):
 @click.option(
     "--type",
     required=False,
-    type=click.Choice(["Operational", "Analytical", "Reference"]),
+    type=click.Choice([
+        "Master", "Reference", "Analytical", "AI", "MasterDataAndReferenceData",
+        "BusinessSystemOrApplication", "ModelTypes", "DashboardsOrReports",
+        "Operational", "MLAITrainingDataSet", "MLAITestingDataSet",
+        "TransactionalDataset", "AnalyticsModel", "SemanticModel",
+    ]),
     help="Type of data product",
 )
 @click.option(
@@ -430,7 +440,7 @@ def show(product_id):
 @click.option(
     "--update-frequency",
     required=False,
-    type=click.Choice(["Daily", "Weekly", "Monthly", "Quarterly", "Annually"]),
+    type=click.Choice(["Hourly", "Daily", "Weekly", "Monthly", "Quarterly", "Yearly"]),
     help="Update frequency",
 )
 @click.option("--endorsed", is_flag=True, help="Mark as endorsed")
@@ -532,12 +542,16 @@ def delete(product_id, yes):
 @click.option("--entity-type", required=True, 
               type=click.Choice(["CRITICALDATACOLUMN", "TERM", "DATAASSET", "CRITICALDATAELEMENT"], case_sensitive=False),
               help="Type of entity to relate to")
-@click.option("--entity-id", required=True, help="Entity ID (GUID) to relate to")
+@click.option("--entity-id", required=False, help="Entity ID (GUID) to relate to")
 @click.option("--asset-id", help="Asset ID (GUID) - defaults to entity-id if not provided")
+@click.option(
+    "--source-asset-id",
+    help="Data Map asset GUID; resolves the Unified Catalog asset ID automatically",
+)
 @click.option("--relationship-type", default="Related", help="Relationship type (default: Related)")
 @click.option("--description", default="", help="Description of the relationship")
 @click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
-def add_relationship(product_id, entity_type, entity_id, asset_id, relationship_type, description, output):
+def add_relationship(product_id, entity_type, entity_id, asset_id, source_asset_id, relationship_type, description, output):
     """Create a relationship for a data product.
     
     Links a data product to another entity like a critical data column, term, or asset.
@@ -547,7 +561,20 @@ def add_relationship(product_id, entity_type, entity_id, asset_id, relationship_
         pvw uc dataproduct add-relationship --product-id <id> --entity-type TERM --entity-id <term-id> --description "Primary term"
     """
     try:
+        if not entity_id and not source_asset_id:
+            raise click.UsageError("Either --entity-id or --source-asset-id is required")
+
         client = UnifiedCatalogClient()
+        if source_asset_id:
+            resolved = client.find_data_asset_by_entity_guid({"--entity-guid": source_asset_id})
+            assets = resolved.get("value", []) if isinstance(resolved, dict) else []
+            if len(assets) != 1 or not assets[0].get("id"):
+                raise click.ClickException(
+                    f"Data Map asset '{source_asset_id}' did not resolve to exactly one Unified Catalog asset"
+                )
+            asset_id = assets[0]["id"]
+            entity_id = entity_id or source_asset_id
+
         args = {
             "--product-id": [product_id],
             "--entity-type": [entity_type],

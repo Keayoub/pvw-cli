@@ -5980,7 +5980,7 @@ Use Cases:
         self.method = "POST"
         self.endpoint = ENDPOINTS["unified_catalog"]["query_data_assets"]
         self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
-        self.payload = {"entityGuids": [entity_guid]}
+        self.payload = {"sourceAssetIds": [entity_guid]}
 
     @decorator
     def create_data_asset_relationship(self, args):

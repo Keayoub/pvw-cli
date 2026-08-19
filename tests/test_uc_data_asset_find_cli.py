@@ -25,7 +25,7 @@ def invoke(*args, **kwargs):
 
 class TestFindDataAssetByEntityGuidClient:
     @patch("purviewcli.client.endpoint.get_data")
-    def test_query_payload_uses_entity_guids(self, mock_get_data):
+    def test_query_payload_uses_source_asset_ids(self, mock_get_data):
         mock_get_data.return_value = {}
 
         client = UnifiedCatalogClient()
@@ -35,7 +35,7 @@ class TestFindDataAssetByEntityGuidClient:
         assert call_args["method"] == "POST"
         assert call_args["endpoint"].endswith("/datagovernance/catalog/dataAssets/query")
         assert call_args["params"].get("api-version") == "2026-03-20-preview"
-        assert call_args["payload"] == {"entityGuids": [ENTITY_GUID]}
+        assert call_args["payload"] == {"sourceAssetIds": [ENTITY_GUID]}
 
 
 class TestFindDataAssetByEntityGuidCli:

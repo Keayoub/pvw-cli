@@ -165,3 +165,35 @@ class TestAddRelationshipPayload:
         assert result.exit_code == 0, result.output
         # A None response (e.g. unexpected server error) falls into the else branch
         assert "SUCCESS" in result.output  # CLI currently prints generic success for None
+
+    @patch("purviewcli.cli.unified_catalog.UnifiedCatalogClient")
+    def test_cli_resolves_data_map_source_asset_id(self, mock_client_cls):
+        """A Data Map source ID should be resolved before creating the relationship."""
+        mock_client = MagicMock()
+        mock_client.find_data_asset_by_entity_guid.return_value = {
+            "value": [{"id": ASSET_ID}]
+        }
+        mock_client.create_data_product_relationship.return_value = {
+            "entityId": ENTITY_ID,
+            "assetId": ASSET_ID,
+            "relationshipType": "Related",
+        }
+        mock_client_cls.return_value = mock_client
+
+        result = invoke(
+            "uc",
+            "dataproduct",
+            "add-relationship",
+            "--product-id", PRODUCT_ID,
+            "--entity-type", "DATAASSET",
+            "--source-asset-id", ENTITY_ID,
+            "--output", "json",
+        )
+
+        assert result.exit_code == 0, result.output
+        mock_client.find_data_asset_by_entity_guid.assert_called_once_with(
+            {"--entity-guid": ENTITY_ID}
+        )
+        payload = mock_client.create_data_product_relationship.call_args[0][0]
+        assert payload["--entity-id"] == [ENTITY_ID]
+        assert payload["--asset-id"] == [ASSET_ID]
