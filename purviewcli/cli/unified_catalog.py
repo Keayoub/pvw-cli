@@ -18,12 +18,22 @@ from rich.table import Table
 
 # Maps lowercased Data Map typeName prefixes/values to UC API type values
 _DM_TYPE_TO_UC: dict = {
+    # ADLS Gen2
     "adls_gen2_path": "ADLSGen2Path",
     "azure_datalake_gen2_path": "ADLSGen2Path",
     "azure_datalake_gen2_filesystem": "ADLSGen2Path",
     "azure_datalake_gen2_resource_set": "ADLSGen2Path",
+    # Azure SQL
     "azure_sql_table": "AzureSqlTable",
     "azure_sql_view": "AzureSqlTable",
+    # Fabric — lakehouses and tables default to General; kept explicit for clarity
+    "fabric_lakehouse": "General",
+    "fabric_lakehouse_table": "General",
+    "fabric_warehouse": "General",
+    "fabric_warehouse_table": "General",
+    "fabric_dataset": "General",
+    "microsoft_fabric_lakehouse": "General",
+    "microsoft_fabric_lakehouse_table": "General",
 }
 
 # Maps UC type to the attribute keys of interest from entity.attributes
@@ -622,189 +632,211 @@ def delete(product_id, yes):
               help="Type of entity to relate to")
 @click.option("--entity-id", required=False, help="Entity ID (GUID) to relate to")
 @click.option("--asset-id", help="Asset ID (GUID) - defaults to entity-id if not provided")
-@click.option(
-    "--source-asset-id",
-    help="Data Map asset GUID; resolves the Unified Catalog asset ID automatically",
-)
-@click.option(
-    "--guids-file",
-    type=click.Path(exists=True),
-    help="Path to a file with one Data Map asset GUID per line for bulk add",
-)
-@click.option(
-    "--create-if-missing",
-    is_flag=True,
-    help="Create a UC data asset from --source-asset-id when no UC asset exists",
-)
-@click.option(
-    "--asset-name",
-    help="Data asset name required when --create-if-missing creates the asset",
-)
-@click.option(
-    "--asset-type",
-    default=None,
-    type=click.Choice(["General", "ADLSGen2Path", "AzureSqlTable"]),
-    help="Data asset type required when creating the asset",
-)
-@click.option(
-    "--type-properties",
-    default="{}",
-    help="JSON object for typeProperties when creating the asset",
-)
-@click.option("--relationship-type", default="Related", help="Relationship type (default: Related)")
+@click.option("--source-asset-id", help="Data Map asset GUID; resolves the Unified Catalog asset ID automatically")
+@click.option("--guids-file", type=click.Path(exists=True), help="File with one Data Map GUID per line for bulk add")
+@click.option("--csv-file", type=click.Path(exists=True), help="CSV file with columns: guid,name,type (name/type override auto-derive)")
+@click.option("--create-if-missing", is_flag=True, help="Create a UC data asset when no UC asset exists")
+@click.option("--dry-run", is_flag=True, help="Show what would be created/linked without making any API calls")
+@click.option("--max-parallel", default=1, type=click.IntRange(1, 20), show_default=True, help="Number of parallel workers for bulk operations")
+@click.option("--max-retries", default=3, type=click.IntRange(0, 10), show_default=True, help="Retries on 429 rate-limit responses")
+@click.option("--failed-output", type=click.Path(), help="Write failed GUIDs to this file for re-run")
+@click.option("--asset-name", help="Override asset name when creating")
+@click.option("--asset-type", default=None, type=click.Choice(["General", "ADLSGen2Path", "AzureSqlTable"]), help="Override asset type when creating")
+@click.option("--type-properties", default="{}", help="JSON object for typeProperties when creating")
+@click.option("--relationship-type", default="Related", help="Relationship type")
 @click.option("--description", default="", help="Description of the relationship")
 @click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
 @click.pass_context
 def add_relationship(
     ctx,
-    product_id,
-    entity_type,
-    entity_id,
-    asset_id,
-    source_asset_id,
-    guids_file,
-    create_if_missing,
-    asset_name,
-    asset_type,
-    type_properties,
-    relationship_type,
-    description,
-    output,
+    product_id, entity_type, entity_id, asset_id,
+    source_asset_id, guids_file, csv_file,
+    create_if_missing, dry_run, max_parallel, max_retries, failed_output,
+    asset_name, asset_type, type_properties, relationship_type, description, output,
 ):
     """Create a relationship for a data product.
 
-    Pass a single asset with --source-asset-id, or bulk-add from a file with
-    --guids-file (one Data Map GUID per line; blank lines and # comments ignored).
+    Single asset:  --source-asset-id <GUID>
+    Bulk (text):   --guids-file guids.txt          (one GUID per line, # = comment)
+    Bulk (CSV):    --csv-file assets.csv            (columns: guid,name,type)
 
-    Examples:
-        pvw uc dataproduct add-relationship --product-id <id> --entity-type DATAASSET --source-asset-id <guid>
-        pvw uc dataproduct add-relationship --product-id <id> --entity-type DATAASSET --guids-file guids.txt --create-if-missing
+    Use --dry-run to preview without making API calls.
+    Use --create-if-missing to materialise assets not yet in Unified Catalog.
+    Use --max-parallel for faster bulk runs (up to 20 concurrent workers).
+    Use --failed-output failed.txt to save failed GUIDs for re-run.
     """
+    import time
+    import concurrent.futures
+    from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn, TimeElapsedColumn
+
+    profile = ctx.obj.get("profile", "default")
+
     try:
-        profile = ctx.obj.get("profile", "default")
-        client = UnifiedCatalogClient()
+        parsed_type_properties = json.loads(type_properties) if type_properties else {}
+    except json.JSONDecodeError as exc:
+        raise click.UsageError(f"--type-properties must be valid JSON: {exc.msg}") from exc
 
-        # --- parse type-properties once so bulk doesn't re-parse per GUID ---
-        try:
-            parsed_type_properties = json.loads(type_properties) if type_properties else {}
-        except json.JSONDecodeError as exc:
-            raise click.UsageError(f"--type-properties must be valid JSON: {exc.msg}") from exc
-        if not isinstance(parsed_type_properties, dict):
-            raise click.UsageError("--type-properties must contain a JSON object")
+    # Build the item list: list of (guid, override_name, override_type)
+    items: list[tuple[str, str | None, str | None]] = []
 
-        def _process_one(guid: str) -> tuple[bool, str]:
-            """Resolve/create UC asset, then create relationship. Returns (ok, message)."""
-            uc_id = None
-            resolved = client.find_data_asset_by_entity_guid({"--entity-guid": guid})
-            assets = resolved.get("value", []) if isinstance(resolved, dict) else []
-            if len(assets) > 1:
-                return False, f"resolved to multiple UC assets"
-            if assets and assets[0].get("id"):
-                uc_id = assets[0]["id"]
-            elif create_if_missing:
-                d_name = asset_name
-                d_type = asset_type
-                d_props: dict = {}
-                if not d_name or not d_type:
-                    raw = _read_dm_entity(guid, profile)
-                    derived = _derive_uc_payload_from_entity(raw)
-                    d_name = d_name or derived.get("name") or guid
-                    d_type = d_type or derived.get("type", "General")
-                    d_props = derived.get("typeProperties", {})
-                payload = {
-                    "name": d_name,
-                    "source": {"type": "DataMap", "assetId": guid},
-                    "type": d_type,
-                    "typeProperties": {**d_props, **parsed_type_properties},
-                }
-                created = client.create_data_asset({"--payload": payload})
-                uc_id = created.get("id") if isinstance(created, dict) else None
-                if not uc_id:
-                    return False, "UC asset creation returned no id"
-            else:
-                return False, "not in UC; rerun with --create-if-missing"
+    if csv_file:
+        import csv as _csv
+        with open(csv_file, newline="", encoding="utf-8") as fh:
+            for row in _csv.DictReader(fh):
+                g = (row.get("guid") or "").strip()
+                if g and not g.startswith("#"):
+                    items.append((g, (row.get("name") or "").strip() or None,
+                                     (row.get("type") or "").strip() or None))
+    elif guids_file:
+        with open(guids_file, encoding="utf-8") as fh:
+            for line in fh:
+                g = line.strip()
+                if g and not g.startswith("#"):
+                    items.append((g, None, None))
+    elif source_asset_id:
+        items.append((source_asset_id, asset_name or None, asset_type or None))
 
+    if not items and not entity_id:
+        raise click.UsageError("Provide --entity-id, --source-asset-id, --guids-file, or --csv-file")
+
+    client = UnifiedCatalogClient()
+
+    def _with_retry(fn, *args, retries: int = max_retries):
+        """Call fn, retrying on 429 with exponential backoff."""
+        for attempt in range(retries + 1):
+            result = fn(*args)
+            if isinstance(result, dict) and result.get("status_code") == 429:
+                if attempt < retries:
+                    time.sleep(2 ** attempt)
+                    continue
+            return result
+        return result
+
+    def _process_one(guid: str, override_name: str | None, override_type: str | None) -> tuple[bool, str]:
+        if dry_run:
+            return True, f"[dry-run] would link {guid}"
+
+        uc_id = None
+        resolved = _with_retry(client.find_data_asset_by_entity_guid, {"--entity-guid": guid})
+        assets = resolved.get("value", []) if isinstance(resolved, dict) else []
+        if len(assets) > 1:
+            return False, "resolved to multiple UC assets"
+        if assets and assets[0].get("id"):
+            uc_id = assets[0]["id"]
+        elif create_if_missing:
+            d_name = override_name or asset_name
+            d_type = override_type or asset_type
+            d_props: dict = {}
+            if not d_name or not d_type:
+                raw = _read_dm_entity(guid, profile)
+                derived = _derive_uc_payload_from_entity(raw)
+                d_name = d_name or derived.get("name") or guid
+                d_type = d_type or derived.get("type", "General")
+                d_props = derived.get("typeProperties", {})
+            payload = {
+                "name": d_name,
+                "source": {"type": "DataMap", "assetId": guid},
+                "type": d_type,
+                "typeProperties": {**d_props, **parsed_type_properties},
+            }
+            created = _with_retry(client.create_data_asset, {"--payload": payload})
+            uc_id = created.get("id") if isinstance(created, dict) else None
+            if not uc_id:
+                return False, "UC asset creation returned no id"
+        else:
+            return False, "not in UC; rerun with --create-if-missing"
+
+        rel_args = {
+            "--product-id": [product_id], "--entity-type": [entity_type],
+            "--entity-id": [uc_id], "--asset-id": [uc_id],
+            "--relationship-type": [relationship_type], "--description": [description],
+        }
+        result = _with_retry(client.create_data_product_relationship, rel_args)
+        is_err = isinstance(result, dict) and (result.get("status") == "error" or "error" in result)
+        if is_err:
+            return False, result.get("message") or result.get("error") or "unknown error"
+        return True, uc_id
+
+    # ---- single mode ----
+    if not guids_file and not csv_file:
+        if entity_id and not source_asset_id:
+            # plain entity-id path
             rel_args = {
-                "--product-id": [product_id],
-                "--entity-type": [entity_type],
-                "--entity-id": [uc_id],
-                "--asset-id": [uc_id],
-                "--relationship-type": [relationship_type],
+                "--product-id": [product_id], "--entity-type": [entity_type],
+                "--entity-id": [entity_id], "--relationship-type": [relationship_type],
                 "--description": [description],
             }
+            if asset_id:
+                rel_args["--asset-id"] = [asset_id]
             result = client.create_data_product_relationship(rel_args)
-            is_error = isinstance(result, dict) and (
-                result.get("status") == "error" or "error" in result
-            )
-            if is_error:
-                msg = result.get("message") or result.get("error") or "unknown error"
-                return False, msg
-            return True, uc_id
+            is_err = isinstance(result, dict) and (result.get("status") == "error" or "error" in result)
+            if result is None or not is_err:
+                console.print("[green]SUCCESS:[/green] Created relationship")
+            else:
+                console.print(f"[red]ERROR:[/red] {result.get('message') or 'unknown'}")
+            return
+        ok, detail = _process_one(*items[0])
+        label = "[dim](dry-run)[/dim] " if dry_run else ""
+        if ok:
+            console.print(f"[green]SUCCESS:[/green] {label}Created relationship (UC id: {detail})")
+        else:
+            console.print(f"[red]ERROR:[/red] {detail}")
+        return
 
-        # --- bulk mode ---
-        if guids_file:
-            with open(guids_file, encoding="utf-8") as fh:
-                guids = [
-                    line.strip()
-                    for line in fh
-                    if line.strip() and not line.strip().startswith("#")
-                ]
-            if not guids:
-                console.print("[yellow]No GUIDs found in file.[/yellow]")
-                return
-            ok_count = fail_count = 0
-            summary = Table(title=f"Bulk add — {len(guids)} GUIDs", show_header=True)
-            summary.add_column("GUID", style="dim")
-            summary.add_column("Status", style="cyan")
-            summary.add_column("UC asset / error", style="white")
-            for g in guids:
-                ok, detail = _process_one(g)
+    # ---- bulk mode ----
+    if not items:
+        console.print("[yellow]No GUIDs found.[/yellow]")
+        return
+
+    ok_count = fail_count = 0
+    failed_guids: list[str] = []
+    rows: list[tuple] = []
+
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        BarColumn(),
+        TextColumn("{task.completed}/{task.total}"),
+        TimeElapsedColumn(),
+        transient=True,
+    ) as progress:
+        task = progress.add_task(
+            f"{'[dim](dry-run)[/dim] ' if dry_run else ''}Linking {len(items)} assets...",
+            total=len(items),
+        )
+
+        def _run(item):
+            return item[0], _process_one(*item)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_parallel) as pool:
+            futures = {pool.submit(_run, item): item for item in items}
+            for future in concurrent.futures.as_completed(futures):
+                guid, (ok, detail) = future.result()
                 if ok:
                     ok_count += 1
-                    summary.add_row(g, "[green]OK[/green]", detail)
+                    rows.append((guid, "[green]OK[/green]", str(detail)))
                 else:
                     fail_count += 1
-                    summary.add_row(g, "[red]FAILED[/red]", detail)
-            console.print(summary)
-            console.print(f"[green]OK[/green] {ok_count}  [red]FAILED[/red] {fail_count}")
-            return
+                    failed_guids.append(guid)
+                    rows.append((guid, "[red]FAILED[/red]", detail))
+                progress.advance(task)
 
-        # --- single mode ---
-        if not entity_id and not source_asset_id:
-            raise click.UsageError("Either --entity-id, --source-asset-id, or --guids-file is required")
+    # summary table
+    summary = Table(title=f"Bulk add — {len(items)} assets{'  [dim](dry-run)[/dim]' if dry_run else ''}", show_header=True)
+    summary.add_column("GUID", style="dim", no_wrap=True)
+    summary.add_column("Status")
+    summary.add_column("UC asset id / error", style="white")
+    for row in rows:
+        summary.add_row(*row)
+    console.print(summary)
+    console.print(f"[green]OK[/green] {ok_count}   [red]FAILED[/red] {fail_count}")
 
-        if source_asset_id:
-            ok, detail = _process_one(source_asset_id)
-            if ok:
-                console.print(f"[green]SUCCESS:[/green] Created relationship (UC id: {detail})")
-            else:
-                console.print(f"[red]ERROR:[/red] {detail}")
-            return
+    if failed_output and failed_guids:
+        with open(failed_output, "w", encoding="utf-8") as fh:
+            fh.write("\n".join(failed_guids) + "\n")
+        console.print(f"[dim]Failed GUIDs written to {failed_output}[/dim]")
 
-        # plain --entity-id path (non-Data-Map flow)
-        rel_args = {
-            "--product-id": [product_id],
-            "--entity-type": [entity_type],
-            "--entity-id": [entity_id],
-            "--relationship-type": [relationship_type],
-            "--description": [description],
-        }
-        if asset_id:
-            rel_args["--asset-id"] = [asset_id]
-        result = client.create_data_product_relationship(rel_args)
-        is_error = isinstance(result, dict) and (
-            result.get("status") == "error" or "error" in result
-        )
-        if result is None or not is_error:
-            console.print("[green]SUCCESS:[/green] Created relationship")
-        else:
-            error_msg = result.get("message") or result.get("error") or "Unknown error"
-            status_code = result.get("status_code", "")
-            detail = f" (HTTP {status_code})" if status_code else ""
-            console.print(f"[red]ERROR:[/red] {error_msg}{detail}")
 
-    except Exception as e:
-        console.print(f"[red]ERROR:[/red] {str(e)}")
 
 
 

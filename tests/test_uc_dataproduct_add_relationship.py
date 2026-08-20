@@ -314,3 +314,73 @@ class TestBulkAddRelationship:
         assert result.exit_code == 0, result.output
         assert "FAILED" in result.output
 
+    @patch("purviewcli.cli.unified_catalog.UnifiedCatalogClient")
+    def test_dry_run_does_not_call_api(self, mock_client_cls, tmp_path):
+        """--dry-run reports OK without calling any API methods."""
+        mock_client = MagicMock()
+        mock_client_cls.return_value = mock_client
+
+        guid_file = tmp_path / "guids.txt"
+        guid_file.write_text(f"{ENTITY_ID}\n")
+
+        result = invoke(
+            "uc", "dataproduct", "add-relationship",
+            "--product-id", PRODUCT_ID,
+            "--entity-type", "DATAASSET",
+            "--guids-file", str(guid_file),
+            "--dry-run",
+        )
+
+        assert result.exit_code == 0, result.output
+        assert "OK" in result.output
+        mock_client.find_data_asset_by_entity_guid.assert_not_called()
+        mock_client.create_data_product_relationship.assert_not_called()
+
+    @patch("purviewcli.cli.unified_catalog.UnifiedCatalogClient")
+    def test_failed_output_written(self, mock_client_cls, tmp_path):
+        """Failed GUIDs are written to --failed-output file."""
+        mock_client = MagicMock()
+        mock_client.find_data_asset_by_entity_guid.return_value = {"value": []}
+        mock_client_cls.return_value = mock_client
+
+        guid_file = tmp_path / "guids.txt"
+        guid_file.write_text(f"{ENTITY_ID}\n")
+        failed_file = tmp_path / "failed.txt"
+
+        invoke(
+            "uc", "dataproduct", "add-relationship",
+            "--product-id", PRODUCT_ID,
+            "--entity-type", "DATAASSET",
+            "--guids-file", str(guid_file),
+            "--failed-output", str(failed_file),
+        )
+
+        assert failed_file.exists()
+        assert ENTITY_ID in failed_file.read_text()
+
+    @patch("purviewcli.cli.unified_catalog.UnifiedCatalogClient")
+    def test_csv_file_overrides_name_and_type(self, mock_client_cls, tmp_path):
+        """CSV columns name and type override auto-derive during creation."""
+        mock_client = MagicMock()
+        mock_client.find_data_asset_by_entity_guid.return_value = {"value": []}
+        mock_client.create_data_asset.return_value = {"id": ASSET_ID}
+        mock_client.create_data_product_relationship.return_value = {"entityId": ASSET_ID}
+        mock_client_cls.return_value = mock_client
+
+        csv_file = tmp_path / "assets.csv"
+        csv_file.write_text(f"guid,name,type\n{ENTITY_ID},my-name,General\n")
+
+        with patch("purviewcli.cli.unified_catalog._read_dm_entity") as mock_rde:
+            mock_rde.return_value = {}
+            invoke(
+                "uc", "dataproduct", "add-relationship",
+                "--product-id", PRODUCT_ID,
+                "--entity-type", "DATAASSET",
+                "--csv-file", str(csv_file),
+                "--create-if-missing",
+            )
+
+        call_payload = mock_client.create_data_asset.call_args[0][0]["--payload"]
+        assert call_payload["name"] == "my-name"
+        assert call_payload["type"] == "General"
+
