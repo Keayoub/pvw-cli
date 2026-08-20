@@ -13,6 +13,80 @@ import os
 import time
 from .console_utils import get_console
 from rich.table import Table
+
+# ---- Data Map entity → Unified Catalog asset type derivation ----------------
+
+# Maps lowercased Data Map typeName prefixes/values to UC API type values
+_DM_TYPE_TO_UC: dict = {
+    "adls_gen2_path": "ADLSGen2Path",
+    "azure_datalake_gen2_path": "ADLSGen2Path",
+    "azure_datalake_gen2_filesystem": "ADLSGen2Path",
+    "azure_datalake_gen2_resource_set": "ADLSGen2Path",
+    "azure_sql_table": "AzureSqlTable",
+    "azure_sql_view": "AzureSqlTable",
+}
+
+# Maps UC type to the attribute keys of interest from entity.attributes
+_UC_TYPE_PROPS: dict = {
+    "ADLSGen2Path": {
+        "serverEndpoint": ["location", "url"],
+        "container": ["container"],
+        "folderPath": ["path", "folderPath"],
+        "fileName": ["name"],
+    },
+    "AzureSqlTable": {
+        "serverEndpoint": ["serverEndpoint", "server"],
+        "databaseName": ["dbName", "databaseName"],
+        "schemaName": ["schemaName", "schema"],
+        "tableName": ["name", "tableName"],
+        "format": None,  # default to "Table"
+    },
+}
+
+
+def _read_dm_entity(guid: str, profile: str) -> dict:
+    """Read a Data Map entity by GUID, returning the entity sub-dict."""
+    from purviewcli.client._entity import Entity
+    from purviewcli.client.client_cache import get_cached_client as _gcc
+    client = _gcc(Entity, profile=profile)
+    resp = client.entityRead(
+        {"--guid": guid, "--ignoreRelationships": True, "--minExtInfo": True}
+    )
+    return resp.get("entity", {}) if isinstance(resp, dict) else {}
+
+
+def _derive_uc_payload_from_entity(entity: dict) -> dict:
+    """Derive the UC data-asset create payload from a raw Data Map entity dict.
+
+    entity should be the ``entity`` sub-key from the entityRead response.
+    Returns ``{"name", "type", "typeProperties"}`` ready to merge into the
+    full create payload alongside ``source``.
+    """
+    attrs = entity.get("attributes", {})
+    dm_type = (entity.get("typeName") or "").lower().strip()
+    uc_type = _DM_TYPE_TO_UC.get(dm_type, "General")
+
+    name = attrs.get("name") or attrs.get("qualifiedName") or entity.get("guid", "")
+    # Use only the last path segment as the asset name when qualifiedName is a URI
+    if "/" in str(name):
+        name = name.rstrip("/").split("/")[-1]
+
+    type_props: dict = {}
+    prop_map = _UC_TYPE_PROPS.get(uc_type)
+    if prop_map:
+        for uc_key, dm_candidates in prop_map.items():
+            if dm_candidates is None:
+                type_props[uc_key] = "Table"
+                continue
+            for candidate in dm_candidates:
+                val = attrs.get(candidate)
+                if val:
+                    type_props[uc_key] = val
+                    break
+
+    return {"name": name, "type": uc_type, "typeProperties": type_props}
+
+
 from rich.text import Text
 from rich.syntax import Syntax
 from purviewcli.client._unified_catalog import UnifiedCatalogClient
@@ -563,8 +637,9 @@ def delete(product_id, yes):
 )
 @click.option(
     "--asset-type",
-    default="",
-    help="Data asset type included when creating the asset",
+    default=None,
+    type=click.Choice(["General", "ADLSGen2Path", "AzureSqlTable"]),
+    help="Data asset type required when creating the asset",
 )
 @click.option(
     "--type-properties",
@@ -574,7 +649,9 @@ def delete(product_id, yes):
 @click.option("--relationship-type", default="Related", help="Relationship type (default: Related)")
 @click.option("--description", default="", help="Description of the relationship")
 @click.option("--output", default="table", type=click.Choice(["json", "table"]), help="Output format")
+@click.pass_context
 def add_relationship(
+    ctx,
     product_id,
     entity_type,
     entity_id,
@@ -611,26 +688,37 @@ def add_relationship(
             if assets and assets[0].get("id"):
                 asset_id = assets[0]["id"]
             elif create_if_missing:
-                if not asset_name:
-                    raise click.UsageError(
-                        "--asset-name is required when --create-if-missing is used"
+                # Auto-derive name and type from Data Map entity when not supplied.
+                derived_name = asset_name
+                derived_type = asset_type
+                derived_type_props: dict = {}
+
+                if not derived_name or not derived_type:
+                    raw_entity = _read_dm_entity(
+                        source_asset_id, ctx.obj.get("profile", "default")
                     )
+                    derived = _derive_uc_payload_from_entity(raw_entity)
+                    derived_name = derived_name or derived.get("name") or source_asset_id
+                    derived_type = derived_type or derived.get("type", "General")
+                    derived_type_props = derived.get("typeProperties", {})
+
                 try:
-                    parsed_type_properties = json.loads(type_properties)
+                    parsed_type_properties = json.loads(type_properties) if type_properties else {}
                 except json.JSONDecodeError as exc:
                     raise click.UsageError(
                         f"--type-properties must be valid JSON: {exc.msg}"
                     ) from exc
                 if not isinstance(parsed_type_properties, dict):
                     raise click.UsageError("--type-properties must contain a JSON object")
+
+                # Explicit --type-properties overrides auto-derived values.
+                final_type_props = {**derived_type_props, **parsed_type_properties}
+
                 create_payload = {
-                    "name": asset_name,
-                    "source": {
-                        "type": "DataMap",
-                        "assetId": source_asset_id,
-                    },
-                    "type": asset_type,
-                    "typeProperties": parsed_type_properties,
+                    "name": derived_name,
+                    "source": {"type": "DataMap", "assetId": source_asset_id},
+                    "type": derived_type,
+                    "typeProperties": final_type_props,
                 }
                 created = client.create_data_asset(
                     {"--payload": create_payload}
@@ -645,7 +733,8 @@ def add_relationship(
                     f"Data Map asset '{source_asset_id}' is not materialized in Unified Catalog; "
                     "rerun with --create-if-missing"
                 )
-            entity_id = entity_id or source_asset_id
+            # Data Product relationships use the UC asset ID as entityId.
+            entity_id = asset_id
 
         args = {
             "--product-id": [product_id],
@@ -5781,6 +5870,46 @@ def data_asset_list(ctx, domain_id, keyword, skip, top, output):
         args["--top"] = top
     result = client.list_data_assets(args)
     _uc_render(result, output, "Data Assets")
+
+
+@data_asset.command(name="inspect-entity")
+@click.option("--guid", required=True, help="Data Map entity GUID")
+@click.option("--output", default="json", type=click.Choice(["json", "jsonc"]))
+@click.pass_context
+def data_asset_inspect_entity(ctx, guid, output):
+    """Show the UC create payload derived from a Data Map entity GUID.
+
+    Reads the entity from the Data Map and derives the ``type`` and
+    ``typeProperties`` fields required by ``pvw uc data-asset create``
+    and the ``--create-if-missing`` flag on ``pvw uc dataproduct add-relationship``.
+
+    \b
+    Example:
+      pvw uc data-asset inspect-entity --guid ab15228d-6926-4ac0-a319-d7f6f6f60000
+    """
+    from purviewcli.client._entity import Entity
+    from purviewcli.client.client_cache import get_cached_client as _gcc
+    entity_client = _gcc(Entity, profile=ctx.obj.get("profile", "default"))
+    entity_resp = entity_client.entityRead(
+        {"--guid": guid, "--ignoreRelationships": True, "--minExtInfo": True}
+    )
+    if not entity_resp or (isinstance(entity_resp, dict) and entity_resp.get("status") == "error"):
+        console.print(f"[red]ERROR:[/red] Could not read entity '{guid}'")
+        return
+    raw = entity_resp.get("entity", {}) if isinstance(entity_resp, dict) else {}
+    derived = _derive_uc_payload_from_entity(raw)
+    payload = {
+        "name": derived["name"],
+        "source": {"type": "DataMap", "assetId": guid},
+        "type": derived["type"],
+        "typeProperties": derived["typeProperties"],
+    }
+    result_json = json.dumps(payload, indent=2)
+    if output == "jsonc":
+        from rich.syntax import Syntax
+        console.print(Syntax(result_json, "json", theme="monokai"))
+    else:
+        print(result_json)
 
 
 @data_asset.command(name="get")

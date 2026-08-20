@@ -196,43 +196,69 @@ class TestAddRelationshipPayload:
             {"--entity-guid": ENTITY_ID}
         )
         payload = mock_client.create_data_product_relationship.call_args[0][0]
-        assert payload["--entity-id"] == [ENTITY_ID]
+        assert payload["--entity-id"] == [ASSET_ID]
         assert payload["--asset-id"] == [ASSET_ID]
 
     @patch("purviewcli.cli.unified_catalog.UnifiedCatalogClient")
     def test_cli_materializes_missing_source_asset_before_relationship(self, mock_client_cls):
-        """The opt-in fallback creates the UC asset from the Data Map source ID."""
+        """Fallback auto-derives name/type from Data Map entity then creates UC asset."""
         mock_client = MagicMock()
         mock_client.find_data_asset_by_entity_guid.return_value = {"value": []}
         mock_client.create_data_asset.return_value = {"id": ASSET_ID}
         mock_client.create_data_product_relationship.return_value = {
-            "entityId": ENTITY_ID,
+            "entityId": ASSET_ID,
             "relationshipType": "Related",
         }
         mock_client_cls.return_value = mock_client
 
-        result = invoke(
-            "uc",
-            "dataproduct",
-            "add-relationship",
-            "--product-id", PRODUCT_ID,
-            "--entity-type", "DATAASSET",
-            "--source-asset-id", ENTITY_ID,
-            "--create-if-missing",
-            "--asset-name", "asset-name",
-            "--output", "json",
-        )
+        fake_entity_resp = {
+            "entity": {
+                "typeName": "azure_sql_table",
+                "attributes": {"name": "asset-name", "serverEndpoint": "srv", "dbName": "db"},
+            }
+        }
+        with patch("purviewcli.cli.unified_catalog._read_dm_entity") as mock_rde:
+            mock_rde.return_value = fake_entity_resp["entity"]
+            result = invoke(
+                "uc", "dataproduct", "add-relationship",
+                "--product-id", PRODUCT_ID,
+                "--entity-type", "DATAASSET",
+                "--source-asset-id", ENTITY_ID,
+                "--create-if-missing",
+                "--output", "json",
+            )
 
         assert result.exit_code == 0, result.output
-        mock_client.create_data_asset.assert_called_once_with(
-            {
-                "--payload": {
-                    "name": "asset-name",
-                    "source": {"type": "DataMap", "assetId": ENTITY_ID},
-                    "type": "",
-                    "typeProperties": {},
-                }
-            }
-        )
-        payload = mock_client.create_data_product_relationship.call_args[0][0]
-        assert payload["--asset-id"] == [ASSET_ID]
+        call_payload = mock_client.create_data_asset.call_args[0][0]["--payload"]
+        assert call_payload["name"] == "asset-name"
+        assert call_payload["type"] == "AzureSqlTable"
+        assert call_payload["source"] == {"type": "DataMap", "assetId": ENTITY_ID}
+        rel_payload = mock_client.create_data_product_relationship.call_args[0][0]
+        assert rel_payload["--entity-id"] == [ASSET_ID]
+        assert rel_payload["--asset-id"] == [ASSET_ID]
+
+    @patch("purviewcli.cli.unified_catalog.UnifiedCatalogClient")
+    def test_cli_explicit_name_type_override_auto_derive(self, mock_client_cls):
+        """Explicit --asset-name and --asset-type take precedence over auto-derive."""
+        mock_client = MagicMock()
+        mock_client.find_data_asset_by_entity_guid.return_value = {"value": []}
+        mock_client.create_data_asset.return_value = {"id": ASSET_ID}
+        mock_client.create_data_product_relationship.return_value = {"entityId": ASSET_ID}
+        mock_client_cls.return_value = mock_client
+
+        with patch("purviewcli.cli.unified_catalog._read_dm_entity") as mock_rde:
+            mock_rde.return_value = {}
+            result = invoke(
+                "uc", "dataproduct", "add-relationship",
+                "--product-id", PRODUCT_ID,
+                "--entity-type", "DATAASSET",
+                "--source-asset-id", ENTITY_ID,
+                "--create-if-missing",
+                "--asset-name", "explicit-name",
+                "--asset-type", "General",
+            )
+
+        assert result.exit_code == 0, result.output
+        call_payload = mock_client.create_data_asset.call_args[0][0]["--payload"]
+        assert call_payload["name"] == "explicit-name"
+        assert call_payload["type"] == "General"
