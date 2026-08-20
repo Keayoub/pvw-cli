@@ -262,3 +262,55 @@ class TestAddRelationshipPayload:
         call_payload = mock_client.create_data_asset.call_args[0][0]["--payload"]
         assert call_payload["name"] == "explicit-name"
         assert call_payload["type"] == "General"
+
+
+class TestBulkAddRelationship:
+    @patch("purviewcli.cli.unified_catalog.UnifiedCatalogClient")
+    def test_bulk_guids_file_processes_all_guids(self, mock_client_cls, tmp_path):
+        """--guids-file processes every GUID and prints a summary table."""
+        mock_client = MagicMock()
+        mock_client.find_data_asset_by_entity_guid.return_value = {
+            "value": [{"id": ASSET_ID}]
+        }
+        mock_client.create_data_product_relationship.return_value = {"entityId": ASSET_ID}
+        mock_client_cls.return_value = mock_client
+
+        guid_file = tmp_path / "guids.txt"
+        guid_file.write_text(f"{ENTITY_ID}\n# comment\n{ASSET_ID}\n\n")
+
+        result = invoke(
+            "uc", "dataproduct", "add-relationship",
+            "--product-id", PRODUCT_ID,
+            "--entity-type", "DATAASSET",
+            "--guids-file", str(guid_file),
+        )
+
+        assert result.exit_code == 0, result.output
+        assert mock_client.create_data_product_relationship.call_count == 2
+        assert "OK" in result.output
+
+    @patch("purviewcli.cli.unified_catalog.UnifiedCatalogClient")
+    def test_bulk_failed_guid_appears_in_summary(self, mock_client_cls, tmp_path):
+        """A GUID that fails relationship creation is marked FAILED in the summary."""
+        mock_client = MagicMock()
+        mock_client.find_data_asset_by_entity_guid.return_value = {
+            "value": [{"id": ASSET_ID}]
+        }
+        mock_client.create_data_product_relationship.return_value = {
+            "status": "error", "message": "conflict", "status_code": 409
+        }
+        mock_client_cls.return_value = mock_client
+
+        guid_file = tmp_path / "guids.txt"
+        guid_file.write_text(f"{ENTITY_ID}\n")
+
+        result = invoke(
+            "uc", "dataproduct", "add-relationship",
+            "--product-id", PRODUCT_ID,
+            "--entity-type", "DATAASSET",
+            "--guids-file", str(guid_file),
+        )
+
+        assert result.exit_code == 0, result.output
+        assert "FAILED" in result.output
+

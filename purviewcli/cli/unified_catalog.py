@@ -617,7 +617,7 @@ def delete(product_id, yes):
 
 @dataproduct.command(name="add-relationship")
 @click.option("--product-id", required=True, help="Data product ID (GUID)")
-@click.option("--entity-type", required=True, 
+@click.option("--entity-type", required=True,
               type=click.Choice(["CRITICALDATACOLUMN", "TERM", "DATAASSET", "CRITICALDATAELEMENT"], case_sensitive=False),
               help="Type of entity to relate to")
 @click.option("--entity-id", required=False, help="Entity ID (GUID) to relate to")
@@ -625,6 +625,11 @@ def delete(product_id, yes):
 @click.option(
     "--source-asset-id",
     help="Data Map asset GUID; resolves the Unified Catalog asset ID automatically",
+)
+@click.option(
+    "--guids-file",
+    type=click.Path(exists=True),
+    help="Path to a file with one Data Map asset GUID per line for bulk add",
 )
 @click.option(
     "--create-if-missing",
@@ -657,6 +662,7 @@ def add_relationship(
     entity_id,
     asset_id,
     source_asset_id,
+    guids_file,
     create_if_missing,
     asset_name,
     asset_type,
@@ -666,113 +672,140 @@ def add_relationship(
     output,
 ):
     """Create a relationship for a data product.
-    
-    Links a data product to another entity like a critical data column, term, or asset.
-    
+
+    Pass a single asset with --source-asset-id, or bulk-add from a file with
+    --guids-file (one Data Map GUID per line; blank lines and # comments ignored).
+
     Examples:
-        pvw uc dataproduct add-relationship --product-id <id> --entity-type CRITICALDATACOLUMN --entity-id <col-id>
-        pvw uc dataproduct add-relationship --product-id <id> --entity-type TERM --entity-id <term-id> --description "Primary term"
+        pvw uc dataproduct add-relationship --product-id <id> --entity-type DATAASSET --source-asset-id <guid>
+        pvw uc dataproduct add-relationship --product-id <id> --entity-type DATAASSET --guids-file guids.txt --create-if-missing
     """
     try:
-        if not entity_id and not source_asset_id:
-            raise click.UsageError("Either --entity-id or --source-asset-id is required")
-
+        profile = ctx.obj.get("profile", "default")
         client = UnifiedCatalogClient()
-        if source_asset_id:
-            resolved = client.find_data_asset_by_entity_guid({"--entity-guid": source_asset_id})
+
+        # --- parse type-properties once so bulk doesn't re-parse per GUID ---
+        try:
+            parsed_type_properties = json.loads(type_properties) if type_properties else {}
+        except json.JSONDecodeError as exc:
+            raise click.UsageError(f"--type-properties must be valid JSON: {exc.msg}") from exc
+        if not isinstance(parsed_type_properties, dict):
+            raise click.UsageError("--type-properties must contain a JSON object")
+
+        def _process_one(guid: str) -> tuple[bool, str]:
+            """Resolve/create UC asset, then create relationship. Returns (ok, message)."""
+            uc_id = None
+            resolved = client.find_data_asset_by_entity_guid({"--entity-guid": guid})
             assets = resolved.get("value", []) if isinstance(resolved, dict) else []
             if len(assets) > 1:
-                raise click.ClickException(
-                    f"Data Map asset '{source_asset_id}' resolved to multiple Unified Catalog assets"
-                )
+                return False, f"resolved to multiple UC assets"
             if assets and assets[0].get("id"):
-                asset_id = assets[0]["id"]
+                uc_id = assets[0]["id"]
             elif create_if_missing:
-                # Auto-derive name and type from Data Map entity when not supplied.
-                derived_name = asset_name
-                derived_type = asset_type
-                derived_type_props: dict = {}
-
-                if not derived_name or not derived_type:
-                    raw_entity = _read_dm_entity(
-                        source_asset_id, ctx.obj.get("profile", "default")
-                    )
-                    derived = _derive_uc_payload_from_entity(raw_entity)
-                    derived_name = derived_name or derived.get("name") or source_asset_id
-                    derived_type = derived_type or derived.get("type", "General")
-                    derived_type_props = derived.get("typeProperties", {})
-
-                try:
-                    parsed_type_properties = json.loads(type_properties) if type_properties else {}
-                except json.JSONDecodeError as exc:
-                    raise click.UsageError(
-                        f"--type-properties must be valid JSON: {exc.msg}"
-                    ) from exc
-                if not isinstance(parsed_type_properties, dict):
-                    raise click.UsageError("--type-properties must contain a JSON object")
-
-                # Explicit --type-properties overrides auto-derived values.
-                final_type_props = {**derived_type_props, **parsed_type_properties}
-
-                create_payload = {
-                    "name": derived_name,
-                    "source": {"type": "DataMap", "assetId": source_asset_id},
-                    "type": derived_type,
-                    "typeProperties": final_type_props,
+                d_name = asset_name
+                d_type = asset_type
+                d_props: dict = {}
+                if not d_name or not d_type:
+                    raw = _read_dm_entity(guid, profile)
+                    derived = _derive_uc_payload_from_entity(raw)
+                    d_name = d_name or derived.get("name") or guid
+                    d_type = d_type or derived.get("type", "General")
+                    d_props = derived.get("typeProperties", {})
+                payload = {
+                    "name": d_name,
+                    "source": {"type": "DataMap", "assetId": guid},
+                    "type": d_type,
+                    "typeProperties": {**d_props, **parsed_type_properties},
                 }
-                created = client.create_data_asset(
-                    {"--payload": create_payload}
-                )
-                asset_id = created.get("id") if isinstance(created, dict) else None
-                if not asset_id:
-                    raise click.ClickException(
-                        f"Failed to create a Unified Catalog asset for Data Map asset '{source_asset_id}'"
-                    )
+                created = client.create_data_asset({"--payload": payload})
+                uc_id = created.get("id") if isinstance(created, dict) else None
+                if not uc_id:
+                    return False, "UC asset creation returned no id"
             else:
-                raise click.ClickException(
-                    f"Data Map asset '{source_asset_id}' is not materialized in Unified Catalog; "
-                    "rerun with --create-if-missing"
-                )
-            # Data Product relationships use the UC asset ID as entityId.
-            entity_id = asset_id
+                return False, "not in UC; rerun with --create-if-missing"
 
-        args = {
+            rel_args = {
+                "--product-id": [product_id],
+                "--entity-type": [entity_type],
+                "--entity-id": [uc_id],
+                "--asset-id": [uc_id],
+                "--relationship-type": [relationship_type],
+                "--description": [description],
+            }
+            result = client.create_data_product_relationship(rel_args)
+            is_error = isinstance(result, dict) and (
+                result.get("status") == "error" or "error" in result
+            )
+            if is_error:
+                msg = result.get("message") or result.get("error") or "unknown error"
+                return False, msg
+            return True, uc_id
+
+        # --- bulk mode ---
+        if guids_file:
+            with open(guids_file, encoding="utf-8") as fh:
+                guids = [
+                    line.strip()
+                    for line in fh
+                    if line.strip() and not line.strip().startswith("#")
+                ]
+            if not guids:
+                console.print("[yellow]No GUIDs found in file.[/yellow]")
+                return
+            ok_count = fail_count = 0
+            summary = Table(title=f"Bulk add — {len(guids)} GUIDs", show_header=True)
+            summary.add_column("GUID", style="dim")
+            summary.add_column("Status", style="cyan")
+            summary.add_column("UC asset / error", style="white")
+            for g in guids:
+                ok, detail = _process_one(g)
+                if ok:
+                    ok_count += 1
+                    summary.add_row(g, "[green]OK[/green]", detail)
+                else:
+                    fail_count += 1
+                    summary.add_row(g, "[red]FAILED[/red]", detail)
+            console.print(summary)
+            console.print(f"[green]OK[/green] {ok_count}  [red]FAILED[/red] {fail_count}")
+            return
+
+        # --- single mode ---
+        if not entity_id and not source_asset_id:
+            raise click.UsageError("Either --entity-id, --source-asset-id, or --guids-file is required")
+
+        if source_asset_id:
+            ok, detail = _process_one(source_asset_id)
+            if ok:
+                console.print(f"[green]SUCCESS:[/green] Created relationship (UC id: {detail})")
+            else:
+                console.print(f"[red]ERROR:[/red] {detail}")
+            return
+
+        # plain --entity-id path (non-Data-Map flow)
+        rel_args = {
             "--product-id": [product_id],
             "--entity-type": [entity_type],
             "--entity-id": [entity_id],
             "--relationship-type": [relationship_type],
-            "--description": [description]
+            "--description": [description],
         }
-        
         if asset_id:
-            args["--asset-id"] = [asset_id]
-        
-        result = client.create_data_product_relationship(args)
-        
-        if output == "json":
-            console.print_json(data=result)
+            rel_args["--asset-id"] = [asset_id]
+        result = client.create_data_product_relationship(rel_args)
+        is_error = isinstance(result, dict) and (
+            result.get("status") == "error" or "error" in result
+        )
+        if result is None or not is_error:
+            console.print("[green]SUCCESS:[/green] Created relationship")
         else:
-            if result and isinstance(result, dict):
-                console.print("[green]SUCCESS:[/green] Created relationship")
-                table = Table(title="Data Product Relationship", show_header=True)
-                table.add_column("Property", style="cyan")
-                table.add_column("Value", style="white")
-                
-                table.add_row("Entity ID", result.get("entityId", "N/A"))
-                table.add_row("Relationship Type", result.get("relationshipType", "N/A"))
-                table.add_row("Description", result.get("description", "N/A"))
-                
-                if "systemData" in result:
-                    sys_data = result["systemData"]
-                    table.add_row("Created By", sys_data.get("createdBy", "N/A"))
-                    table.add_row("Created At", sys_data.get("createdAt", "N/A"))
-                
-                console.print(table)
-            else:
-                console.print("[green]SUCCESS:[/green] Created relationship")
-                
+            error_msg = result.get("message") or result.get("error") or "Unknown error"
+            status_code = result.get("status_code", "")
+            detail = f" (HTTP {status_code})" if status_code else ""
+            console.print(f"[red]ERROR:[/red] {error_msg}{detail}")
+
     except Exception as e:
         console.print(f"[red]ERROR:[/red] {str(e)}")
+
 
 
 @dataproduct.command(name="list-relationships")
