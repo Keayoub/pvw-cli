@@ -107,5 +107,7 @@ pvw entity bulk-update-csv \
 
 - `bulk-create-csv` expects `typeName` and `qualifiedName`.
 - `bulk-update-csv` supports GUID-driven rows or `typeName + qualifiedName` rows and now uses bulk payload calls per batch.
+- For classifications, use either `classification` or `classificationName`; separate multiple values with `;` or `,`.
+- When a row contains `guid`, `bulk-update-csv` uses the GUID update path, even when `qualifiedName` is also present. The identifier columns are not sent as entity attributes.
 - Use `--error-csv` to capture failed rows for reprocessing.
 - Use `--dry-run` to preview batch behavior without changing Purview.

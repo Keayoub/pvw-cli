@@ -3112,8 +3112,8 @@ def bulk_update_csv(
             raise RuntimeError(f"{batch_label} failed without exception details")
 
         # Determine mode:
-        # - If CSV has both 'typeName' and 'qualifiedName' -> map rows to Purview entities and call bulk create-or-update
-        # - Else if CSV has 'guid' and 'typeName' -> build guid-based payloads (preferred for partial attribute updates)
+        # - If CSV has 'guid' and 'typeName' -> build guid-based payloads (preferred for partial attribute updates)
+        # - Else if CSV has both 'typeName' and 'qualifiedName' -> map rows to Purview entities and call bulk create-or-update
         has_type_qn = ("typeName" in df.columns and "qualifiedName" in df.columns)
         has_guid = "guid" in df.columns
         has_type_name = "typeName" in df.columns
@@ -3144,60 +3144,7 @@ def bulk_update_csv(
         for i in range(0, total, batch_size):
             batch = df.iloc[i : i + batch_size]
 
-            if has_type_qn:
-                # Map flat rows to Purview entity objects using helper
-                from purviewcli.client._entity import map_flat_entity_to_purview_entity
-
-                entities = [map_flat_entity_to_purview_entity(row, debug=debug) for _, row in batch.iterrows()]
-                
-                if debug:
-                    console.print(f"[cyan][DEBUG] Batch {i//batch_size+1} entities: {json.dumps(entities, indent=2, default=str)}[/cyan]")
-                payload = {"entities": entities}
-
-                if dry_run:
-                    console.print(f"[blue]DRY RUN: Would bulk-create/update batch {i//batch_size+1} with {len(batch)} entities[/blue]")
-                    continue
-
-                with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False, encoding="utf-8") as tmpf:
-                    json.dump(payload, tmpf, indent=2)
-                    tmpf.flush()
-                    payload_file = tmpf.name
-                
-                if debug:
-                    console.print(f"[cyan][DEBUG] Payload file: {payload_file}[/cyan]")
-                    console.print(f"[cyan][DEBUG] Payload:\n{json.dumps(payload, indent=2, default=str)}[/cyan]")
-
-                try:
-                    args = {"--payloadFile": payload_file}
-                    result = _call_bulk_with_retry(args, f"Batch {i//batch_size+1}")
-                    if debug:
-                        console.print(f"[cyan][DEBUG] API Result: {result}[/cyan]")
-                    if result and (not isinstance(result, dict) or result.get("status") != "error"):
-                        success += len(batch)
-                    else:
-                        failed += len(batch)
-                        errors.append(f"Batch {i//batch_size+1}: {result}")
-                        failed_rows.extend(batch.to_dict(orient="records"))
-                except Exception as e:
-                    failed += len(batch)
-                    errors.append(f"Batch {i//batch_size+1}: {str(e)}")
-                    failed_rows.extend(batch.to_dict(orient="records"))
-                    if debug:
-                        console.print(f"[cyan][DEBUG] Exception: {str(e)}[/cyan]")
-                finally:
-                    try:
-                        os.remove(payload_file)
-                    except Exception:
-                        pass
-
-                if throttle_ms > 0 and (i + batch_size) < total:
-                    if debug:
-                        console.print(
-                            f"[cyan][DEBUG] Throttling {throttle_ms} ms before next batch[/cyan]"
-                        )
-                    time.sleep(throttle_ms / 1000.0)
-
-            elif has_guid:
+            if has_guid:
                 # Build guid-based updates in a bulk payload to avoid per-attribute API calls.
                 rows = [row.to_dict() for _, row in batch.iterrows()]
                 entities = []
@@ -3252,9 +3199,13 @@ def bulk_update_csv(
                             "Description": "description",
                         }
 
-                        skip_columns = {"guid", "attrName", "attrValue"} | set(
-                            classification_columns
-                        )
+                        skip_columns = {
+                            "guid",
+                            "typeName",
+                            "qualifiedName",
+                            "attrName",
+                            "attrValue",
+                        } | set(classification_columns)
 
                         for csv_col, purview_attr in column_mapping.items():
                             if csv_col in r and pd.notnull(r.get(csv_col)):
@@ -3340,6 +3291,59 @@ def bulk_update_csv(
                     failed += len(entities)
                     errors.append(f"Batch {i//batch_size+1}: {str(e)}")
                     failed_rows.extend(batch.to_dict(orient="records"))
+                finally:
+                    try:
+                        os.remove(payload_file)
+                    except Exception:
+                        pass
+
+                if throttle_ms > 0 and (i + batch_size) < total:
+                    if debug:
+                        console.print(
+                            f"[cyan][DEBUG] Throttling {throttle_ms} ms before next batch[/cyan]"
+                        )
+                    time.sleep(throttle_ms / 1000.0)
+
+            elif has_type_qn:
+                # Map flat rows to Purview entity objects using helper
+                from purviewcli.client._entity import map_flat_entity_to_purview_entity
+
+                entities = [map_flat_entity_to_purview_entity(row, debug=debug) for _, row in batch.iterrows()]
+                
+                if debug:
+                    console.print(f"[cyan][DEBUG] Batch {i//batch_size+1} entities: {json.dumps(entities, indent=2, default=str)}[/cyan]")
+                payload = {"entities": entities}
+
+                if dry_run:
+                    console.print(f"[blue]DRY RUN: Would bulk-create/update batch {i//batch_size+1} with {len(batch)} entities[/blue]")
+                    continue
+
+                with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False, encoding="utf-8") as tmpf:
+                    json.dump(payload, tmpf, indent=2)
+                    tmpf.flush()
+                    payload_file = tmpf.name
+                
+                if debug:
+                    console.print(f"[cyan][DEBUG] Payload file: {payload_file}[/cyan]")
+                    console.print(f"[cyan][DEBUG] Payload:\n{json.dumps(payload, indent=2, default=str)}[/cyan]")
+
+                try:
+                    args = {"--payloadFile": payload_file}
+                    result = _call_bulk_with_retry(args, f"Batch {i//batch_size+1}")
+                    if debug:
+                        console.print(f"[cyan][DEBUG] API Result: {result}[/cyan]")
+                    if result and (not isinstance(result, dict) or result.get("status") != "error"):
+                        success += len(batch)
+                    else:
+                        failed += len(batch)
+                        errors.append(f"Batch {i//batch_size+1}: {result}")
+                        failed_rows.extend(batch.to_dict(orient="records"))
+                except Exception as e:
+                    failed += len(batch)
+                    errors.append(f"Batch {i//batch_size+1}: {str(e)}")
+                    failed_rows.extend(batch.to_dict(orient="records"))
+                    if debug:
+                        console.print(f"[cyan][DEBUG] Exception: {str(e)}[/cyan]")
                 finally:
                     try:
                         os.remove(payload_file)
