@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
-__version__ = "1.15.6"
+__version__ = "1.15.7"
 
 # Import main client modules
 from .client import *
