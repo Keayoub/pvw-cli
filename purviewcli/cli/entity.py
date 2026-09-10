@@ -2812,12 +2812,12 @@ def bulk_create_csv(
         errors = []
         failed_rows = []
 
-        def _call_bulk_with_retry(args, batch_label):
+        def _call_with_retry(operation, args, batch_label):
             last_error = None
             total_attempts = max_retries + 1
             for attempt in range(1, total_attempts + 1):
                 try:
-                    return entity_client.entityCreateBulk(args)
+                    return operation(args)
                 except Exception as exc:
                     last_error = exc
                     if attempt >= total_attempts:
@@ -2842,6 +2842,9 @@ def bulk_create_csv(
             if last_error is not None:
                 raise last_error
             raise RuntimeError(f"{batch_label} failed without exception details")
+
+        def _call_bulk_with_retry(args, batch_label):
+            return _call_with_retry(entity_client.entityCreateBulk, args, batch_label)
         
         for i in range(0, total, batch_size):
             batch = df.iloc[i:i+batch_size]
@@ -3148,6 +3151,7 @@ def bulk_update_csv(
                 # Build guid-based updates in a bulk payload to avoid per-attribute API calls.
                 rows = [row.to_dict() for _, row in batch.iterrows()]
                 entities = []
+                classification_headers = {}
 
                 has_attr_name_value = set(["guid", "attrName", "attrValue"]).issubset(
                     set(batch.columns)
@@ -3239,6 +3243,16 @@ def bulk_update_csv(
                             entity["classifications"] = [
                                 {"typeName": name} for name in classification_names
                             ]
+                            classification_header = {
+                                "typeName": type_name,
+                                "classifications": entity["classifications"],
+                            }
+                            qualified_name = r.get("qualifiedName")
+                            if pd.notna(qualified_name) and str(qualified_name).strip():
+                                classification_header["attributes"] = {
+                                    "qualifiedName": str(qualified_name).strip()
+                                }
+                            classification_headers[guid] = classification_header
 
                     if "attributes" not in entity and "classifications" not in entity:
                         failed += 1
@@ -3282,6 +3296,30 @@ def bulk_update_csv(
                     if result and (
                         not isinstance(result, dict) or result.get("status") != "error"
                     ):
+                        if classification_headers:
+                            with tempfile.NamedTemporaryFile(
+                                mode="w", suffix=".json", delete=False, encoding="utf-8"
+                            ) as classification_file:
+                                json.dump(
+                                    {"guidHeaderMap": classification_headers},
+                                    classification_file,
+                                    indent=2,
+                                )
+                                classification_payload_file = classification_file.name
+
+                            try:
+                                classification_result = _call_with_retry(
+                                    entity_client.entityBulkSetClassifications,
+                                    {"--payloadFile": classification_payload_file},
+                                    f"Classification batch {i//batch_size+1}",
+                                )
+                                if isinstance(classification_result, dict) and classification_result.get("status") == "error":
+                                    raise RuntimeError(str(classification_result))
+                            finally:
+                                try:
+                                    os.remove(classification_payload_file)
+                                except Exception:
+                                    pass
                         success += len(entities)
                     else:
                         failed += len(entities)

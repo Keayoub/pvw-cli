@@ -23,15 +23,28 @@ def test_bulk_update_csv_prefers_guid_and_maps_classification():
         with open("update.csv", "w", encoding="utf-8", newline="") as csv_file:
             csv_file.write(csv_content)
 
-        captured_payloads = []
+        captured_update_payloads = []
+        captured_classification_payloads = []
 
-        def capture_bulk_call(args):
+        def capture_update_call(args):
             with open(args["--payloadFile"], encoding="utf-8") as payload_file:
-                captured_payloads.append(json.load(payload_file))
+                captured_update_payloads.append(json.load(payload_file))
             return {"mutatedEntities": {}}
 
-        with patch(
-            "purviewcli.client._entity.Entity.entityCreateBulk", side_effect=capture_bulk_call
+        def capture_classification_call(args):
+            with open(args["--payloadFile"], encoding="utf-8") as payload_file:
+                captured_classification_payloads.append(json.load(payload_file))
+            return ["Add:5b80b2ea-db05-4404-b964-50f6f6f60000:DataSet -> Sensible:(Done)"]
+
+        with (
+            patch(
+                "purviewcli.client._entity.Entity.entityCreateBulk",
+                side_effect=capture_update_call,
+            ),
+            patch(
+                "purviewcli.client._entity.Entity.entityBulkSetClassifications",
+                side_effect=capture_classification_call,
+            ),
         ):
             result = CliRunner().invoke(
                 main,
@@ -40,7 +53,7 @@ def test_bulk_update_csv_prefers_guid_and_maps_classification():
             )
 
     assert result.exit_code == 0, result.output
-    assert captured_payloads == [
+    assert captured_update_payloads == [
         {
             "entities": [
                 {
@@ -53,5 +66,18 @@ def test_bulk_update_csv_prefers_guid_and_maps_classification():
                     "classifications": [{"typeName": "Sensible"}],
                 }
             ]
+        }
+    ]
+    assert captured_classification_payloads == [
+        {
+            "guidHeaderMap": {
+                "5b80b2ea-db05-4404-b964-50f6f6f60000": {
+                    "typeName": "DataSet",
+                    "attributes": {
+                        "qualifiedName": "mssql://server/database/schema/table"
+                    },
+                    "classifications": [{"typeName": "Sensible"}],
+                }
+            }
         }
     ]
