@@ -3083,12 +3083,12 @@ def bulk_update_csv(
 
         retry_mode = (retry_mode or "exponential").lower()
 
-        def _call_bulk_with_retry(args, batch_label):
+        def _call_with_retry(operation, args, batch_label):
             last_error = None
             total_attempts = max_retries + 1
             for attempt in range(1, total_attempts + 1):
                 try:
-                    return entity_client.entityCreateBulk(args)
+                    return operation(args)
                 except Exception as exc:
                     last_error = exc
                     if attempt >= total_attempts:
@@ -3113,6 +3113,9 @@ def bulk_update_csv(
             if last_error is not None:
                 raise last_error
             raise RuntimeError(f"{batch_label} failed without exception details")
+
+        def _call_bulk_with_retry(args, batch_label):
+            return _call_with_retry(entity_client.entityCreateBulk, args, batch_label)
 
         # Determine mode:
         # - If CSV has 'guid' and 'typeName' -> build guid-based payloads (preferred for partial attribute updates)
@@ -3151,7 +3154,6 @@ def bulk_update_csv(
                 # Build guid-based updates in a bulk payload to avoid per-attribute API calls.
                 rows = [row.to_dict() for _, row in batch.iterrows()]
                 entities = []
-                classification_headers = {}
 
                 has_attr_name_value = set(["guid", "attrName", "attrValue"]).issubset(
                     set(batch.columns)
@@ -3243,16 +3245,6 @@ def bulk_update_csv(
                             entity["classifications"] = [
                                 {"typeName": name} for name in classification_names
                             ]
-                            classification_header = {
-                                "typeName": type_name,
-                                "classifications": entity["classifications"],
-                            }
-                            qualified_name = r.get("qualifiedName")
-                            if pd.notna(qualified_name) and str(qualified_name).strip():
-                                classification_header["attributes"] = {
-                                    "qualifiedName": str(qualified_name).strip()
-                                }
-                            classification_headers[guid] = classification_header
 
                     if "attributes" not in entity and "classifications" not in entity:
                         failed += 1
@@ -3266,6 +3258,28 @@ def bulk_update_csv(
                     continue
 
                 payload = {"entities": entities}
+                classification_headers = {}
+                classification_qualified_names = {}
+                for entity in entities:
+                    if "classifications" in entity:
+                        classification_headers[str(entity["guid"])] = {
+                            "typeName": entity["typeName"],
+                            "classifications": entity["classifications"],
+                        }
+                        qualified_name = next(
+                            (
+                                str(row.get("qualifiedName")).strip()
+                                for row in rows
+                                if str(row.get("guid")).strip() == str(entity["guid"])
+                                and pd.notna(row.get("qualifiedName"))
+                                and str(row.get("qualifiedName")).strip()
+                            ),
+                            None,
+                        )
+                        if qualified_name:
+                            classification_headers[str(entity["guid"])] ["attributes"] = {
+                                "qualifiedName": qualified_name
+                            }
 
                 if dry_run:
                     console.print(
