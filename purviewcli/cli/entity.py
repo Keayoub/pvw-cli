@@ -2782,8 +2782,16 @@ def bulk_create_csv(
         df = pd.read_csv(csv_file)
         
         # Detect classification columns
+        classification_col_candidates = [
+            "classification",
+            "classifications",
+            "classificationName",
+            "classification_name",
+            "Classification",
+            "Classifications",
+        ]
         classification_columns = [
-            col for col in ["classification", "classificationName"] if col in df.columns
+            col for col in classification_col_candidates if col in df.columns
         ]
         
         # Debug: Show CSV structure
@@ -3117,14 +3125,24 @@ def bulk_update_csv(
         def _call_bulk_with_retry(args, batch_label):
             return _call_with_retry(entity_client.entityCreateBulk, args, batch_label)
 
+        from purviewcli.client._entity import parse_classification_names
+
         # Determine mode:
         # - If CSV has 'guid' and 'typeName' -> build guid-based payloads (preferred for partial attribute updates)
         # - Else if CSV has both 'typeName' and 'qualifiedName' -> map rows to Purview entities and call bulk create-or-update
         has_type_qn = ("typeName" in df.columns and "qualifiedName" in df.columns)
         has_guid = "guid" in df.columns
         has_type_name = "typeName" in df.columns
+        classification_col_candidates = [
+            "classification",
+            "classifications",
+            "classificationName",
+            "classification_name",
+            "Classification",
+            "Classifications",
+        ]
         classification_columns = [
-            col for col in ["classification", "classificationName"] if col in df.columns
+            col for col in classification_col_candidates if col in df.columns
         ]
         
         if debug:
@@ -3203,12 +3221,12 @@ def bulk_update_csv(
                         column_mapping = {
                             "DisplayName": "displayName",
                             "Description": "description",
+                            "QualifiedName": "qualifiedName",
                         }
 
                         skip_columns = {
                             "guid",
                             "typeName",
-                            "qualifiedName",
                             "attrName",
                             "attrValue",
                         } | set(classification_columns)
@@ -3233,14 +3251,7 @@ def bulk_update_csv(
                             break
 
                     if classification_value is not None:
-                        if isinstance(classification_value, str):
-                            raw_items = [
-                                v.strip() for v in classification_value.replace(",", ";").split(";")
-                            ]
-                            classification_names = [v for v in raw_items if v]
-                        else:
-                            classification_names = [str(classification_value).strip()]
-
+                        classification_names = parse_classification_names(classification_value)
                         if classification_names:
                             entity["classifications"] = [
                                 {"typeName": name} for name in classification_names
@@ -3263,6 +3274,7 @@ def bulk_update_csv(
                 for entity in entities:
                     if "classifications" in entity:
                         classification_headers[str(entity["guid"])] = {
+                            "guid": str(entity["guid"]),
                             "typeName": entity["typeName"],
                             "classifications": entity["classifications"],
                         }
@@ -3277,7 +3289,7 @@ def bulk_update_csv(
                             None,
                         )
                         if qualified_name:
-                            classification_headers[str(entity["guid"])] ["attributes"] = {
+                            classification_headers[str(entity["guid"])]["attributes"] = {
                                 "qualifiedName": qualified_name
                             }
 

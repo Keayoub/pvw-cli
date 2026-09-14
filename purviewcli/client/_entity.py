@@ -21,6 +21,46 @@ from .endpoint import Endpoint, decorator, get_json, no_api_call_decorator
 from .endpoints import ENDPOINTS, get_api_version_params
 
 
+def parse_classification_names(classification_value):
+    """Parse classification names from string, list, or JSON array format.
+
+    Supports:
+    - String single: 'Sensible'
+    - String delimited: 'Sensible; Confidential' or 'Sensible, Confidential'
+    - JSON array string: '["Sensible"]' or '["Sensible", "Confidential"]'
+    - List/Iterable: ['Sensible', 'Confidential']
+    """
+    if classification_value is None:
+        return []
+
+    import json
+    from math import isnan
+
+    if isinstance(classification_value, float) and isnan(classification_value):
+        return []
+
+    if isinstance(classification_value, (list, tuple, set)):
+        return [str(v).strip().strip('"').strip("'") for v in classification_value if str(v).strip()]
+
+    val_str = str(classification_value).strip()
+    if not val_str or val_str.lower() in ("nan", "none", "null"):
+        return []
+
+    # Try parsing as JSON array
+    if val_str.startswith("[") and val_str.endswith("]"):
+        try:
+            parsed = json.loads(val_str)
+            if isinstance(parsed, list):
+                return [str(v).strip().strip('"').strip("'") for v in parsed if str(v).strip()]
+        except Exception:
+            # Fallback: strip outer brackets and split
+            val_str = val_str[1:-1].strip()
+
+    # Split by semicolon or comma
+    raw_items = [v.strip().strip('"').strip("'") for v in val_str.replace(",", ";").split(";")]
+    return [v for v in raw_items if v]
+
+
 def map_flat_entity_to_purview_entity(row, debug=False):
     """Map a flat row (pandas Series or dict) into a Purview entity dict.
 
@@ -52,9 +92,9 @@ def map_flat_entity_to_purview_entity(row, debug=False):
     # pop guid if present (it should not be in attributes)
     guid = data.pop("guid", None)
 
-    # pop and process classifications (classification or classificationName column)
+    # pop and process classifications (classification, classifications, or classificationName column)
     classification_value = None
-    for col_name in ["classification", "classificationName"]:
+    for col_name in ["classification", "classifications", "classificationName", "classification_name", "Classification", "Classifications"]:
         if col_name in data:
             classification_value = data.pop(col_name)
             break
@@ -123,20 +163,11 @@ def map_flat_entity_to_purview_entity(row, debug=False):
     
     # Add classifications if present
     if classification_value is not None:
-        try:
-            if not isinstance(classification_value, float) or not isnan(classification_value):
-                if isinstance(classification_value, str):
-                    raw_items = [v.strip() for v in classification_value.replace(",", ";").split(";")]
-                    classification_names = [v for v in raw_items if v]
-                else:
-                    classification_names = [str(classification_value).strip()]
-                
-                if classification_names:
-                    result["classifications"] = [{"typeName": name} for name in classification_names]
-                    if debug:
-                        print(f"[DEBUG] Added classifications = {classification_names}")
-        except Exception:
-            pass
+        classification_names = parse_classification_names(classification_value)
+        if classification_names:
+            result["classifications"] = [{"typeName": name} for name in classification_names]
+            if debug:
+                print(f"[DEBUG] Added classifications = {classification_names}")
     
     return result
 
