@@ -3241,6 +3241,13 @@ def bulk_update_csv(
                             if pd.notnull(v):
                                 attributes[str(k)] = str(v)
 
+                    # If typeName is a specific column type but data_type is not provided in attributes,
+                    # use DataSet for the bulk attribute update so Atlas does not reject missing mandatory attributes (e.g. data_type)
+                    if type_name.lower().endswith(("_column", "column")) and "data_type" not in attributes:
+                        entity["typeName"] = "DataSet"
+                    else:
+                        entity["typeName"] = type_name
+
                     if attributes:
                         entity["attributes"] = attributes
 
@@ -3323,29 +3330,17 @@ def bulk_update_csv(
                         not isinstance(result, dict) or result.get("status") != "error"
                     ):
                         if classification_headers:
-                            with tempfile.NamedTemporaryFile(
-                                mode="w", suffix=".json", delete=False, encoding="utf-8"
-                            ) as classification_file:
-                                json.dump(
-                                    {"guidHeaderMap": classification_headers},
-                                    classification_file,
-                                    indent=2,
-                                )
-                                classification_payload_file = classification_file.name
-
-                            try:
-                                classification_result = _call_with_retry(
-                                    entity_client.entityBulkSetClassifications,
-                                    {"--payloadFile": classification_payload_file},
-                                    f"Classification batch {i//batch_size+1}",
-                                )
-                                if isinstance(classification_result, dict) and classification_result.get("status") == "error":
-                                    raise RuntimeError(str(classification_result))
-                            finally:
-                                try:
-                                    os.remove(classification_payload_file)
-                                except Exception:
-                                    pass
+                            # Apply classifications directly per entity GUID to reliably support tables, columns, and datasets
+                            for entity in entities:
+                                if "classifications" in entity and entity.get("guid"):
+                                    _call_with_retry(
+                                        entity_client.entityCreateClassifications,
+                                        {
+                                            "--guid": [str(entity["guid"])],
+                                            "--payloadFile": entity["classifications"],
+                                        },
+                                        f"Classification for GUID {entity['guid']}",
+                                    )
                         success += len(entities)
                     else:
                         failed += len(entities)

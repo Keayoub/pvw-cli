@@ -32,9 +32,8 @@ def test_bulk_update_csv_prefers_guid_and_maps_classification():
             return {"mutatedEntities": {}}
 
         def capture_classification_call(args):
-            with open(args["--payloadFile"], encoding="utf-8") as payload_file:
-                captured_classification_payloads.append(json.load(payload_file))
-            return ["Add:5b80b2ea-db05-4404-b964-50f6f6f60000:DataSet -> Sensible:(Done)"]
+            captured_classification_payloads.append(args)
+            return {"guid": args["--guid"][0]}
 
         with (
             patch(
@@ -42,7 +41,7 @@ def test_bulk_update_csv_prefers_guid_and_maps_classification():
                 side_effect=capture_update_call,
             ),
             patch(
-                "purviewcli.client._entity.Entity.entityBulkSetClassifications",
+                "purviewcli.client._entity.Entity.entityCreateClassifications",
                 side_effect=capture_classification_call,
             ),
         ):
@@ -71,16 +70,8 @@ def test_bulk_update_csv_prefers_guid_and_maps_classification():
     ]
     assert captured_classification_payloads == [
         {
-            "guidHeaderMap": {
-                "5b80b2ea-db05-4404-b964-50f6f6f60000": {
-                    "guid": "5b80b2ea-db05-4404-b964-50f6f6f60000",
-                    "typeName": "DataSet",
-                    "attributes": {
-                        "qualifiedName": "mssql://server/database/schema/table"
-                    },
-                    "classifications": [{"typeName": "Sensible"}],
-                }
-            }
+            "--guid": ["5b80b2ea-db05-4404-b964-50f6f6f60000"],
+            "--payloadFile": [{"typeName": "Sensible"}],
         }
     ]
 
@@ -89,7 +80,7 @@ def test_bulk_update_csv_handles_classifications_plural_and_json_array():
     csv_content = (
         'typeName,guid,qualifiedName,name,userDescription,classifications\n'
         '"DataSet","5b80b2ea-db05-4404-b964-50f6f6f60000","mssql://server/db/schema/tab1","tab1","desc1","[""Sensible""]"\n'
-        '"DataSet","5b80b2ea-db05-4404-b964-50f6f6f60001","mssql://server/db/schema/tab2","tab2","desc2","Sensible"\n'
+        '"mssql_column","5b80b2ea-db05-4404-b964-50f6f6f60001","mssql://server/db/schema/tab2#col","col","desc2","Sensible"\n'
     )
 
     with CliRunner().isolated_filesystem():
@@ -105,9 +96,8 @@ def test_bulk_update_csv_handles_classifications_plural_and_json_array():
             return {"mutatedEntities": {}}
 
         def capture_classification_call(args):
-            with open(args["--payloadFile"], encoding="utf-8") as payload_file:
-                captured_classification_payloads.append(json.load(payload_file))
-            return ["Done"]
+            captured_classification_payloads.append(args)
+            return {"guid": args["--guid"][0]}
 
         with (
             patch(
@@ -115,7 +105,7 @@ def test_bulk_update_csv_handles_classifications_plural_and_json_array():
                 side_effect=capture_update_call,
             ),
             patch(
-                "purviewcli.client._entity.Entity.entityBulkSetClassifications",
+                "purviewcli.client._entity.Entity.entityCreateClassifications",
                 side_effect=capture_classification_call,
             ),
         ):
@@ -143,8 +133,8 @@ def test_bulk_update_csv_handles_classifications_plural_and_json_array():
                     "guid": "5b80b2ea-db05-4404-b964-50f6f6f60001",
                     "typeName": "DataSet",
                     "attributes": {
-                        "name": "tab2",
-                        "qualifiedName": "mssql://server/db/schema/tab2",
+                        "name": "col",
+                        "qualifiedName": "mssql://server/db/schema/tab2#col",
                         "userDescription": "desc2",
                     },
                     "classifications": [{"typeName": "Sensible"}],
@@ -154,23 +144,11 @@ def test_bulk_update_csv_handles_classifications_plural_and_json_array():
     ]
     assert captured_classification_payloads == [
         {
-            "guidHeaderMap": {
-                "5b80b2ea-db05-4404-b964-50f6f6f60000": {
-                    "guid": "5b80b2ea-db05-4404-b964-50f6f6f60000",
-                    "typeName": "DataSet",
-                    "attributes": {
-                        "qualifiedName": "mssql://server/db/schema/tab1"
-                    },
-                    "classifications": [{"typeName": "Sensible"}],
-                },
-                "5b80b2ea-db05-4404-b964-50f6f6f60001": {
-                    "guid": "5b80b2ea-db05-4404-b964-50f6f6f60001",
-                    "typeName": "DataSet",
-                    "attributes": {
-                        "qualifiedName": "mssql://server/db/schema/tab2"
-                    },
-                    "classifications": [{"typeName": "Sensible"}],
-                },
-            }
-        }
+            "--guid": ["5b80b2ea-db05-4404-b964-50f6f6f60000"],
+            "--payloadFile": [{"typeName": "Sensible"}],
+        },
+        {
+            "--guid": ["5b80b2ea-db05-4404-b964-50f6f6f60001"],
+            "--payloadFile": [{"typeName": "Sensible"}],
+        },
     ]
