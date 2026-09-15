@@ -1231,7 +1231,7 @@ Use Cases:
         """
         self.method = "GET"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_data_product_facets"]
-        self.params = get_api_version_params("2025-09-15-preview")
+        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
         
         if "--domain-id" in args:
             self.params["domainId"] = args["--domain-id"][0]
@@ -1318,7 +1318,7 @@ Use Cases:
         """
         self.method = "GET"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_objective_facets"]
-        self.params = get_api_version_params("2025-09-15-preview")
+        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
         
         if "--domain-id" in args:
             self.params["domainId"] = args["--domain-id"][0]
@@ -2389,7 +2389,7 @@ Use Cases:
         """
         self.method = "GET"
         self.endpoint = ENDPOINTS["unified_catalog"]["list_hierarchy_terms"]
-        self.params = get_api_version_params("2025-09-15-preview")
+        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
         
         if "--domain-id" in args:
             self.params["domainId"] = args["--domain-id"][0]
@@ -2454,7 +2454,7 @@ Use Cases:
         """
         self.method = "GET"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_term_facets"]
-        self.params = get_api_version_params("2025-09-15-preview")
+        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
         
         if "--domain-id" in args:
             self.params["domainId"] = args["--domain-id"][0]
@@ -2529,7 +2529,7 @@ Use Cases:
         """
         self.method = "GET"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_cde_facets"]
-        self.params = get_api_version_params("2025-09-15-preview")
+        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
         
         if "--domain-id" in args:
             self.params["domainId"] = args["--domain-id"][0]
@@ -2595,7 +2595,7 @@ Use Cases:
         """
         self.method = "GET"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_data_product_facets"]
-        self.params = get_api_version_params("2025-09-15-preview")
+        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
         
         if "--domain-id" in args:
             self.params["domainId"] = args["--domain-id"][0]
@@ -2665,7 +2665,7 @@ Use Cases:
         """
         self.method = "GET"
         self.endpoint = ENDPOINTS["unified_catalog"]["get_objective_facets"]
-        self.params = get_api_version_params("2025-09-15-preview")
+        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
         
         if "--domain-id" in args:
             self.params["domainId"] = args["--domain-id"][0]
@@ -2746,7 +2746,7 @@ Use Cases:
         self.endpoint = ENDPOINTS["unified_catalog"]["list_related_entities"].format(
             termId=term_id
         )
-        self.params = get_api_version_params("2025-09-15-preview")
+        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
         self.params["entityType"] = "TERM"  # Default to TERM entity type
         
         if "--relationship-type" in args:
@@ -2817,9 +2817,7 @@ Use Cases:
         
         self.method = "POST"
         self.endpoint = ENDPOINTS["unified_catalog"]["add_term_relationship"].format(termId=term_id)
-        self.params = {
-            "api-version": "2025-09-15-preview"
-        }
+        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
         
         # Add entity type filter if provided
         if args.get("--entity-type"):
@@ -2864,9 +2862,7 @@ Example:
             termId=term_id,
             entityId=entity_id
         )
-        self.params = {
-            "api-version": "2025-09-15-preview"
-        }
+        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
 
     def _get_or_create_glossary_for_domain(self, domain_id):
         """Get or create a default glossary for the domain."""

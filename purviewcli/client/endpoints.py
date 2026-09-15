@@ -437,12 +437,8 @@ ENDPOINTS = {
         "get_share_analytics": "/sentShares/{sentShareId}/analytics",
     },
     # ==================== UNIFIED CATALOG API ENDPOINTS ====================
-    # Current: Using /datagovernance/catalog/* endpoints (Working as of Oct 2025)
-    # Future: Microsoft announced new Unified Catalog API (2024-03-01-preview)
-    #         https://learn.microsoft.com/en-us/rest/api/purview/unified-catalog-api-overview
-    # TODO: Monitor and migrate to new UC API when documentation is complete
-    #       New API will cover: OKRs, Domains, CDEs, Data Products, Terms, Policies
-    #       Roadmap: Data Assets and Critical Data Columns support
+    # Public preview: 2026-03-20-preview is the current Unified Catalog API.
+    # https://learn.microsoft.com/en-us/rest/api/purview/unified-catalog-api-overview
     "unified_catalog": {
         # Business domains
         "list_domains": "/datagovernance/catalog/businessdomains",
