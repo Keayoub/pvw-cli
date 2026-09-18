@@ -26,6 +26,7 @@ from purviewcli.migration.purview_to_fabric import (
     filter_catalog_entries_by_workspace,
     index_fabric_domains_by_name,
     namespaced_tag_name,
+    plan_asset_metadata_tag_names,
     plan_domain,
     plan_governance_tag_names,
     plan_item_metadata,
@@ -254,6 +255,20 @@ class TestNamespacedTagName:
         ]
         names = plan_governance_tag_names(objects)
         assert names == ["purview:term:Customer ID"]
+
+    def test_plan_asset_metadata_tag_names_namespaces_and_dedupes(self):
+        asset = PurviewAsset(
+            id="a1",
+            name="A",
+            classification_names=["MICROSOFT.PERSONAL.EMAIL", "MICROSOFT.PERSONAL.EMAIL"],
+            label_names=["pvw-test-label"],
+        )
+        names = plan_asset_metadata_tag_names(asset)
+        assert names == ["purview:classification:MICROSOFT.PERSONA", "purview:label:pvw-test-label"]
+
+    def test_plan_asset_metadata_tag_names_empty_when_no_metadata(self):
+        asset = PurviewAsset(id="a1", name="A")
+        assert plan_asset_metadata_tag_names(asset) == []
 
 
 class TestPlanItemTags:

@@ -46,6 +46,36 @@ to the mapping file, or leave the asset unmatched and migrate it manually.
   domain is always reported as a conflict and never reassigned automatically — this is
   independent of `--overwrite`, which only governs item metadata.
 
+## Syncing classifications & labels onto existing Fabric items
+
+For assets that already exist as Fabric items (created directly in Fabric, or by an earlier
+run of this tool), you can optionally sync a Purview asset's **classifications** and
+**labels** onto the matched Fabric item as tags, in addition to the glossary-term/data-
+product/CDE tags described above. This is opt-in via `--sync-classifications` on
+`assess`/`sync`/`run`.
+
+- Classification names (e.g. `MICROSOFT.PERSONAL.EMAIL`) and free-text labels are each
+  namespaced as Fabric tags: `purview:classification:<name>` and `purview:label:<name>`
+  (same 40-character-truncated, additive-only pipeline as governance-object tags — see
+  above).
+- **Source**: classifications/labels are read from the classic Atlas **Entity API**
+  (`entityReadUniqueAttribute`), not the Unified Catalog Data Asset API — the UC wrapper does
+  not expose this data at all, even with `includeExtendedProperties=true` (live-verified).
+  This means the sync only works for assets that have a resolvable Data Map entity: the
+  asset's `source.qualifiedName` must be present, and its UC `type` must have a known
+  Atlas-`typeName` mapping (currently: `ADLSGen2Path`, `AzureSqlTable`). Assets that don't
+  meet both conditions are silently skipped (reported as having no classifications/labels)
+  rather than failing the run.
+- **Sensitivity labels (MIP) are not synced.** Purview exposes no confirmed per-asset read
+  API for a data asset's actual sensitivity label — only tenant-wide aggregate reporting
+  endpoints exist. See [`fabric-migration-feature-parity.md`](fabric-migration-feature-parity.md)
+  for what's implemented today versus tracked as a future item once a Fabric/Purview API
+  makes this possible.
+
+```powershell
+pvw fabric migration assess --sync-classifications --mapping-file .\mapping_file.json
+```
+
 ## Commands
 
 ### `pvw fabric migration assess`
@@ -138,7 +168,7 @@ resolve the mapping file or adjust `--overwrite`/`--truncate-descriptions`).
 
 | Command | Writes to Fabric? | Default | Key options |
 |---|---|---|---|
-| `pvw fabric migration assess` | Never | — | `--purview-domain-id`, `--workspace-id`, `--mapping-file`, `--overwrite`, `--truncate-descriptions`, `--report-file`, `--csv-report-file`, `--output` |
+| `pvw fabric migration assess` | Never | — | `--purview-domain-id`, `--workspace-id`, `--mapping-file`, `--overwrite`, `--truncate-descriptions`, `--sync-classifications`, `--report-file`, `--csv-report-file`, `--output` |
 | `pvw fabric migration sync` | Only with `--apply` | Dry run | All of the above, plus `--checkpoint-file` (required), `--apply` |
 | `pvw fabric migration run --config <file>` | Only if `"apply": true` in the config | Dry run | `--config` (JSON file with the same keys as `sync`) |
 | `pvw fabric migration rollback` | Only with `--apply` | Preview | `--checkpoint-file` (required), `--apply`, `--report-file`, `--output` |
@@ -146,13 +176,28 @@ resolve the mapping file or adjust `--overwrite`/`--truncate-descriptions`).
 ## Verification status
 
 The Fabric-side API shapes this tool relies on (catalog search, domains, item read/update, tag
-list/apply/unapply) were confirmed against a live Fabric tenant, which surfaced and fixed two
-real discrepancies from the initial implementation:
+list/apply/unapply, item create with `source.type`) were confirmed against a live Fabric
+tenant, which surfaced and fixed two real discrepancies from the initial implementation:
 
 - `GET /v1/admin/domains` returns `{"domains": [...]}`, not a `value`-keyed envelope.
 - `POST /v1/catalog/search` entries nest their workspace under `hierarchy.workspace.{id,displayName}`,
   not flat `workspaceId`/`workspaceDisplayName` fields.
 
-The Purview Unified Catalog side (data asset/domain/term/data-product/CDE field names) has not
-yet been verified against a live Purview tenant — if your responses differ from what's assumed
-in `purviewcli/migration/service.py`, the normalization functions there are the place to adjust.
+The Purview side has been partially verified against a live tenant:
+
+- `pvw uc domain list` matches the field names already assumed (`id`/`name`/`description`/
+  `type`/`status`/`managedAttributes`).
+- The classic Atlas Entity API's `classifications` (`[{"typeName", ...}]`) and `labels`
+  (`["..."]`) fields were confirmed live and are the source for `--sync-classifications`.
+- The Unified Catalog Data Asset API (`list_data_assets`/`get_data_asset`) was confirmed to
+  **not** expose classifications, labels, tags, or a sensitivity label, even with
+  `includeExtendedProperties=true`.
+- Purview's Unified Catalog data asset/domain/term/data-product/CDE field names beyond
+  domain list are still unverified against a populated live tenant (the test tenant used
+  this session had zero scanned assets) — if your responses differ from what's assumed in
+  `purviewcli/migration/service.py`, the normalization functions there are the place to
+  adjust.
+
+See [`fabric-migration-feature-parity.md`](fabric-migration-feature-parity.md) for the full
+feature-by-feature implementation status, including what's tracked as future work pending
+Fabric/Purview API availability (e.g. sensitivity-label sync).

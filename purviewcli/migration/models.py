@@ -112,6 +112,14 @@ class PurviewAsset:
     data_product_ids: List[str] = dataclasses.field(default_factory=list)
     cde_ids: List[str] = dataclasses.field(default_factory=list)
     owners: List[str] = dataclasses.field(default_factory=list)
+    # Populated only when the caller opts into classification/label sync (see
+    # ``service.enrich_assets_with_entity_metadata``); empty by default so
+    # existing construction sites are unaffected. Sourced from the classic
+    # Atlas Entity API, *not* the Unified Catalog data-asset API, which does
+    # not expose classifications/labels (live-verified: absent even with
+    # ``includeExtendedProperties=true``).
+    classification_names: List[str] = dataclasses.field(default_factory=list)
+    label_names: List[str] = dataclasses.field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         return _to_dict(self)

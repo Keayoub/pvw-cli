@@ -25,6 +25,7 @@ console = get_console()
 
 
 def _get_clients(ctx):
+    from purviewcli.client._entity import Entity
     from purviewcli.client._unified_catalog import UnifiedCatalogClient
     from purviewcli.client.client_cache import get_cached_client
     from purviewcli.client.fabric_client import FabricClient
@@ -32,7 +33,8 @@ def _get_clients(ctx):
     profile = ctx.obj.get("profile", "default")
     uc_client = get_cached_client(UnifiedCatalogClient, profile=profile)
     fabric_client = get_cached_client(FabricClient, profile=profile)
-    return uc_client, fabric_client
+    entity_client = get_cached_client(Entity, profile=profile)
+    return uc_client, fabric_client, entity_client
 
 
 def _shared_assessment_options(func):
@@ -43,6 +45,7 @@ def _shared_assessment_options(func):
         click.option("--mapping-file", type=click.Path(exists=True, dir_okay=False), default=None, help="JSON file of explicit Purview-asset-id -> Fabric workspace/item bindings."),
         click.option("--overwrite", is_flag=True, default=False, help="Allow overwriting already-populated Fabric display name/description values."),
         click.option("--truncate-descriptions", is_flag=True, default=False, help="Truncate descriptions over Fabric's 256-character limit instead of flagging a validation error."),
+        click.option("--sync-classifications", is_flag=True, default=False, help="Also sync Purview classifications/labels onto Fabric items as tags (opt-in: requires Data Map linkage; see docs/fabric-migration-feature-parity.md)."),
         click.option("--report-file", type=click.Path(dir_okay=False), default=None, help="Write the full JSON assessment/apply report to this path."),
         click.option("--csv-report-file", type=click.Path(dir_okay=False), default=None, help="Write a flattened CSV audit report to this path."),
         click.option("--output", default="table", type=click.Choice(["table", "json"]), help="Console summary format."),
@@ -52,9 +55,16 @@ def _shared_assessment_options(func):
     return func
 
 
-def _run_assessment(ctx, purview_domain_ids: Tuple[str, ...], workspace_ids: Tuple[str, ...], mapping_file: Optional[str], overwrite: bool, truncate_descriptions: bool):
-    """Fetch Purview + Fabric state and build a MigrationPlan. Shared by assess/sync/run."""
-def _run_assessment(ctx, purview_domain_ids: Tuple[str, ...], workspace_ids: Tuple[str, ...], mapping_file: Optional[str], overwrite: bool, truncate_descriptions: bool, run_id: Optional[str] = None):
+def _run_assessment(
+    ctx,
+    purview_domain_ids: Tuple[str, ...],
+    workspace_ids: Tuple[str, ...],
+    mapping_file: Optional[str],
+    overwrite: bool,
+    truncate_descriptions: bool,
+    sync_classifications: bool = False,
+    run_id: Optional[str] = None,
+):
     """Fetch Purview + Fabric state and build a MigrationPlan. Shared by assess/sync/run.
 
     ``run_id`` should be supplied by callers that persist a checkpoint (e.g.
@@ -73,10 +83,15 @@ def _run_assessment(ctx, purview_domain_ids: Tuple[str, ...], workspace_ids: Tup
     )
     from purviewcli.migration.state import new_run_id
 
-    uc_client, fabric_client = _get_clients(ctx)
+    uc_client, fabric_client, entity_client = _get_clients(ctx)
 
     mapping = load_mapping_file(mapping_file)
-    purview_state = fetch_purview_state(uc_client, domain_ids=list(purview_domain_ids))
+    purview_state = fetch_purview_state(
+        uc_client,
+        domain_ids=list(purview_domain_ids),
+        entity_client=entity_client,
+        sync_classifications=sync_classifications,
+    )
     catalog_entries = fetch_fabric_catalog(fabric_client, workspace_ids=list(workspace_ids))
     fabric_domains, workspace_current_domain = fetch_fabric_domains_and_workspace_assignments(fabric_client)
 
@@ -93,6 +108,7 @@ def _run_assessment(ctx, purview_domain_ids: Tuple[str, ...], workspace_ids: Tup
         target_workspace_ids=list(workspace_ids),
         overwrite=overwrite,
         truncate_descriptions=truncate_descriptions,
+        sync_classifications=sync_classifications,
     )
     return plan, fabric_client
 
@@ -171,9 +187,9 @@ def migration():
 @migration.command(name="assess")
 @_shared_assessment_options
 @click.pass_context
-def migration_assess(ctx, purview_domain_ids, workspace_ids, mapping_file, overwrite, truncate_descriptions, report_file, csv_report_file, output):
+def migration_assess(ctx, purview_domain_ids, workspace_ids, mapping_file, overwrite, truncate_descriptions, sync_classifications, report_file, csv_report_file, output):
     """Read-only assessment: build and report a migration plan without writing anything."""
-    plan, _fabric_client = _run_assessment(ctx, purview_domain_ids, workspace_ids, mapping_file, overwrite, truncate_descriptions)
+    plan, _fabric_client = _run_assessment(ctx, purview_domain_ids, workspace_ids, mapping_file, overwrite, truncate_descriptions, sync_classifications=sync_classifications)
     _write_reports(plan, report_file, csv_report_file)
     _render_plan_summary(plan, output)
     _exit_nonzero_if_needed(plan)
@@ -184,7 +200,7 @@ def migration_assess(ctx, purview_domain_ids, workspace_ids, mapping_file, overw
 @click.option("--checkpoint-file", type=click.Path(dir_okay=False), required=True, help="Path to this run's checkpoint file (created on first apply; required for resume/rollback).")
 @click.option("--apply", "apply_", is_flag=True, default=False, help="Actually write changes to Fabric. Without this flag, sync always dry-runs.")
 @click.pass_context
-def migration_sync(ctx, purview_domain_ids, workspace_ids, mapping_file, overwrite, truncate_descriptions, report_file, csv_report_file, output, checkpoint_file, apply_):
+def migration_sync(ctx, purview_domain_ids, workspace_ids, mapping_file, overwrite, truncate_descriptions, sync_classifications, report_file, csv_report_file, output, checkpoint_file, apply_):
     """Assess, then apply (or dry-run) the resulting plan against Fabric."""
     from purviewcli.migration.service import sync_plan
     from purviewcli.migration.state import CheckpointStore
@@ -195,7 +211,7 @@ def migration_sync(ctx, purview_domain_ids, workspace_ids, mapping_file, overwri
     existing_checkpoint = store.load()
     run_id = existing_checkpoint.run_id if existing_checkpoint is not None else None
 
-    plan, fabric_client = _run_assessment(ctx, purview_domain_ids, workspace_ids, mapping_file, overwrite, truncate_descriptions, run_id=run_id)
+    plan, fabric_client = _run_assessment(ctx, purview_domain_ids, workspace_ids, mapping_file, overwrite, truncate_descriptions, sync_classifications=sync_classifications, run_id=run_id)
     sync_result = sync_plan(fabric_client, plan, store, plan.run_id, dry_run=not apply_)
 
     _write_reports(plan, report_file, csv_report_file, sync_result=sync_result)
@@ -229,6 +245,7 @@ def migration_run(ctx, config_path):
         mapping_file=config.get("mapping_file"),
         overwrite=bool(config.get("overwrite", False)),
         truncate_descriptions=bool(config.get("truncate_descriptions", False)),
+        sync_classifications=bool(config.get("sync_classifications", False)),
         report_file=config.get("report_file"),
         csv_report_file=config.get("csv_report_file"),
         output=config.get("output", "table"),
@@ -254,7 +271,7 @@ def migration_rollback(ctx, checkpoint_file, apply_, report_file, output):
     from purviewcli.migration.service import rollback_run
     from purviewcli.migration.state import CheckpointStore, new_run_id
 
-    _uc_client, fabric_client = _get_clients(ctx)
+    _uc_client, fabric_client, _entity_client = _get_clients(ctx)
     store = CheckpointStore(checkpoint_file)
     result = rollback_run(fabric_client, store, dry_run=not apply_)
 

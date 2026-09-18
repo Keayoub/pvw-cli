@@ -10,6 +10,7 @@ network calls are made.
 import json
 import os
 import tempfile
+from unittest.mock import MagicMock
 
 import pytest
 from click.testing import CliRunner
@@ -141,8 +142,10 @@ def tmp_dir():
         yield d
 
 
-def _patch_clients(monkeypatch, uc_client, fabric_client):
-    monkeypatch.setattr("purviewcli.cli.fabric._get_clients", lambda ctx: (uc_client, fabric_client))
+def _patch_clients(monkeypatch, uc_client, fabric_client, entity_client=None):
+    if entity_client is None:
+        entity_client = MagicMock()
+    monkeypatch.setattr("purviewcli.cli.fabric._get_clients", lambda ctx: (uc_client, fabric_client, entity_client))
 
 
 # ---------------------------------------------------------------------------

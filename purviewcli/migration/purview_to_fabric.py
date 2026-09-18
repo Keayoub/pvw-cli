@@ -346,6 +346,25 @@ def plan_governance_tag_names(objects: Sequence[PurviewGovernanceObject]) -> Lis
     return list(seen.keys())
 
 
+def plan_asset_metadata_tag_names(asset: PurviewAsset) -> List[str]:
+    """Compute namespaced tag names for one asset's classifications and labels.
+
+    Unlike :func:`plan_governance_tag_names`, this operates per-asset (each
+    asset carries its own ``classification_names``/``label_names``, populated
+    by ``service.enrich_assets_with_entity_metadata``) rather than against a
+    tenant-wide governance-object list. Only used when the caller opts into
+    classification/label sync (``--sync-classifications``); empty lists are
+    a no-op so callers that never populate these fields see no behavior
+    change.
+    """
+    seen: Dict[str, None] = {}
+    for name in asset.classification_names:
+        seen[namespaced_tag_name("classification", name)] = None
+    for name in asset.label_names:
+        seen[namespaced_tag_name("label", name)] = None
+    return list(seen.keys())
+
+
 def plan_item_tags(
     workspace_id: str,
     item_id: str,

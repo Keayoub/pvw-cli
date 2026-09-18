@@ -17,6 +17,8 @@ from purviewcli.migration.models import (
 )
 from purviewcli.migration.service import (
     build_migration_plan,
+    enrich_assets_with_entity_metadata,
+    fetch_entity_metadata,
     fetch_fabric_catalog,
     fetch_fabric_domains_and_workspace_assignments,
     fetch_fabric_item_state,
@@ -27,6 +29,7 @@ from purviewcli.migration.service import (
     normalize_governance_objects,
     normalize_purview_assets,
     normalize_purview_domains,
+    resolve_entity_type_name,
     resolve_tag_names_to_ids,
     rollback_run,
     sync_plan,
@@ -125,6 +128,24 @@ class FakeFabricClient:
 
     def unassign_domain_workspaces(self, domain_id, workspace_ids):
         self.unassigned.append((domain_id, workspace_ids))
+
+
+class FakeEntityClient:
+    """Test double for ``purviewcli.client._entity.Entity``, keyed by (typeName, qualifiedName)."""
+
+    def __init__(self, entities_by_key=None, raise_on=()):
+        self._entities_by_key = entities_by_key or {}
+        self._raise_on = set(raise_on)
+        self.calls = []
+
+    def entityReadUniqueAttribute(self, args):
+        type_name = args["--typeName"]
+        qualified_name = args["--qualifiedName"]
+        self.calls.append((type_name, qualified_name))
+        key = (type_name, qualified_name)
+        if key in self._raise_on:
+            raise RuntimeError("simulated 404")
+        return self._entities_by_key.get(key, {"entity": {}})
 
 
 # ---------------------------------------------------------------------------
@@ -277,6 +298,106 @@ class TestFetchHelpers:
         assert resolved == {"purview:term:PII": "t1"}
 
 
+class TestClassificationMetadataSync:
+    """Tests for the entity-metadata enrichment used by ``--sync-classifications``."""
+
+    def test_resolve_entity_type_name_known_types(self):
+        assert resolve_entity_type_name("ADLSGen2Path") == "azure_datalake_gen2_path"
+        assert resolve_entity_type_name("AzureSqlTable") == "azure_sql_table"
+
+    def test_resolve_entity_type_name_unmapped_type_returns_none(self):
+        # "General" folds multiple Data Map types together, so it's deliberately unmapped.
+        assert resolve_entity_type_name("General") is None
+        assert resolve_entity_type_name("SomethingUnknown") is None
+
+    def test_fetch_entity_metadata_happy_path(self):
+        # Exact live-verified shape (entity read against a real tenant, 2026-09-18).
+        entity_client = FakeEntityClient(
+            entities_by_key={
+                ("DataSet", "pvw-cli-migration-test/asset-001"): {
+                    "entity": {
+                        "typeName": "DataSet",
+                        "classifications": [
+                            {
+                                "typeName": "MICROSOFT.PERSONAL.EMAIL",
+                                "attributes": {"confidence": None},
+                                "entityGuid": "9f611788-7a93-4f74-ba72-495942829c53",
+                                "entityStatus": "ACTIVE",
+                            }
+                        ],
+                        "labels": ["pvw-test-label"],
+                    }
+                }
+            }
+        )
+        classifications, labels = fetch_entity_metadata(
+            entity_client, "DataSet", "pvw-cli-migration-test/asset-001"
+        )
+        assert classifications == ["MICROSOFT.PERSONAL.EMAIL"]
+        assert labels == ["pvw-test-label"]
+
+    def test_fetch_entity_metadata_no_classifications_or_labels(self):
+        entity_client = FakeEntityClient(
+            entities_by_key={("DataSet", "q1"): {"entity": {"typeName": "DataSet"}}}
+        )
+        classifications, labels = fetch_entity_metadata(entity_client, "DataSet", "q1")
+        assert classifications == []
+        assert labels == []
+
+    def test_fetch_entity_metadata_swallows_lookup_failure(self):
+        entity_client = FakeEntityClient(raise_on={("DataSet", "missing")})
+        classifications, labels = fetch_entity_metadata(entity_client, "DataSet", "missing")
+        assert classifications == []
+        assert labels == []
+
+    def test_enrich_assets_with_entity_metadata_populates_matching_assets(self):
+        entity_client = FakeEntityClient(
+            entities_by_key={
+                ("azure_sql_table", "sql/q1"): {
+                    "entity": {"classifications": [{"typeName": "MICROSOFT.PERSONAL.EMAIL"}], "labels": ["l1"]}
+                }
+            }
+        )
+        assets = [
+            PurviewAsset(id="a1", name="A", type="AzureSqlTable", source={"qualifiedName": "sql/q1"}),
+            # Unmapped UC type -- skipped without a lookup attempt.
+            PurviewAsset(id="a2", name="B", type="General", source={"qualifiedName": "fab/q2"}),
+            # No qualifiedName at all -- skipped without a lookup attempt.
+            PurviewAsset(id="a3", name="C", type="AzureSqlTable", source={}),
+        ]
+        enriched = enrich_assets_with_entity_metadata(entity_client, assets)
+        by_id = {a.id: a for a in enriched}
+        assert by_id["a1"].classification_names == ["MICROSOFT.PERSONAL.EMAIL"]
+        assert by_id["a1"].label_names == ["l1"]
+        assert by_id["a2"].classification_names == []
+        assert by_id["a3"].classification_names == []
+        assert entity_client.calls == [("azure_sql_table", "sql/q1")]
+
+    def test_fetch_purview_state_enriches_when_flag_set(self):
+        uc = FakeUcClient(
+            domains=[{"id": "d1", "name": "Sales"}],
+            assets=[{"id": "a1", "name": "X", "type": "AzureSqlTable", "domainId": "d1", "source": {"qualifiedName": "sql/q1"}}],
+        )
+        entity_client = FakeEntityClient(
+            entities_by_key={
+                ("azure_sql_table", "sql/q1"): {"entity": {"classifications": [{"typeName": "MICROSOFT.PERSONAL.EMAIL"}], "labels": []}}
+            }
+        )
+        state = fetch_purview_state(uc, entity_client=entity_client, sync_classifications=True)
+        assert state["assets"][0].classification_names == ["MICROSOFT.PERSONAL.EMAIL"]
+
+    def test_fetch_purview_state_skips_enrichment_when_flag_unset(self):
+        uc = FakeUcClient(
+            assets=[{"id": "a1", "name": "X", "type": "AzureSqlTable", "source": {"qualifiedName": "sql/q1"}}],
+        )
+        entity_client = FakeEntityClient(
+            entities_by_key={("azure_sql_table", "sql/q1"): {"entity": {"classifications": [{"typeName": "X"}]}}}
+        )
+        state = fetch_purview_state(uc, entity_client=entity_client, sync_classifications=False)
+        assert state["assets"][0].classification_names == []
+        assert entity_client.calls == []
+
+
 # ---------------------------------------------------------------------------
 # Mapping file I/O
 # ---------------------------------------------------------------------------
@@ -338,6 +459,65 @@ class TestBuildMigrationPlanAndApply:
         assert plan.matches[0].outcome.value == "matched_by_mapping"
         assert len(plan.item_plans) == 1
         assert plan.item_plans[0].decision.value == "ready"
+
+    def test_build_plan_includes_classification_tags_when_flag_set(self):
+        asset = PurviewAsset(
+            id="a1",
+            name="Customer Table",
+            description="A customer table.",
+            domain_id="d1",
+            classification_names=["MICROSOFT.PERSONAL.EMAIL"],
+            label_names=["pvw-test-label"],
+        )
+        entry = self._catalog_entry_embedding_ref()
+        mapping = MigrationMapping.from_dict(
+            {"mappings": [{"purviewAssetId": "a1", "workspaceId": "ws1", "itemId": "it1"}]}
+        )
+        fabric_client = FakeFabricClient(items={("ws1", "it1"): {"displayName": "", "description": None, "tags": []}})
+
+        plan = build_migration_plan(
+            run_id="run-1",
+            purview_assets=[asset],
+            purview_domains=[],
+            governance_objects=[],
+            catalog_entries=[entry],
+            fabric_domains=[],
+            workspace_current_domain={},
+            fabric_client=fabric_client,
+            mapping=mapping,
+            sync_classifications=True,
+        )
+        assert len(plan.tag_plans) == 1
+        assert set(plan.tag_plans[0].tags_to_apply) == {
+            "purview:classification:MICROSOFT.PERSONA",
+            "purview:label:pvw-test-label",
+        }
+
+    def test_build_plan_omits_classification_tags_when_flag_unset(self):
+        asset = PurviewAsset(
+            id="a1",
+            name="Customer Table",
+            domain_id="d1",
+            classification_names=["MICROSOFT.PERSONAL.EMAIL"],
+        )
+        entry = self._catalog_entry_embedding_ref()
+        mapping = MigrationMapping.from_dict(
+            {"mappings": [{"purviewAssetId": "a1", "workspaceId": "ws1", "itemId": "it1"}]}
+        )
+        fabric_client = FakeFabricClient(items={("ws1", "it1"): {"displayName": "", "description": None, "tags": []}})
+
+        plan = build_migration_plan(
+            run_id="run-1",
+            purview_assets=[asset],
+            purview_domains=[],
+            governance_objects=[],
+            catalog_entries=[entry],
+            fabric_domains=[],
+            workspace_current_domain={},
+            fabric_client=fabric_client,
+            mapping=mapping,
+        )
+        assert plan.tag_plans == []
 
     def test_sync_plan_dry_run_makes_no_calls(self):
         asset = self._asset()
