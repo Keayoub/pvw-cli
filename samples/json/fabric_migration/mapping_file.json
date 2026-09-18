@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Explicit Purview data-asset -> Fabric item bindings used when an asset has no embedded Fabric reference and cannot be matched by name (fuzzy/name matching never authorizes a write). Referenced via `pvw fabric migration assess|sync --mapping-file`.",
+  "mappings": [
+    {
+      "purviewAssetId": "5b6b0e2e-1c1a-4e7a-9a2a-000000000001",
+      "workspaceId": "9d6a6f2f-2e2b-4f8b-9b3b-000000000010",
+      "itemId": "1a2b3c4d-5e6f-7a8b-9c0d-000000000100",
+      "note": "Sales fact table -> Sales Lakehouse (manually verified 2026-01-15)"
+    },
+    {
+      "purviewAssetId": "5b6b0e2e-1c1a-4e7a-9a2a-000000000002",
+      "workspaceId": "9d6a6f2f-2e2b-4f8b-9b3b-000000000010",
+      "itemId": "1a2b3c4d-5e6f-7a8b-9c0d-000000000101",
+      "note": "Customer dimension -> Sales Lakehouse"
+    }
+  ]
+}

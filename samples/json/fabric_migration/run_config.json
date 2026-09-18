@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Config-driven equivalent of `pvw fabric migration sync`'s options, for use with `pvw fabric migration run --config <this file>` from a scheduler/pipeline. Keys mirror the sync command's option names.",
+  "purview_domain_ids": [
+    "b1c9e6b0-0000-0000-0000-000000000001"
+  ],
+  "workspace_ids": [
+    "9d6a6f2f-2e2b-4f8b-9b3b-000000000010"
+  ],
+  "mapping_file": "./mapping_file.json",
+  "checkpoint_file": "./checkpoints/sales-domain-run.json",
+  "report_file": "./reports/sales-domain-run.json",
+  "csv_report_file": "./reports/sales-domain-run.csv",
+  "overwrite": false,
+  "truncate_descriptions": false,
+  "apply": false,
+  "output": "table"
+}

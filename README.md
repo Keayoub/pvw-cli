@@ -138,6 +138,7 @@ pvw types            Type definitions
 pvw uc               Unified Catalog (domains, terms, data products, OKRs, CDEs, quality)
 pvw workflow         Approval workflows
 pvw diagnostics      Cache stats and profile info
+pvw fabric           Purview Unified Catalog -> Fabric OneLake catalog migration
 ```
 
 Run `pvw <command> --help` for full options on any command.
@@ -154,6 +155,24 @@ This guide covers:
 - Data Quality commands and workflow examples
 - Facets, hierarchy, and relationship operations
 - Common patterns and troubleshooting tips
+
+### Purview → Fabric Migration
+
+Purview data governance is converging into Microsoft Fabric. `pvw fabric migration` provides
+a dry-run-by-default, checkpointed, one-way sync of portable Unified Catalog metadata (asset
+descriptions, governance domains, glossary/data-product/CDE names as tags) into the Fabric
+OneLake catalog:
+
+```bash
+pvw fabric migration assess --purview-domain-id <id> --workspace-id <id>
+pvw fabric migration sync --mapping-file mapping_file.json --checkpoint-file run.json --apply
+pvw fabric migration rollback --checkpoint-file run.json --apply
+```
+
+See **[docs/fabric-migration-guide.md](docs/fabric-migration-guide.md)** for the full guide
+(matching policy, conflict/tag-overflow rules, required Fabric permissions, scheduling, and
+command reference), and **[samples/json/fabric_migration/](samples/json/fabric_migration/)**
+for mapping-file and `run --config` examples.
 
 ### Additional Documentation
 
