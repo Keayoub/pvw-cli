@@ -192,6 +192,25 @@ class TestNormalization:
         assert entries[0].workspace_id == "ws1"
         assert entries[0].display_name == "Sales LH"
 
+    def test_normalize_catalog_entries_nested_hierarchy_workspace(self):
+        # Verified live against POST /v1/catalog/search: the real Fabric API
+        # nests workspace info under hierarchy.workspace, not flat
+        # workspaceId/workspaceDisplayName fields.
+        raw = [
+            {
+                "id": "item1",
+                "type": "PowerBIApp",
+                "displayName": "Sales LH",
+                "description": None,
+                "catalogEntryType": "App",
+                "hierarchy": {"workspace": {"id": "ws1", "displayName": "Sales WS"}},
+            }
+        ]
+        entries = normalize_catalog_entries(raw)
+        assert entries[0].workspace_id == "ws1"
+        assert entries[0].workspace_display_name == "Sales WS"
+        assert entries[0].display_name == "Sales LH"
+
     def test_normalize_fabric_domains(self):
         raw = [{"id": "fd1", "displayName": "Finance", "description": None, "parentDomainId": None}]
         domains = normalize_fabric_domains(raw)

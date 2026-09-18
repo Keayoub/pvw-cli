@@ -142,3 +142,17 @@ resolve the mapping file or adjust `--overwrite`/`--truncate-descriptions`).
 | `pvw fabric migration sync` | Only with `--apply` | Dry run | All of the above, plus `--checkpoint-file` (required), `--apply` |
 | `pvw fabric migration run --config <file>` | Only if `"apply": true` in the config | Dry run | `--config` (JSON file with the same keys as `sync`) |
 | `pvw fabric migration rollback` | Only with `--apply` | Preview | `--checkpoint-file` (required), `--apply`, `--report-file`, `--output` |
+
+## Verification status
+
+The Fabric-side API shapes this tool relies on (catalog search, domains, item read/update, tag
+list/apply/unapply) were confirmed against a live Fabric tenant, which surfaced and fixed two
+real discrepancies from the initial implementation:
+
+- `GET /v1/admin/domains` returns `{"domains": [...]}`, not a `value`-keyed envelope.
+- `POST /v1/catalog/search` entries nest their workspace under `hierarchy.workspace.{id,displayName}`,
+  not flat `workspaceId`/`workspaceDisplayName` fields.
+
+The Purview Unified Catalog side (data asset/domain/term/data-product/CDE field names) has not
+yet been verified against a live Purview tenant — if your responses differ from what's assumed
+in `purviewcli/migration/service.py`, the normalization functions there are the place to adjust.

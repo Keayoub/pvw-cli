@@ -9,7 +9,33 @@ best-effort) glue that normalizes real API responses into the typed models
 those pure functions consume, and is where any tenant-specific field-naming
 differences should be adjusted if your Purview/Fabric responses vary from
 what's assumed here.
+
+Fabric response shapes verified live against a real tenant (2026-09-18):
+    - ``GET /v1/tags``: ``{"value": [{"id", "displayName", "scope"}]}``.
+    - ``GET /v1/admin/domains``: ``{"domains": [{"id", "displayName",
+      "description", "parentDomainId"}]}`` -- **not** a ``value``-keyed
+      envelope.
+    - ``POST /v1/catalog/search``: ``{"value": [...], "continuationToken"}``,
+      where each entry nests its workspace under
+      ``hierarchy.workspace.{id,displayName}`` -- **not** flat
+      ``workspaceId``/``workspaceDisplayName`` fields as originally assumed
+      (fixed in :func:`normalize_catalog_entries`, which now checks the flat
+      fields first as a defensive fallback, then falls back to the nested
+      shape).
+    - ``GET /v1/workspaces/{ws}/items/{id}``: flat ``id``/``type``/
+      ``displayName``/``description``/``workspaceId``; a ``tags`` array
+      (``[{"id","displayName"}]``) is present only when the item has at
+      least one tag applied and is omitted entirely otherwise (confirmed via
+      a live ``applyTags``/``unapplyTags`` round-trip).
+    - ``POST /v1/workspaces/{ws}/items/{id}/applyTags`` and
+      ``.../unapplyTags``: body is ``{"tags": [<tag-id-string>, ...]}`` --
+      plain GUID strings, not ``{"id": ...}`` objects.
+
+Purview UC response shapes remain unverified against a live tenant (no
+Purview account was available during this pass) -- see the field-name notes
+inline below.
 """
+
 
 from __future__ import annotations
 
@@ -205,16 +231,25 @@ def fetch_purview_state(
 
 
 def normalize_catalog_entries(raw_entries: Sequence[Dict[str, Any]]) -> List[FabricCatalogEntry]:
+    """Normalize raw ``catalog/search`` entries into :class:`FabricCatalogEntry`.
+
+    Verified live against ``POST /v1/catalog/search``: the workspace is nested
+    under ``hierarchy.workspace.{id,displayName}``, not flat ``workspaceId``/
+    ``workspaceDisplayName`` fields. The flat fields are still checked first as
+    a defensive fallback in case a future/older API version or a different
+    catalog entry ``type`` returns a flatter shape.
+    """
     entries = []
     for raw in raw_entries:
+        workspace = (raw.get("hierarchy") or {}).get("workspace") or {}
         entries.append(
             FabricCatalogEntry(
                 id=raw.get("id", ""),
                 type=raw.get("type", ""),
                 display_name=raw.get("displayName", ""),
                 description=raw.get("description"),
-                workspace_id=raw.get("workspaceId", ""),
-                workspace_display_name=raw.get("workspaceDisplayName", raw.get("workspace", "")),
+                workspace_id=raw.get("workspaceId") or workspace.get("id", ""),
+                workspace_display_name=raw.get("workspaceDisplayName") or workspace.get("displayName", ""),
             )
         )
     return entries
