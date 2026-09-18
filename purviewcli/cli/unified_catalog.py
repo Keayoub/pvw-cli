@@ -5250,28 +5250,20 @@ def list_custom_metadata(output, fallback, include_expired, api_version):
             console.print("[yellow]No custom metadata attributes found from catalog preview endpoint[/yellow]")
             return
 
-        table = Table(title="[bold green]Custom Metadata (Including Expired)[/bold green]", show_header=True)
-        table.add_column("Group", style="cyan")
-        table.add_column("GroupId", style="white")
-        table.add_column("GroupStatus", style="yellow")
-        table.add_column("GroupExpired", style="magenta")
-        table.add_column("Attribute", style="green")
-        table.add_column("AttrId", style="white")
+        console.print("[bold green]Custom Metadata (Including Expired)[/bold green]")
 
         for item in rows:
             if not isinstance(item, dict):
                 continue
 
-            table.add_row(
-                str(item.get("groupName") or item.get("group") or "N/A"),
-                str(item.get("groupId") or "N/A"),
-                str(item.get("groupStatus") or item.get("status") or "N/A"),
-                "yes" if bool(item.get("groupExpired", item.get("expired", False))) else "no",
-                str(item.get("attributeName") or item.get("attribute") or item.get("name") or "N/A"),
-                str(item.get("attributeId") or item.get("attrId") or item.get("id") or "N/A"),
-            )
+            group = str(item.get("groupName") or item.get("group") or "N/A")
+            group_id = str(item.get("groupId") or "N/A")
+            group_status = str(item.get("groupStatus") or item.get("status") or "N/A")
+            group_expired = "yes" if bool(item.get("groupExpired", item.get("expired", False))) else "no"
+            attr = str(item.get("attributeName") or item.get("attribute") or item.get("name") or "N/A")
+            attr_id = str(item.get("attributeId") or item.get("attrId") or item.get("id") or "N/A")
+            console.print(f"{group} | {group_id} | {group_status} | {group_expired} | {attr} | {attr_id}")
 
-        console.print(table)
         console.print(f"\n[cyan]Total:[/cyan] {len(rows)} custom metadata row(s) (catalog preview)")
         return
 
