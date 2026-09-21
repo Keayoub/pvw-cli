@@ -1,5 +1,9 @@
 # Purview → Fabric OneLake Catalog: Sync Overview & Roadmap
 
+> **Last reviewed: 2026-09-21**, against a live Purview tenant (`kaydemopurview`, test data
+> only) and public Fabric/Purview API documentation available at that time. See
+> ["Re-check checklist"](#re-check-checklist) below for what to re-verify and when.
+
 > Microsoft Purview's standalone data governance experience is being retired in favor of
 > governance capabilities built directly into Microsoft Fabric (OneLake catalog, Fabric
 > domains/tags, Fabric admin APIs). This page is the single at-a-glance status board for
@@ -10,6 +14,19 @@
 > permissions, scheduling). For the exhaustive implementation-level detail behind each row
 > below, see the [Fabric Sync Feature Parity Map](fabric-sync-feature-parity.md). This page
 > is the summary; those two are the source of truth.
+
+## Get the live version from the CLI
+
+The table below is a snapshot. The CLI renders the same data live, straight from
+[`purviewcli/sync/capabilities.py`](../purviewcli/sync/capabilities.py) — the single source
+of truth both this page and the CLI draw from — so it can never silently drift from what's
+actually implemented:
+
+```bash
+pvw fabric sync capabilities                       # table
+pvw fabric sync capabilities --output json         # machine-readable
+pvw fabric sync capabilities --status planned       # only "planned/TBD" rows
+```
 
 ## Status legend
 
@@ -39,16 +56,29 @@
 | Custom / managed attributes | *(no confirmed Fabric field)* | 🔜 Planned / TBD | Present in Purview UC domain responses (`managedAttributes`); no confirmed arbitrary-property field on Fabric items yet. |
 | Full glossary hierarchy (parent/child terms, relationships) | *(no Fabric equivalent)* | ⛔ Not supported | Only the term's name is portable as a tag; Fabric has no structured term/hierarchy object. |
 
+## Re-check checklist
+
+Run through this list periodically (e.g. quarterly, or whenever Microsoft announces a
+Fabric governance update) to see if any 🔜/⛔ row can move to ✅/🟡. Each item links directly
+to where the answer would show up — no need to rediscover these sources from scratch:
+
+| # | Re-check this | Where to look | Unblocks |
+|---|---|---|---|
+| 1 | Does Purview expose a **per-asset** sensitivity-label read API yet (Data Map entity attribute, UC data asset field, or a new endpoint)? | [Fabric roadmap — Governance filter](https://roadmap.fabric.microsoft.com/?product=governance), [Purview REST API reference](https://learn.microsoft.com/en-us/rest/api/purview/), [`microsoft/fabric-cli` releases](https://github.com/microsoft/fabric-cli/releases) | Sensitivity label (MIP) sync |
+| 2 | Has Fabric shipped a documented **data-quality** API for attaching scores/rules to catalog items? | [Fabric roadmap — Data Warehouse/OneLake filter](https://roadmap.fabric.microsoft.com/), [Fabric REST API reference](https://learn.microsoft.com/en-us/rest/api/fabric/) | Data quality rules / scores sync |
+| 3 | Has Fabric shipped a **lineage-ingestion** API compatible with Purview's process/relationship entities? | [Fabric roadmap](https://roadmap.fabric.microsoft.com/), [Fabric REST API reference](https://learn.microsoft.com/en-us/rest/api/fabric/) | Lineage sync |
+| 4 | Has Fabric introduced a **native data-product** object (beyond tags)? | [Fabric roadmap](https://roadmap.fabric.microsoft.com/), [Microsoft Fabric blog](https://blog.fabric.microsoft.com/) | Data Products as first-class Fabric objects |
+| 5 | Does Fabric support **arbitrary custom/managed properties** on items (beyond tags/sensitivity labels)? | [Fabric REST API reference — Items](https://learn.microsoft.com/en-us/rest/api/fabric/core/items) | Custom / managed attributes sync |
+| 6 | Has Fabric added an **attribute-based access policy** API at the item/workspace level? | [Fabric roadmap — Admin & Governance filter](https://roadmap.fabric.microsoft.com/?product=governance) | RBAC → ABAC policy sync |
+
 ## How this table is kept current
 
 This page reflects the same facts recorded in
-[`fabric-sync-feature-parity.md`](fabric-sync-feature-parity.md), summarized for a quick
-read. It should be revisited:
+[`fabric-sync-feature-parity.md`](fabric-sync-feature-parity.md) and in
+[`purviewcli/sync/capabilities.py`](../purviewcli/sync/capabilities.py) (the CLI's source
+of truth), summarized for a quick read. It should be revisited:
 
-- Whenever Microsoft publishes updates to the
-  [Fabric roadmap](https://roadmap.fabric.microsoft.com/) or OneLake catalog/governance
-  "what's new" notes — look specifically for sensitivity-label read APIs, data quality
-  APIs, lineage ingestion APIs, or a native data-product object.
+- Whenever the ["Re-check checklist"](#re-check-checklist) above turns up a new API.
 - Whenever this project live-verifies a new Purview or Fabric API shape (see the
   "Verification status" section of the [Fabric Sync Guide](fabric-sync-guide.md) for the
   project's live-verify-first convention).
@@ -57,8 +87,9 @@ When a 🔜/⛔ row becomes possible:
 
 1. Live-verify the exact request/response shape against a real tenant first — never assume
    a shape from documentation alone.
-2. Flip the row here and in `fabric-sync-feature-parity.md` to ✅/🟡, recording what was
-   verified and against what.
+2. Update the row in `purviewcli/sync/capabilities.py` first (the CLI's source of truth),
+   then mirror the change here and in `fabric-sync-feature-parity.md`, recording what was
+   verified and against what. Update the "Last reviewed" date at the top of this page.
 3. Extend `purviewcli/sync/models.py`, `service.py`, `purview_to_fabric.py`,
    `execution.py`, `fabric_client.py`, and `cli/fabric.py`, following the same additive,
    opt-in pattern used for `--sync-classifications`.

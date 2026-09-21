@@ -172,10 +172,16 @@ resolve the mapping file or adjust `--overwrite`/`--truncate-descriptions`).
 
 | Command | Writes to Fabric? | Default | Key options |
 |---|---|---|---|
+| `pvw fabric sync capabilities` | Never (no client I/O at all) | — | `--status`, `--output` |
 | `pvw fabric sync assess` | Never | — | `--purview-domain-id`, `--workspace-id`, `--mapping-file`, `--overwrite`, `--truncate-descriptions`, `--sync-classifications`, `--report-file`, `--csv-report-file`, `--output` |
 | `pvw fabric sync apply` | Only with `--apply` | Dry run | All of the above, plus `--checkpoint-file` (required), `--apply` |
 | `pvw fabric sync run --config <file>` | Only if `"apply": true` in the config | Dry run | `--config` (JSON file with the same keys as `apply`) |
 | `pvw fabric sync rollback` | Only with `--apply` | Preview | `--checkpoint-file` (required), `--apply`, `--report-file`, `--output` |
+
+`pvw fabric sync capabilities` prints the same feature-status board as
+[Purview to Fabric OneLake Sync Overview](purview-to-fabric-onelake-sync.md), live from the
+CLI's own capability data — useful for scripting a quick "what's supported today" check
+without reading docs.
 
 ## Verification status
 

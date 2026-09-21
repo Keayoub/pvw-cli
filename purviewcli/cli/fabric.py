@@ -2,6 +2,7 @@
 """``pvw fabric`` command group: Purview Unified Catalog -> Fabric OneLake catalog sync.
 
 Commands:
+  - ``pvw fabric sync capabilities``: prints the current feature-status board (no I/O).
   - ``pvw fabric sync assess``  : always read-only; produces a plan/report.
   - ``pvw fabric sync apply``    : dry-run by default; pass --apply to write.
   - ``pvw fabric sync run``     : config-file-driven equivalent of ``apply``, for schedulers.
@@ -182,6 +183,51 @@ def fabric():
 def sync():
     """Assess, apply, and roll back the Purview -> Fabric metadata sync."""
     pass
+
+
+@sync.command(name="capabilities")
+@click.option("--output", default="table", type=click.Choice(["table", "json"]), help="Output format.")
+@click.option("--status", "status_filter", default=None, type=click.Choice(["supported", "partial", "planned", "not_supported"]), help="Only show rows with this status.")
+@click.pass_context
+def sync_capabilities(ctx, output, status_filter):
+    """Show what Purview UC -> Fabric sync supports today, and what's tracked as future work.
+
+    This is the live, authoritative view of the feature-status table also described in
+    docs/purview-to-fabric-onelake-sync.md -- it's rendered from the same data
+    (purviewcli.sync.capabilities) so the CLI can never drift from what's actually
+    implemented.
+    """
+    from purviewcli.sync.capabilities import get_capabilities
+
+    capabilities = get_capabilities()
+    if status_filter:
+        capabilities = [c for c in capabilities if c.status.value == status_filter]
+
+    if output == "json":
+        print(json.dumps([c.to_dict() for c in capabilities], indent=2))
+        return
+
+    from rich.table import Table
+
+    table = Table(title="Purview UC -> Fabric OneLake catalog sync: capability status")
+    table.add_column("Status", style="bold")
+    table.add_column("Purview capability", style="cyan")
+    table.add_column("Fabric target", style="green")
+    table.add_column("Flag", style="magenta")
+    table.add_column("Notes", style="yellow", overflow="fold")
+    for capability in capabilities:
+        table.add_row(
+            f"{capability.status.symbol} {capability.status.label}",
+            capability.purview_capability,
+            capability.fabric_target,
+            capability.command_flag,
+            capability.notes,
+        )
+    console.print(table)
+    console.print(
+        "\n[dim]See docs/purview-to-fabric-onelake-sync.md for the roadmap-aware summary "
+        "and docs/fabric-sync-feature-parity.md for full implementation detail.[/dim]"
+    )
 
 
 @sync.command(name="assess")
