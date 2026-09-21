@@ -169,9 +169,11 @@ pvw fabric sync apply --mapping-file mapping_file.json --checkpoint-file run.jso
 pvw fabric sync rollback --checkpoint-file run.json --apply
 ```
 
-See **[docs/fabric-sync-guide.md](docs/fabric-sync-guide.md)** for the full guide
-(matching policy, conflict/tag-overflow rules, required Fabric permissions, scheduling, and
-command reference), **[docs/fabric-sync-feature-parity.md](docs/fabric-sync-feature-parity.md)**
+See **[docs/purview-to-fabric-onelake-sync.md](docs/purview-to-fabric-onelake-sync.md)**
+for an at-a-glance status board (supported / partial / planned / not supported) kept in sync
+with the Fabric roadmap, **[docs/fabric-sync-guide.md](docs/fabric-sync-guide.md)** for the
+full guide (matching policy, conflict/tag-overflow rules, required Fabric permissions,
+scheduling, and command reference), **[docs/fabric-sync-feature-parity.md](docs/fabric-sync-feature-parity.md)**
 for what's implemented today versus tracked as future work (e.g. sensitivity-label sync,
 pending Purview/Fabric API availability), and
 **[samples/json/fabric_sync/](samples/json/fabric_sync/)** for mapping-file and

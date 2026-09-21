@@ -4,6 +4,9 @@
 > are not yet portable because Fabric (or Purview) doesn't yet expose a confirmed,
 > documented API for them. Revisit the "Not yet implemented" rows whenever Fabric/Purview
 > ship a new public API — each row lists exactly what to re-verify first.
+>
+> See [Purview to Fabric OneLake Sync Overview](purview-to-fabric-onelake-sync.md) for a
+> condensed, roadmap-aware summary of this same information.
 
 ## Implemented today (live-verified)
 

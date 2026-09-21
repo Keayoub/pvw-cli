@@ -54,6 +54,7 @@ nav:
       - Command Groups: command-groups.md
   - Core Guides:
       - Unified Catalog: unified-catalog.md
+      - Purview to Fabric OneLake Sync Overview: purview-to-fabric-onelake-sync.md
       - Fabric Sync Guide: fabric-sync-guide.md
       - Fabric Sync Feature Parity: fabric-sync-feature-parity.md
       - Purview MCP Server: purview-mcp-server.md

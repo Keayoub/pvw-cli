@@ -3,6 +3,10 @@
 > Microsoft Purview's data governance capabilities are converging into Microsoft Fabric.
 > This guide covers `pvw fabric sync`, a repeatable, safe path for moving portable
 > Unified Catalog (UC) metadata into the Fabric OneLake catalog.
+>
+> For an at-a-glance status board of everything that is/isn't portable today (and what to
+> watch on the Fabric roadmap), see
+> [Purview to Fabric OneLake Sync Overview](purview-to-fabric-onelake-sync.md).
 
 ## What this does (and does not) do
 
