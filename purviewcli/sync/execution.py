@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
 """Dependency-ordered apply and rollback execution for the Fabric sync.
 
-This module turns a :class:`~purviewcli.migration.models.MigrationPlan`
-into concrete, checkpointed :class:`~purviewcli.migration.models.PlannedOperation`
+This module turns a :class:`~purviewcli.sync.models.SyncPlan`
+into concrete, checkpointed :class:`~purviewcli.sync.models.PlannedOperation`
 mutations, executes them against a Fabric client, and can later reverse a
 completed run using only its checkpoint (never by re-deriving a plan).
 
@@ -11,7 +11,7 @@ Design notes:
     workspace assignment before tags before item metadata) so that, e.g., a
     workspace's domain is correct before governance tags are applied.
   - Every successful mutation is checkpointed immediately (see
-    :mod:`purviewcli.migration.state`), so partial failures never lose
+    :mod:`purviewcli.sync.state`), so partial failures never lose
     track of what already succeeded.
   - Domains and tag *definitions* created by a run are never deleted by
     rollback (Fabric policy the user approved); only item metadata,

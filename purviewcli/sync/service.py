@@ -2,8 +2,8 @@
 """Adapter/orchestration layer wiring UnifiedCatalogClient and FabricClient
 into the pure matching/planning/execution engine.
 
-Everything in :mod:`purviewcli.migration.purview_to_fabric` and
-:mod:`purviewcli.migration.execution` is deliberately free of network I/O so
+Everything in :mod:`purviewcli.sync.purview_to_fabric` and
+:mod:`purviewcli.sync.execution` is deliberately free of network I/O so
 it can be unit-tested without a live tenant. This module is the (thin,
 best-effort) glue that normalizes real API responses into the typed models
 those pure functions consume, and is where any tenant-specific field-naming
@@ -57,7 +57,7 @@ Purview response shapes verified live against a real tenant (2026-09-18):
       endpoints exist (``sensitivityLabel/labelSummary``,
       ``sensitivityLabel/labelInsights``). Sensitivity-label sync is
       therefore out of scope for now; see
-      ``docs/fabric-migration-feature-parity.md``.
+      ``docs/fabric-sync-feature-parity.md``.
 """
 
 
@@ -79,8 +79,8 @@ from .models import (
     FabricDomain,
     FabricItemState,
     FabricTag,
-    MigrationMapping,
-    MigrationPlan,
+    SyncMapping,
+    SyncPlan,
     PurviewAsset,
     PurviewDomain,
     PurviewGovernanceObject,
@@ -111,13 +111,13 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 
-def load_mapping_file(path: Optional[str]) -> Optional[MigrationMapping]:
+def load_mapping_file(path: Optional[str]) -> Optional[SyncMapping]:
     """Load and validate an explicit Purview-asset-to-Fabric-item mapping file."""
     if not path:
         return None
     with open(path, "r", encoding="utf-8") as handle:
         data = json.load(handle)
-    return MigrationMapping.from_dict(data)
+    return SyncMapping.from_dict(data)
 
 
 # ---------------------------------------------------------------------------
@@ -423,11 +423,11 @@ def fetch_fabric_domains_and_workspace_assignments(
 
 
 # ---------------------------------------------------------------------------
-# Building a full MigrationPlan
+# Building a full SyncPlan
 # ---------------------------------------------------------------------------
 
 
-def build_migration_plan(
+def build_sync_plan(
     run_id: str,
     purview_assets: Sequence[PurviewAsset],
     purview_domains: Sequence[PurviewDomain],
@@ -436,13 +436,13 @@ def build_migration_plan(
     fabric_domains: Sequence[FabricDomain],
     workspace_current_domain: Dict[str, str],
     fabric_client: Any,
-    mapping: Optional[MigrationMapping] = None,
+    mapping: Optional[SyncMapping] = None,
     target_workspace_ids: Sequence[str] = (),
     overwrite: bool = False,
     truncate_descriptions: bool = False,
     sync_classifications: bool = False,
-) -> MigrationPlan:
-    """Run the full matching/planning pipeline and assemble a :class:`MigrationPlan`.
+) -> SyncPlan:
+    """Run the full matching/planning pipeline and assemble a :class:`SyncPlan`.
 
     ``fabric_client`` is used only for read calls needed mid-planning
     (fetching each matched item's current state); no writes happen here.
@@ -493,7 +493,7 @@ def build_migration_plan(
 
     non_portable = build_non_portable_summary(purview_domains, governance_objects)
 
-    return MigrationPlan(
+    return SyncPlan(
         run_id=run_id,
         generated_at=datetime.now(timezone.utc).isoformat(),
         matches=matches,
@@ -517,7 +517,7 @@ def resolve_tag_names_to_ids(fabric_client: Any, tag_names: Sequence[str]) -> Di
 
 def sync_plan(
     fabric_client: FabricMutationClient,
-    plan: MigrationPlan,
+    plan: SyncPlan,
     checkpoint_store: CheckpointStore,
     run_id: str,
     dry_run: bool = True,

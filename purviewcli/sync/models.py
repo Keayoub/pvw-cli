@@ -247,7 +247,7 @@ class MappingValidationError(ValueError):
 
 
 @dataclasses.dataclass
-class MigrationMapping:
+class SyncMapping:
     """A validated set of explicit Purview-asset-to-Fabric-item bindings."""
 
     entries: List[MappingEntry] = dataclasses.field(default_factory=list)
@@ -282,7 +282,7 @@ class MigrationMapping:
         return {e.purview_asset_id: e for e in self.entries}
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "MigrationMapping":
+    def from_dict(cls, data: Dict[str, Any]) -> "SyncMapping":
         raw_entries = data.get("mappings", data.get("entries", []))
         return cls(entries=[MappingEntry.from_dict(e) for e in raw_entries])
 
@@ -410,7 +410,7 @@ class NonPortableSummary:
 
 
 @dataclasses.dataclass
-class MigrationPlan:
+class SyncPlan:
     """The complete, human- and machine-readable output of an assessment."""
 
     run_id: str
@@ -432,7 +432,7 @@ class MigrationPlan:
 
 @dataclasses.dataclass
 class PlannedOperation:
-    """One atomic, checkpointable mutation derived from a :class:`MigrationPlan`."""
+    """One atomic, checkpointable mutation derived from a :class:`SyncPlan`."""
 
     operation_id: str
     operation_type: OperationType
@@ -492,7 +492,7 @@ class CheckpointRecord:
 
 @dataclasses.dataclass
 class RunCheckpoint:
-    """The full checkpoint state for one migration run, keyed by run_id."""
+    """The full checkpoint state for one sync run, keyed by run_id."""
 
     run_id: str
     created_at: str

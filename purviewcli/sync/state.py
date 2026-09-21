@@ -1,14 +1,14 @@
 # SPDX-License-Identifier: Apache-2.0
 """Checkpoint persistence, fingerprinting, and run-id generation.
 
-This module is responsible for the durability half of the migration
+This module is responsible for the durability half of the sync
 workflow: turning a desired-state payload into a stable fingerprint,
 generating stable run IDs, and reading/writing checkpoint files atomically
 so a crashed or interrupted run can resume without redoing (or losing track
 of) already-applied operations.
 
 Nothing here talks to Purview or Fabric; it operates purely on the
-dataclasses defined in :mod:`purviewcli.migration.models`.
+dataclasses defined in :mod:`purviewcli.sync.models`.
 """
 
 from __future__ import annotations

@@ -1,6 +1,6 @@
-# Purview → Fabric Migration: Feature Parity Map
+# Purview → Fabric Sync: Feature Parity Map
 
-> Tracks what `pvw fabric migration` implements today versus governance capabilities that
+> Tracks what `pvw fabric sync` implements today versus governance capabilities that
 > are not yet portable because Fabric (or Purview) doesn't yet expose a confirmed,
 > documented API for them. Revisit the "Not yet implemented" rows whenever Fabric/Purview
 > ship a new public API — each row lists exactly what to re-verify first.
@@ -36,9 +36,9 @@ When a new Fabric or Purview API makes one of the "not yet implemented" rows pos
 
 1. Live-verify the exact request/response shape against a real tenant first (this project's
    convention — see the "Verification status" section of
-   [`fabric-migration-guide.md`](fabric-migration-guide.md)).
+   [`fabric-sync-guide.md`](fabric-sync-guide.md)).
 2. Move the row from "Not yet implemented" to "Implemented today" here, recording what was
    verified and against what.
-3. Extend `purviewcli/migration/models.py`, `service.py`, `purview_to_fabric.py`,
+3. Extend `purviewcli/sync/models.py`, `service.py`, `purview_to_fabric.py`,
    `execution.py`, `fabric_client.py`, and `cli/fabric.py` following the same additive,
    opt-in pattern used for `--sync-classifications`.

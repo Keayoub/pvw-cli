@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Tests for purviewcli.migration.purview_to_fabric (matching + planning)."""
+"""Tests for purviewcli.sync.purview_to_fabric (matching + planning)."""
 
 import pytest
 
-from purviewcli.migration.models import (
+from purviewcli.sync.models import (
     DomainAction,
     FabricCatalogEntry,
     FabricDomain,
@@ -12,13 +12,13 @@ from purviewcli.migration.models import (
     ItemDecision,
     MappingEntry,
     MatchOutcome,
-    MigrationMapping,
+    SyncMapping,
     PurviewAsset,
     PurviewDomain,
     PurviewGovernanceObject,
     TagDecision,
 )
-from purviewcli.migration.purview_to_fabric import (
+from purviewcli.sync.purview_to_fabric import (
     DESCRIPTION_MAX_LENGTH,
     build_non_portable_summary,
     extract_embedded_fabric_ref,
@@ -119,14 +119,14 @@ class TestResolveMatches:
 
     def test_matched_by_explicit_mapping(self):
         asset = PurviewAsset(id="a1", name="A")
-        mapping = MigrationMapping(entries=[MappingEntry(purview_asset_id="a1", workspace_id="ws1", item_id="it1")])
+        mapping = SyncMapping(entries=[MappingEntry(purview_asset_id="a1", workspace_id="ws1", item_id="it1")])
         matches = resolve_matches([asset], [_catalog_entry()], mapping=mapping)
         assert matches[0].outcome == MatchOutcome.MATCHED_BY_MAPPING
         assert matches[0].is_writable()
 
     def test_mapping_target_not_found(self):
         asset = PurviewAsset(id="a1", name="A")
-        mapping = MigrationMapping(
+        mapping = SyncMapping(
             entries=[MappingEntry(purview_asset_id="a1", workspace_id="ws1", item_id="does-not-exist")]
         )
         matches = resolve_matches([asset], [_catalog_entry()], mapping=mapping)
@@ -134,7 +134,7 @@ class TestResolveMatches:
 
     def test_embedded_id_takes_precedence_over_mapping(self):
         asset = PurviewAsset(id="a1", name="A", source={"workspaceId": "ws1", "itemId": "it1"})
-        mapping = MigrationMapping(
+        mapping = SyncMapping(
             entries=[MappingEntry(purview_asset_id="a1", workspace_id="ws2", item_id="it2")]
         )
         entries = [_catalog_entry(workspace_id="ws1", item_id="it1"), _catalog_entry(workspace_id="ws2", item_id="it2")]
@@ -159,14 +159,14 @@ class TestResolveMatches:
 
 class TestMappingValidation:
     def test_flags_unknown_source_asset(self):
-        mapping = MigrationMapping(entries=[MappingEntry(purview_asset_id="ghost", workspace_id="ws1", item_id="it1")])
+        mapping = SyncMapping(entries=[MappingEntry(purview_asset_id="ghost", workspace_id="ws1", item_id="it1")])
         errors = validate_mapping_targets_are_unambiguous(mapping, assets_by_id={})
         assert len(errors) == 1
         assert "ghost" in errors[0]
 
     def test_no_errors_for_known_source(self):
         asset = PurviewAsset(id="a1", name="A")
-        mapping = MigrationMapping(entries=[MappingEntry(purview_asset_id="a1", workspace_id="ws1", item_id="it1")])
+        mapping = SyncMapping(entries=[MappingEntry(purview_asset_id="a1", workspace_id="ws1", item_id="it1")])
         errors = validate_mapping_targets_are_unambiguous(mapping, assets_by_id={"a1": asset})
         assert errors == []
 

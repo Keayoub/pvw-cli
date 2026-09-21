@@ -2,10 +2,10 @@
 """``pvw fabric`` command group: Purview Unified Catalog -> Fabric OneLake catalog sync.
 
 Commands:
-  - ``pvw fabric migration assess``  : always read-only; produces a plan/report.
-  - ``pvw fabric migration sync``    : dry-run by default; pass --apply to write.
-  - ``pvw fabric migration run``     : config-file-driven equivalent of ``sync``, for schedulers.
-  - ``pvw fabric migration rollback``: preview by default; pass --apply to restore.
+  - ``pvw fabric sync assess``  : always read-only; produces a plan/report.
+  - ``pvw fabric sync apply``    : dry-run by default; pass --apply to write.
+  - ``pvw fabric sync run``     : config-file-driven equivalent of ``apply``, for schedulers.
+  - ``pvw fabric sync rollback``: preview by default; pass --apply to restore.
 
 All writes are metadata-only (Fabric item display name/description, tenant tags, domain
 assignment) and one-way (Purview -> Fabric); nothing is ever written back to Purview.
@@ -45,7 +45,7 @@ def _shared_assessment_options(func):
         click.option("--mapping-file", type=click.Path(exists=True, dir_okay=False), default=None, help="JSON file of explicit Purview-asset-id -> Fabric workspace/item bindings."),
         click.option("--overwrite", is_flag=True, default=False, help="Allow overwriting already-populated Fabric display name/description values."),
         click.option("--truncate-descriptions", is_flag=True, default=False, help="Truncate descriptions over Fabric's 256-character limit instead of flagging a validation error."),
-        click.option("--sync-classifications", is_flag=True, default=False, help="Also sync Purview classifications/labels onto Fabric items as tags (opt-in: requires Data Map linkage; see docs/fabric-migration-feature-parity.md)."),
+        click.option("--sync-classifications", is_flag=True, default=False, help="Also sync Purview classifications/labels onto Fabric items as tags (opt-in: requires Data Map linkage; see docs/fabric-sync-feature-parity.md)."),
         click.option("--report-file", type=click.Path(dir_okay=False), default=None, help="Write the full JSON assessment/apply report to this path."),
         click.option("--csv-report-file", type=click.Path(dir_okay=False), default=None, help="Write a flattened CSV audit report to this path."),
         click.option("--output", default="table", type=click.Choice(["table", "json"]), help="Console summary format."),
@@ -65,23 +65,23 @@ def _run_assessment(
     sync_classifications: bool = False,
     run_id: Optional[str] = None,
 ):
-    """Fetch Purview + Fabric state and build a MigrationPlan. Shared by assess/sync/run.
+    """Fetch Purview + Fabric state and build a SyncPlan. Shared by assess/apply/run.
 
     ``run_id`` should be supplied by callers that persist a checkpoint (e.g.
-    ``sync``) so repeated invocations against the same checkpoint file reuse
+    ``apply``) so repeated invocations against the same checkpoint file reuse
     its run id rather than generating a new one each time -- required for
-    :meth:`~purviewcli.migration.state.CheckpointStore.load_or_create`'s
+    :meth:`~purviewcli.sync.state.CheckpointStore.load_or_create`'s
     resume/idempotency guard. ``assess`` (which never checkpoints) leaves it
     unset and always gets a fresh run id.
     """
-    from purviewcli.migration.service import (
-        build_migration_plan,
+    from purviewcli.sync.service import (
+        build_sync_plan,
         fetch_fabric_catalog,
         fetch_fabric_domains_and_workspace_assignments,
         fetch_purview_state,
         load_mapping_file,
     )
-    from purviewcli.migration.state import new_run_id
+    from purviewcli.sync.state import new_run_id
 
     uc_client, fabric_client, entity_client = _get_clients(ctx)
 
@@ -95,7 +95,7 @@ def _run_assessment(
     catalog_entries = fetch_fabric_catalog(fabric_client, workspace_ids=list(workspace_ids))
     fabric_domains, workspace_current_domain = fetch_fabric_domains_and_workspace_assignments(fabric_client)
 
-    plan = build_migration_plan(
+    plan = build_sync_plan(
         run_id=run_id or new_run_id(),
         purview_assets=purview_state["assets"],
         purview_domains=purview_state["domains"],
@@ -114,7 +114,7 @@ def _run_assessment(
 
 
 def _write_reports(plan, report_file: Optional[str], csv_report_file: Optional[str], sync_result=None, rollback_result=None):
-    from purviewcli.migration.reporting import write_csv_report, write_json_report
+    from purviewcli.sync.reporting import write_csv_report, write_json_report
 
     if report_file:
         write_json_report(plan, report_file, sync_result=sync_result, rollback_result=rollback_result)
@@ -161,7 +161,7 @@ def _render_plan_summary(plan, output: str) -> None:
 
 def _exit_nonzero_if_needed(plan, sync_result=None) -> None:
     """Exit nonzero if the assessment/apply surfaced anything requiring attention."""
-    from purviewcli.migration.models import ItemDecision, TagDecision
+    from purviewcli.sync.models import ItemDecision, TagDecision
 
     has_conflicts = any(
         p.decision in (ItemDecision.CONFLICT, ItemDecision.VALIDATION_ERROR) for p in plan.item_plans
@@ -174,36 +174,36 @@ def _exit_nonzero_if_needed(plan, sync_result=None) -> None:
 
 @click.group()
 def fabric():
-    """Purview Unified Catalog -> Fabric OneLake catalog migration commands."""
+    """Purview Unified Catalog -> Fabric OneLake catalog sync commands."""
     pass
 
 
 @fabric.group()
-def migration():
-    """Assess, sync, and roll back the Purview -> Fabric metadata migration."""
+def sync():
+    """Assess, apply, and roll back the Purview -> Fabric metadata sync."""
     pass
 
 
-@migration.command(name="assess")
+@sync.command(name="assess")
 @_shared_assessment_options
 @click.pass_context
-def migration_assess(ctx, purview_domain_ids, workspace_ids, mapping_file, overwrite, truncate_descriptions, sync_classifications, report_file, csv_report_file, output):
-    """Read-only assessment: build and report a migration plan without writing anything."""
+def sync_assess(ctx, purview_domain_ids, workspace_ids, mapping_file, overwrite, truncate_descriptions, sync_classifications, report_file, csv_report_file, output):
+    """Read-only assessment: build and report a sync plan without writing anything."""
     plan, _fabric_client = _run_assessment(ctx, purview_domain_ids, workspace_ids, mapping_file, overwrite, truncate_descriptions, sync_classifications=sync_classifications)
     _write_reports(plan, report_file, csv_report_file)
     _render_plan_summary(plan, output)
     _exit_nonzero_if_needed(plan)
 
 
-@migration.command(name="sync")
+@sync.command(name="apply")
 @_shared_assessment_options
 @click.option("--checkpoint-file", type=click.Path(dir_okay=False), required=True, help="Path to this run's checkpoint file (created on first apply; required for resume/rollback).")
-@click.option("--apply", "apply_", is_flag=True, default=False, help="Actually write changes to Fabric. Without this flag, sync always dry-runs.")
+@click.option("--apply", "apply_", is_flag=True, default=False, help="Actually write changes to Fabric. Without this flag, apply always dry-runs.")
 @click.pass_context
-def migration_sync(ctx, purview_domain_ids, workspace_ids, mapping_file, overwrite, truncate_descriptions, sync_classifications, report_file, csv_report_file, output, checkpoint_file, apply_):
+def sync_apply(ctx, purview_domain_ids, workspace_ids, mapping_file, overwrite, truncate_descriptions, sync_classifications, report_file, csv_report_file, output, checkpoint_file, apply_):
     """Assess, then apply (or dry-run) the resulting plan against Fabric."""
-    from purviewcli.migration.service import sync_plan
-    from purviewcli.migration.state import CheckpointStore
+    from purviewcli.sync.service import sync_plan
+    from purviewcli.sync.state import CheckpointStore
 
     store = CheckpointStore(checkpoint_file)
     # Reuse an existing checkpoint's run id so repeated syncs against the same
@@ -230,16 +230,16 @@ def migration_sync(ctx, purview_domain_ids, workspace_ids, mapping_file, overwri
     _exit_nonzero_if_needed(plan, sync_result)
 
 
-@migration.command(name="run")
-@click.option("--config", "config_path", type=click.Path(exists=True, dir_okay=False), required=True, help="JSON config file with the same keys as the sync command's options (for scheduled/unattended runs).")
+@sync.command(name="run")
+@click.option("--config", "config_path", type=click.Path(exists=True, dir_okay=False), required=True, help="JSON config file with the same keys as the apply command's options (for scheduled/unattended runs).")
 @click.pass_context
-def migration_run(ctx, config_path):
-    """Config-file-driven equivalent of ``sync``, intended for schedulers/automation."""
+def sync_run(ctx, config_path):
+    """Config-file-driven equivalent of ``apply``, intended for schedulers/automation."""
     with open(config_path, "r", encoding="utf-8") as handle:
         config = json.load(handle)
 
     ctx.invoke(
-        migration_sync,
+        sync_apply,
         purview_domain_ids=tuple(config.get("purview_domain_ids", [])),
         workspace_ids=tuple(config.get("workspace_ids", [])),
         mapping_file=config.get("mapping_file"),
@@ -254,30 +254,30 @@ def migration_run(ctx, config_path):
     )
 
 
-@migration.command(name="rollback")
+@sync.command(name="rollback")
 @click.option("--checkpoint-file", type=click.Path(exists=True, dir_okay=False), required=True, help="Checkpoint file of the run to roll back.")
 @click.option("--apply", "apply_", is_flag=True, default=False, help="Actually restore prior state in Fabric. Without this flag, rollback always previews.")
 @click.option("--report-file", type=click.Path(dir_okay=False), default=None, help="Write the full JSON rollback report to this path.")
 @click.option("--output", default="table", type=click.Choice(["table", "json"]), help="Console summary format.")
 @click.pass_context
-def migration_rollback(ctx, checkpoint_file, apply_, report_file, output):
+def sync_rollback(ctx, checkpoint_file, apply_, report_file, output):
     """Reverse a completed run's item metadata, tag, and domain-assignment changes.
 
     Rollback is derived purely from the checkpoint file -- it never re-runs
     matching/planning -- so it is safe to run long after the source data has
     moved on. Domains and tag definitions created by a run are never deleted.
     """
-    from purviewcli.migration.models import MigrationPlan
-    from purviewcli.migration.service import rollback_run
-    from purviewcli.migration.state import CheckpointStore, new_run_id
+    from purviewcli.sync.models import SyncPlan
+    from purviewcli.sync.service import rollback_run
+    from purviewcli.sync.state import CheckpointStore, new_run_id
 
     _uc_client, fabric_client, _entity_client = _get_clients(ctx)
     store = CheckpointStore(checkpoint_file)
     result = rollback_run(fabric_client, store, dry_run=not apply_)
 
     if report_file:
-        empty_plan = MigrationPlan(run_id=result.run_id or new_run_id(), generated_at="")
-        from purviewcli.migration.reporting import write_json_report
+        empty_plan = SyncPlan(run_id=result.run_id or new_run_id(), generated_at="")
+        from purviewcli.sync.reporting import write_json_report
 
         write_json_report(empty_plan, report_file, rollback_result=result)
         console.print(f"[dim]JSON report written to {report_file}[/dim]")

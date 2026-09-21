@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Tests for purviewcli.migration.models and purviewcli.migration.state."""
+"""Tests for purviewcli.sync.models and purviewcli.sync.state."""
 
 import json
 import os
@@ -7,18 +7,18 @@ import tempfile
 
 import pytest
 
-from purviewcli.migration.models import (
+from purviewcli.sync.models import (
     AssetMatch,
     CheckpointRecord,
     MappingEntry,
     MappingValidationError,
     MatchOutcome,
-    MigrationMapping,
+    SyncMapping,
     OperationStatus,
     OperationType,
     RunCheckpoint,
 )
-from purviewcli.migration.state import (
+from purviewcli.sync.state import (
     CheckpointStore,
     compute_fingerprint,
     new_run_id,
@@ -30,9 +30,9 @@ from purviewcli.migration.state import (
 # ---------------------------------------------------------------------------
 
 
-class TestMigrationMapping:
+class TestSyncMapping:
     def test_valid_mapping_builds_lookup(self):
-        mapping = MigrationMapping(
+        mapping = SyncMapping(
             entries=[
                 MappingEntry(purview_asset_id="a1", workspace_id="ws1", item_id="it1"),
                 MappingEntry(purview_asset_id="a2", workspace_id="ws1", item_id="it2"),
@@ -44,7 +44,7 @@ class TestMigrationMapping:
 
     def test_duplicate_source_binding_rejected(self):
         with pytest.raises(MappingValidationError, match="Duplicate purviewAssetId"):
-            MigrationMapping(
+            SyncMapping(
                 entries=[
                     MappingEntry(purview_asset_id="a1", workspace_id="ws1", item_id="it1"),
                     MappingEntry(purview_asset_id="a1", workspace_id="ws2", item_id="it2"),
@@ -53,7 +53,7 @@ class TestMigrationMapping:
 
     def test_duplicate_target_binding_rejected(self):
         with pytest.raises(MappingValidationError, match="Duplicate Fabric target"):
-            MigrationMapping(
+            SyncMapping(
                 entries=[
                     MappingEntry(purview_asset_id="a1", workspace_id="ws1", item_id="it1"),
                     MappingEntry(purview_asset_id="a2", workspace_id="ws1", item_id="it1"),
@@ -62,7 +62,7 @@ class TestMigrationMapping:
 
     def test_missing_field_rejected(self):
         with pytest.raises(MappingValidationError):
-            MigrationMapping(entries=[MappingEntry(purview_asset_id="", workspace_id="ws1", item_id="it1")])
+            SyncMapping(entries=[MappingEntry(purview_asset_id="", workspace_id="ws1", item_id="it1")])
 
     def test_from_dict_round_trip(self):
         data = {
@@ -70,7 +70,7 @@ class TestMigrationMapping:
                 {"purviewAssetId": "a1", "workspaceId": "ws1", "itemId": "it1", "note": "manual"},
             ]
         }
-        mapping = MigrationMapping.from_dict(data)
+        mapping = SyncMapping.from_dict(data)
         assert mapping.entries[0].note == "manual"
 
 

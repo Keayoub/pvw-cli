@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """JSON and CSV report generation for the Purview UC -> Fabric sync.
 
-Reports are always written atomically (see :func:`purviewcli.migration.state._atomic_write`)
+Reports are always written atomically (see :func:`purviewcli.sync.state._atomic_write`)
 so a crash mid-write never leaves a truncated report file that looks valid.
 """
 
@@ -12,12 +12,12 @@ import io
 import json
 from typing import Any, Dict, List, Optional
 
-from .models import MigrationPlan, RollbackResult, SyncRunResult
+from .models import SyncPlan, RollbackResult, SyncRunResult
 from .state import atomic_write
 
 
 def write_json_report(
-    plan: MigrationPlan,
+    plan: SyncPlan,
     path: str,
     sync_result: Optional[SyncRunResult] = None,
     rollback_result: Optional[RollbackResult] = None,
@@ -42,7 +42,7 @@ _CSV_COLUMNS = [
 ]
 
 
-def _item_plan_rows(plan: MigrationPlan) -> List[Dict[str, str]]:
+def _item_plan_rows(plan: SyncPlan) -> List[Dict[str, str]]:
     rows = []
     for item_plan in plan.item_plans:
         details = "; ".join(f"{c.field}: {c.current!r} -> {c.desired!r}" for c in item_plan.changes)
@@ -61,7 +61,7 @@ def _item_plan_rows(plan: MigrationPlan) -> List[Dict[str, str]]:
     return rows
 
 
-def _tag_plan_rows(plan: MigrationPlan) -> List[Dict[str, str]]:
+def _tag_plan_rows(plan: SyncPlan) -> List[Dict[str, str]]:
     rows = []
     for tag_plan in plan.tag_plans:
         parts = []
@@ -82,7 +82,7 @@ def _tag_plan_rows(plan: MigrationPlan) -> List[Dict[str, str]]:
     return rows
 
 
-def _domain_plan_rows(plan: MigrationPlan) -> List[Dict[str, str]]:
+def _domain_plan_rows(plan: SyncPlan) -> List[Dict[str, str]]:
     rows = []
     for domain_plan in plan.domain_plans:
         rows.append(
@@ -112,7 +112,7 @@ def _domain_plan_rows(plan: MigrationPlan) -> List[Dict[str, str]]:
     return rows
 
 
-def _match_rows(plan: MigrationPlan) -> List[Dict[str, str]]:
+def _match_rows(plan: SyncPlan) -> List[Dict[str, str]]:
     rows = []
     for match in plan.matches:
         details = match.reason or ""
@@ -132,12 +132,12 @@ def _match_rows(plan: MigrationPlan) -> List[Dict[str, str]]:
     return rows
 
 
-def plan_to_csv_rows(plan: MigrationPlan) -> List[Dict[str, str]]:
+def plan_to_csv_rows(plan: SyncPlan) -> List[Dict[str, str]]:
     """Flatten a plan into rows suitable for a single CSV audit report."""
     return _match_rows(plan) + _item_plan_rows(plan) + _tag_plan_rows(plan) + _domain_plan_rows(plan)
 
 
-def write_csv_report(plan: MigrationPlan, path: str) -> None:
+def write_csv_report(plan: SyncPlan, path: str) -> None:
     """Write a flattened CSV audit report covering matches, items, tags, and domains."""
     buffer = io.StringIO()
     writer = csv.DictWriter(buffer, fieldnames=_CSV_COLUMNS)

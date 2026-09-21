@@ -11,10 +11,10 @@ stack: Fabric is a different host, a different authentication audience, and
 a different error/response shape.
 
 It backs the ``pvw fabric`` command group, primarily the Purview Unified
-Catalog -> Fabric OneLake catalog migration workflow, but is written as a
+Catalog -> Fabric OneLake catalog sync workflow, but is written as a
 general-purpose Fabric transport so it can be reused by future commands.
 
-Only the operations needed for the migration workflow are implemented:
+Only the operations needed for the sync workflow are implemented:
 
 - OneLake catalog search (discovery of Fabric items)
 - Item read / update (``displayName`` / ``description``)

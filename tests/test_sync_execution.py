@@ -1,12 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Tests for purviewcli.migration.execution (apply + rollback)."""
+"""Tests for purviewcli.sync.execution (apply + rollback)."""
 
 import os
 import tempfile
 
 import pytest
 
-from purviewcli.migration.execution import (
+from purviewcli.sync.execution import (
     apply_operations,
     apply_rollback,
     build_domain_operations,
@@ -16,7 +16,7 @@ from purviewcli.migration.execution import (
     build_rollback_operations,
     build_tag_definition_operations,
 )
-from purviewcli.migration.models import (
+from purviewcli.sync.models import (
     DomainAction,
     DomainPlan,
     FieldChange,
@@ -28,7 +28,7 @@ from purviewcli.migration.models import (
     TagDecision,
     WorkspaceDomainAssignmentPlan,
 )
-from purviewcli.migration.state import CheckpointStore, compute_fingerprint
+from purviewcli.sync.state import CheckpointStore, compute_fingerprint
 
 
 # ---------------------------------------------------------------------------
@@ -235,7 +235,7 @@ class TestBuildOperations:
 
 class TestApplyOperations:
     def _update_item_op(self, workspace_id="ws1", item_id="it1", desired="new desc"):
-        from purviewcli.migration.models import PlannedOperation
+        from purviewcli.sync.models import PlannedOperation
 
         payload = {"description": desired}
         return PlannedOperation(
@@ -299,7 +299,7 @@ class TestApplyOperations:
         assert store.load() is None
 
     def test_domain_creation_resolves_id_for_dependent_assignment(self, store_and_checkpoint):
-        from purviewcli.migration.models import PlannedOperation
+        from purviewcli.sync.models import PlannedOperation
 
         store, checkpoint = store_and_checkpoint
         client = FakeFabricClient()
@@ -322,7 +322,7 @@ class TestApplyOperations:
         assert client.assigned == [("fd-1", ["ws1"])]
 
     def test_assignment_without_prior_domain_creation_fails_cleanly(self, store_and_checkpoint):
-        from purviewcli.migration.models import PlannedOperation
+        from purviewcli.sync.models import PlannedOperation
 
         store, checkpoint = store_and_checkpoint
         client = FakeFabricClient()
@@ -338,7 +338,7 @@ class TestApplyOperations:
 
     def test_tag_creation_resolves_id_for_dependent_apply(self, store_and_checkpoint):
         """CREATE_TAG's id must be resolved for a same-run APPLY_ITEM_TAGS by name."""
-        from purviewcli.migration.models import PlannedOperation
+        from purviewcli.sync.models import PlannedOperation
 
         store, checkpoint = store_and_checkpoint
         client = FakeFabricClient()
@@ -362,7 +362,7 @@ class TestApplyOperations:
 
     def test_apply_tags_resolves_via_preexisting_tag_ids(self, store_and_checkpoint):
         """A tag that already existed on the tenant (no CREATE_TAG in this run) still resolves."""
-        from purviewcli.migration.models import PlannedOperation
+        from purviewcli.sync.models import PlannedOperation
 
         store, checkpoint = store_and_checkpoint
         client = FakeFabricClient()
@@ -385,7 +385,7 @@ class TestApplyOperations:
         assert client.applied_tags == [("ws1", "it1", ["existing-tag-1"])]
 
     def test_apply_tags_without_resolvable_name_fails_cleanly(self, store_and_checkpoint):
-        from purviewcli.migration.models import PlannedOperation
+        from purviewcli.sync.models import PlannedOperation
 
         store, checkpoint = store_and_checkpoint
         client = FakeFabricClient()
@@ -408,12 +408,12 @@ class TestApplyOperations:
 
 class TestRollback:
     def _checkpoint_with(self, records):
-        from purviewcli.migration.models import RunCheckpoint
+        from purviewcli.sync.models import RunCheckpoint
 
         return RunCheckpoint(run_id="run-1", created_at="t", updated_at="t", records=records)
 
     def test_rollback_reverses_item_update(self):
-        from purviewcli.migration.models import CheckpointRecord
+        from purviewcli.sync.models import CheckpointRecord
 
         checkpoint = self._checkpoint_with(
             [
@@ -435,7 +435,7 @@ class TestRollback:
         assert reverse_ops[0].payload == {"description": "old"}
 
     def test_rollback_unassigns_domain(self):
-        from purviewcli.migration.models import CheckpointRecord
+        from purviewcli.sync.models import CheckpointRecord
 
         checkpoint = self._checkpoint_with(
             [
@@ -455,7 +455,7 @@ class TestRollback:
         assert reverse_ops[0].payload == {"domainId": "fd-1"}
 
     def test_rollback_unapplies_only_run_owned_tags(self):
-        from purviewcli.migration.models import CheckpointRecord
+        from purviewcli.sync.models import CheckpointRecord
 
         checkpoint = self._checkpoint_with(
             [
@@ -476,7 +476,7 @@ class TestRollback:
         assert reverse_ops[0].payload == {"tagIds": ["tag-1", "tag-2"]}
 
     def test_rollback_never_touches_domain_or_tag_creation(self):
-        from purviewcli.migration.models import CheckpointRecord
+        from purviewcli.sync.models import CheckpointRecord
 
         checkpoint = self._checkpoint_with(
             [
@@ -499,7 +499,7 @@ class TestRollback:
         assert build_rollback_operations(checkpoint) == []
 
     def test_apply_rollback_dry_run(self):
-        from purviewcli.migration.models import PlannedOperation
+        from purviewcli.sync.models import PlannedOperation
 
         client = FakeFabricClient()
         op = PlannedOperation(
@@ -515,7 +515,7 @@ class TestRollback:
         assert client.updated_items == []
 
     def test_apply_rollback_executes_and_reports_failures(self):
-        from purviewcli.migration.models import PlannedOperation
+        from purviewcli.sync.models import PlannedOperation
 
         client = FakeFabricClient(fail_operations={"update_item"})
         ops = [

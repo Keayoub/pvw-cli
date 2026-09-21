@@ -138,7 +138,7 @@ pvw types            Type definitions
 pvw uc               Unified Catalog (domains, terms, data products, OKRs, CDEs, quality)
 pvw workflow         Approval workflows
 pvw diagnostics      Cache stats and profile info
-pvw fabric           Purview Unified Catalog -> Fabric OneLake catalog migration
+pvw fabric           Purview Unified Catalog -> Fabric OneLake catalog sync
 ```
 
 Run `pvw <command> --help` for full options on any command.
@@ -156,25 +156,25 @@ This guide covers:
 - Facets, hierarchy, and relationship operations
 - Common patterns and troubleshooting tips
 
-### Purview → Fabric Migration
+### Purview → Fabric Sync
 
-Purview data governance is converging into Microsoft Fabric. `pvw fabric migration` provides
+Purview data governance is converging into Microsoft Fabric. `pvw fabric sync` provides
 a dry-run-by-default, checkpointed, one-way sync of portable Unified Catalog metadata (asset
 descriptions, governance domains, glossary/data-product/CDE names as tags, and optionally
 classifications/labels via `--sync-classifications`) into the Fabric OneLake catalog:
 
 ```bash
-pvw fabric migration assess --purview-domain-id <id> --workspace-id <id> --sync-classifications
-pvw fabric migration sync --mapping-file mapping_file.json --checkpoint-file run.json --apply
-pvw fabric migration rollback --checkpoint-file run.json --apply
+pvw fabric sync assess --purview-domain-id <id> --workspace-id <id> --sync-classifications
+pvw fabric sync apply --mapping-file mapping_file.json --checkpoint-file run.json --apply
+pvw fabric sync rollback --checkpoint-file run.json --apply
 ```
 
-See **[docs/fabric-migration-guide.md](docs/fabric-migration-guide.md)** for the full guide
+See **[docs/fabric-sync-guide.md](docs/fabric-sync-guide.md)** for the full guide
 (matching policy, conflict/tag-overflow rules, required Fabric permissions, scheduling, and
-command reference), **[docs/fabric-migration-feature-parity.md](docs/fabric-migration-feature-parity.md)**
+command reference), **[docs/fabric-sync-feature-parity.md](docs/fabric-sync-feature-parity.md)**
 for what's implemented today versus tracked as future work (e.g. sensitivity-label sync,
 pending Purview/Fabric API availability), and
-**[samples/json/fabric_migration/](samples/json/fabric_migration/)** for mapping-file and
+**[samples/json/fabric_sync/](samples/json/fabric_sync/)** for mapping-file and
 `run --config` examples.
 
 ### Additional Documentation

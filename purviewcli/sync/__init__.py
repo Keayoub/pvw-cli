@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Purview Unified Catalog -> Fabric OneLake catalog migration/sync package.
+"""Purview Unified Catalog -> Fabric OneLake catalog sync package.
 
 This package is intentionally independent of Click and of the Purview/Fabric
 HTTP clients: it operates on plain, typed, JSON-serializable models so the

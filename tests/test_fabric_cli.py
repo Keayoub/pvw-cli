@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""CLI-level tests for `pvw fabric migration` (assess/sync/run/rollback).
+"""CLI-level tests for `pvw fabric sync` (assess/apply/run/rollback).
 
 These tests exercise Click option parsing, dry-run gating, exit codes, and
 report writing by monkeypatching the client-construction seam
@@ -19,7 +19,7 @@ from purviewcli.cli.fabric import fabric
 
 
 # ---------------------------------------------------------------------------
-# Fakes (mirrors tests/test_migration_service.py's fakes)
+# Fakes (mirrors tests/test_sync_service.py's fakes)
 # ---------------------------------------------------------------------------
 
 
@@ -159,7 +159,7 @@ class TestAssess:
         _patch_clients(monkeypatch, uc_client, fabric_client)
         mapping_path = _mapping_file(tmp_dir)
 
-        result = runner.invoke(fabric, ["migration", "assess", "--mapping-file", mapping_path], obj={"profile": "default"})
+        result = runner.invoke(fabric, ["sync", "assess", "--mapping-file", mapping_path], obj={"profile": "default"})
         assert result.exit_code == 0, result.output
         assert "Assessment summary" in result.output
         assert fabric_client.updated_items == []  # assess never writes
@@ -173,7 +173,7 @@ class TestAssess:
 
         result = runner.invoke(
             fabric,
-            ["migration", "assess", "--mapping-file", mapping_path, "--report-file", report_path, "--csv-report-file", csv_path],
+            ["sync", "assess", "--mapping-file", mapping_path, "--report-file", report_path, "--csv-report-file", csv_path],
             obj={"profile": "default"},
         )
         assert result.exit_code == 0, result.output
@@ -190,7 +190,7 @@ class TestAssess:
         mapping_path = _mapping_file(tmp_dir)
 
         result = runner.invoke(
-            fabric, ["migration", "assess", "--mapping-file", mapping_path, "--output", "json"], obj={"profile": "default"}
+            fabric, ["sync", "assess", "--mapping-file", mapping_path, "--output", "json"], obj={"profile": "default"}
         )
         assert result.exit_code == 0, result.output
         payload = json.loads(result.output)
@@ -202,7 +202,7 @@ class TestAssess:
         _patch_clients(monkeypatch, uc_client, fabric_client)
         mapping_path = _mapping_file(tmp_dir)
 
-        result = runner.invoke(fabric, ["migration", "assess", "--mapping-file", mapping_path], obj={"profile": "default"})
+        result = runner.invoke(fabric, ["sync", "assess", "--mapping-file", mapping_path], obj={"profile": "default"})
         assert result.exit_code == 1, result.output
 
 
@@ -220,7 +220,7 @@ class TestSync:
 
         result = runner.invoke(
             fabric,
-            ["migration", "sync", "--mapping-file", mapping_path, "--checkpoint-file", checkpoint_path],
+            ["sync", "apply", "--mapping-file", mapping_path, "--checkpoint-file", checkpoint_path],
             obj={"profile": "default"},
         )
         assert result.exit_code == 0, result.output
@@ -236,7 +236,7 @@ class TestSync:
 
         result = runner.invoke(
             fabric,
-            ["migration", "sync", "--mapping-file", mapping_path, "--checkpoint-file", checkpoint_path, "--apply"],
+            ["sync", "apply", "--mapping-file", mapping_path, "--checkpoint-file", checkpoint_path, "--apply"],
             obj={"profile": "default"},
         )
         assert result.exit_code == 0, result.output
@@ -249,7 +249,7 @@ class TestSync:
         _patch_clients(monkeypatch, uc_client, fabric_client)
         mapping_path = _mapping_file(tmp_dir)
         checkpoint_path = os.path.join(tmp_dir, "checkpoint.json")
-        args = ["migration", "sync", "--mapping-file", mapping_path, "--checkpoint-file", checkpoint_path, "--apply"]
+        args = ["sync", "apply", "--mapping-file", mapping_path, "--checkpoint-file", checkpoint_path, "--apply"]
 
         runner.invoke(fabric, args, obj={"profile": "default"})
         assert len(fabric_client.updated_items) == 1
@@ -277,7 +277,7 @@ class TestRunConfig:
                 handle,
             )
 
-        result = runner.invoke(fabric, ["migration", "run", "--config", config_path], obj={"profile": "default"})
+        result = runner.invoke(fabric, ["sync", "run", "--config", config_path], obj={"profile": "default"})
         assert result.exit_code == 0, result.output
         assert fabric_client.updated_items == [("ws1", "it1", "Customer Table", "A table.")]
 
@@ -295,7 +295,7 @@ class TestRollback:
         checkpoint_path = os.path.join(tmp_dir, "checkpoint.json")
         runner.invoke(
             fabric,
-            ["migration", "sync", "--mapping-file", mapping_path, "--checkpoint-file", checkpoint_path, "--apply"],
+            ["sync", "apply", "--mapping-file", mapping_path, "--checkpoint-file", checkpoint_path, "--apply"],
             obj={"profile": "default"},
         )
         return fabric_client, checkpoint_path
@@ -304,7 +304,7 @@ class TestRollback:
         fabric_client, checkpoint_path = self._apply_then_get_checkpoint(runner, monkeypatch, tmp_dir)
         applied_count = len(fabric_client.updated_items)
 
-        result = runner.invoke(fabric, ["migration", "rollback", "--checkpoint-file", checkpoint_path], obj={"profile": "default"})
+        result = runner.invoke(fabric, ["sync", "rollback", "--checkpoint-file", checkpoint_path], obj={"profile": "default"})
         assert result.exit_code == 0, result.output
         assert "PREVIEW" in result.output
         assert len(fabric_client.updated_items) == applied_count  # no new writes
@@ -313,7 +313,7 @@ class TestRollback:
         fabric_client, checkpoint_path = self._apply_then_get_checkpoint(runner, monkeypatch, tmp_dir)
 
         result = runner.invoke(
-            fabric, ["migration", "rollback", "--checkpoint-file", checkpoint_path, "--apply"], obj={"profile": "default"}
+            fabric, ["sync", "rollback", "--checkpoint-file", checkpoint_path, "--apply"], obj={"profile": "default"}
         )
         assert result.exit_code == 0, result.output
         assert "ROLLED BACK" in result.output

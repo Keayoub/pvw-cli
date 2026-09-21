@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "description": "Config-driven equivalent of `pvw fabric migration sync`'s options, for use with `pvw fabric migration run --config <this file>` from a scheduler/pipeline. Keys mirror the sync command's option names.",
+  "description": "Config-driven equivalent of `pvw fabric sync apply`'s options, for use with `pvw fabric sync run --config <this file>` from a scheduler/pipeline. Keys mirror the sync command's option names.",
   "purview_domain_ids": [
     "b1c9e6b0-0000-0000-0000-000000000001"
   ],

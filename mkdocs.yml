@@ -54,8 +54,8 @@ nav:
       - Command Groups: command-groups.md
   - Core Guides:
       - Unified Catalog: unified-catalog.md
-      - Fabric Migration Guide: fabric-migration-guide.md
-      - Fabric Migration Feature Parity: fabric-migration-feature-parity.md
+      - Fabric Sync Guide: fabric-sync-guide.md
+      - Fabric Sync Feature Parity: fabric-sync-feature-parity.md
       - Purview MCP Server: purview-mcp-server.md
       - Quick Reference: quick-reference.md
       - Entity Bulk CSV Guide: entity-bulk-csv-guide.md

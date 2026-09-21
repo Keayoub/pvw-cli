@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 """Deterministic matching and planning for the Purview UC -> Fabric sync.
 
-This module contains the pure "brain" of the migration: given normalized
-Purview and Fabric state (see :mod:`purviewcli.migration.models`), it
-produces a :class:`~purviewcli.migration.models.MigrationPlan` describing
+This module contains the pure "brain" of the sync: given normalized
+Purview and Fabric state (see :mod:`purviewcli.sync.models`), it
+produces a :class:`~purviewcli.sync.models.SyncPlan` describing
 every proposed change, with no network access and no side effects. This
 keeps matching/planning fully unit-testable and keeps policy decisions
 (conflict handling, tag-overflow behavior, description truncation) in one
@@ -33,8 +33,8 @@ from .models import (
     ItemTagPlan,
     MatchOutcome,
     MatchSuggestion,
-    MigrationMapping,
-    MigrationPlan,
+    SyncMapping,
+    SyncPlan,
     NonPortableSummary,
     PurviewAsset,
     PurviewDomain,
@@ -144,14 +144,14 @@ def _suggest_by_name(
 def resolve_matches(
     assets: Sequence[PurviewAsset],
     catalog_entries: Sequence[FabricCatalogEntry],
-    mapping: Optional[MigrationMapping] = None,
+    mapping: Optional[SyncMapping] = None,
 ) -> List[AssetMatch]:
     """Resolve each Purview asset to at most one Fabric item.
 
     Precedence: embedded Fabric IDs first, then an explicit mapping entry.
     Anything else is ``unmatched`` (with non-authoritative name suggestions
     only) -- fuzzy/name-only matching is never sufficient to authorize a
-    write, per the approved migration design.
+    write, per the approved sync design.
     """
     entries_by_key = {(e.workspace_id, e.id): e for e in catalog_entries}
     mapping_by_source = mapping.by_purview_asset_id() if mapping else {}
@@ -226,7 +226,7 @@ def resolve_matches(
 
 
 def validate_mapping_targets_are_unambiguous(
-    mapping: MigrationMapping, assets_by_id: Dict[str, PurviewAsset]
+    mapping: SyncMapping, assets_by_id: Dict[str, PurviewAsset]
 ) -> List[str]:
     """Return human-readable errors for mapping entries with unresolvable sources.
 

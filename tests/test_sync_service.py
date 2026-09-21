@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Tests for purviewcli.migration.service (adapter/orchestration layer)."""
+"""Tests for purviewcli.sync.service (adapter/orchestration layer)."""
 
 import json
 import os
@@ -7,16 +7,16 @@ import tempfile
 
 import pytest
 
-from purviewcli.migration.models import (
+from purviewcli.sync.models import (
     FabricDomain,
-    MigrationMapping,
+    SyncMapping,
     OperationStatus,
     PurviewAsset,
     PurviewDomain,
     PurviewGovernanceObject,
 )
-from purviewcli.migration.service import (
-    build_migration_plan,
+from purviewcli.sync.service import (
+    build_sync_plan,
     enrich_assets_with_entity_metadata,
     fetch_entity_metadata,
     fetch_fabric_catalog,
@@ -34,7 +34,7 @@ from purviewcli.migration.service import (
     rollback_run,
     sync_plan,
 )
-from purviewcli.migration.state import CheckpointStore
+from purviewcli.sync.state import CheckpointStore
 
 
 # ---------------------------------------------------------------------------
@@ -414,7 +414,7 @@ class TestMappingFile:
             with open(path, "w", encoding="utf-8") as handle:
                 json.dump(payload, handle)
             mapping = load_mapping_file(path)
-        assert isinstance(mapping, MigrationMapping)
+        assert isinstance(mapping, SyncMapping)
         assert mapping.entries[0].purview_asset_id == "a1"
 
 
@@ -423,14 +423,14 @@ class TestMappingFile:
 # ---------------------------------------------------------------------------
 
 
-class TestBuildMigrationPlanAndApply:
+class TestBuildSyncPlanAndApply:
     def _asset(self):
         return PurviewAsset(id="a1", name="Customer Table", description="A customer table.", domain_id="d1")
 
     def _catalog_entry_embedding_ref(self):
         # extract_embedded_fabric_ref looks for a `fabric_ref` shaped source; simplest writable
         # path for this test is an explicit mapping instead of embedded-ref detection.
-        from purviewcli.migration.models import FabricCatalogEntry
+        from purviewcli.sync.models import FabricCatalogEntry
 
         return FabricCatalogEntry(
             id="it1", type="Lakehouse", display_name="", description=None, workspace_id="ws1", workspace_display_name="WS1"
@@ -439,12 +439,12 @@ class TestBuildMigrationPlanAndApply:
     def test_build_plan_matches_via_mapping_and_diffs_metadata(self):
         asset = self._asset()
         entry = self._catalog_entry_embedding_ref()
-        mapping = MigrationMapping.from_dict(
+        mapping = SyncMapping.from_dict(
             {"mappings": [{"purviewAssetId": "a1", "workspaceId": "ws1", "itemId": "it1"}]}
         )
         fabric_client = FakeFabricClient(items={("ws1", "it1"): {"displayName": "", "description": None, "tags": []}})
 
-        plan = build_migration_plan(
+        plan = build_sync_plan(
             run_id="run-1",
             purview_assets=[asset],
             purview_domains=[],
@@ -470,12 +470,12 @@ class TestBuildMigrationPlanAndApply:
             label_names=["pvw-test-label"],
         )
         entry = self._catalog_entry_embedding_ref()
-        mapping = MigrationMapping.from_dict(
+        mapping = SyncMapping.from_dict(
             {"mappings": [{"purviewAssetId": "a1", "workspaceId": "ws1", "itemId": "it1"}]}
         )
         fabric_client = FakeFabricClient(items={("ws1", "it1"): {"displayName": "", "description": None, "tags": []}})
 
-        plan = build_migration_plan(
+        plan = build_sync_plan(
             run_id="run-1",
             purview_assets=[asset],
             purview_domains=[],
@@ -501,12 +501,12 @@ class TestBuildMigrationPlanAndApply:
             classification_names=["MICROSOFT.PERSONAL.EMAIL"],
         )
         entry = self._catalog_entry_embedding_ref()
-        mapping = MigrationMapping.from_dict(
+        mapping = SyncMapping.from_dict(
             {"mappings": [{"purviewAssetId": "a1", "workspaceId": "ws1", "itemId": "it1"}]}
         )
         fabric_client = FakeFabricClient(items={("ws1", "it1"): {"displayName": "", "description": None, "tags": []}})
 
-        plan = build_migration_plan(
+        plan = build_sync_plan(
             run_id="run-1",
             purview_assets=[asset],
             purview_domains=[],
@@ -522,11 +522,11 @@ class TestBuildMigrationPlanAndApply:
     def test_sync_plan_dry_run_makes_no_calls(self):
         asset = self._asset()
         entry = self._catalog_entry_embedding_ref()
-        mapping = MigrationMapping.from_dict(
+        mapping = SyncMapping.from_dict(
             {"mappings": [{"purviewAssetId": "a1", "workspaceId": "ws1", "itemId": "it1"}]}
         )
         fabric_client = FakeFabricClient(items={("ws1", "it1"): {"displayName": "", "description": None, "tags": []}})
-        plan = build_migration_plan(
+        plan = build_sync_plan(
             run_id="run-1",
             purview_assets=[asset],
             purview_domains=[],
@@ -546,11 +546,11 @@ class TestBuildMigrationPlanAndApply:
     def test_sync_plan_apply_updates_item(self):
         asset = self._asset()
         entry = self._catalog_entry_embedding_ref()
-        mapping = MigrationMapping.from_dict(
+        mapping = SyncMapping.from_dict(
             {"mappings": [{"purviewAssetId": "a1", "workspaceId": "ws1", "itemId": "it1"}]}
         )
         fabric_client = FakeFabricClient(items={("ws1", "it1"): {"displayName": "", "description": None, "tags": []}})
-        plan = build_migration_plan(
+        plan = build_sync_plan(
             run_id="run-1",
             purview_assets=[asset],
             purview_domains=[],
