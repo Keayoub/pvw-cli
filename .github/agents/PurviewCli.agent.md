@@ -115,6 +115,9 @@ Sources for re-checking the Fabric roadmap and API surface (browser-free where p
   virtualised and "select All" does not expand it), so use it to confirm a single known
   item, not to enumerate the roadmap. Prefer Fabric GPS for bulk queries.
 
+- `https://github.com/microsoft/fabric-cli` - read-only reference for client patterns. It is
+  NOT a runtime dependency of this repo; do not add it as one.
+
 Browser tooling notes (Windows):
 - The built-in integrated browser tools (`openBrowserPage` / `readPage` /
   `runPlaywrightCode`) do render the roadmap SPA correctly - use these first.
@@ -124,8 +127,14 @@ Browser tooling notes (Windows):
 - Do not run `npx playwright install chrome`: it fails without Administrator rights AND
   deletes the bundled `chromium-*` build as "unused" first. Recover with
   `npx playwright install chromium`.
-- `https://github.com/microsoft/fabric-cli` - read-only reference for client patterns. It is
-  NOT a runtime dependency of this repo; do not add it as one.
+- Playwright MCP defaults to the real Chrome channel. It is configured in
+  `%APPDATA%\Code\User\mcp.json` with `"--browser", "chromium"` so it uses the bundled
+  build instead of requiring a Chrome install.
+- The bundled build is version-pinned: `@playwright/mcp@latest` tracks a specific
+  `chromium-<rev>` and fails with `Browser "chrome-for-testing" is not installed` if only
+  an older revision is present. Install the matching revision with that package's own CLI
+  (`node_modules/.bin/playwright install chromium`) - a bare
+  `npx playwright@<ver> install chromium` may silently no-op.
 
 ## Profiling and Performance Diagnosis
 - For startup performance: Time CLI invocation with `Measure-Command` in PowerShell; profile module imports using `python -m cProfile`.
