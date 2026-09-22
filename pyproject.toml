@@ -81,7 +81,7 @@ pvw = "purviewcli.cli.cli:main"
 pvw-cli = "purviewcli.cli.cli:main"
 
 [tool.setuptools]
-packages = ["purviewcli", "purviewcli.cli", "purviewcli.client", "purviewcli.migration", "purviewcli.plugins"]
+packages = ["purviewcli", "purviewcli.cli", "purviewcli.client", "purviewcli.sync", "purviewcli.plugins"]
 include-package-data = true
 zip-safe = false
 
