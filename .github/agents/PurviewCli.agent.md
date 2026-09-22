@@ -72,6 +72,48 @@ Use this decision table to select the correct release path:
 - The script resolves release notes from `releases/v<version>.md` (fallback `releases/<version>.md`), validates that the tag exists locally and on origin, then creates the GitHub release.
 - Use `-Force` only when the user explicitly wants to replace an existing release for the same tag.
 
+## Purview -> Fabric OneLake Catalog Sync (feature area)
+
+Purview's standalone data governance experience is converging into Microsoft Fabric, so
+`pvw fabric sync` provides a one-way, metadata-only, dry-run-by-default sync from Purview
+Unified Catalog into the Fabric OneLake catalog.
+
+Layout and entry points:
+- Logic lives in `purviewcli/sync/` (`models.py`, `service.py`, `purview_to_fabric.py`,
+  `execution.py`, `state.py`, `reporting.py`, `capabilities.py`); CLI in `purviewcli/cli/fabric.py`.
+- Commands: `pvw fabric sync capabilities|assess|apply|run|rollback`. Prefer the wording
+  "sync" over "migration" (it is a repeatable, checkpointed sync, not a one-time cutover).
+- Writes are additive-only and never write back to Purview. `apply`/`rollback` require
+  `--apply`; everything else dry-runs or previews.
+
+Feature status tracking (keep these three in agreement):
+- `purviewcli/sync/capabilities.py` is the single source of truth, rendered live by
+  `pvw fabric sync capabilities`.
+- `docs/purview-to-fabric-onelake-sync.md` is the summary/status board (carries a
+  "Last reviewed" date and a re-check checklist).
+- `docs/fabric-sync-feature-parity.md` holds full per-capability implementation detail.
+
+Live-verify-first convention (important):
+- Never assume a Purview/Fabric request or response shape from documentation alone. Verify
+  against a real tenant or the published OpenAPI specs before implementing or before
+  flipping a capability's status. This convention has already caught real discrepancies.
+- Known verified facts: classifications/labels are only exposed by the classic Atlas Entity
+  API (`entityReadUniqueAttribute`), NOT the UC Data Asset API (even with
+  `includeExtendedProperties=true`); creating a UC data asset requires
+  `source.type = "DataMap"`.
+
+Sources for re-checking the Fabric roadmap and API surface (browser-free where possible):
+- `https://github.com/microsoft/fabric-rest-api-specs` - authoritative OpenAPI specs, best
+  signal for "does this API exist?". Fetch raw JSON, or use
+  `gh api "search/code?q=<term>+repo:microsoft/fabric-rest-api-specs"`.
+- `https://www.fabric-gps.com/api/releases` - queryable JSON mirror of the Fabric roadmap
+  (`q`, `product_name`, `release_status`, `release_type`, `modified_within_days`); response
+  envelope is `data`/`links`/`pagination`. Docs at `https://www.fabric-gps.com/endpoints`.
+- `https://roadmap.fabric.microsoft.com/` - official roadmap, but a JS-rendered SPA, so it
+  requires actual browser tools; the two sources above work with plain HTTP.
+- `https://github.com/microsoft/fabric-cli` - read-only reference for client patterns. It is
+  NOT a runtime dependency of this repo; do not add it as one.
+
 ## Profiling and Performance Diagnosis
 - For startup performance: Time CLI invocation with `Measure-Command` in PowerShell; profile module imports using `python -m cProfile`.
 - For bulk operations: Compare execution time across `--bulk-size`, `--max-parallel` parameters; refer to `entity analyze-performance` command for baseline math.
