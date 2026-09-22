@@ -110,20 +110,29 @@ Sources for re-checking the Fabric roadmap and API surface (browser-free where p
   (`q`, `product_name`, `release_status`, `release_type`, `modified_within_days`); response
   envelope is `data`/`links`/`pagination`. Docs at `https://www.fabric-gps.com/endpoints`.
 - `https://roadmap.fabric.microsoft.com/` - official roadmap, but a JS-rendered SPA, so it
-  requires actual browser tools; the two sources above work with plain HTTP. Even with a
-  browser its accessibility tree only ever exposes ~8 cards at a time (the list is
-  virtualised and "select All" does not expand it), so use it to confirm a single known
-  item, not to enumerate the roadmap. Prefer Fabric GPS for bulk queries.
-
+  requires actual browser tools; the two sources above work with plain HTTP. It renders
+  correctly and completely, but note the filter defaults to `Planned`, so the card count
+  looks small (e.g. 8 for Administration/Governance/Security - verified 2026-09-22 to be
+  the true planned total, not truncation). Prefer Fabric GPS for bulk queries anyway,
+  since it needs no browser and is filterable.
 - `https://github.com/microsoft/fabric-cli` - read-only reference for client patterns. It is
   NOT a runtime dependency of this repo; do not add it as one.
+
+Fabric GPS query gotchas:
+- `product_name` must match exactly, including commas - it is
+  `"Administration, Governance and Security"`, not `"Administration and governance"`.
+  A wrong value returns `total_items: 0` rather than an error.
+- The title field is `feature_name` (not `title`); other useful fields are
+  `release_status`, `release_type`, `release_date`, `feature_description`, `blog_url`.
+- Discover valid product names with `?page_size=200` and grouping on `product_name`.
 
 Browser tooling notes (Windows):
 - The built-in integrated browser tools (`openBrowserPage` / `readPage` /
   `runPlaywrightCode`) do render the roadmap SPA correctly - use these first.
 - `runPlaywrightCode` does NOT surface return values and has no `fs` access, so results must
   be read back via `readPage`. React re-renders wipe any DOM you inject, so do not try to
-  stash output in the page.
+  stash output in the page. Driving `playwright-core` directly from PowerShell avoids both
+  limits and is a good fallback when MCP browser tools are absent from the session.
 - Do not run `npx playwright install chrome`: it fails without Administrator rights AND
   deletes the bundled `chromium-*` build as "unused" first. Recover with
   `npx playwright install chromium`.
