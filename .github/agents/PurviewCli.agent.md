@@ -110,7 +110,20 @@ Sources for re-checking the Fabric roadmap and API surface (browser-free where p
   (`q`, `product_name`, `release_status`, `release_type`, `modified_within_days`); response
   envelope is `data`/`links`/`pagination`. Docs at `https://www.fabric-gps.com/endpoints`.
 - `https://roadmap.fabric.microsoft.com/` - official roadmap, but a JS-rendered SPA, so it
-  requires actual browser tools; the two sources above work with plain HTTP.
+  requires actual browser tools; the two sources above work with plain HTTP. Even with a
+  browser its accessibility tree only ever exposes ~8 cards at a time (the list is
+  virtualised and "select All" does not expand it), so use it to confirm a single known
+  item, not to enumerate the roadmap. Prefer Fabric GPS for bulk queries.
+
+Browser tooling notes (Windows):
+- The built-in integrated browser tools (`openBrowserPage` / `readPage` /
+  `runPlaywrightCode`) do render the roadmap SPA correctly - use these first.
+- `runPlaywrightCode` does NOT surface return values and has no `fs` access, so results must
+  be read back via `readPage`. React re-renders wipe any DOM you inject, so do not try to
+  stash output in the page.
+- Do not run `npx playwright install chrome`: it fails without Administrator rights AND
+  deletes the bundled `chromium-*` build as "unused" first. Recover with
+  `npx playwright install chromium`.
 - `https://github.com/microsoft/fabric-cli` - read-only reference for client patterns. It is
   NOT a runtime dependency of this repo; do not add it as one.
 
