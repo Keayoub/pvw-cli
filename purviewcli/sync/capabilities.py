@@ -119,12 +119,14 @@ CAPABILITIES: List[SyncCapability] = [
     ),
     SyncCapability(
         purview_capability="Sensitivity label (MIP)",
-        fabric_target="Fabric `bulkSetLabels`/`bulkRemoveLabels`",
+        fabric_target="Item `sensitivityLabel.id` + admin `bulkSetLabels`/`bulkRemoveLabels`",
         status=CapabilityStatus.PLANNED,
         notes=(
-            "Fabric's write API exists and is documented; Purview has no confirmed "
-            "per-asset read API for the applied label -- only tenant-wide aggregate "
-            "reports today."
+            "Fabric side is now fully ready (verified 2026-09-22): Get/List/Create Item "
+            "return `sensitivityLabel.id`, Create accepts `sensitivityLabelSettings`, and "
+            "admin bulk set/remove label APIs exist. Still blocked on the PURVIEW read "
+            "side -- no confirmed per-asset API returns an asset's applied MIP label ID "
+            "(only tenant-wide aggregate reports)."
         ),
         command_flag="(not available)",
     ),
