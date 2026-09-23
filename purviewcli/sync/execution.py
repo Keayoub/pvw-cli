@@ -63,6 +63,18 @@ _EXECUTION_ORDER = {
 _UPDATE_ITEM_FIELD_MAP = {"displayName": "display_name", "description": "description"}
 
 
+def _normalize_tag_key(name: str) -> str:
+    """Case/whitespace-normalize a tag display name for lookup purposes.
+
+    Mirrors the case-insensitive existing-tag check in
+    :func:`build_tag_definition_operations`, so a tenant tag that already
+    exists under different casing (e.g. ``purview:term:foo`` vs the desired
+    ``purview:term:Foo``) still resolves to an id instead of raising
+    "no resolved Fabric tag id" during ``APPLY_ITEM_TAGS``.
+    """
+    return name.strip().lower()
+
+
 class FabricMutationClient(Protocol):
     """The subset of :class:`~purviewcli.client.fabric_client.FabricClient` used to apply mutations.
 
@@ -228,6 +240,7 @@ def apply_operations(
     checkpoint: RunCheckpoint,
     dry_run: bool = True,
     existing_tag_ids_by_name: Optional[Dict[str, str]] = None,
+    domain_plans: Sequence[DomainPlan] = (),
 ) -> SyncRunResult:
     """Apply planned operations in order, checkpointing each success immediately.
 
@@ -238,10 +251,22 @@ def apply_operations(
     operations, and resolves governance tag *names* to tag *ids* (seeded from
     ``existing_tag_ids_by_name`` and updated as ``CREATE_TAG`` operations
     succeed) for dependent ``APPLY_ITEM_TAGS`` operations.
+
+    ``domain_plans`` seeds ``resolved_domain_ids`` with already-known Fabric
+    domain IDs for domains being *reused* (``DomainAction.REUSE_DOMAIN``),
+    since those never emit a ``CREATE_DOMAIN`` operation to resolve one at
+    apply time -- without this, a workspace assignment to a reused domain
+    would fail with "no resolved Fabric domain id".
     """
     results: List[OperationResult] = []
-    resolved_domain_ids: Dict[str, str] = {}
-    resolved_tag_ids: Dict[str, str] = dict(existing_tag_ids_by_name or {})
+    resolved_domain_ids: Dict[str, str] = {
+        domain_plan.purview_domain_id: domain_plan.fabric_domain_id
+        for domain_plan in domain_plans
+        if domain_plan.fabric_domain_id
+    }
+    resolved_tag_ids: Dict[str, str] = {
+        _normalize_tag_key(name): tag_id for name, tag_id in (existing_tag_ids_by_name or {}).items()
+    }
 
     for operation in operations:
         if CheckpointStore.has_applied(checkpoint, operation.operation_id, operation.fingerprint):
@@ -351,7 +376,7 @@ def _execute_operation(
         result = client.bulk_create_tags([display_name])
         tag_id = result[0].get("id") if result else None
         if tag_id is not None and resolved_tag_ids is not None:
-            resolved_tag_ids[display_name] = tag_id
+            resolved_tag_ids[_normalize_tag_key(display_name)] = tag_id
         return {"tagId": tag_id}
 
     if op_type == OperationType.APPLY_ITEM_TAGS:
@@ -360,13 +385,13 @@ def _execute_operation(
         # just created earlier in this same run (see ``resolved_tag_ids``).
         tag_names = operation.payload.get("tagNames", [])
         resolved_tag_ids = resolved_tag_ids or {}
-        missing = [name for name in tag_names if name not in resolved_tag_ids]
+        missing = [name for name in tag_names if _normalize_tag_key(name) not in resolved_tag_ids]
         if missing:
             raise RuntimeError(
                 f"No resolved Fabric tag id for tag name(s) {missing!r}; the corresponding "
                 f"CREATE_TAG operation must run (and succeed) before tags are applied."
             )
-        tag_ids = [resolved_tag_ids[name] for name in tag_names]
+        tag_ids = [resolved_tag_ids[_normalize_tag_key(name)] for name in tag_names]
         client.apply_tags(operation.target["workspaceId"], operation.target["itemId"], tag_ids)
         return {"appliedTags": tag_ids}
 

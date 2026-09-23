@@ -489,7 +489,7 @@ class TestBuildSyncPlanAndApply:
         )
         assert len(plan.tag_plans) == 1
         assert set(plan.tag_plans[0].tags_to_apply) == {
-            "purview:classification:MICROSOFT.PERSONA",
+            "purview:classification:MICROSOF-2a0099bb",
             "purview:label:pvw-test-label",
         }
 

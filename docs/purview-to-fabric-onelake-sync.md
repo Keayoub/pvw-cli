@@ -44,8 +44,8 @@ pvw fabric sync capabilities --status planned       # only "planned/TBD" rows
 |---|---|---|---|
 | Data asset display name / description | Item `displayName` / `description` | ✅ Supported | Always on; additive-only, dry-run by default. |
 | Governance domain | Fabric domain + workspace assignment | ✅ Supported | Matched/created by name; always on. |
-| Glossary term name | Namespaced Fabric tag `purview:glossary:<name>` | 🟡 Partial | Only the name is portable — no hierarchy, definitions, or relationships. |
-| Data product name | Namespaced Fabric tag `purview:dataproduct:<name>` | 🟡 Partial | Name only; Fabric has no first-class "data product" object yet. |
+| Glossary term name | Namespaced Fabric tag `purview:term:<name>` | 🟡 Partial | Only the name is portable — no hierarchy, definitions, or relationships. |
+| Data product name | Namespaced Fabric tag `purview:data_product:<name>` | 🟡 Partial | Name only; Fabric has no first-class "data product" object yet. |
 | Critical Data Element (CDE) name | Namespaced Fabric tag `purview:cde:<name>` | 🟡 Partial | Name only. |
 | Data Map classifications (e.g. `MICROSOFT.PERSONAL.EMAIL`) | Namespaced Fabric tag `purview:classification:<name>` | ✅ Supported | Opt-in via `--sync-classifications`; requires a resolvable Data Map link + known type mapping. |
 | Data Map labels (free-text) | Namespaced Fabric tag `purview:label:<name>` | ✅ Supported | Opt-in via `--sync-classifications`; same source/limitations as classifications. |

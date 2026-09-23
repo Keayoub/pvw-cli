@@ -244,6 +244,15 @@ class TestNamespacedTagName:
         name = namespaced_tag_name("data_product", "x" * 100)
         assert len(name) == 40
 
+    def test_truncated_names_get_a_collision_resistant_suffix(self):
+        # Two distinct long names sharing a common prefix must not collapse
+        # onto the same truncated Fabric tag name.
+        name_a = namespaced_tag_name("term", "Customer Segmentation Model For Retail Division A")
+        name_b = namespaced_tag_name("term", "Customer Segmentation Model For Retail Division B")
+        assert len(name_a) == 40
+        assert len(name_b) == 40
+        assert name_a != name_b
+
     def test_strips_unsafe_characters(self):
         name = namespaced_tag_name("cde", "Weird/Name*?")
         assert "/" not in name and "*" not in name and "?" not in name
@@ -264,7 +273,7 @@ class TestNamespacedTagName:
             label_names=["pvw-test-label"],
         )
         names = plan_asset_metadata_tag_names(asset)
-        assert names == ["purview:classification:MICROSOFT.PERSONA", "purview:label:pvw-test-label"]
+        assert names == ["purview:classification:MICROSOF-2a0099bb", "purview:label:pvw-test-label"]
 
     def test_plan_asset_metadata_tag_names_empty_when_no_metadata(self):
         asset = PurviewAsset(id="a1", name="A")

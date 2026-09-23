@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "description": "Explicit Purview data-asset -> Fabric item bindings used when an asset has no embedded Fabric reference and cannot be matched by name (fuzzy/name matching never authorizes a write). Referenced via `pvw fabric sync assess|sync --mapping-file`.",
+  "description": "Explicit Purview data-asset -> Fabric item bindings used when an asset has no embedded Fabric reference and cannot be matched by name (fuzzy/name matching never authorizes a write). Referenced via `pvw fabric sync assess|apply --mapping-file`.",
   "mappings": [
     {
       "purviewAssetId": "5b6b0e2e-1c1a-4e7a-9a2a-000000000001",

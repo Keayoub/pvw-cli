@@ -17,6 +17,7 @@ evolve independently of this planning logic.
 
 from __future__ import annotations
 
+import hashlib
 import re
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
@@ -331,11 +332,23 @@ def namespaced_tag_name(object_type: str, name: str) -> str:
     Fabric's 40-character tag-name limit. Sanitization strips characters
     outside a conservative safe set so tag names round-trip cleanly through
     Fabric's admin APIs regardless of the source Purview object's name.
+
+    Names that fit within the limit are used as-is. Names that must be
+    truncated get an 8-character hash suffix derived from the *original*
+    (pre-truncation) name so two distinct long names that share the same
+    prefix never collapse onto the same Fabric tag -- without it,
+    :func:`plan_governance_tag_names`'s deduplication would silently drop
+    one of them.
     """
     sanitized = _SLUG_RE.sub("", name or "").strip()
     prefix = f"purview:{object_type}:"
     available = TAG_NAME_MAX_LENGTH - len(prefix)
-    return f"{prefix}{sanitized[:available]}"
+    if len(sanitized) <= available:
+        return f"{prefix}{sanitized}"
+    digest = hashlib.sha1((name or "").encode("utf-8")).hexdigest()[:8]
+    suffix = f"-{digest}"
+    body_length = max(available - len(suffix), 0)
+    return f"{prefix}{sanitized[:body_length]}{suffix}"
 
 
 def plan_governance_tag_names(objects: Sequence[PurviewGovernanceObject]) -> List[str]:

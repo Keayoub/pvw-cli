@@ -336,6 +336,35 @@ class TestApplyOperations:
         result = apply_operations(client, [assign_op], store, checkpoint, dry_run=False)
         assert result.failed_count == 1
 
+    def test_reused_domain_id_is_seeded_for_dependent_assignment(self, store_and_checkpoint):
+        """REUSE_DOMAIN never emits a CREATE_DOMAIN op, so the assignment's
+        domain id must come from the domain_plans seed, not from a same-run
+        resolution."""
+        from purviewcli.sync.models import PlannedOperation
+
+        store, checkpoint = store_and_checkpoint
+        client = FakeFabricClient()
+        assign_op = PlannedOperation(
+            operation_id="domain:assign:d1:ws1",
+            operation_type=OperationType.ASSIGN_WORKSPACE_DOMAIN,
+            fingerprint=compute_fingerprint({"purviewDomainId": "d1", "workspaceId": "ws1"}),
+            target={"purviewDomainId": "d1", "workspaceId": "ws1"},
+            payload={},
+        )
+        domain_plans = [
+            DomainPlan(
+                purview_domain_id="d1",
+                fabric_domain_name="Finance",
+                fabric_domain_id="fd-existing",
+                action=DomainAction.REUSE_DOMAIN,
+            )
+        ]
+        result = apply_operations(
+            client, [assign_op], store, checkpoint, dry_run=False, domain_plans=domain_plans
+        )
+        assert result.succeeded_count == 1
+        assert client.assigned == [("fd-existing", ["ws1"])]
+
     def test_tag_creation_resolves_id_for_dependent_apply(self, store_and_checkpoint):
         """CREATE_TAG's id must be resolved for a same-run APPLY_ITEM_TAGS by name."""
         from purviewcli.sync.models import PlannedOperation

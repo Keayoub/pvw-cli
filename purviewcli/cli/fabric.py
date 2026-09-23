@@ -23,6 +23,11 @@ import click
 from .console_utils import get_console
 
 console = get_console()
+#: Status/progress notices (e.g. "report written to <path>") must never go to
+#: stdout: with ``--output json`` that stream is meant to be a single valid
+#: JSON document for scripting/piping, and any interleaved text would break it.
+_stderr_console = get_console()
+_stderr_console.file = sys.stderr
 
 
 def _get_clients(ctx):
@@ -119,10 +124,10 @@ def _write_reports(plan, report_file: Optional[str], csv_report_file: Optional[s
 
     if report_file:
         write_json_report(plan, report_file, sync_result=sync_result, rollback_result=rollback_result)
-        console.print(f"[dim]JSON report written to {report_file}[/dim]")
+        _stderr_console.print(f"[dim]JSON report written to {report_file}[/dim]")
     if csv_report_file:
         write_csv_report(plan, csv_report_file)
-        console.print(f"[dim]CSV report written to {csv_report_file}[/dim]")
+        _stderr_console.print(f"[dim]CSV report written to {csv_report_file}[/dim]")
 
 
 def _render_plan_summary(plan, output: str) -> None:
@@ -162,14 +167,20 @@ def _render_plan_summary(plan, output: str) -> None:
 
 def _exit_nonzero_if_needed(plan, sync_result=None) -> None:
     """Exit nonzero if the assessment/apply surfaced anything requiring attention."""
-    from purviewcli.sync.models import ItemDecision, TagDecision
+    from purviewcli.sync.models import DomainAction, ItemDecision, TagDecision
 
     has_conflicts = any(
         p.decision in (ItemDecision.CONFLICT, ItemDecision.VALIDATION_ERROR) for p in plan.item_plans
     )
     has_tag_overflow = any(t.decision == TagDecision.TAG_OVERFLOW for t in plan.tag_plans)
+    has_workspace_conflicts = any(
+        assignment.action == DomainAction.WORKSPACE_CONFLICT
+        for domain_plan in plan.domain_plans
+        for assignment in domain_plan.workspace_assignments
+    )
+    has_mapping_errors = bool(plan.mapping_errors)
     has_failures = sync_result is not None and sync_result.failed_count > 0
-    if has_conflicts or has_tag_overflow or has_failures:
+    if has_conflicts or has_tag_overflow or has_workspace_conflicts or has_mapping_errors or has_failures:
         sys.exit(1)
 
 
@@ -261,10 +272,13 @@ def sync_apply(ctx, purview_domain_ids, workspace_ids, mapping_file, overwrite, 
     sync_result = sync_plan(fabric_client, plan, store, plan.run_id, dry_run=not apply_)
 
     _write_reports(plan, report_file, csv_report_file, sync_result=sync_result)
-    _render_plan_summary(plan, output)
     if output == "json":
-        print(json.dumps(sync_result.to_dict(), indent=2, default=str))
+        # Emit exactly one JSON document combining the plan and the sync
+        # result, so stdout stays parseable as a single value (matching
+        # assess/capabilities) instead of two concatenated documents.
+        print(json.dumps({"plan": plan.to_dict(), "syncResult": sync_result.to_dict()}, indent=2, default=str))
     else:
+        _render_plan_summary(plan, output)
         mode = "DRY RUN (no changes written)" if not apply_ else "APPLIED"
         console.print(
             f"[bold]{mode}[/bold]: {sync_result.succeeded_count} succeeded, "
@@ -326,7 +340,7 @@ def sync_rollback(ctx, checkpoint_file, apply_, report_file, output):
         from purviewcli.sync.reporting import write_json_report
 
         write_json_report(empty_plan, report_file, rollback_result=result)
-        console.print(f"[dim]JSON report written to {report_file}[/dim]")
+        _stderr_console.print(f"[dim]JSON report written to {report_file}[/dim]")
 
     if output == "json":
         print(json.dumps(result.to_dict(), indent=2, default=str))

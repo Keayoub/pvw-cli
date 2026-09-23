@@ -71,6 +71,16 @@ class TestRequestConstruction:
         with pytest.raises(ValueError):
             client.update_item("ws-1", "item-1")
 
+    def test_update_item_allows_explicit_none_to_clear_a_field(self, client):
+        """An explicit `description=None` (e.g. restoring a rollback's
+        before_state where the item originally had no description) must be
+        sent as a PATCH value, not treated the same as "not supplied"."""
+        with patch.object(client._session, "request", return_value=_response(200, {"id": "item-1"})) as mock_req:
+            client.update_item("ws-1", "item-1", description=None)
+
+        call = mock_req.call_args
+        assert call.kwargs["json"] == {"description": None}
+
 
 class TestCatalogPagination:
     def test_iter_catalog_entries_follows_continuation_token(self, client):
@@ -211,6 +221,17 @@ class TestErrorHandling:
         assert result == {"id": "item-1"}
         assert mock_req.call_count == 2
         assert mock_req.call_args_list[1].kwargs["headers"]["Authorization"] == "Bearer fresh-token"
+
+
+    def test_write_methods_are_excluded_from_automatic_retry(self, client):
+        """POST/PATCH are non-idempotent Fabric mutations; retrying them on a
+        transient 5xx risks double-applying a write that actually succeeded
+        server-side, so they must not be in the retry adapter's allowlist."""
+        adapter = client._session.get_adapter("https://api.fabric.microsoft.com")
+        allowed_methods = adapter.max_retries.allowed_methods
+        assert "POST" not in allowed_methods
+        assert "PATCH" not in allowed_methods
+        assert "GET" in allowed_methods
 
 
 class TestAuthentication:

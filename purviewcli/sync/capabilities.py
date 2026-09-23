@@ -87,13 +87,13 @@ CAPABILITIES: List[SyncCapability] = [
     ),
     SyncCapability(
         purview_capability="Glossary term name",
-        fabric_target="Namespaced tag `purview:glossary:<name>`",
+        fabric_target="Namespaced tag `purview:term:<name>`",
         status=CapabilityStatus.PARTIAL,
         notes="Only the name is portable -- no hierarchy, definitions, or relationships.",
     ),
     SyncCapability(
         purview_capability="Data product name",
-        fabric_target="Namespaced tag `purview:dataproduct:<name>`",
+        fabric_target="Namespaced tag `purview:data_product:<name>`",
         status=CapabilityStatus.PARTIAL,
         notes="Name only; Fabric has no first-class \"data product\" object yet.",
     ),

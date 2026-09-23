@@ -108,6 +108,12 @@ class FabricApiError(Exception):
         return " ".join(parts)
 
 
+#: Sentinel default for optional "clearable" parameters, distinguishing
+#: "argument not supplied" from an explicit ``None`` (e.g. "clear this field
+#: to blank").
+_UNSET = object()
+
+
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
@@ -155,7 +161,7 @@ class _FabricCliCredential:
                     capture_output=True,
                     text=True,
                     check=False,
-                    shell=True,
+                    shell=False,
                 )
                 if result.returncode == 0:
                     break
@@ -222,7 +228,12 @@ class FabricClient:
             total=5,
             backoff_factor=1,
             status_forcelist=[429, 500, 502, 503, 504],
-            allowed_methods=["HEAD", "GET", "PUT", "DELETE", "OPTIONS", "TRACE", "POST", "PATCH"],
+            # POST/PATCH are intentionally excluded: they are used for
+            # non-idempotent Fabric mutations (create domain/tag, apply item
+            # changes), and retrying them on a transient 5xx could double-
+            # apply a write if the original request actually succeeded
+            # server-side before the error was returned.
+            allowed_methods=["HEAD", "GET", "PUT", "DELETE", "OPTIONS", "TRACE"],
             respect_retry_after_header=True,
         )
         adapter = HTTPAdapter(max_retries=retry_strategy)
@@ -413,13 +424,18 @@ class FabricClient:
         self,
         workspace_id: str,
         item_id: str,
-        display_name: Optional[str] = None,
-        description: Optional[str] = None,
+        display_name: Any = _UNSET,
+        description: Any = _UNSET,
     ) -> Dict[str, Any]:
+        # `_UNSET` (rather than `None`) marks "field not supplied", so callers
+        # -- notably rollback, which restores `before_state` values that can
+        # legitimately be `None` (e.g. "the item originally had no
+        # description") -- can explicitly clear a field without that request
+        # being mistaken for an omitted argument.
         body: Dict[str, Any] = {}
-        if display_name is not None:
+        if display_name is not _UNSET:
             body["displayName"] = display_name
-        if description is not None:
+        if description is not _UNSET:
             body["description"] = description
         if not body:
             raise ValueError("update_item requires at least one of display_name or description")

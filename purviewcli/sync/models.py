@@ -420,6 +420,11 @@ class SyncPlan:
     domain_plans: List[DomainPlan] = dataclasses.field(default_factory=list)
     tag_plans: List[ItemTagPlan] = dataclasses.field(default_factory=list)
     non_portable: NonPortableSummary = dataclasses.field(default_factory=NonPortableSummary)
+    #: Human-readable errors for mapping-file entries referencing an unknown
+    #: Purview asset id (stale/mistyped mappings); see
+    #: :func:`~.purview_to_fabric.validate_mapping_targets_are_unambiguous`.
+    #: Non-empty here means the mapping file needs correction before apply.
+    mapping_errors: List[str] = dataclasses.field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         return _to_dict(self)

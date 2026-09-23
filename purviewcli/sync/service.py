@@ -461,12 +461,13 @@ def build_sync_plan(
     matches = resolve_matches(purview_assets, catalog_entries, mapping)
     assets_by_id = {a.id: a for a in purview_assets}
 
+    mapping_errors: List[str] = []
+    if mapping is not None:
+        mapping_errors = validate_mapping_targets_are_unambiguous(mapping, assets_by_id)
+
     item_plans = []
     tag_plans = []
-    governance_by_domain: Dict[str, List[PurviewGovernanceObject]] = {}
-    for obj in governance_objects:
-        if obj.domain_id:
-            governance_by_domain.setdefault(obj.domain_id, []).append(obj)
+    governance_by_id: Dict[str, PurviewGovernanceObject] = {obj.id: obj for obj in governance_objects}
 
     for match in matches:
         if not match.is_writable():
@@ -478,7 +479,8 @@ def build_sync_plan(
         item_plans.append(
             plan_item_metadata(asset, match, current_state, overwrite=overwrite, truncate_descriptions=truncate_descriptions)
         )
-        relevant_objects = governance_by_domain.get(asset.domain_id, []) if asset.domain_id else []
+        asset_object_ids = asset.term_ids + asset.data_product_ids + asset.cde_ids
+        relevant_objects = [governance_by_id[oid] for oid in asset_object_ids if oid in governance_by_id]
         desired_tags = plan_governance_tag_names(relevant_objects)
         if sync_classifications:
             desired_tags = list(dict.fromkeys(desired_tags + plan_asset_metadata_tag_names(asset)))
@@ -486,8 +488,16 @@ def build_sync_plan(
             tag_plans.append(plan_item_tags(match.workspace_id, match.item_id, current_state, desired_tags))
 
     fabric_domains_by_name = index_fabric_domains_by_name(fabric_domains)
+    # An empty --workspace-id scope is documented as "default: all workspaces",
+    # so derive the actual target set from the catalog rather than silently
+    # planning zero workspace assignments for every domain.
+    domain_target_workspace_ids = (
+        list(target_workspace_ids)
+        if target_workspace_ids
+        else sorted({entry.workspace_id for entry in catalog_entries if entry.workspace_id})
+    )
     domain_plans = [
-        plan_domain(domain, target_workspace_ids, fabric_domains_by_name, workspace_current_domain)
+        plan_domain(domain, domain_target_workspace_ids, fabric_domains_by_name, workspace_current_domain)
         for domain in purview_domains
     ]
 
@@ -501,6 +511,7 @@ def build_sync_plan(
         domain_plans=domain_plans,
         tag_plans=tag_plans,
         non_portable=non_portable,
+        mapping_errors=mapping_errors,
     )
 
 
@@ -542,6 +553,7 @@ def sync_plan(
         checkpoint,
         dry_run=dry_run,
         existing_tag_ids_by_name=existing_tags_by_name,
+        domain_plans=plan.domain_plans,
     )
 
 
