@@ -96,8 +96,9 @@ pvw fabric sync assess `
   --csv-report-file .\reports\assessment.csv
 ```
 
-Exits non-zero if the plan contains any conflicts, validation errors, or tag overflow, so it
-can gate a pipeline before anyone runs `apply --apply`.
+Exits non-zero if the plan contains any conflicts, validation errors, tag overflow, a
+workspace-domain assignment conflict, or an unresolvable mapping-file entry, so it can gate
+a pipeline before anyone runs `apply --apply`.
 
 ### `pvw fabric sync apply`
 
