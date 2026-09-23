@@ -102,6 +102,18 @@ Live-verify-first convention (important):
   `includeExtendedProperties=true`); creating a UC data asset requires
   `source.type = "DataMap"`.
 
+Related/overlapping Fabric capabilities (do not treat as out of scope, but do not assume
+API/data-model equivalence without live-verifying):
+- **Fabric Ontology** and **Fabric IQ** are separate, newer Fabric governance/semantic
+  surfaces that cover some of the same conceptual ground as this sync feature (terms,
+  business concepts, relationships, semantic modeling over OneLake data). When re-checking
+  the roadmap or capability parity (see the `capabilities.py` re-check flow above), also
+  scan Fabric GPS/roadmap results for these product names, since either could eventually
+  supersede or absorb parts of the current tag-based `purview:term:`/`purview:data_product:`
+  namespacing approach, or become a better sync target than tags for glossary/term data.
+- Do not assume their schemas match `purview_to_fabric.py`'s models; verify against live
+  tenant behavior or OpenAPI specs the same way as the rest of this feature area.
+
 Sources for re-checking the Fabric roadmap and API surface (browser-free where possible):
 - `https://github.com/microsoft/fabric-rest-api-specs` - authoritative OpenAPI specs, best
   signal for "does this API exist?". Fetch raw JSON, or use
