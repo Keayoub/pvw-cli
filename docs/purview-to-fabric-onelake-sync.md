@@ -1,8 +1,9 @@
 # Purview → Fabric OneLake Catalog: Sync Overview & Roadmap
 
-> **Last reviewed: 2026-09-22**, against a live Purview tenant (`kaydemopurview`, test data
+> **Last reviewed: 2026-09-23**, against a live Purview tenant (`kaydemopurview`, test data
 > only), the [`microsoft/fabric-rest-api-specs`](https://github.com/microsoft/fabric-rest-api-specs)
-> OpenAPI specs, and the [Fabric GPS roadmap API](https://www.fabric-gps.com/endpoints). See
+> OpenAPI specs (including the newer `ontology/` and `dataAgent/` specs), and the
+> [Fabric GPS roadmap API](https://www.fabric-gps.com/endpoints). See
 > ["Re-check checklist"](#re-check-checklist) below for what to re-verify and when.
 
 > Microsoft Purview's standalone data governance experience is being retired in favor of
@@ -55,7 +56,8 @@ pvw fabric sync capabilities --status planned       # only "planned/TBD" rows
 | Data Products as first-class Fabric objects | *(no Fabric object exists)* | ⛔ Not supported | Fabric has no native "data product" concept beyond tags today; re-evaluate if that changes. |
 | RBAC → ABAC access policies | *(no confirmed Fabric equivalent)* | ⛔ Not supported | Purview's attribute-based access policies have no matching Fabric item/workspace policy API today. |
 | Custom / managed attributes | *(no confirmed Fabric field)* | 🔜 Planned / TBD | Present in Purview UC domain responses (`managedAttributes`); no confirmed arbitrary-property field on Fabric items yet. |
-| Full glossary hierarchy (parent/child terms, relationships) | *(no Fabric equivalent)* | ⛔ Not supported | Only the term's name is portable as a tag; Fabric has no structured term/hierarchy object. |
+| Full glossary hierarchy (parent/child terms, relationships) | *(no Fabric equivalent)* | ⛔ Not supported | Only the term's name is portable as a tag today; Fabric Ontology (next row) is the eventual candidate target, but not until relationships/hierarchy ship in its public API. |
+| Structured governance model (typed entity properties, relationships) | Fabric Ontology item (`EntityTypes` with typed properties) | 🔜 Planned / TBD | **Live-verified 2026-09-23**: Fabric Ontology has a public REST spec (`/workspaces/{id}/ontologies`, full CRUD + definition parts) with a typed `EntityType` model (name, namespace, typed properties) — richer than a flat tag, and Data Agent already accepts an Ontology as a `FabricItem` datasource. Not yet adopted: per the Fabric roadmap, "Public API for Ontology", entity-type relationships, and versioning are still Planned (Q3–Q4 2026), so the object model isn't finalized. Could eventually replace the term/data-product/CDE tag rows above with a structured mapping. |
 
 ## Re-check checklist
 
@@ -71,6 +73,7 @@ to where the answer would show up — no need to rediscover these sources from s
 | 4 | Has Fabric introduced a **native data-product** object (beyond tags)? | [Fabric GPS roadmap API](https://www.fabric-gps.com/api/releases?product_name=Administration%2C+Governance+and+Security), [Microsoft Fabric blog](https://blog.fabric.microsoft.com/) | Data Products as first-class Fabric objects |
 | 5 | Does Fabric support **arbitrary custom/managed properties** on items (beyond tags/sensitivity labels)? | [`fabric-rest-api-specs` — platform definitions](https://github.com/microsoft/fabric-rest-api-specs/tree/main/platform/definitions), [Fabric REST API reference — Items](https://learn.microsoft.com/en-us/rest/api/fabric/core/items) | Custom / managed attributes sync |
 | 6 | Has Fabric added an **attribute-based access policy** API at the item/workspace level? (As of 2026-09-22, "Outbound Access Protection" items are network-egress controls, not ABAC.) | [Fabric GPS roadmap API](https://www.fabric-gps.com/api/releases?product_name=Administration%2C+Governance+and+Security) | RBAC → ABAC policy sync |
+| 7 | Has Fabric's **Ontology** public API shipped (Fabric GPS: "Public API for Ontology", entity-type relationships, versioning — all Planned Q3–Q4 2026 as of 2026-09-23)? If so, does it expose relationships/hierarchy between entity types? | [`fabric-rest-api-specs` — ontology](https://github.com/microsoft/fabric-rest-api-specs/tree/main/ontology), [Fabric GPS roadmap API](https://www.fabric-gps.com/api/releases?product_name=IQ&q=ontology) | Structured governance model (typed entities/relationships), full glossary hierarchy |
 
 ### Useful sources for re-checking
 

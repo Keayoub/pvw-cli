@@ -45,6 +45,15 @@ class TestCapabilitiesData:
         sensitivity = by_name["Sensitivity label (MIP)"]
         assert sensitivity.status == CapabilityStatus.PLANNED
 
+    def test_ontology_structured_governance_model_is_tracked_as_planned(self):
+        """Fabric Ontology/Fabric IQ overlap with this feature area (see the agent
+        profile) -- tracked as a planned row, not implemented, since its public API
+        is still preview-grade per the Fabric roadmap."""
+        by_name = {c.purview_capability: c for c in get_capabilities()}
+        ontology = by_name["Structured governance model (typed entity properties, relationships)"]
+        assert ontology.status == CapabilityStatus.PLANNED
+        assert "Ontology" in ontology.fabric_target
+
 
 class TestCapabilitiesCli:
     def test_capabilities_table_output_lists_every_capability(self):
