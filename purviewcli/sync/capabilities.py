@@ -176,7 +176,29 @@ CAPABILITIES: List[SyncCapability] = [
         purview_capability="Full glossary hierarchy (parent/child terms, relationships)",
         fabric_target="(no Fabric equivalent)",
         status=CapabilityStatus.NOT_SUPPORTED,
-        notes="Only the term's name is portable as a tag; no structured term/hierarchy object.",
+        notes=(
+            "Only the term's name is portable as a tag today; no structured "
+            "term/hierarchy object. Fabric Ontology (see next row) is the eventual "
+            "candidate target, but not until relationships/hierarchy ship in its "
+            "public API."
+        ),
+        command_flag="(not available)",
+    ),
+    SyncCapability(
+        purview_capability="Structured governance model (typed entity properties, relationships)",
+        fabric_target="Fabric Ontology item (`EntityTypes` with typed properties)",
+        status=CapabilityStatus.PLANNED,
+        notes=(
+            "Live-verified 2026-09-23: Fabric Ontology has a public REST spec "
+            "(`/workspaces/{id}/ontologies`, full CRUD + definition parts) with a "
+            "typed EntityType model (name, namespace, typed properties) -- richer "
+            "than a flat tag, and Data Agent already accepts an Ontology as a "
+            "`FabricItem` datasource. Not yet adopted here: Fabric GPS still lists "
+            "\"Public API for Ontology\", entity-type relationships, and versioning "
+            "as Planned (Q3-Q4 2026), so the object model isn't finalized. Re-check "
+            "once those ship; this could eventually replace the term/data-product/CDE "
+            "tag rows above with a structured mapping instead of name-only tags."
+        ),
         command_flag="(not available)",
     ),
 ]
