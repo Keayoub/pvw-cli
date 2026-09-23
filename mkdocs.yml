@@ -54,6 +54,9 @@ nav:
       - Command Groups: command-groups.md
   - Core Guides:
       - Unified Catalog: unified-catalog.md
+      - Purview to Fabric OneLake Sync Overview: purview-to-fabric-onelake-sync.md
+      - Fabric Sync Guide: fabric-sync-guide.md
+      - Fabric Sync Feature Parity: fabric-sync-feature-parity.md
       - Purview MCP Server: purview-mcp-server.md
       - Quick Reference: quick-reference.md
       - Entity Bulk CSV Guide: entity-bulk-csv-guide.md
@@ -76,8 +79,6 @@ nav:
       - Types: commands/types/main.md
       - Insight: commands/insight/main.md
       - Unified Catalog Commands: commands/unified-catalog.md
-      - Data Assets: commands/unified-catalog/data-assets.md
-      - Data Columns: commands/unified-catalog/data-columns.md
       - Term Bulk Import: commands/unified-catalog/term-bulk-import.md
       - Term Bulk Update: commands/unified-catalog/term-bulk-update.md
   - Task Guides:

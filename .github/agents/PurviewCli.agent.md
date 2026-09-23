@@ -72,6 +72,79 @@ Use this decision table to select the correct release path:
 - The script resolves release notes from `releases/v<version>.md` (fallback `releases/<version>.md`), validates that the tag exists locally and on origin, then creates the GitHub release.
 - Use `-Force` only when the user explicitly wants to replace an existing release for the same tag.
 
+## Purview -> Fabric OneLake Catalog Sync (feature area)
+
+Purview's standalone data governance experience is converging into Microsoft Fabric, so
+`pvw fabric sync` provides a one-way, metadata-only, dry-run-by-default sync from Purview
+Unified Catalog into the Fabric OneLake catalog.
+
+Layout and entry points:
+- Logic lives in `purviewcli/sync/` (`models.py`, `service.py`, `purview_to_fabric.py`,
+  `execution.py`, `state.py`, `reporting.py`, `capabilities.py`); CLI in `purviewcli/cli/fabric.py`.
+- Commands: `pvw fabric sync capabilities|assess|apply|run|rollback`. Prefer the wording
+  "sync" over "migration" (it is a repeatable, checkpointed sync, not a one-time cutover).
+- Writes are additive-only and never write back to Purview. `apply`/`rollback` require
+  `--apply`; everything else dry-runs or previews.
+
+Feature status tracking (keep these three in agreement):
+- `purviewcli/sync/capabilities.py` is the single source of truth, rendered live by
+  `pvw fabric sync capabilities`.
+- `docs/purview-to-fabric-onelake-sync.md` is the summary/status board (carries a
+  "Last reviewed" date and a re-check checklist).
+- `docs/fabric-sync-feature-parity.md` holds full per-capability implementation detail.
+
+Live-verify-first convention (important):
+- Never assume a Purview/Fabric request or response shape from documentation alone. Verify
+  against a real tenant or the published OpenAPI specs before implementing or before
+  flipping a capability's status. This convention has already caught real discrepancies.
+- Known verified facts: classifications/labels are only exposed by the classic Atlas Entity
+  API (`entityReadUniqueAttribute`), NOT the UC Data Asset API (even with
+  `includeExtendedProperties=true`); creating a UC data asset requires
+  `source.type = "DataMap"`.
+
+Sources for re-checking the Fabric roadmap and API surface (browser-free where possible):
+- `https://github.com/microsoft/fabric-rest-api-specs` - authoritative OpenAPI specs, best
+  signal for "does this API exist?". Fetch raw JSON, or use
+  `gh api "search/code?q=<term>+repo:microsoft/fabric-rest-api-specs"`.
+- `https://www.fabric-gps.com/api/releases` - queryable JSON mirror of the Fabric roadmap
+  (`q`, `product_name`, `release_status`, `release_type`, `modified_within_days`); response
+  envelope is `data`/`links`/`pagination`. Docs at `https://www.fabric-gps.com/endpoints`.
+- `https://roadmap.fabric.microsoft.com/` - official roadmap, but a JS-rendered SPA, so it
+  requires actual browser tools; the two sources above work with plain HTTP. It renders
+  correctly and completely, but note the filter defaults to `Planned`, so the card count
+  looks small (e.g. 8 for Administration/Governance/Security - verified 2026-09-22 to be
+  the true planned total, not truncation). Prefer Fabric GPS for bulk queries anyway,
+  since it needs no browser and is filterable.
+- `https://github.com/microsoft/fabric-cli` - read-only reference for client patterns. It is
+  NOT a runtime dependency of this repo; do not add it as one.
+
+Fabric GPS query gotchas:
+- `product_name` must match exactly, including commas - it is
+  `"Administration, Governance and Security"`, not `"Administration and governance"`.
+  A wrong value returns `total_items: 0` rather than an error.
+- The title field is `feature_name` (not `title`); other useful fields are
+  `release_status`, `release_type`, `release_date`, `feature_description`, `blog_url`.
+- Discover valid product names with `?page_size=200` and grouping on `product_name`.
+
+Browser tooling notes (Windows):
+- The built-in integrated browser tools (`openBrowserPage` / `readPage` /
+  `runPlaywrightCode`) do render the roadmap SPA correctly - use these first.
+- `runPlaywrightCode` does NOT surface return values and has no `fs` access, so results must
+  be read back via `readPage`. React re-renders wipe any DOM you inject, so do not try to
+  stash output in the page. Driving `playwright-core` directly from PowerShell avoids both
+  limits and is a good fallback when MCP browser tools are absent from the session.
+- Do not run `npx playwright install chrome`: it fails without Administrator rights AND
+  deletes the bundled `chromium-*` build as "unused" first. Recover with
+  `npx playwright install chromium`.
+- Playwright MCP defaults to the real Chrome channel. It is configured in
+  `%APPDATA%\Code\User\mcp.json` with `"--browser", "chromium"` so it uses the bundled
+  build instead of requiring a Chrome install.
+- The bundled build is version-pinned: `@playwright/mcp@latest` tracks a specific
+  `chromium-<rev>` and fails with `Browser "chrome-for-testing" is not installed` if only
+  an older revision is present. Install the matching revision with that package's own CLI
+  (`node_modules/.bin/playwright install chromium`) - a bare
+  `npx playwright@<ver> install chromium` may silently no-op.
+
 ## Profiling and Performance Diagnosis
 - For startup performance: Time CLI invocation with `Measure-Command` in PowerShell; profile module imports using `python -m cProfile`.
 - For bulk operations: Compare execution time across `--bulk-size`, `--max-parallel` parameters; refer to `entity analyze-performance` command for baseline math.

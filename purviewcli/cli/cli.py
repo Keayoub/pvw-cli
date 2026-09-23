@@ -50,6 +50,7 @@ _MODULE_MAP = {
     "domain": "domain",
     "workflow": "workflow",
     "diagnostics": "diagnostics",  # Performance diagnostics and cache management
+    "fabric": "fabric",  # Purview UC -> Fabric OneLake catalog sync
 }
 
 
