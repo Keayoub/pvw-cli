@@ -18,6 +18,36 @@ from click.testing import CliRunner
 from purviewcli.cli.fabric import fabric
 
 
+def test_sync_help_warns_against_production_use():
+    result = CliRunner().invoke(fabric, ["sync", "--help"])
+    assert result.exit_code == 0
+    assert "Experimental. Do not use sync operations in production." in result.output
+
+
+def test_operational_command_warns_before_assessment(monkeypatch):
+    import purviewcli.cli.fabric as fabric_module
+
+    def fail(*args, **kwargs):
+        raise RuntimeError("assessment reached")
+
+    monkeypatch.setattr(fabric_module, "_run_assessment", fail)
+    result = CliRunner().invoke(fabric, ["sync", "assess"])
+    assert "WARNING: Fabric sync is experimental. Do not use it in production." in result.output
+    assert isinstance(result.exception, RuntimeError)
+
+
+def test_json_assessment_does_not_emit_warning(monkeypatch):
+    import purviewcli.cli.fabric as fabric_module
+
+    def fail(*args, **kwargs):
+        raise RuntimeError("assessment reached")
+
+    monkeypatch.setattr(fabric_module, "_run_assessment", fail)
+    result = CliRunner().invoke(fabric, ["sync", "assess", "--output", "json"])
+    assert "WARNING" not in result.output
+    assert isinstance(result.exception, RuntimeError)
+
+
 # ---------------------------------------------------------------------------
 # Fakes (mirrors tests/test_sync_service.py's fakes)
 # ---------------------------------------------------------------------------

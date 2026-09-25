@@ -3,6 +3,7 @@
 
 Commands:
   - ``pvw fabric sync capabilities``: prints the current feature-status board (no I/O).
+  - ``pvw fabric sync roadmap``: reads governance roadmap announcements from Fabric GPS.
   - ``pvw fabric sync assess``  : always read-only; produces a plan/report.
   - ``pvw fabric sync apply``    : dry-run by default; pass --apply to write.
   - ``pvw fabric sync run``     : config-file-driven equivalent of ``apply``, for schedulers.
@@ -192,8 +193,19 @@ def fabric():
 
 @fabric.group()
 def sync():
-    """Assess, apply, and roll back the Purview -> Fabric metadata sync."""
+    """Assess, apply, and roll back the Purview -> Fabric metadata sync.
+
+    WARNING: Experimental. Do not use sync operations in production.
+    """
     pass
+
+
+def _warn_experimental_sync(output: str) -> None:
+    if output != "json":
+        click.echo(
+            "WARNING: Fabric sync is experimental. Do not use it in production.",
+            err=True,
+        )
 
 
 @sync.command(name="capabilities")
@@ -241,11 +253,47 @@ def sync_capabilities(ctx, output, status_filter):
     )
 
 
+@sync.command(name="roadmap")
+@click.option("--output", type=click.Choice(["table", "json"]), default="table", help="Output format.")
+@click.option("--status", type=click.Choice(["planned", "shipped"], case_sensitive=False), help="Filter Fabric GPS release status.")
+def sync_roadmap(output, status):
+    """Read Fabric GPS governance roadmap announcements (not verified sync support)."""
+    from purviewcli.sync.roadmap import RoadmapError, fetch_governance_roadmap
+
+    try:
+        result = fetch_governance_roadmap(status=status)
+    except RoadmapError as exc:
+        raise click.ClickException(str(exc)) from exc
+    if output == "json":
+        click.echo(json.dumps(result, indent=2))
+        return
+
+    from rich.table import Table
+
+    table = Table(title="Fabric GPS: data governance roadmap")
+    table.add_column("Modified")
+    table.add_column("Feature", style="cyan")
+    table.add_column("Product")
+    table.add_column("Roadmap status", style="yellow")
+    table.add_column("Target")
+    for item in result["items"]:
+        table.add_row(
+            item["last_modified"] or "",
+            item["feature_name"],
+            item["product_name"],
+            item["release_status"],
+            item["release_date"] or "",
+        )
+    console.print(table)
+    console.print(f"INFO Checked: {result['checked_at']}. {result['note']}")
+
+
 @sync.command(name="assess")
 @_shared_assessment_options
 @click.pass_context
 def sync_assess(ctx, purview_domain_ids, workspace_ids, mapping_file, overwrite, truncate_descriptions, sync_classifications, report_file, csv_report_file, output):
     """Read-only assessment: build and report a sync plan without writing anything."""
+    _warn_experimental_sync(output)
     plan, _fabric_client = _run_assessment(ctx, purview_domain_ids, workspace_ids, mapping_file, overwrite, truncate_descriptions, sync_classifications=sync_classifications)
     _write_reports(plan, report_file, csv_report_file)
     _render_plan_summary(plan, output)
@@ -262,6 +310,7 @@ def sync_apply(ctx, purview_domain_ids, workspace_ids, mapping_file, overwrite, 
     from purviewcli.sync.service import sync_plan
     from purviewcli.sync.state import CheckpointStore
 
+    _warn_experimental_sync(output)
     store = CheckpointStore(checkpoint_file)
     # Reuse an existing checkpoint's run id so repeated syncs against the same
     # checkpoint file are idempotent (see CheckpointStore.load_or_create).
@@ -331,6 +380,7 @@ def sync_rollback(ctx, checkpoint_file, apply_, report_file, output):
     from purviewcli.sync.service import rollback_run
     from purviewcli.sync.state import CheckpointStore, new_run_id
 
+    _warn_experimental_sync(output)
     _uc_client, fabric_client, _entity_client = _get_clients(ctx)
     store = CheckpointStore(checkpoint_file)
     result = rollback_run(fabric_client, store, dry_run=not apply_)

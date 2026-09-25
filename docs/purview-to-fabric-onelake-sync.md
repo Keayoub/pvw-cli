@@ -1,9 +1,11 @@
 # Purview → Fabric OneLake Catalog: Sync Overview & Roadmap
 
-> **Last reviewed: 2026-09-23**, against a live Purview tenant (`kaydemopurview`, test data
-> only), the [`microsoft/fabric-rest-api-specs`](https://github.com/microsoft/fabric-rest-api-specs)
-> OpenAPI specs (including the newer `ontology/` and `dataAgent/` specs), and the
-> [Fabric GPS roadmap API](https://www.fabric-gps.com/endpoints). See
+> **Last reviewed: 2026-09-25 (roadmap only).** **API/tenant verification:
+> 2026-09-23**, against a live Purview tenant
+> (`kaydemopurview`, test data only) and the
+> [`microsoft/fabric-rest-api-specs`](https://github.com/microsoft/fabric-rest-api-specs)
+> OpenAPI specs (including `ontology/` and `dataAgent/`).
+> **Fabric GPS roadmap checked: 2026-09-25**. See
 > ["Re-check checklist"](#re-check-checklist) below for what to re-verify and when.
 
 > Microsoft Purview's standalone data governance experience is being retired in favor of
@@ -17,6 +19,9 @@
 > below, see the [Fabric Sync Feature Parity Map](fabric-sync-feature-parity.md). This page
 > is the summary; those two are the source of truth.
 
+> **WARNING: The sync is experimental and must not be used in production.**
+> Use only non-production data and resources when assessing or applying changes.
+
 ## Get the live version from the CLI
 
 The table below is a snapshot. The CLI renders the same data live, straight from
@@ -29,6 +34,43 @@ pvw fabric sync capabilities                       # table
 pvw fabric sync capabilities --output json         # machine-readable
 pvw fabric sync capabilities --status planned       # only "planned/TBD" rows
 ```
+
+To consult **current** Fabric data-governance roadmap announcements, rather than
+the verified sync-status board above:
+
+```bash
+pvw fabric sync roadmap                           # live Fabric GPS results
+pvw fabric sync roadmap --status planned
+pvw fabric sync roadmap --output json              # checked_at, source, note, items
+```
+
+This read-only command queries the [Fabric GPS roadmap API](https://www.fabric-gps.com/endpoints)
+across the *Administration, Governance and Security* and *IQ* product categories,
+following all pages and filtering feature names for governance topics (OneLake
+catalog, Ontology, Fabric Graph, labels, lineage, quality, and related topics).
+Results include the roadmap's `last_modified` date, release status, and target
+date. It requires network access but no Fabric/Purview credentials. GPS is a
+roadmap mirror, **not proof that an API is available or that sync is implemented**:
+verify the published spec and tenant behavior before changing a capability's
+status. The command does not alter the capability board or sync data.
+
+### Fabric GPS snapshot (2026-09-25)
+
+At **18:39 UTC**, `pvw fabric sync roadmap --output json` returned **53 matching
+announcements**: 42 `Shipped` and 11 `Planned` (25 under *IQ*, 28 under
+*Administration, Governance and Security*). These are **feature-name matches**
+from those two product categories, not the entire Fabric roadmap and not an
+API-availability audit. Relevant planned items included:
+
+| Roadmap item | Roadmap status / target | Impact to re-check |
+|---|---|---|
+| Ontology item GA; Public **query** API for Ontology | Planned / Q4 2026 | Ontology definition **management** already has a published REST spec; the query API is a distinct future feature. Re-check relationships and tenant behavior before attempting structured governance sync. |
+| Ontology Versioning; Full Ontology canvas experience | Planned / Q3 2026 | Re-check maturity of Ontology definitions; neither changes the current tag mapping by itself. |
+| OneLake catalog Search API expansion to OneLake and Semantic model tables | Planned / Q3 2026 | Re-check `POST /v1/catalog/search` result shapes before extending asset matching below Fabric items. |
+
+`Govern Skills for Fabric` was marked `Shipped` (Q3 2026); it does not
+establish a Purview-to-Fabric metadata mapping. Run the command again for
+current statuses; this dated snapshot does not update automatically.
 
 ## Status legend
 
@@ -57,7 +99,7 @@ pvw fabric sync capabilities --status planned       # only "planned/TBD" rows
 | RBAC → ABAC access policies | *(no confirmed Fabric equivalent)* | ⛔ Not supported | Purview's attribute-based access policies have no matching Fabric item/workspace policy API today. |
 | Custom / managed attributes | *(no confirmed Fabric field)* | 🔜 Planned / TBD | Present in Purview UC domain responses (`managedAttributes`); no confirmed arbitrary-property field on Fabric items yet. |
 | Full glossary hierarchy (parent/child terms, relationships) | *(no Fabric equivalent)* | ⛔ Not supported | Only the term's name is portable as a tag today; Fabric Ontology (next row) is the eventual candidate target, but not until relationships/hierarchy ship in its public API. |
-| Structured governance model (typed entity properties, relationships) | Fabric Ontology item (`EntityTypes` with typed properties) | 🔜 Planned / TBD | **Live-verified 2026-09-23**: Fabric Ontology has a public REST spec (`/workspaces/{id}/ontologies`, full CRUD + definition parts) with a typed `EntityType` model (name, namespace, typed properties) — richer than a flat tag, and Data Agent already accepts an Ontology as a `FabricItem` datasource. Not yet adopted: per the Fabric roadmap, "Public API for Ontology", entity-type relationships, and versioning are still Planned (Q3–Q4 2026), so the object model isn't finalized. Could eventually replace the term/data-product/CDE tag rows above with a structured mapping. |
+| Structured governance model (typed entity properties, relationships) | Fabric Ontology item (`EntityTypes` with typed properties) | 🔜 Planned / TBD | **API spec checked 2026-09-23; roadmap checked 2026-09-25**: Fabric Ontology has a published definition-management REST spec (`/workspaces/{id}/ontologies`, CRUD + definition parts) with typed `EntityType` properties; Data Agent accepts Ontology as a datasource. The separate public **query** API and Ontology GA remain Planned (Q4 2026), with versioning and the full canvas Planned (Q3 2026). Relationships/hierarchy are not yet confirmed in the published spec; no structured sync has been implemented. |
 
 ## Re-check checklist
 
@@ -73,7 +115,7 @@ to where the answer would show up — no need to rediscover these sources from s
 | 4 | Has Fabric introduced a **native data-product** object (beyond tags)? | [Fabric GPS roadmap API](https://www.fabric-gps.com/api/releases?product_name=Administration%2C+Governance+and+Security), [Microsoft Fabric blog](https://blog.fabric.microsoft.com/) | Data Products as first-class Fabric objects |
 | 5 | Does Fabric support **arbitrary custom/managed properties** on items (beyond tags/sensitivity labels)? | [`fabric-rest-api-specs` — platform definitions](https://github.com/microsoft/fabric-rest-api-specs/tree/main/platform/definitions), [Fabric REST API reference — Items](https://learn.microsoft.com/en-us/rest/api/fabric/core/items) | Custom / managed attributes sync |
 | 6 | Has Fabric added an **attribute-based access policy** API at the item/workspace level? (As of 2026-09-22, "Outbound Access Protection" items are network-egress controls, not ABAC.) | [Fabric GPS roadmap API](https://www.fabric-gps.com/api/releases?product_name=Administration%2C+Governance+and+Security) | RBAC → ABAC policy sync |
-| 7 | Has Fabric's **Ontology** public API shipped (Fabric GPS: "Public API for Ontology", entity-type relationships, versioning — all Planned Q3–Q4 2026 as of 2026-09-23)? If so, does it expose relationships/hierarchy between entity types? | [`fabric-rest-api-specs` — ontology](https://github.com/microsoft/fabric-rest-api-specs/tree/main/ontology), [Fabric GPS roadmap API](https://www.fabric-gps.com/api/releases?product_name=IQ&q=ontology) | Structured governance model (typed entities/relationships), full glossary hierarchy |
+| 7 | Does the published **Ontology definition-management API** expose relationships/hierarchy between entity types? Has Ontology GA shipped (Planned Q4 2026 on Fabric GPS as of 2026-09-25)? The separate public query API is also Planned for Q4 2026. | [`fabric-rest-api-specs` — ontology](https://github.com/microsoft/fabric-rest-api-specs/tree/main/ontology), [Fabric GPS roadmap API](https://www.fabric-gps.com/api/releases?product_name=IQ&q=ontology) | Structured governance model (typed entities/relationships), full glossary hierarchy |
 
 ### Useful sources for re-checking
 
@@ -99,7 +141,8 @@ When a 🔜/⛔ row becomes possible:
    a shape from documentation alone.
 2. Update the row in `purviewcli/sync/capabilities.py` first (the CLI's source of truth),
    then mirror the change here and in `fabric-sync-feature-parity.md`, recording what was
-   verified and against what. Update the "Last reviewed" date at the top of this page.
+   verified and against what. Update the relevant roadmap and API/tenant review
+   dates at the top of this page independently.
 3. Extend `purviewcli/sync/models.py`, `service.py`, `purview_to_fabric.py`,
    `execution.py`, `fabric_client.py`, and `cli/fabric.py`, following the same additive,
    opt-in pattern used for `--sync-classifications`.

@@ -8,6 +8,12 @@
 > watch on the Fabric roadmap), see
 > [Purview to Fabric OneLake Sync Overview](purview-to-fabric-onelake-sync.md).
 
+> **WARNING: `pvw fabric sync` is experimental. Do not use sync operations in
+> production.** Test only with non-production Purview and Fabric resources. The
+> operational commands display this warning in table mode; JSON mode omits
+> notices so stdout remains machine-readable. `capabilities` and `roadmap` are
+> read-only status/roadmap lookups, not proof of production readiness.
+
 ## What this does (and does not) do
 
 `pvw fabric sync` is a **one-way, metadata-only** sync from Purview UC into Fabric:
@@ -174,6 +180,7 @@ resolve the mapping file or adjust `--overwrite`/`--truncate-descriptions`).
 | Command | Writes to Fabric? | Default | Key options |
 |---|---|---|---|
 | `pvw fabric sync capabilities` | Never (no client I/O at all) | — | `--status`, `--output` |
+| `pvw fabric sync roadmap` | Never (reads public Fabric GPS API) | — | `--status planned\|shipped`, `--output table\|json` |
 | `pvw fabric sync assess` | Never | — | `--purview-domain-id`, `--workspace-id`, `--mapping-file`, `--overwrite`, `--truncate-descriptions`, `--sync-classifications`, `--report-file`, `--csv-report-file`, `--output` |
 | `pvw fabric sync apply` | Only with `--apply` | Dry run | All of the above, plus `--checkpoint-file` (required), `--apply` |
 | `pvw fabric sync run --config <file>` | Only if `"apply": true` in the config | Dry run | `--config` (JSON file with the same keys as `apply`) |
@@ -183,6 +190,10 @@ resolve the mapping file or adjust `--overwrite`/`--truncate-descriptions`).
 [Purview to Fabric OneLake Sync Overview](purview-to-fabric-onelake-sync.md), live from the
 CLI's own capability data — useful for scripting a quick "what's supported today" check
 without reading docs.
+
+`pvw fabric sync roadmap` retrieves the current Fabric GPS governance roadmap in
+read-only mode; see the [dated snapshot and caveats](purview-to-fabric-onelake-sync.md#fabric-gps-snapshot-2026-09-25).
+Roadmap `Shipped` does not mean the sync capability is implemented or tenant-verified.
 
 ## Verification status
 
