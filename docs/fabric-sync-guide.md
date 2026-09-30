@@ -258,7 +258,11 @@ tenant, which surfaced and fixed two real discrepancies from the initial impleme
 - `POST /v1/catalog/search` entries nest their workspace under `hierarchy.workspace.{id,displayName}`,
   not flat `workspaceId`/`workspaceDisplayName` fields.
 
-The Purview side has been partially verified against a live tenant:
+The Purview side has been partially verified against a live tenant. A read-only
+validation on 2026-09-30 exported a valid schema-v1 snapshot containing one domain,
+one term, and zero assets/data products/CDEs. Direct `data-asset list` returned
+`{"value": [], "count": 0}`, confirming that zero assets came from the selected
+profile rather than export filtering:
 
 - `pvw uc domain list` matches the field names already assumed (`id`/`name`/`description`/
   `type`/`status`/`managedAttributes`).
@@ -268,10 +272,14 @@ The Purview side has been partially verified against a live tenant:
   **not** expose classifications, labels, tags, or a sensitivity label, even with
   `includeExtendedProperties=true`.
 - Purview's Unified Catalog data asset/domain/term/data-product/CDE field names beyond
-  domain list are still unverified against a populated live tenant (the test tenant used
-  this session had zero scanned assets) — if your responses differ from what's assumed in
-  `purviewcli/sync/service.py`, the normalization functions there are the place to
-  adjust.
+  the observed empty/list responses are still unverified against a populated live tenant.
+  If your responses differ from what's assumed in `purviewcli/sync/service.py`, the
+  normalization functions there are the place to adjust.
+- The same 2026-09-30 run normalized 312 live Fabric catalog items, including 25
+  Lakehouses, 37 Semantic Models, and 11 Warehouses. `sync prepare` completed without
+  writes; its empty decisions draft was correctly rejected because no Purview asset was
+  selected or mapped. This validates connectivity and safeguards, not an end-to-end asset
+  sync.
 
 See [`fabric-sync-feature-parity.md`](fabric-sync-feature-parity.md) for the full
 feature-by-feature implementation status, including what's tracked as future work pending
