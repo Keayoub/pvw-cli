@@ -189,12 +189,14 @@ CAPABILITIES: List[SyncCapability] = [
         fabric_target="Fabric Ontology item (`EntityTypes` with typed properties)",
         status=CapabilityStatus.PLANNED,
         notes=(
-            "API spec checked 2026-09-23: Fabric Ontology has a published "
+            "API spec checked 2026-09-29: Fabric Ontology has a published "
             "definition-management REST spec "
             "(`/workspaces/{id}/ontologies`, full CRUD + definition parts) with a "
             "typed EntityType model (name, namespace, typed properties) -- richer "
             "than a flat tag, and Data Agent already accepts an Ontology as a "
-            "`FabricItem` datasource. Roadmap checked 2026-09-25: Ontology GA and "
+            "`FabricItem` datasource. Ontology responses now expose read-only "
+            "`properties.generation` (1 or 2); creating without a definition "
+            "defaults to generation 2. Roadmap checked 2026-09-29: Ontology GA and "
             "the separate public query API are Planned for Q4 2026; versioning "
             "and the full canvas are Planned for Q3 2026. Relationships/hierarchy "
             "are not confirmed in the published definition spec. Re-check API "

@@ -4,6 +4,76 @@
 
 ## Overview
 
+### Portable catalog export (no Fabric dependency)
+
+Export a read-only, normalized snapshot of Purview Unified Catalog:
+
+```powershell
+pvw uc export --output-dir .\purview-snapshot
+```
+
+The destination must not exist. The command creates `manifest.json` (schema version,
+UTC export time, file counts and SHA-256 checksums), `assets.json`, `domains.json`,
+`terms.json`, `data_products.json`, `cdes.json` and `decisions.example.json`.
+Asset records include Purview identifiers
+for their domain, terms, data products and CDEs **when these IDs are present in
+the UC list response**, so consumers can join records without relying on display
+names. Business objects retain their names,
+descriptions, domain IDs and available status/parent IDs. The snapshot uses
+normalized field names (for example `domain_id` and `term_ids`); it is not a
+lossless backup of every Purview API field.
+
+This export does **not** connect to Fabric, perform a sync, or include lineage.
+Keep the directory private: asset descriptions, contact IDs and source metadata
+may be sensitive. If Purview reports pagination that cannot be followed, or
+`totalCount` does not match the retrieved records (including if it changes
+between asset pages), the export fails rather than publishing an apparently
+complete snapshot. When no count or continuation is supplied, completeness
+cannot be independently guaranteed; verify the export against your tenant.
+
+To prepare a **reviewed Fabric sync**, run `pvw fabric sync prepare --snapshot-dir
+.\purview-snapshot --output-file .\decisions.json` to generate a new draft
+outside the snapshot folder (keep the export unchanged). The draft contains
+informational name-match candidates with Fabric types and a `reviewStatus`
+indicating zero, one or multiple candidates. Each suggestion includes a
+`proposedMapping` object that can be copied to the top-level `mappings` array
+**only after customer verification**; also add its Purview ID to
+`selectedAssetIds`. None are selected or approved by the command.
+You can also copy `decisions.example.json` outside the snapshot
+folder and edit it manually:
+
+```json
+{
+  "schemaVersion": 1,
+  "snapshotSha256": "<leave the value from decisions.example.json>",
+  "selectedAssetIds": ["<Purview asset ID>"],
+  "descriptions": {"<Purview asset ID>": "Approved description"},
+  "mappings": [
+    {"purviewAssetId": "<Purview asset ID>", "workspaceId": "<Fabric workspace GUID>", "itemId": "<Fabric item GUID>", "expectedFabricType": "Lakehouse"}
+  ]
+}
+```
+
+Selection must be nonempty, and **every selected asset needs one explicit
+mapping**. The `descriptions` field is optional per asset (use `{}` to leave
+descriptions unchanged); terms and domains cannot be edited in this version.
+Selected asset IDs, mapping IDs and linked-object IDs must be valid strings;
+malformed records are rejected before Fabric is contacted.
+The expected Fabric item type must be `Lakehouse`, `SemanticModel` or
+`Warehouse` and is checked against both current Fabric catalog and Get Item
+before writing. UC type `General` is ambiguous, so a name match alone cannot
+establish that the target is the right asset; confirm it with the customer.
+The manifest digest and checksums detect accidental changes to the export;
+they are **not** cryptographic proof of Purview provenance or customer approval.
+Validate locally before any Fabric read:
+
+```powershell
+pvw uc validate-export --snapshot-dir .\purview-snapshot --decisions-file .\decisions.json
+```
+
+For a dry-run and review against *current* Fabric state, see the
+[Fabric Sync Guide](../fabric-sync-guide.md#reviewed-offline-export-to-fabric).
+
 The Unified Catalog (`uc`) command group provides comprehensive management of Microsoft Purview's modern data governance features:
 
 - **✅ Governance Domains** - Organisational contexts for data assets

@@ -133,6 +133,38 @@ def uc():
     pass
 
 
+@uc.command(name="export")
+@click.option("--output-dir", required=True, type=click.Path(file_okay=False, path_type=str), help="New folder for the JSON snapshot (must not exist).")
+@click.pass_context
+def export_catalog(ctx, output_dir):
+    """Export assets and business context to JSON without using Fabric."""
+    from pathlib import Path
+    from purviewcli.client.client_cache import get_cached_client
+    from purviewcli.export.catalog import export_catalog as write_export
+
+    try:
+        client = get_cached_client(UnifiedCatalogClient, profile=(ctx.obj or {}).get("profile", "default"))
+        manifest = write_export(client, Path(output_dir))
+    except (OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    console.print(f"OK Purview export saved to {output_dir} ({manifest['files']['assets.json']} assets)")
+
+
+@uc.command(name="validate-export")
+@click.option("--snapshot-dir", required=True, type=click.Path(exists=True, file_okay=False))
+@click.option("--decisions-file", required=True, type=click.Path(exists=True, dir_okay=False))
+def validate_export(snapshot_dir, decisions_file):
+    """Validate a reviewed export and its explicit mappings offline."""
+    from pathlib import Path
+    from purviewcli.export.decisions import load_reviewed_snapshot
+
+    try:
+        state, _ = load_reviewed_snapshot(Path(snapshot_dir), Path(decisions_file))
+    except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    console.print(f"OK Validated {len(state['assets'])} selected assets (no Fabric connection)")
+
+
 # ========================================
 # GOVERNANCE DOMAINS
 # ========================================
