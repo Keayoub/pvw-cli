@@ -30,6 +30,57 @@ Nothing is ever written back to Purview. Every command defaults to a **dry run**
 
 ## Matching policy: how an asset is linked to a Fabric item
 
+### Reviewed offline export to Fabric
+
+To let a customer select assets and approve description changes before sync,
+use the standalone [Purview UC export](commands/unified-catalog.md#portable-catalog-export-no-fabric-dependency).
+Run the read-only preparation command to discover existing Fabric items by
+exact name. It writes a **new draft outside the export folder** with item IDs,
+workspace names, Fabric types and reasons for each suggestion. Each asset has
+a `reviewStatus` (`no_candidate`, `single_candidate`, or `multiple_candidates`);
+each suggestion includes a `proposedMapping` object ready to copy. Suggestions
+never pre-select an asset or approve a mapping:
+
+```powershell
+pvw fabric sync prepare --snapshot-dir .\purview-snapshot --output-file .\decisions.json
+```
+
+Review the draft with the customer. Copy **only verified** `proposedMapping`
+objects into the top-level `mappings` array, add their Purview IDs to
+`selectedAssetIds`, and supply optional `descriptions`. Exactly one explicit
+mapping is required per selected asset, including
+`expectedFabricType` (`Lakehouse`, `SemanticModel` or `Warehouse`). A UC asset
+of type `General` does **not** prove which Fabric item type it represents:
+confirm its identity and type manually. The prepared file is a convenience,
+not an authorization. Then run:
+
+```powershell
+pvw uc validate-export --snapshot-dir .\purview-snapshot --decisions-file .\decisions.json
+pvw fabric sync assess --snapshot-dir .\purview-snapshot --decisions-file .\decisions.json --report-file .\assessment.json
+pvw fabric sync apply --snapshot-dir .\purview-snapshot --decisions-file .\decisions.json --checkpoint-file .\checkpoint.json
+# Only after reviewing the assessment and dry-run, on non-production resources:
+pvw fabric sync apply --snapshot-dir .\purview-snapshot --decisions-file .\decisions.json --checkpoint-file .\checkpoint.json --apply
+```
+
+This mode **does not call Purview** during assess/apply. It verifies export
+checksums, selected IDs, relationships and mappings before reading Fabric, then
+uses the existing planner with fresh Fabric state. It compares the approved
+workspace/item IDs and the approved item type against the current catalog and
+Get Item response and plans from that same verified response (not a second
+unverified read);
+unknown, missing or mismatched types block the entire reviewed apply before
+any write. Missing mapping targets and conflicts must be resolved before
+application. It does not infer mappings from
+embedded IDs, update Fabric domains, or support `--sync-classifications`;
+`--mapping-file` and `--purview-domain-id` cannot be combined with this mode.
+It remains experimental and **must not be used in production**. An export can
+be stale: re-export if Purview changes and review a new decisions file.
+
+**Future enhancement, not yet implemented:** a local mapping UI under `tools/`
+could simplify reviewing candidates and editing the same decisions file. Build
+it after tenant validation of this CLI workflow; it must reuse the CLI validation
+and safety gates rather than approve matches or apply changes on its own.
+
 A Purview asset is only ever written to if it resolves to **exactly one** Fabric item, via
 (in priority order):
 
@@ -181,7 +232,8 @@ resolve the mapping file or adjust `--overwrite`/`--truncate-descriptions`).
 |---|---|---|---|
 | `pvw fabric sync capabilities` | Never (no client I/O at all) | — | `--status`, `--output` |
 | `pvw fabric sync roadmap` | Never (reads public Fabric GPS API) | — | `--status planned\|shipped`, `--output table\|json` |
-| `pvw fabric sync assess` | Never | — | `--purview-domain-id`, `--workspace-id`, `--mapping-file`, `--overwrite`, `--truncate-descriptions`, `--sync-classifications`, `--report-file`, `--csv-report-file`, `--output` |
+| `pvw fabric sync prepare` | Never (reads Fabric catalog) | — | `--snapshot-dir`, `--output-file`, `--workspace-id` |
+| `pvw fabric sync assess` | Never | — | `--purview-domain-id`, `--workspace-id`, `--mapping-file` or `--snapshot-dir` + `--decisions-file`, `--overwrite`, `--truncate-descriptions`, `--sync-classifications` (live source only), `--report-file`, `--csv-report-file`, `--output` |
 | `pvw fabric sync apply` | Only with `--apply` | Dry run | All of the above, plus `--checkpoint-file` (required), `--apply` |
 | `pvw fabric sync run --config <file>` | Only if `"apply": true` in the config | Dry run | `--config` (JSON file with the same keys as `apply`) |
 | `pvw fabric sync rollback` | Only with `--apply` | Preview | `--checkpoint-file` (required), `--apply`, `--report-file`, `--output` |

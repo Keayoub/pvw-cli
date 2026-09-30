@@ -228,6 +228,7 @@ class MappingEntry:
     workspace_id: str
     item_id: str
     note: Optional[str] = None
+    expected_fabric_type: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return _to_dict(self)
@@ -239,6 +240,7 @@ class MappingEntry:
             workspace_id=data["workspaceId"],
             item_id=data["itemId"],
             note=data.get("note"),
+            expected_fabric_type=data.get("expectedFabricType"),
         )
 
 

@@ -65,7 +65,7 @@ from __future__ import annotations
 
 import json
 import logging
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 from .execution import (
     FabricMutationClient,
@@ -352,10 +352,13 @@ def normalize_catalog_entries(raw_entries: Sequence[Dict[str, Any]]) -> List[Fab
     under ``hierarchy.workspace.{id,displayName}``, not flat ``workspaceId``/
     ``workspaceDisplayName`` fields. The flat fields are still checked first as
     a defensive fallback in case a future/older API version or a different
-    catalog entry ``type`` returns a flatter shape.
+    catalog entry ``type`` returns a flatter shape. Workspace search results
+    are excluded: they cannot be used as Fabric item sync targets.
     """
     entries = []
     for raw in raw_entries:
+        if raw.get("catalogEntryType") == "Workspace" or raw.get("type") == "Workspace":
+            continue
         workspace = (raw.get("hierarchy") or {}).get("workspace") or {}
         entries.append(
             FabricCatalogEntry(
@@ -396,6 +399,11 @@ def fetch_fabric_catalog(fabric_client: Any, workspace_ids: Sequence[str] = ()) 
 def fetch_fabric_item_state(fabric_client: Any, workspace_id: str, item_id: str) -> FabricItemState:
     """Fetch the current display name/description/tags for one Fabric item."""
     raw = fabric_client.get_item(workspace_id, item_id)
+    return normalize_fabric_item_state(raw, workspace_id, item_id)
+
+
+def normalize_fabric_item_state(raw: Dict[str, Any], workspace_id: str, item_id: str) -> FabricItemState:
+    """Normalize a previously fetched item without reading Fabric again."""
     raw_tags = raw.get("tags", []) or []
     tags = [FabricTag(id=t.get("id", ""), display_name=t.get("displayName", "")) for t in raw_tags]
     return FabricItemState(
@@ -441,6 +449,7 @@ def build_sync_plan(
     overwrite: bool = False,
     truncate_descriptions: bool = False,
     sync_classifications: bool = False,
+    verified_item_states: Optional[Dict[Tuple[str, str], FabricItemState]] = None,
 ) -> SyncPlan:
     """Run the full matching/planning pipeline and assemble a :class:`SyncPlan`.
 
@@ -475,7 +484,13 @@ def build_sync_plan(
         asset = assets_by_id.get(match.purview_asset_id)
         if asset is None:
             continue
-        current_state = fetch_fabric_item_state(fabric_client, match.workspace_id, match.item_id)
+        if verified_item_states is not None:
+            key = (match.workspace_id, match.item_id)
+            if key not in verified_item_states:
+                raise ValueError(f"No verified Fabric item state for {key[0]}/{key[1]}")
+            current_state = verified_item_states[key]
+        else:
+            current_state = fetch_fabric_item_state(fabric_client, match.workspace_id, match.item_id)
         item_plans.append(
             plan_item_metadata(asset, match, current_state, overwrite=overwrite, truncate_descriptions=truncate_descriptions)
         )

@@ -232,6 +232,27 @@ class TestNormalization:
         assert entries[0].workspace_display_name == "Sales WS"
         assert entries[0].display_name == "Sales LH"
 
+    def test_normalize_catalog_entries_excludes_workspace_search_results(self):
+        raw = [
+            {
+                "id": "ws1",
+                "type": "Workspace",
+                "catalogEntryType": "Workspace",
+                "displayName": "Sales",
+            },
+            {
+                "id": "item1",
+                "type": "Lakehouse",
+                "catalogEntryType": "FabricItem",
+                "displayName": "Sales",
+                "hierarchy": {"workspace": {"id": "ws1", "displayName": "Sales"}},
+            },
+            {"id": "ws2", "type": "Workspace", "displayName": "Other"},
+            {"id": "ws3", "catalogEntryType": "Workspace", "displayName": "Third"},
+        ]
+        entries = normalize_catalog_entries(raw)
+        assert [(entry.id, entry.workspace_id) for entry in entries] == [("item1", "ws1")]
+
     def test_normalize_fabric_domains(self):
         raw = [{"id": "fd1", "displayName": "Finance", "description": None, "parentDomainId": None}]
         domains = normalize_fabric_domains(raw)
@@ -269,6 +290,7 @@ class TestFetchHelpers:
     def test_fetch_fabric_catalog_filters_by_workspace(self):
         client = FakeFabricClient(
             catalog_entries=[
+                {"id": "ws1", "type": "Workspace", "catalogEntryType": "Workspace", "displayName": "WS1"},
                 {"id": "i1", "type": "Lakehouse", "displayName": "A", "workspaceId": "ws1", "workspaceDisplayName": "WS1"},
                 {"id": "i2", "type": "Lakehouse", "displayName": "B", "workspaceId": "ws2", "workspaceDisplayName": "WS2"},
             ]
