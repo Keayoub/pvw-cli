@@ -58,7 +58,9 @@ Selection must be nonempty, and **every selected asset needs one explicit
 mapping**. The `descriptions` field is optional per asset (use `{}` to leave
 descriptions unchanged); terms and domains cannot be edited in this version.
 Selected asset IDs, mapping IDs and linked-object IDs must be valid strings;
-malformed records are rejected before Fabric is contacted.
+malformed records are rejected before Fabric is contacted. `schemaVersion`
+(in both `manifest.json` and the decisions file) and manifest file counts must
+be JSON integers: `"schemaVersion": 1` is accepted, `true` or `"1"` are rejected.
 The expected Fabric item type must be `Lakehouse`, `SemanticModel` or
 `Warehouse` and is checked against both current Fabric catalog and Get Item
 before writing. UC type `General` is ambiguous, so a name match alone cannot

@@ -13,6 +13,12 @@ from purviewcli.sync.models import PurviewAsset, PurviewGovernanceObject, SyncMa
 
 FILES = ("assets.json", "domains.json", "terms.json", "data_products.json", "cdes.json")
 FABRIC_ITEM_TYPES = {"Lakehouse", "SemanticModel", "Warehouse"}
+SCHEMA_VERSION = 1
+
+
+def _is_int(value: Any) -> bool:
+    # bool subclasses int in Python, so JSON true would otherwise equal 1.
+    return isinstance(value, int) and not isinstance(value, bool)
 
 
 def _object(path: Path) -> Dict[str, Any]:
@@ -28,7 +34,8 @@ def load_snapshot(snapshot_dir: Path) -> Dict[str, List[Dict[str, Any]]]:
     snapshot_dir = Path(snapshot_dir)
     manifest = _object(snapshot_dir / "manifest.json")
     if (
-        manifest.get("schemaVersion") != 1
+        not _is_int(manifest.get("schemaVersion"))
+        or manifest["schemaVersion"] != SCHEMA_VERSION
         or not isinstance(manifest.get("sha256"), dict)
         or not isinstance(manifest.get("files"), dict)
     ):
@@ -42,7 +49,8 @@ def load_snapshot(snapshot_dir: Path) -> Dict[str, List[Dict[str, Any]]]:
         records = json.loads(content)
         if not isinstance(records, list) or any(not isinstance(record, dict) for record in records):
             raise ValueError(f"{name}: expected an array of objects")
-        if manifest.get("files", {}).get(name) != len(records):
+        count = manifest["files"].get(name)
+        if not _is_int(count) or count != len(records):
             raise ValueError(f"{name}: manifest count mismatch")
         identifiers = [record.get("id") for record in records]
         if any(not isinstance(identifier, str) or not identifier for identifier in identifiers):
@@ -82,7 +90,11 @@ def load_reviewed_snapshot(
             "Decisions must contain schemaVersion, snapshotSha256, selectedAssetIds, descriptions, mappings (and optionally candidates)"
         )
     digest = hashlib.sha256((snapshot_dir / "manifest.json").read_bytes()).hexdigest()
-    if decisions["schemaVersion"] != 1 or decisions["snapshotSha256"] != digest:
+    if (
+        not _is_int(decisions["schemaVersion"])
+        or decisions["schemaVersion"] != SCHEMA_VERSION
+        or decisions["snapshotSha256"] != digest
+    ):
         raise ValueError("Decisions do not match this snapshot version and manifest")
     selected = decisions["selectedAssetIds"]
     if (

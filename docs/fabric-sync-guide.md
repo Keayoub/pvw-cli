@@ -63,7 +63,8 @@ pvw fabric sync apply --snapshot-dir .\purview-snapshot --decisions-file .\decis
 ```
 
 This mode **does not call Purview** during assess/apply. It verifies export
-checksums, selected IDs, relationships and mappings before reading Fabric, then
+checksums, integer schema versions and file counts, selected IDs,
+relationships and mappings before reading Fabric, then
 uses the existing planner with fresh Fabric state. It compares the approved
 workspace/item IDs and the approved item type against the current catalog and
 Get Item response and plans from that same verified response (not a second

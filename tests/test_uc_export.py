@@ -279,6 +279,43 @@ def test_reviewed_snapshot_rejects_malformed_asset_fields(tmp_path, field, value
         load_reviewed_snapshot(folder, decisions)
 
 
+def _rewrite_manifest(folder, decisions, **changes):
+    manifest_path = folder / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    for key, value in changes.items():
+        if key == "assets_count":
+            manifest["files"]["assets.json"] = value
+        else:
+            manifest[key] = value
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    reviewed = json.loads(decisions.read_text(encoding="utf-8"))
+    reviewed["snapshotSha256"] = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+    decisions.write_text(json.dumps(reviewed), encoding="utf-8")
+
+
+def test_reviewed_snapshot_rejects_boolean_manifest_schema_version(tmp_path):
+    folder, decisions = reviewed_export(tmp_path)
+    _rewrite_manifest(folder, decisions, schemaVersion=True)
+    with pytest.raises(ValueError, match="Unsupported or unverified snapshot manifest"):
+        load_reviewed_snapshot(folder, decisions)
+
+
+def test_reviewed_snapshot_rejects_boolean_manifest_count(tmp_path):
+    folder, decisions = reviewed_export(tmp_path)
+    _rewrite_manifest(folder, decisions, assets_count=True)
+    with pytest.raises(ValueError, match="manifest count mismatch"):
+        load_reviewed_snapshot(folder, decisions)
+
+
+def test_reviewed_snapshot_rejects_boolean_decisions_schema_version(tmp_path):
+    folder, decisions = reviewed_export(tmp_path)
+    reviewed = json.loads(decisions.read_text(encoding="utf-8"))
+    reviewed["schemaVersion"] = True
+    decisions.write_text(json.dumps(reviewed), encoding="utf-8")
+    with pytest.raises(ValueError, match="snapshot version"):
+        load_reviewed_snapshot(folder, decisions)
+
+
 def test_reviewed_snapshot_rejects_broken_term_reference(tmp_path):
     folder, decisions = reviewed_export(tmp_path)
     terms = folder / "terms.json"
