@@ -17,8 +17,11 @@ UTC export time, file counts and SHA-256 checksums), `assets.json`, `domains.jso
 `terms.json`, `data_products.json`, `cdes.json` and `decisions.example.json`.
 Asset records include Purview identifiers
 for their domain, terms, data products and CDEs **when these IDs are present in
-the UC list response**, so consumers can join records without relying on display
-names. Business objects retain their names,
+the UC APIs**, so consumers can join records without relying on display names.
+Because the UC data-asset list response omits relationships, export reads the
+typed Term and Data Product relationship endpoints for each asset. Direct
+asset-to-CDE relationships are not supported by the current API; CDEs are
+exported as standalone business objects. Business objects retain their names,
 descriptions, domain IDs and available status/parent IDs. The snapshot uses
 normalized field names (for example `domain_id` and `term_ids`); it is not a
 lossless backup of every Purview API field.
@@ -75,6 +78,31 @@ pvw uc validate-export --snapshot-dir .\purview-snapshot --decisions-file .\deci
 
 For a dry-run and review against *current* Fabric state, see the
 [Fabric Sync Guide](../fabric-sync-guide.md#reviewed-offline-export-to-fabric).
+
+### Reusable export-validation scenario
+
+The repository includes
+[`samples/json/fabric_sync/purview_validation_scenario.json`](../../samples/json/fabric_sync/purview_validation_scenario.json),
+a small, non-production data set with one governance domain, two terms, two
+CDEs, one data product and two Data Map-backed UC assets. Plan it without
+writing:
+
+```powershell
+pvw uc apply-validation-scenario `
+  --scenario-file .\samples\json\fabric_sync\purview_validation_scenario.json `
+  --state-file .\purview-validation-state.json
+```
+
+After reviewing the plan, add `--apply` to create missing objects. The state
+file records generated IDs and binds them to the exact scenario file checksum,
+so the same scenario can be rerun safely. Existing identical objects are
+reused. If an object with the same name has different managed fields, the
+command stops and does not update it. The scenario command never deletes
+objects and never writes to Fabric.
+
+The sample's `collectionId` and qualified-name account suffix target the
+`kaydemopurview` test account. Copy and edit the sample for another tenant;
+do not reuse those values unchanged.
 
 The Unified Catalog (`uc`) command group provides comprehensive management of Microsoft Purview's modern data governance features:
 

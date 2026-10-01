@@ -293,7 +293,7 @@ Use Cases:
         self.params = get_api_version_params("datamap")
         if "--collectionId" in args:
             self.params["collectionId"] = args["--collectionId"]
-        self.payload = get_json(args, "--payloadFile")
+        self.payload = args.get("--payload") or get_json(args, "--payloadFile")
 
     @decorator
     def entityCreate(self, args):

@@ -165,6 +165,41 @@ def validate_export(snapshot_dir, decisions_file):
     console.print(f"OK Validated {len(state['assets'])} selected assets (no Fabric connection)")
 
 
+@uc.command(name="apply-validation-scenario")
+@click.option("--scenario-file", required=True, type=click.Path(exists=True, dir_okay=False))
+@click.option("--state-file", required=True, type=click.Path(dir_okay=False))
+@click.option("--apply", "apply_", is_flag=True, help="Create missing test objects. Default: dry-run.")
+@click.option("--output", default="table", type=click.Choice(["table", "json"]))
+@click.pass_context
+def apply_validation_scenario(ctx, scenario_file, state_file, apply_, output):
+    """Plan or create an idempotent Purview export-validation data set."""
+    from pathlib import Path
+    from purviewcli.client._entity import Entity
+    from purviewcli.client.client_cache import get_cached_client
+    from purviewcli.export.scenario import apply_scenario
+
+    try:
+        profile = (ctx.obj or {}).get("profile", "default")
+        uc_client = get_cached_client(UnifiedCatalogClient, profile=profile)
+        entity_client = get_cached_client(Entity, profile=profile)
+        result = apply_scenario(
+            uc_client,
+            entity_client,
+            Path(scenario_file),
+            Path(state_file),
+            apply=apply_,
+        )
+    except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    if output == "json":
+        print(json.dumps(result, indent=2))
+        return
+    mode = "APPLIED" if apply_ else "DRY RUN"
+    console.print(f"INFO {mode}: {len(result['actions'])} scenario actions")
+    for action in result["actions"]:
+        console.print(f"- {action['action']}: {action['kind']} {action['key']}")
+
+
 # ========================================
 # GOVERNANCE DOMAINS
 # ========================================
@@ -6136,14 +6171,24 @@ def data_asset_add_relationship(ctx, asset_id, payload_file, output):
 
 @data_asset.command(name="list-relationships")
 @click.option("--asset-id", required=True, help="Data asset GUID")
+@click.option(
+    "--entity-type",
+    required=True,
+    type=click.Choice(
+        ["DATAPRODUCT", "TERM", "CRITICALDATACOLUMN", "DATACOLUMN"],
+        case_sensitive=False,
+    ),
+)
 @click.option("--output", default="json", type=click.Choice(["table", "json", "jsonc"]))
 @click.pass_context
-def data_asset_list_relationships(ctx, asset_id, output):
+def data_asset_list_relationships(ctx, asset_id, entity_type, output):
     """List relationships of a data asset."""
     from purviewcli.client._unified_catalog import UnifiedCatalogClient
     from purviewcli.client.client_cache import get_cached_client
     client = get_cached_client(UnifiedCatalogClient, profile=ctx.obj.get("profile", "default"))
-    result = client.list_data_asset_relationships({"--asset-id": asset_id})
+    result = client.list_data_asset_relationships(
+        {"--asset-id": asset_id, "--entity-type": entity_type.upper()}
+    )
     _uc_render(result, output, "Data Asset Relationships")
 
 
@@ -6152,7 +6197,10 @@ def data_asset_list_relationships(ctx, asset_id, output):
 @click.option("--entity-id", required=True, help="GUID of the entity to unlink (e.g. Data Product ID)")
 @click.option(
     "--entity-type",
-    type=click.Choice(["DATAPRODUCT", "TERM", "CRITICALDATACOLUMN", "CRITICALDATAELEMENT"], case_sensitive=False),
+    type=click.Choice(
+        ["DATAPRODUCT", "TERM", "CRITICALDATACOLUMN", "DATACOLUMN"],
+        case_sensitive=False,
+    ),
     default="DATAPRODUCT",
     show_default=True,
     help="Type of entity to unlink",

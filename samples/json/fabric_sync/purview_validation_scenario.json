@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "scenarioId": "pvw-cli-purview-export-validation-v1",
+  "domain": {
+    "key": "validation-domain",
+    "name": "PVW CLI Validation Sales",
+    "description": "Temporary non-production governance domain for pvw-cli export validation.",
+    "type": "FunctionalUnit",
+    "status": "Draft"
+  },
+  "terms": [
+    {
+      "key": "customer-order",
+      "name": "PVW Validation Customer Order",
+      "description": "A temporary business term describing a customer order.",
+      "status": "Draft"
+    },
+    {
+      "key": "sales-customer",
+      "name": "PVW Validation Sales Customer",
+      "description": "A temporary business term describing a sales customer.",
+      "status": "Draft"
+    }
+  ],
+  "criticalDataElements": [
+    {
+      "key": "order-id",
+      "name": "PVW Validation Order Identifier",
+      "description": "Temporary critical identifier for an order.",
+      "dataType": "Number",
+      "ownerIds": ["75d058e8-ac84-4d33-b01c-54a8d3cbbac1"],
+      "status": "Draft"
+    },
+    {
+      "key": "customer-id",
+      "name": "PVW Validation Customer Identifier",
+      "description": "Temporary critical identifier for a customer.",
+      "dataType": "Number",
+      "ownerIds": ["75d058e8-ac84-4d33-b01c-54a8d3cbbac1"],
+      "status": "Draft"
+    }
+  ],
+  "dataProducts": [
+    {
+      "key": "sales-orders-product",
+      "name": "PVW Validation Sales Orders Product",
+      "description": "Temporary data product for pvw-cli export and sync validation.",
+      "type": "Dataset",
+      "businessUse": "Validate portable Purview export relationships.",
+      "ownerIds": ["75d058e8-ac84-4d33-b01c-54a8d3cbbac1"],
+      "status": "Draft"
+    }
+  ],
+  "assets": [
+    {
+      "key": "sales-orders",
+      "name": "pvw_cli_validation_sales_orders",
+      "description": "Temporary sales orders asset for pvw-cli validation.",
+      "qualifiedName": "pvw-cli-validation/sales-orders@kaydemopurview",
+      "collectionId": "kaydemopurview",
+      "dataMapType": "DataSet",
+      "termKeys": ["customer-order", "sales-customer"],
+      "criticalDataElementKeys": [],
+      "dataProductKeys": ["sales-orders-product"]
+    },
+    {
+      "key": "sales-customers",
+      "name": "pvw_cli_validation_sales_customers",
+      "description": "Temporary sales customers asset for pvw-cli validation.",
+      "qualifiedName": "pvw-cli-validation/sales-customers@kaydemopurview",
+      "collectionId": "kaydemopurview",
+      "dataMapType": "DataSet",
+      "termKeys": ["sales-customer"],
+      "criticalDataElementKeys": [],
+      "dataProductKeys": ["sales-orders-product"]
+    }
+  ]
+}

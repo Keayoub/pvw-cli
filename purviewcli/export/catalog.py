@@ -72,6 +72,32 @@ def _assets(client: Any) -> List[Dict[str, Any]]:
     return result
 
 
+def _enrich_asset_relationships(client: Any, assets: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Hydrate relationships omitted by the UC data-asset list response."""
+    enriched = []
+    for asset in assets:
+        row = dict(asset)
+        asset_id = row["id"]
+        for entity_type, field in (
+            ("Term", "termIds"),
+            ("DataProduct", "dataProductIds"),
+        ):
+            relationships = _rows(
+                client.list_data_asset_relationships(
+                    {"--asset-id": asset_id, "--entity-type": entity_type}
+                ),
+                f"asset {asset_id} {entity_type} relationships",
+            )
+            identifiers = [relationship.get("entityId") for relationship in relationships]
+            if any(not isinstance(identifier, str) or not identifier for identifier in identifiers):
+                raise ValueError(
+                    f"asset {asset_id}: {entity_type} relationship is missing entityId"
+                )
+            row[field] = list(dict.fromkeys(identifiers))
+        enriched.append(row)
+    return enriched
+
+
 def _business_objects(client: Any, method: str, name: str) -> List[Dict[str, Any]]:
     records = _rows(getattr(client, method)({}), name)
     result = []
@@ -96,7 +122,7 @@ def export_catalog(client: Any, output_dir: Path) -> Dict[str, Any]:
     domains = _rows(client.get_governance_domains({}), "domains")
     if any(not isinstance(domain.get("id"), str) or not domain["id"] for domain in domains):
         raise ValueError("domains: a domain is missing its Purview ID")
-    assets = _assets(client)
+    assets = _enrich_asset_relationships(client, _assets(client))
     terms = _business_objects(client, "get_terms", "terms")
     products = _business_objects(client, "get_data_products", "data_products")
     cdes = _business_objects(client, "get_critical_data_elements", "cdes")

@@ -50,6 +50,13 @@ class FakeUC:
     def get_critical_data_elements(self, args):
         return {"value": [{"id": "c1", "name": "Order ID", "domainId": "d1"}]}
 
+    def list_data_asset_relationships(self, args):
+        if args["--entity-type"] == "Term":
+            return {"value": [{"entityId": "t1"}]}
+        if args["--entity-type"] == "DataProduct":
+            return {"value": [{"entityId": "p1"}]}
+        raise AssertionError(f"Unexpected relationship type: {args['--entity-type']}")
+
 
 def test_export_writes_related_portable_json(tmp_path):
     client = FakeUC()
@@ -71,6 +78,7 @@ def test_export_writes_related_portable_json(tmp_path):
     asset = json.loads((path / "assets.json").read_text(encoding="utf-8"))[0]
     term = json.loads((path / "terms.json").read_text(encoding="utf-8"))[0]
     assert asset["term_ids"] == [term["id"]]
+    assert asset["data_product_ids"] == ["p1"]
     assert asset["domain_id"] == "d1"
     assert term["description"] == "An order"
 
