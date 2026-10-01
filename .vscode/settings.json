@@ -24,7 +24,8 @@
         "~/.copilot/skills": true,
         "~/.claude/skills": true,
         "~/.vscode/extensions/synapsevscode.synapse-1.21.0/copilot/skills": true,
-        "~/.vscode/extensions/synapsevscode.synapse-1.25.0/copilot/skills": true
+        "~/.vscode/extensions/synapsevscode.synapse-1.25.0/copilot/skills": true,
+        "~/.vscode/extensions/synapsevscode.synapse-1.26.0/copilot/skills": true
     },
     "azureFunctions.deploySubpath": "tools\\hosting\\app",
     "azureFunctions.scmDoBuildDuringDeployment": true,

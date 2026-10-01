@@ -1,11 +1,11 @@
 # Purview → Fabric OneLake Catalog: Sync Overview & Roadmap
 
-> **Last reviewed: 2026-09-25 (roadmap only).** **API/tenant verification:
-> 2026-09-23**, against a live Purview tenant
+> **Last reviewed: 2026-09-29 (published Fabric API spec).** **Tenant
+> verification: 2026-09-23**, against a live Purview tenant
 > (`kaydemopurview`, test data only) and the
 > [`microsoft/fabric-rest-api-specs`](https://github.com/microsoft/fabric-rest-api-specs)
 > OpenAPI specs (including `ontology/` and `dataAgent/`).
-> **Fabric GPS roadmap checked: 2026-09-25**. See
+> **Fabric GPS roadmap checked: 2026-09-29**. See
 > ["Re-check checklist"](#re-check-checklist) below for what to re-verify and when.
 
 > Microsoft Purview's standalone data governance experience is being retired in favor of
@@ -72,6 +72,24 @@ API-availability audit. Relevant planned items included:
 establish a Purview-to-Fabric metadata mapping. Run the command again for
 current statuses; this dated snapshot does not update automatically.
 
+### API spec changes (2026-09-29)
+
+The [Fabric REST spec update](https://github.com/microsoft/fabric-rest-api-specs/compare/36c12f02c1...a070c71d79)
+adds `Workspace` results alongside `FabricItem` to `POST /v1/catalog/search`.
+Sync now excludes workspace results when discovering *item* targets, while
+preserving other previously recognized catalog entries. The spec also
+documents `WorkspaceId` server-side filtering (up to 12 GUIDs per filter);
+sync retains its existing client-side workspace filter until that new
+request behavior is validated in a tenant. This is a spec-based compatibility
+guard, not a new live-tenant verification.
+
+Ontology responses now include read-only `properties.generation` (`1` or `2`).
+Creating an Ontology without a definition defaults to generation 2; a provided
+definition determines its generation. This is relevant to a future mapping but
+does **not** enable Ontology writes in this sync. Fabric GPS still lists the
+Ontology query API and GA as Planned (Q4 2026) and the catalog table-search
+expansion as Planned (Q3 2026). Ontology Health has shifted to Q1 2027.
+
 ## Status legend
 
 | Status | Meaning |
@@ -99,7 +117,7 @@ current statuses; this dated snapshot does not update automatically.
 | RBAC → ABAC access policies | *(no confirmed Fabric equivalent)* | ⛔ Not supported | Purview's attribute-based access policies have no matching Fabric item/workspace policy API today. |
 | Custom / managed attributes | *(no confirmed Fabric field)* | 🔜 Planned / TBD | Present in Purview UC domain responses (`managedAttributes`); no confirmed arbitrary-property field on Fabric items yet. |
 | Full glossary hierarchy (parent/child terms, relationships) | *(no Fabric equivalent)* | ⛔ Not supported | Only the term's name is portable as a tag today; Fabric Ontology (next row) is the eventual candidate target, but not until relationships/hierarchy ship in its public API. |
-| Structured governance model (typed entity properties, relationships) | Fabric Ontology item (`EntityTypes` with typed properties) | 🔜 Planned / TBD | **API spec checked 2026-09-23; roadmap checked 2026-09-25**: Fabric Ontology has a published definition-management REST spec (`/workspaces/{id}/ontologies`, CRUD + definition parts) with typed `EntityType` properties; Data Agent accepts Ontology as a datasource. The separate public **query** API and Ontology GA remain Planned (Q4 2026), with versioning and the full canvas Planned (Q3 2026). Relationships/hierarchy are not yet confirmed in the published spec; no structured sync has been implemented. |
+| Structured governance model (typed entity properties, relationships) | Fabric Ontology item (`EntityTypes` with typed properties) | 🔜 Planned / TBD | **API spec and roadmap checked 2026-09-29**: Ontology definition-management REST APIs expose typed `EntityType` properties and read-only `properties.generation` (1 or 2); creation without a definition defaults to generation 2. Data Agent accepts Ontology as a datasource. The separate public **query** API and Ontology GA remain Planned (Q4 2026), with versioning and the full canvas Planned (Q3 2026). Relationships/hierarchy are not yet confirmed in the published spec; no structured sync has been implemented. |
 
 ## Re-check checklist
 
@@ -115,7 +133,7 @@ to where the answer would show up — no need to rediscover these sources from s
 | 4 | Has Fabric introduced a **native data-product** object (beyond tags)? | [Fabric GPS roadmap API](https://www.fabric-gps.com/api/releases?product_name=Administration%2C+Governance+and+Security), [Microsoft Fabric blog](https://blog.fabric.microsoft.com/) | Data Products as first-class Fabric objects |
 | 5 | Does Fabric support **arbitrary custom/managed properties** on items (beyond tags/sensitivity labels)? | [`fabric-rest-api-specs` — platform definitions](https://github.com/microsoft/fabric-rest-api-specs/tree/main/platform/definitions), [Fabric REST API reference — Items](https://learn.microsoft.com/en-us/rest/api/fabric/core/items) | Custom / managed attributes sync |
 | 6 | Has Fabric added an **attribute-based access policy** API at the item/workspace level? (As of 2026-09-22, "Outbound Access Protection" items are network-egress controls, not ABAC.) | [Fabric GPS roadmap API](https://www.fabric-gps.com/api/releases?product_name=Administration%2C+Governance+and+Security) | RBAC → ABAC policy sync |
-| 7 | Does the published **Ontology definition-management API** expose relationships/hierarchy between entity types? Has Ontology GA shipped (Planned Q4 2026 on Fabric GPS as of 2026-09-25)? The separate public query API is also Planned for Q4 2026. | [`fabric-rest-api-specs` — ontology](https://github.com/microsoft/fabric-rest-api-specs/tree/main/ontology), [Fabric GPS roadmap API](https://www.fabric-gps.com/api/releases?product_name=IQ&q=ontology) | Structured governance model (typed entities/relationships), full glossary hierarchy |
+| 7 | Does the published **Ontology definition-management API** expose relationships/hierarchy between entity types and define compatible generation 2 parts? Has Ontology GA shipped (Planned Q4 2026 on Fabric GPS as of 2026-09-29)? The separate public query API is also Planned for Q4 2026. | [`fabric-rest-api-specs` — ontology](https://github.com/microsoft/fabric-rest-api-specs/tree/main/ontology), [Fabric GPS roadmap API](https://www.fabric-gps.com/api/releases?product_name=IQ&q=ontology) | Structured governance model (typed entities/relationships), full glossary hierarchy |
 
 ### Useful sources for re-checking
 

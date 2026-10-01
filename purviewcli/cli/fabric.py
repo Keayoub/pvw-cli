@@ -4,6 +4,7 @@
 Commands:
   - ``pvw fabric sync capabilities``: prints the current feature-status board (no I/O).
   - ``pvw fabric sync roadmap``: reads governance roadmap announcements from Fabric GPS.
+  - ``pvw fabric sync prepare``: proposes existing Fabric item matches for review.
   - ``pvw fabric sync assess``  : always read-only; produces a plan/report.
   - ``pvw fabric sync apply``    : dry-run by default; pass --apply to write.
   - ``pvw fabric sync run``     : config-file-driven equivalent of ``apply``, for schedulers.
@@ -50,6 +51,8 @@ def _shared_assessment_options(func):
         click.option("--purview-domain-id", "purview_domain_ids", multiple=True, help="Restrict to these Purview domain IDs (repeatable). Default: all domains."),
         click.option("--workspace-id", "workspace_ids", multiple=True, help="Restrict to these Fabric workspace IDs (repeatable). Default: all workspaces."),
         click.option("--mapping-file", type=click.Path(exists=True, dir_okay=False), default=None, help="JSON file of explicit Purview-asset-id -> Fabric workspace/item bindings."),
+        click.option("--snapshot-dir", type=click.Path(exists=True, file_okay=False), default=None, help="Validated Purview UC export folder (requires --decisions-file; no live Purview reads)."),
+        click.option("--decisions-file", type=click.Path(exists=True, dir_okay=False), default=None, help="Reviewed selections, descriptions and explicit mappings for --snapshot-dir."),
         click.option("--overwrite", is_flag=True, default=False, help="Allow overwriting already-populated Fabric display name/description values."),
         click.option("--truncate-descriptions", is_flag=True, default=False, help="Truncate descriptions over Fabric's 256-character limit instead of flagging a validation error."),
         click.option("--sync-classifications", is_flag=True, default=False, help="Also sync Purview classifications/labels onto Fabric items as tags (opt-in: requires Data Map linkage; see docs/fabric-sync-feature-parity.md)."),
@@ -67,6 +70,8 @@ def _run_assessment(
     purview_domain_ids: Tuple[str, ...],
     workspace_ids: Tuple[str, ...],
     mapping_file: Optional[str],
+    snapshot_dir: Optional[str],
+    decisions_file: Optional[str],
     overwrite: bool,
     truncate_descriptions: bool,
     sync_classifications: bool = False,
@@ -87,20 +92,74 @@ def _run_assessment(
         fetch_fabric_domains_and_workspace_assignments,
         fetch_purview_state,
         load_mapping_file,
+        normalize_fabric_item_state,
     )
     from purviewcli.sync.state import new_run_id
 
-    uc_client, fabric_client, entity_client = _get_clients(ctx)
-
-    mapping = load_mapping_file(mapping_file)
-    purview_state = fetch_purview_state(
-        uc_client,
-        domain_ids=list(purview_domain_ids),
-        entity_client=entity_client,
-        sync_classifications=sync_classifications,
-    )
+    if bool(snapshot_dir) != bool(decisions_file):
+        raise click.UsageError("--snapshot-dir and --decisions-file must be supplied together")
+    if snapshot_dir and (mapping_file or purview_domain_ids):
+        raise click.UsageError("Snapshot mode cannot combine --mapping-file or --purview-domain-id")
+    if snapshot_dir and sync_classifications:
+        raise click.UsageError("--sync-classifications is not supported for snapshot imports")
+    if snapshot_dir:
+        from pathlib import Path
+        from purviewcli.export.decisions import load_reviewed_snapshot
+        try:
+            purview_state, mapping = load_reviewed_snapshot(Path(snapshot_dir), Path(decisions_file))
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            raise click.ClickException(str(exc)) from exc
+        # Snapshot classifications/labels are already captured at export time.
+        from purviewcli.client.client_cache import get_cached_client
+        from purviewcli.client.fabric_client import FabricClient
+        fabric_client = get_cached_client(FabricClient, profile=(ctx.obj or {}).get("profile", "default"))
+    else:
+        uc_client, fabric_client, entity_client = _get_clients(ctx)
+        mapping = load_mapping_file(mapping_file)
+        purview_state = fetch_purview_state(
+            uc_client,
+            domain_ids=list(purview_domain_ids),
+            entity_client=entity_client,
+            sync_classifications=sync_classifications,
+        )
     catalog_entries = fetch_fabric_catalog(fabric_client, workspace_ids=list(workspace_ids))
-    fabric_domains, workspace_current_domain = fetch_fabric_domains_and_workspace_assignments(fabric_client)
+    verified_item_states = None
+    if snapshot_dir:
+        from purviewcli.export.decisions import FABRIC_ITEM_TYPES
+
+        entries_by_key = {(entry.workspace_id, entry.id): entry for entry in catalog_entries}
+        verified_item_states = {}
+        for binding in mapping.entries:
+            entry = entries_by_key.get((binding.workspace_id, binding.item_id))
+            if entry is None:
+                raise click.ClickException(
+                    f"Mapped Fabric item {binding.workspace_id}/{binding.item_id} "
+                    "is not present in the current catalog scope"
+                )
+            if entry.type != binding.expected_fabric_type or entry.type not in FABRIC_ITEM_TYPES:
+                raise click.ClickException(
+                    f"Fabric type mismatch for {binding.purview_asset_id}: "
+                    f"approved {binding.expected_fabric_type}, catalog reports {entry.type}"
+                )
+            current_item = fabric_client.get_item(binding.workspace_id, binding.item_id)
+            if (
+                not isinstance(current_item, dict)
+                or current_item.get("id") != binding.item_id
+                or current_item.get("workspaceId") != binding.workspace_id
+                or current_item.get("type") != binding.expected_fabric_type
+            ):
+                raise click.ClickException(
+                    f"Fabric identity or type mismatch for {binding.purview_asset_id}: "
+                    f"Get Item did not confirm {binding.workspace_id}/{binding.item_id} "
+                    f"as {binding.expected_fabric_type}"
+                )
+            verified_item_states[(binding.workspace_id, binding.item_id)] = normalize_fabric_item_state(
+                current_item, binding.workspace_id, binding.item_id
+            )
+    if snapshot_dir:
+        fabric_domains, workspace_current_domain = [], {}
+    else:
+        fabric_domains, workspace_current_domain = fetch_fabric_domains_and_workspace_assignments(fabric_client)
 
     plan = build_sync_plan(
         run_id=run_id or new_run_id(),
@@ -116,7 +175,15 @@ def _run_assessment(
         overwrite=overwrite,
         truncate_descriptions=truncate_descriptions,
         sync_classifications=sync_classifications,
+        verified_item_states=verified_item_states,
     )
+    if snapshot_dir:
+        from purviewcli.sync.models import MatchOutcome
+        unresolved = [match.purview_asset_id for match in plan.matches if match.outcome == MatchOutcome.TARGET_NOT_FOUND]
+        if unresolved:
+            raise click.ClickException(
+                f"Selected asset mappings have no current Fabric item in the catalog scope: {', '.join(unresolved)}"
+            )
     return plan, fabric_client
 
 
@@ -166,7 +233,7 @@ def _render_plan_summary(plan, output: str) -> None:
     console.print(table)
 
 
-def _exit_nonzero_if_needed(plan, sync_result=None) -> None:
+def _exit_nonzero_if_needed(plan, sync_result=None, fail_message=None) -> None:
     """Exit nonzero if the assessment/apply surfaced anything requiring attention."""
     from purviewcli.sync.models import DomainAction, ItemDecision, TagDecision
 
@@ -182,6 +249,8 @@ def _exit_nonzero_if_needed(plan, sync_result=None) -> None:
     has_mapping_errors = bool(plan.mapping_errors)
     has_failures = sync_result is not None and sync_result.failed_count > 0
     if has_conflicts or has_tag_overflow or has_workspace_conflicts or has_mapping_errors or has_failures:
+        if fail_message:
+            raise click.ClickException(fail_message)
         sys.exit(1)
 
 
@@ -288,13 +357,40 @@ def sync_roadmap(output, status):
     console.print(f"INFO Checked: {result['checked_at']}. {result['note']}")
 
 
+@sync.command(name="prepare")
+@click.option("--snapshot-dir", required=True, type=click.Path(exists=True, file_okay=False))
+@click.option("--output-file", required=True, type=click.Path(dir_okay=False))
+@click.option("--workspace-id", "workspace_ids", multiple=True, help="Restrict suggestions to these workspaces.")
+@click.pass_context
+def sync_prepare(ctx, snapshot_dir, output_file, workspace_ids):
+    """Suggest existing Fabric items for customer review; never approve mappings."""
+    from pathlib import Path
+    from purviewcli.client.client_cache import get_cached_client
+    from purviewcli.client.fabric_client import FabricClient
+    from purviewcli.export.prepare import prepare_decisions
+    from purviewcli.sync.service import fetch_fabric_catalog
+
+    if Path(output_file).exists():
+        raise click.ClickException(f"Draft destination already exists: {output_file}")
+    try:
+        client = get_cached_client(FabricClient, profile=(ctx.obj or {}).get("profile", "default"))
+        entries = fetch_fabric_catalog(client, workspace_ids=list(workspace_ids))
+        draft = prepare_decisions(Path(snapshot_dir), entries, Path(output_file))
+    except (OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    console.print(
+        f"INFO Draft saved to {output_file}: {len(draft['candidates'])} assets reviewed. "
+        "No assets selected or mappings approved."
+    )
+
+
 @sync.command(name="assess")
 @_shared_assessment_options
 @click.pass_context
-def sync_assess(ctx, purview_domain_ids, workspace_ids, mapping_file, overwrite, truncate_descriptions, sync_classifications, report_file, csv_report_file, output):
+def sync_assess(ctx, purview_domain_ids, workspace_ids, mapping_file, snapshot_dir, decisions_file, overwrite, truncate_descriptions, sync_classifications, report_file, csv_report_file, output):
     """Read-only assessment: build and report a sync plan without writing anything."""
     _warn_experimental_sync(output)
-    plan, _fabric_client = _run_assessment(ctx, purview_domain_ids, workspace_ids, mapping_file, overwrite, truncate_descriptions, sync_classifications=sync_classifications)
+    plan, _fabric_client = _run_assessment(ctx, purview_domain_ids, workspace_ids, mapping_file, snapshot_dir, decisions_file, overwrite, truncate_descriptions, sync_classifications=sync_classifications)
     _write_reports(plan, report_file, csv_report_file)
     _render_plan_summary(plan, output)
     _exit_nonzero_if_needed(plan)
@@ -305,7 +401,7 @@ def sync_assess(ctx, purview_domain_ids, workspace_ids, mapping_file, overwrite,
 @click.option("--checkpoint-file", type=click.Path(dir_okay=False), required=True, help="Path to this run's checkpoint file (created on first apply; required for resume/rollback).")
 @click.option("--apply", "apply_", is_flag=True, default=False, help="Actually write changes to Fabric. Without this flag, apply always dry-runs.")
 @click.pass_context
-def sync_apply(ctx, purview_domain_ids, workspace_ids, mapping_file, overwrite, truncate_descriptions, sync_classifications, report_file, csv_report_file, output, checkpoint_file, apply_):
+def sync_apply(ctx, purview_domain_ids, workspace_ids, mapping_file, snapshot_dir, decisions_file, overwrite, truncate_descriptions, sync_classifications, report_file, csv_report_file, output, checkpoint_file, apply_):
     """Assess, then apply (or dry-run) the resulting plan against Fabric."""
     from purviewcli.sync.service import sync_plan
     from purviewcli.sync.state import CheckpointStore
@@ -317,7 +413,12 @@ def sync_apply(ctx, purview_domain_ids, workspace_ids, mapping_file, overwrite, 
     existing_checkpoint = store.load()
     run_id = existing_checkpoint.run_id if existing_checkpoint is not None else None
 
-    plan, fabric_client = _run_assessment(ctx, purview_domain_ids, workspace_ids, mapping_file, overwrite, truncate_descriptions, sync_classifications=sync_classifications, run_id=run_id)
+    plan, fabric_client = _run_assessment(ctx, purview_domain_ids, workspace_ids, mapping_file, snapshot_dir, decisions_file, overwrite, truncate_descriptions, sync_classifications=sync_classifications, run_id=run_id)
+    if snapshot_dir and apply_:
+        _exit_nonzero_if_needed(
+            plan,
+            fail_message="Reviewed snapshot has conflicts or validation errors; run assess and resolve them before --apply",
+        )
     sync_result = sync_plan(fabric_client, plan, store, plan.run_id, dry_run=not apply_)
 
     _write_reports(plan, report_file, csv_report_file, sync_result=sync_result)
@@ -352,6 +453,8 @@ def sync_run(ctx, config_path):
         purview_domain_ids=tuple(config.get("purview_domain_ids", [])),
         workspace_ids=tuple(config.get("workspace_ids", [])),
         mapping_file=config.get("mapping_file"),
+        snapshot_dir=config.get("snapshot_dir"),
+        decisions_file=config.get("decisions_file"),
         overwrite=bool(config.get("overwrite", False)),
         truncate_descriptions=bool(config.get("truncate_descriptions", False)),
         sync_classifications=bool(config.get("sync_classifications", False)),

@@ -21,6 +21,11 @@
 All of the above are additive-only (existing Fabric tags/values are never removed by a sync)
 and one-way (Purview → Fabric; nothing is ever written back to Purview).
 
+As of the [2026-09-29 Fabric API spec update](https://github.com/microsoft/fabric-rest-api-specs/compare/36c12f02c1...a070c71d79),
+catalog search may also return `Workspace` entries. Sync excludes these from
+item targets. `WorkspaceId` server-side filtering is documented but not yet
+tenant-verified; workspace scoping remains client-side.
+
 ## Not yet implemented (tracked for later)
 
 | Capability | Why it's blocked | What to re-verify before implementing |
@@ -32,7 +37,7 @@ and one-way (Purview → Fabric; nothing is ever written back to Purview).
 | RBAC → ABAC policy migration | Purview's attribute-based access policies have no confirmed Fabric equivalent/API. | Check Fabric's item-level or workspace-level access-policy APIs once (if) they support attribute-based rules. |
 | Custom attributes / managed attributes | Present in Purview UC domain responses (`managedAttributes`) but no confirmed Fabric item field to receive them. | Check whether Fabric items support arbitrary custom properties beyond tags/sensitivity labels. |
 | Full glossary hierarchy (parent/child terms, relationships) | Only the term's *name* survives as a tag today; hierarchy/relationships have no Fabric equivalent. | Re-check if Fabric's OneLake catalog adds a structured glossary/term-hierarchy object, or see the Fabric Ontology row below. |
-| Structured governance model (typed entity properties, relationships) via **Fabric Ontology** | **Spec checked 2026-09-23; roadmap checked 2026-09-25**: Ontology already has a published definition-management REST spec (`/workspaces/{id}/ontologies` CRUD, `getDefinition`/`updateDefinition`) with typed `EntityType` properties in definition parts. Fabric Data Agent lists Ontology as a supported datasource. The separate public **query** API and Ontology GA remain Planned for Q4 2026; versioning and the full canvas remain Planned for Q3 2026. Relationships/hierarchy were not confirmed in the published definition spec, so no structured mapping has been implemented. | Re-check `ontology/swagger.json` and `ontology/definitions.json` in `microsoft/fabric-rest-api-specs` for relationship/versioning support; monitor [Fabric GPS IQ releases](https://www.fabric-gps.com/api/releases?product_name=IQ) with `pvw fabric sync roadmap`, then verify request/response shapes in a tenant before designing a `PurviewGovernanceObject` -> Ontology `EntityType` mapping. Do not equate roadmap `Shipped` with a supported sync capability. |
+| Structured governance model (typed entity properties, relationships) via **Fabric Ontology** | **Spec and roadmap checked 2026-09-29**: Ontology has a published definition-management REST spec (`/workspaces/{id}/ontologies` CRUD, `getDefinition`/`updateDefinition`) with typed `EntityType` properties in definition parts. Ontology responses now include read-only `properties.generation` (1 or 2); creation without a definition defaults to generation 2, while a supplied definition determines the generation. Fabric Data Agent lists Ontology as a datasource. The separate public **query** API and Ontology GA remain Planned for Q4 2026; versioning and the full canvas remain Planned for Q3 2026. Relationships/hierarchy were not confirmed in the published definition spec; no structured mapping has been implemented. | Re-check `ontology/swagger.json` and `ontology/definitions.json` in `microsoft/fabric-rest-api-specs` for relationship/versioning and generation 2 definition support; monitor [Fabric GPS IQ releases](https://www.fabric-gps.com/api/releases?product_name=IQ) with `pvw fabric sync roadmap`, then verify request/response shapes in a tenant before designing a `PurviewGovernanceObject` -> Ontology `EntityType` mapping. Do not equate roadmap `Shipped` with a supported sync capability. |
 
 ## How to extend this map
 

@@ -86,6 +86,14 @@ Layout and entry points:
 - Writes are additive-only and never write back to Purview. `apply`/`rollback` require
   `--apply`; everything else dry-runs or previews.
 
+Future mapping UI (not implemented):
+- Consider a local UI under `tools/` after the export -> decisions -> assess/apply
+  workflow has been validated on a real tenant. Keep Purview data local; do not require
+  a hosted service or make Fabric mandatory for standalone exports.
+- The UI should edit the same reviewable decisions file and reuse CLI validation,
+  planning, explicit mapping approval, and write safeguards, not introduce a second
+  sync engine or auto-approve name-based candidates.
+
 Feature status tracking (keep these three in agreement):
 - `purviewcli/sync/capabilities.py` is the single source of truth, rendered live by
   `pvw fabric sync capabilities`.

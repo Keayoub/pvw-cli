@@ -300,7 +300,7 @@ class UnifiedCatalogClient(Endpoint):
         self.method = "POST"
         self.endpoint = ENDPOINTS["unified_catalog"]["list_domains"]
         # Allow payload file to fully control creation; otherwise build payload from flags
-        payload = get_json(args, "--payloadFile")
+        payload = args.get("--payload") or get_json(args, "--payloadFile")
         if not payload:
             payload = {
                 "name": args.get("--name", [""])[0].strip(),
@@ -5983,15 +5983,19 @@ Use Cases:
         asset_id = args.get("--asset-id", [""])[0] if isinstance(args.get("--asset-id"), list) else args.get("--asset-id", "")
         self.method = "POST"
         self.endpoint = ENDPOINTS["unified_catalog"]["create_data_asset_relationship"].format(dataAssetId=asset_id)
-        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
-        self.payload = get_json(args, "--payloadFile") or {}
+        self.payload = args.get("--payload") or get_json(args, "--payloadFile") or {}
+        self.params = {
+            "api-version": CATALOG_LIST_DEFAULT_API_VERSION,
+            "entityType": self.payload.get("entityType", ""),
+        }
 
     @decorator
     def list_data_asset_relationships(self, args):
         asset_id = args.get("--asset-id", [""])[0] if isinstance(args.get("--asset-id"), list) else args.get("--asset-id", "")
+        entity_type = args.get("--entity-type", [""])[0] if isinstance(args.get("--entity-type"), list) else args.get("--entity-type", "")
         self.method = "GET"
         self.endpoint = ENDPOINTS["unified_catalog"]["list_data_asset_relationships"].format(dataAssetId=asset_id)
-        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION}
+        self.params = {"api-version": CATALOG_LIST_DEFAULT_API_VERSION, "entityType": entity_type}
 
     @decorator
     def delete_data_asset_relationship(self, args):
