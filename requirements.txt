@@ -94,7 +94,7 @@ multidict==6.7.1
     #   yarl
 numpy==2.2.6
     # via pandas
-oauthlib==3.3.1
+oauthlib==4.0.0
     # via requests-oauthlib
 pandas==2.3.3
     # via -r requirements.in
@@ -114,7 +114,7 @@ pydantic-settings==2.14.2
     # via -r requirements.in
 pygments==2.20.0
     # via rich
-pyjwt[crypto]==2.13.0
+pyjwt[crypto]==2.15.0
     # via
     #   msal
     #   pyjwt
@@ -161,7 +161,7 @@ typing-inspection==0.4.2
     #   pydantic-settings
 tzdata==2026.2
     # via pandas
-urllib3==2.7.0
+urllib3==2.8.0
     # via requests
 yarl==1.23.0
     # via aiohttp
