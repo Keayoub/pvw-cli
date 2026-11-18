@@ -547,6 +547,8 @@ def sync_plan(
     checkpoint_store: CheckpointStore,
     run_id: str,
     dry_run: bool = True,
+    *,
+    expected_item_types: Optional[Dict[Tuple[str, str], str]] = None,
 ) -> SyncRunResult:
     """Build operations for a plan and apply them, resolving tag names to IDs first."""
     desired_tag_names = sorted({tag for tp in plan.tag_plans for tag in tp.tags_to_apply})
@@ -558,6 +560,7 @@ def sync_plan(
         plan.tag_plans,
         desired_governance_tag_names=desired_tag_names,
         existing_tenant_tag_names=list(existing_tags_by_name.keys()),
+        expected_item_types=expected_item_types,
     )
 
     checkpoint = checkpoint_store.load_or_create(run_id)

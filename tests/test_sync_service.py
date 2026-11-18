@@ -91,7 +91,8 @@ class FakeFabricClient:
         return iter(self._catalog_entries)
 
     def get_item(self, workspace_id, item_id):
-        return self._items.get((workspace_id, item_id), {})
+        item = self._items.get((workspace_id, item_id))
+        return {"id": item_id, "workspaceId": workspace_id, **item} if item is not None else {}
 
     def list_domains(self):
         return self._domains
@@ -104,6 +105,7 @@ class FakeFabricClient:
 
     def update_item(self, workspace_id, item_id, display_name=None, description=None):
         self.updated_items.append((workspace_id, item_id, display_name, description))
+        self._items[(workspace_id, item_id)].update(displayName=display_name, description=description)
         return {}
 
     def bulk_create_tags(self, display_names):

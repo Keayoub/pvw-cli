@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime, timezone
-from typing import Any, Callable, Dict, List, Optional, Protocol, Sequence
+from typing import Any, Callable, Dict, List, Mapping, Optional, Protocol, Sequence, Tuple
 
 from .models import (
     DomainAction,
@@ -82,6 +82,8 @@ class FabricMutationClient(Protocol):
     lightweight fake without importing the real HTTP client.
     """
 
+    def get_item(self, workspace_id: str, item_id: str) -> Dict[str, Any]: ...
+
     def update_item(self, workspace_id: str, item_id: str, **fields: Any) -> Dict[str, Any]: ...
 
     def create_domain(self, display_name: str, description: Optional[str] = None) -> Dict[str, Any]: ...
@@ -102,7 +104,10 @@ class FabricMutationClient(Protocol):
 # ---------------------------------------------------------------------------
 
 
-def build_item_metadata_operations(item_plans: Sequence[ItemPlan]) -> List[PlannedOperation]:
+def build_item_metadata_operations(
+    item_plans: Sequence[ItemPlan],
+    expected_item_types: Optional[Mapping[Tuple[str, str], str]] = None,
+) -> List[PlannedOperation]:
     """Build ``UPDATE_ITEM`` operations for item plans in the ``ready`` state only."""
     operations: List[PlannedOperation] = []
     for plan in item_plans:
@@ -110,13 +115,16 @@ def build_item_metadata_operations(item_plans: Sequence[ItemPlan]) -> List[Plann
             continue
         payload = {change.field: change.desired for change in plan.changes}
         before_state = {change.field: change.current for change in plan.changes}
+        target = {"workspaceId": plan.workspace_id, "itemId": plan.item_id}
+        if expected_item_types is not None:
+            target["expectedFabricType"] = expected_item_types[(plan.workspace_id, plan.item_id)]
         operations.append(
             PlannedOperation(
                 operation_id=f"item:update:{plan.workspace_id}:{plan.item_id}",
                 operation_type=OperationType.UPDATE_ITEM,
                 fingerprint=compute_fingerprint(payload),
                 purview_source_id=plan.purview_asset_id,
-                target={"workspaceId": plan.workspace_id, "itemId": plan.item_id},
+                target=target,
                 payload=payload,
                 before_state=before_state,
             )
@@ -217,13 +225,15 @@ def build_planned_operations(
     tag_plans: Sequence[ItemTagPlan],
     desired_governance_tag_names: Sequence[str] = (),
     existing_tenant_tag_names: Sequence[str] = (),
+    *,
+    expected_item_types: Optional[Mapping[Tuple[str, str], str]] = None,
 ) -> List[PlannedOperation]:
     """Build every writable operation for a plan, in execution order."""
     operations = (
         build_domain_operations(domain_plans)
         + build_tag_definition_operations(desired_governance_tag_names, existing_tenant_tag_names)
         + build_item_tag_operations(tag_plans)
-        + build_item_metadata_operations(item_plans)
+        + build_item_metadata_operations(item_plans, expected_item_types)
     )
     return sorted(operations, key=lambda op: _EXECUTION_ORDER.get(op.operation_type, 99))
 
@@ -337,6 +347,52 @@ def _checkpoint_record_for(run_id: str, operation: PlannedOperation, after_state
     )
 
 
+def _update_item(
+    client: FabricMutationClient, operation: PlannedOperation, *, verify_state: bool
+) -> None:
+    workspace_id, item_id = operation.target["workspaceId"], operation.target["itemId"]
+    if verify_state:
+        if not all(isinstance(value, str) and value for value in (workspace_id, item_id)):
+            raise ValueError("Invalid Fabric item target IDs")
+        expected_type = operation.target.get("expectedFabricType")
+        if "expectedFabricType" in operation.target and (
+            not isinstance(expected_type, str) or not expected_type
+        ):
+            raise ValueError(f"{workspace_id}/{item_id}: invalid approved Fabric item type")
+        expected = operation.before_state
+        fields = operation.payload.keys()
+        if (
+            not isinstance(expected, dict)
+            or not fields
+            or fields != expected.keys()
+            or not fields <= _UPDATE_ITEM_FIELD_MAP.keys()
+        ):
+            raise ValueError(f"{workspace_id}/{item_id}: incomplete or invalid item metadata state")
+        for field in fields:
+            for value in (expected[field], operation.payload[field]):
+                if not isinstance(value, str) and not (field == "description" and value is None):
+                    raise ValueError(f"{workspace_id}/{item_id}: invalid item metadata value for {field}")
+
+        current = client.get_item(workspace_id, item_id)
+        if (
+            not isinstance(current, dict)
+            or current.get("id") != item_id
+            or current.get("workspaceId") != workspace_id
+            or (expected_type is not None and current.get("type") != expected_type)
+        ):
+            raise ValueError(f"{workspace_id}/{item_id}: Get Item did not confirm target identity or type")
+        for field in fields:
+            if field not in current or (
+                not isinstance(current[field], str)
+                and not (field == "description" and current[field] is None)
+            ):
+                raise ValueError(f"{workspace_id}/{item_id}: Get Item did not verify {field}")
+            if current[field] != expected[field]:
+                raise ValueError(f"{workspace_id}/{item_id}: target drift detected in {field}")
+    kwargs = {_UPDATE_ITEM_FIELD_MAP.get(k, k): v for k, v in operation.payload.items()}
+    client.update_item(workspace_id, item_id, **kwargs)
+
+
 def _execute_operation(
     client: FabricMutationClient,
     operation: PlannedOperation,
@@ -346,11 +402,7 @@ def _execute_operation(
     op_type = operation.operation_type
 
     if op_type == OperationType.UPDATE_ITEM:
-        # PlannedOperation payloads use the Fabric REST field names
-        # ("displayName"/"description"); FabricClient.update_item takes the
-        # equivalent snake_case keyword arguments, so map between the two here.
-        kwargs = {_UPDATE_ITEM_FIELD_MAP.get(k, k): v for k, v in operation.payload.items()}
-        client.update_item(operation.target["workspaceId"], operation.target["itemId"], **kwargs)
+        _update_item(client, operation, verify_state="expectedFabricType" in operation.target)
         return dict(operation.payload)
 
     if op_type == OperationType.CREATE_DOMAIN:
@@ -415,8 +467,8 @@ def build_rollback_operations(checkpoint: RunCheckpoint) -> List[PlannedOperatio
     """Derive reverse operations purely from a run's checkpoint records.
 
     Rollback never re-runs matching/planning -- it only knows how to undo
-    exactly what was recorded, which is what makes it safe to run long after
-    the source Purview/Fabric state has moved on.
+    exactly what was recorded. Metadata restore uses the recorded applied
+    state as the precondition for changing Fabric.
     """
     reverse_ops: List[PlannedOperation] = []
     for record in checkpoint.records:
@@ -433,6 +485,7 @@ def build_rollback_operations(checkpoint: RunCheckpoint) -> List[PlannedOperatio
                     purview_source_id=record.purview_source_id,
                     target=record.target,
                     payload=payload,
+                    before_state=record.after_state,
                 )
             )
         elif record.operation_type == OperationType.ASSIGN_WORKSPACE_DOMAIN:
@@ -489,8 +542,7 @@ def apply_rollback(
             continue
         try:
             if operation.operation_type == OperationType.UPDATE_ITEM:
-                kwargs = {_UPDATE_ITEM_FIELD_MAP.get(k, k): v for k, v in operation.payload.items()}
-                client.update_item(operation.target["workspaceId"], operation.target["itemId"], **kwargs)
+                _update_item(client, operation, verify_state=True)
             elif operation.operation_type == OperationType.UNASSIGN_WORKSPACE_DOMAIN:
                 domain_id = operation.payload.get("domainId")
                 if domain_id:

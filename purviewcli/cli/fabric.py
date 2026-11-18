@@ -4,6 +4,8 @@
 Commands:
   - ``pvw fabric sync capabilities``: prints the current feature-status board (no I/O).
   - ``pvw fabric sync roadmap``: reads governance roadmap announcements from Fabric GPS.
+  - ``pvw fabric sync readiness``: inventories a portable snapshot offline.
+  - ``pvw fabric sync plan-waves``: validates offline wave assignments and scopes decisions.
   - ``pvw fabric sync prepare``: proposes existing Fabric item matches for review.
   - ``pvw fabric sync assess``  : always read-only; produces a plan/report.
   - ``pvw fabric sync apply``    : dry-run by default; pass --apply to write.
@@ -18,6 +20,7 @@ from __future__ import annotations
 
 import json
 import sys
+from pathlib import Path
 from typing import List, Optional, Tuple
 
 import click
@@ -85,6 +88,8 @@ def _run_assessment(
     :meth:`~purviewcli.sync.state.CheckpointStore.load_or_create`'s
     resume/idempotency guard. ``assess`` (which never checkpoints) leaves it
     unset and always gets a fresh run id.
+
+    Returns the plan, Fabric client, and approved target types (snapshot mode only).
     """
     from purviewcli.sync.service import (
         build_sync_plan,
@@ -103,7 +108,6 @@ def _run_assessment(
     if snapshot_dir and sync_classifications:
         raise click.UsageError("--sync-classifications is not supported for snapshot imports")
     if snapshot_dir:
-        from pathlib import Path
         from purviewcli.export.decisions import load_reviewed_snapshot
         try:
             purview_state, mapping = load_reviewed_snapshot(Path(snapshot_dir), Path(decisions_file))
@@ -124,11 +128,13 @@ def _run_assessment(
         )
     catalog_entries = fetch_fabric_catalog(fabric_client, workspace_ids=list(workspace_ids))
     verified_item_states = None
+    expected_item_types = None
     if snapshot_dir:
         from purviewcli.export.decisions import FABRIC_ITEM_TYPES
 
         entries_by_key = {(entry.workspace_id, entry.id): entry for entry in catalog_entries}
         verified_item_states = {}
+        expected_item_types = {}
         for binding in mapping.entries:
             entry = entries_by_key.get((binding.workspace_id, binding.item_id))
             if entry is None:
@@ -156,6 +162,7 @@ def _run_assessment(
             verified_item_states[(binding.workspace_id, binding.item_id)] = normalize_fabric_item_state(
                 current_item, binding.workspace_id, binding.item_id
             )
+            expected_item_types[(binding.workspace_id, binding.item_id)] = binding.expected_fabric_type
     if snapshot_dir:
         fabric_domains, workspace_current_domain = [], {}
     else:
@@ -184,7 +191,7 @@ def _run_assessment(
             raise click.ClickException(
                 f"Selected asset mappings have no current Fabric item in the catalog scope: {', '.join(unresolved)}"
             )
-    return plan, fabric_client
+    return plan, fabric_client, expected_item_types
 
 
 def _write_reports(plan, report_file: Optional[str], csv_report_file: Optional[str], sync_result=None, rollback_result=None):
@@ -357,6 +364,61 @@ def sync_roadmap(output, status):
     console.print(f"INFO Checked: {result['checked_at']}. {result['note']}")
 
 
+@sync.command(name="readiness")
+@click.option("--snapshot-dir", required=True, type=click.Path(exists=True, file_okay=False, path_type=Path))
+@click.option("--decisions-file", type=click.Path(exists=True, dir_okay=False, path_type=Path), help="Optional reviewed decisions for this snapshot.")
+@click.option("--output", type=click.Choice(["table", "json"]), default="table", help="Output format.")
+def sync_readiness(snapshot_dir, decisions_file, output):
+    """Inventory a portable UC export offline; does not verify Fabric targets."""
+    from purviewcli.export.readiness import build_readiness_report
+
+    try:
+        report = build_readiness_report(snapshot_dir, decisions_file)
+    except (OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    if output == "json":
+        click.echo(json.dumps(report, indent=2))
+        return
+
+    from rich.table import Table
+
+    table = Table(title="Migration readiness (snapshot only)")
+    table.add_column("Inventory")
+    table.add_column("Records", justify="right")
+    table.add_column("Outcomes")
+    for kind, summary in report["summary"].items():
+        outcomes = ", ".join(
+            f"{count} {outcome.replace('_', ' ')}"
+            for outcome, count in sorted(summary["outcomes"].items())
+        )
+        table.add_row(kind.replace("_", " "), str(summary["snapshotCount"]), outcomes or "-")
+    table.add_row(
+        "Not captured", "unknown", ", ".join(kind.replace("_", " ") for kind in report["notCaptured"])
+    )
+    console.print(table)
+    if decisions_file is not None:
+        click.echo(f"Locally reviewed mappings: {report['reviewedMappingCount']} (not target verified).")
+    for limitation in report["limitations"]:
+        click.echo(limitation)
+
+
+@sync.command(name="plan-waves")
+@click.option("--snapshot-dir", required=True, type=click.Path(exists=True, file_okay=False, path_type=Path))
+@click.option("--decisions-file", required=True, type=click.Path(exists=True, dir_okay=False, path_type=Path), help="Reviewed decisions for the exact snapshot.")
+@click.option("--wave-file", type=click.Path(exists=True, dir_okay=False, path_type=Path), help="Reviewed wave manifest. Omit to inspect input digests and unassigned assets.")
+@click.option("--wave", "wave_name", help="Name of the wave to export; requires --wave-file and --output-file.")
+@click.option("--output-file", type=click.Path(dir_okay=False, path_type=Path), help="New wave decisions file outside the snapshot directory.")
+def sync_plan_waves(snapshot_dir, decisions_file, wave_file, wave_name, output_file):
+    """Report migration waves as JSON offline; optionally export one wave's decisions."""
+    from purviewcli.export.waves import plan_waves
+
+    try:
+        report = plan_waves(snapshot_dir, decisions_file, wave_file, wave_name, output_file)
+    except (OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    click.echo(json.dumps(report, indent=2))
+
+
 @sync.command(name="prepare")
 @click.option("--snapshot-dir", required=True, type=click.Path(exists=True, file_okay=False))
 @click.option("--output-file", required=True, type=click.Path(dir_okay=False))
@@ -364,7 +426,6 @@ def sync_roadmap(output, status):
 @click.pass_context
 def sync_prepare(ctx, snapshot_dir, output_file, workspace_ids):
     """Suggest existing Fabric items for customer review; never approve mappings."""
-    from pathlib import Path
     from purviewcli.client.client_cache import get_cached_client
     from purviewcli.client.fabric_client import FabricClient
     from purviewcli.export.prepare import prepare_decisions
@@ -390,7 +451,7 @@ def sync_prepare(ctx, snapshot_dir, output_file, workspace_ids):
 def sync_assess(ctx, purview_domain_ids, workspace_ids, mapping_file, snapshot_dir, decisions_file, overwrite, truncate_descriptions, sync_classifications, report_file, csv_report_file, output):
     """Read-only assessment: build and report a sync plan without writing anything."""
     _warn_experimental_sync(output)
-    plan, _fabric_client = _run_assessment(ctx, purview_domain_ids, workspace_ids, mapping_file, snapshot_dir, decisions_file, overwrite, truncate_descriptions, sync_classifications=sync_classifications)
+    plan, _, _ = _run_assessment(ctx, purview_domain_ids, workspace_ids, mapping_file, snapshot_dir, decisions_file, overwrite, truncate_descriptions, sync_classifications=sync_classifications)
     _write_reports(plan, report_file, csv_report_file)
     _render_plan_summary(plan, output)
     _exit_nonzero_if_needed(plan)
@@ -413,13 +474,16 @@ def sync_apply(ctx, purview_domain_ids, workspace_ids, mapping_file, snapshot_di
     existing_checkpoint = store.load()
     run_id = existing_checkpoint.run_id if existing_checkpoint is not None else None
 
-    plan, fabric_client = _run_assessment(ctx, purview_domain_ids, workspace_ids, mapping_file, snapshot_dir, decisions_file, overwrite, truncate_descriptions, sync_classifications=sync_classifications, run_id=run_id)
+    plan, fabric_client, expected_item_types = _run_assessment(ctx, purview_domain_ids, workspace_ids, mapping_file, snapshot_dir, decisions_file, overwrite, truncate_descriptions, sync_classifications=sync_classifications, run_id=run_id)
     if snapshot_dir and apply_:
         _exit_nonzero_if_needed(
             plan,
             fail_message="Reviewed snapshot has conflicts or validation errors; run assess and resolve them before --apply",
         )
-    sync_result = sync_plan(fabric_client, plan, store, plan.run_id, dry_run=not apply_)
+    sync_result = sync_plan(
+        fabric_client, plan, store, plan.run_id, dry_run=not apply_,
+        expected_item_types=expected_item_types,
+    )
 
     _write_reports(plan, report_file, csv_report_file, sync_result=sync_result)
     if output == "json":
@@ -475,9 +539,9 @@ def sync_run(ctx, config_path):
 def sync_rollback(ctx, checkpoint_file, apply_, report_file, output):
     """Reverse a completed run's item metadata, tag, and domain-assignment changes.
 
-    Rollback is derived purely from the checkpoint file -- it never re-runs
-    matching/planning -- so it is safe to run long after the source data has
-    moved on. Domains and tag definitions created by a run are never deleted.
+    Rollback is derived from the checkpoint, not a fresh plan. Item metadata
+    restores only proceed if the fields still match the recorded applied state.
+    Domains and tag definitions created by a run are never deleted.
     """
     from purviewcli.sync.models import SyncPlan
     from purviewcli.sync.service import rollback_run

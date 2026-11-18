@@ -31,10 +31,20 @@ def _object(path: Path) -> Dict[str, Any]:
 
 def load_snapshot(snapshot_dir: Path) -> Dict[str, List[Dict[str, Any]]]:
     """Verify the immutable exported records before they can be used."""
+    documents, _ = load_snapshot_with_digest(snapshot_dir)
+    return documents
+
+
+def load_snapshot_with_digest(
+    snapshot_dir: Path,
+) -> Tuple[Dict[str, List[Dict[str, Any]]], str]:
+    """Verify exported records and return the digest of the manifest used."""
     snapshot_dir = Path(snapshot_dir)
-    manifest = _object(snapshot_dir / "manifest.json")
+    manifest_content = (snapshot_dir / "manifest.json").read_bytes()
+    manifest = json.loads(manifest_content.decode("utf-8"))
     if (
-        not _is_int(manifest.get("schemaVersion"))
+        not isinstance(manifest, dict)
+        or not _is_int(manifest.get("schemaVersion"))
         or manifest["schemaVersion"] != SCHEMA_VERSION
         or not isinstance(manifest.get("sha256"), dict)
         or not isinstance(manifest.get("files"), dict)
@@ -59,16 +69,28 @@ def load_snapshot(snapshot_dir: Path) -> Dict[str, List[Dict[str, Any]]]:
             raise ValueError(f"{name}: duplicate Purview ID")
         documents[name] = records
 
-    return documents
+    return documents, hashlib.sha256(manifest_content).hexdigest()
 
 
 def load_reviewed_snapshot(
     snapshot_dir: Path, decisions_file: Path
 ) -> Tuple[Dict[str, List[Any]], SyncMapping]:
     """Return selected source records only after local integrity/reference checks."""
-    snapshot_dir = Path(snapshot_dir)
-    documents = load_snapshot(snapshot_dir)
-    decisions = _object(Path(decisions_file))
+    documents, digest = load_snapshot_with_digest(snapshot_dir)
+    return validate_snapshot_decisions(documents, digest, decisions_file)
+
+
+def validate_snapshot_decisions(
+    documents: Dict[str, List[Dict[str, Any]]], digest: str, decisions_file: Path
+) -> Tuple[Dict[str, List[Any]], SyncMapping]:
+    """Validate reviewed decisions against already integrity-checked records."""
+    return validate_decisions(documents, digest, _object(Path(decisions_file)))
+
+
+def validate_decisions(
+    documents: Dict[str, List[Dict[str, Any]]], digest: str, decisions: Dict[str, Any]
+) -> Tuple[Dict[str, List[Any]], SyncMapping]:
+    """Validate parsed decisions against already integrity-checked records."""
     if set(decisions) not in (
         {
             "schemaVersion",
@@ -89,7 +111,6 @@ def load_reviewed_snapshot(
         raise ValueError(
             "Decisions must contain schemaVersion, snapshotSha256, selectedAssetIds, descriptions, mappings (and optionally candidates)"
         )
-    digest = hashlib.sha256((snapshot_dir / "manifest.json").read_bytes()).hexdigest()
     if (
         not _is_int(decisions["schemaVersion"])
         or decisions["schemaVersion"] != SCHEMA_VERSION
@@ -103,7 +124,8 @@ def load_reviewed_snapshot(
         or any(not isinstance(value, str) or not value.strip() for value in selected)
     ):
         raise ValueError("selectedAssetIds must contain at least one Purview asset ID")
-    if len(set(selected)) != len(selected):
+    selected_ids = set(selected)
+    if len(selected_ids) != len(selected):
         raise ValueError("selectedAssetIds contains duplicates")
     descriptions = decisions["descriptions"]
     if not isinstance(descriptions, dict) or any(
@@ -112,7 +134,7 @@ def load_reviewed_snapshot(
     ):
         raise ValueError("descriptions must map asset IDs to strings")
     asset_ids = {row["id"] for row in documents["assets.json"]}
-    if not set(selected) <= asset_ids or not set(descriptions) <= set(selected):
+    if not selected_ids <= asset_ids or not set(descriptions) <= selected_ids:
         raise ValueError("Selected or edited asset ID is absent from the snapshot")
     mappings = decisions["mappings"]
     if not isinstance(mappings, list) or any(not isinstance(entry, dict) for entry in mappings):
@@ -136,7 +158,7 @@ def load_reviewed_snapshot(
         raise ValueError(
             "Invalid mapping: purviewAssetId, workspaceId and itemId required"
         ) from exc
-    if set(mapping.by_purview_asset_id()) != set(selected):
+    if set(mapping.by_purview_asset_id()) != selected_ids:
         raise ValueError("Every selected asset must have exactly one explicit Fabric mapping")
     mapping_by_id = mapping.by_purview_asset_id()
     domains = {row["id"]: row for row in documents["domains.json"]}
@@ -146,7 +168,7 @@ def load_reviewed_snapshot(
     }
     assets = []
     for record in documents["assets.json"]:
-        if record["id"] not in selected:
+        if record["id"] not in selected_ids:
             continue
         asset = PurviewAsset.from_dict(record)
         if not isinstance(asset.name, str) or not asset.name.strip():

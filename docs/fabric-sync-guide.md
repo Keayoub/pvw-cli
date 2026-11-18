@@ -32,9 +32,36 @@ Nothing is ever written back to Purview. Every command defaults to a **dry run**
 
 ### Reviewed offline export to Fabric
 
+Start with an offline migration readiness report from the
+[portable UC export](commands/unified-catalog.md#portable-catalog-export-no-fabric-dependency):
+
+```powershell
+pvw fabric sync readiness --snapshot-dir .\purview-snapshot
+pvw fabric sync readiness --snapshot-dir .\purview-snapshot --output json > .\readiness.json
+```
+
+The report validates snapshot checksums and counts and inventories all exported
+assets, domains, glossary terms, data products and critical data elements
+(CDEs). Run it again with `--decisions-file .\decisions.json` after review to
+annotate the inventory with locally validated mappings. The command does not
+authenticate, contact either tenant, change the snapshot, or produce a sync
+plan. JSON includes a report schema version and the snapshot manifest hash.
+
+| Outcome | What it means for migration planning |
+|---|---|
+| `native_candidate` | Item display name and description are candidates on an existing Fabric item. Evidence is either a source type hint or a locally reviewed mapping, not a verified target. Use `assess` to verify the target and check conflicts. |
+| `lossy_tag` | An observed asset link and a usable name give a glossary term, data product or CDE a potential name-only tag. Definitions, hierarchy and governance behavior do not transfer. The suggested name is not a tag plan. |
+| `retain_manual_redesign` | Keep or redesign domains and workspace assignment outside the reviewed path. Governance records without a usable tag or an observed asset link also need separate review. |
+| `unknown` / `not_captured` | Insufficient evidence to classify a record, or the feature is not inventoried (for example lineage, data quality, policies, classifications and sensitivity labels). An unavailable count is `null`, not zero. |
+
+Counts describe the export, not the tenant. Asset relationship entries show
+observed IDs and flag unresolved references. An empty CDE link list in schema v1
+does not establish that no links exist: the export does not independently
+enumerate them. Use the outcome groups to prioritize review; this report does
+not assign migration waves or discover native Fabric equivalents.
+
 To let a customer select assets and approve description changes before sync,
-use the standalone [Purview UC export](commands/unified-catalog.md#portable-catalog-export-no-fabric-dependency).
-Run the read-only preparation command to discover existing Fabric items by
+run the read-only preparation command to discover existing Fabric items by
 exact name. It writes a **new draft outside the export folder** with item IDs,
 workspace names, Fabric types and reasons for each suggestion. Each asset has
 a `reviewStatus` (`no_candidate`, `single_candidate`, or `multiple_candidates`);
@@ -76,6 +103,51 @@ embedded IDs, update Fabric domains, or support `--sync-classifications`;
 `--mapping-file` and `--purview-domain-id` cannot be combined with this mode.
 It remains experimental and **must not be used in production**. An export can
 be stale: re-export if Purview changes and review a new decisions file.
+
+#### Plan migration waves offline
+
+After reviewing `decisions.json`, run `plan-waves` without a manifest to see
+the exact `snapshotSha256` and `decisionsSha256` to copy, and which assets have
+reviewed mappings:
+
+```powershell
+pvw fabric sync plan-waves --snapshot-dir .\purview-snapshot --decisions-file .\decisions.json
+```
+
+In a new `waves.json`, list only reviewed Purview asset IDs. Array order is the
+intended execution order; wave names are unique and case-sensitive, and an asset
+can appear only once across the manifest. Assets can be left unassigned.
+
+```json
+{
+  "schemaVersion": 1,
+  "snapshotSha256": "<copy from plan-waves>",
+  "decisionsSha256": "<copy from plan-waves>",
+  "waves": [
+    {"name": "pilot", "assetIds": ["<reviewed asset ID>"]},
+    {"name": "rollout", "assetIds": ["<another reviewed asset ID>"]}
+  ]
+}
+```
+
+Validate the entire manifest with `--wave-file .\waves.json` before exporting a
+wave. The JSON report lists the assignments and distinguishes unassigned assets
+that are `reviewed_not_scheduled` from those that are `not_reviewed`. A new
+snapshot manifest or any change to the decisions file (including formatting)
+requires rechecking the wave assignments against the new digests.
+
+```powershell
+pvw fabric sync plan-waves --snapshot-dir .\purview-snapshot --decisions-file .\decisions.json --wave-file .\waves.json --wave pilot --output-file .\pilot.decisions.json
+pvw uc validate-export --snapshot-dir .\purview-snapshot --decisions-file .\pilot.decisions.json
+pvw fabric sync assess --snapshot-dir .\purview-snapshot --decisions-file .\pilot.decisions.json --report-file .\pilot.assessment.json
+```
+
+The export uses the existing decisions schema, keeping only the chosen wave's
+selections, description edits, and explicit mappings. It must go outside the
+snapshot directory and cannot replace an existing file. `plan-waves` makes no
+tenant calls, verifies no live Fabric targets, and does not approve, run, or
+enforce the order of waves. Use the existing assess/apply process with a
+separate checkpoint for each wave.
 
 **Future enhancement, not yet implemented:** a local mapping UI under `tools/`
 could simplify reviewing candidates and editing the same decisions file. Build
@@ -178,6 +250,13 @@ state hasn't changed are skipped, and only genuinely new/changed operations are 
 Independent operation failures don't stop the run — the command reports every failure and
 exits non-zero if any occurred.
 
+For reviewed snapshots, immediately before each item metadata PATCH, apply reads the
+item again and confirms its identity, approved type, and the previous values of only
+the fields being changed (`displayName` and/or `description`). Drift, a failed read,
+or a missing or invalid field blocks that PATCH even with `--overwrite`. This
+compares against the plan built by the current apply invocation, not a report from
+an earlier `assess`. Reassess and review any drift before retrying.
+
 ### `pvw fabric sync run --config <file>`
 
 A config-file-driven equivalent of `apply`, intended for schedulers/pipelines where passing a
@@ -191,9 +270,13 @@ pvw fabric sync run --config .\run_config.json
 
 ### `pvw fabric sync rollback`
 
-Reverses a completed run's item metadata, tag application, and workspace-domain assignment
-changes — derived **purely from the checkpoint file**, never by re-running matching or
-planning. This makes it safe to run long after the source Purview/Fabric state has moved on.
+Derives item metadata restores, tag removals, and workspace-domain unassignments
+from the checkpoint file without re-running matching or planning. With `--apply`,
+an item metadata restore replaces only fields that still match the checkpoint's
+recorded applied values. A later edit or an unverifiable field blocks the whole
+PATCH for that item, not unrelated rollback operations. Legacy checkpoints can
+still verify item/workspace identity and field values, but do not record the approved
+type. Preview performs no drift checks.
 
 ```powershell
 # Preview (default) — shows what would be reverted, writes nothing.
@@ -205,6 +288,12 @@ pvw fabric sync rollback --checkpoint-file .\checkpoints\run1.json --apply
 
 **Fabric domains and tag definitions created by a run are never deleted by rollback** —
 only item metadata, tag *application*, and workspace-domain *assignment* are reversed.
+
+These checks are not atomic: Fabric can still change between Get Item and PATCH,
+and an intervening edit that ends at the expected value cannot be detected. They
+do not guard tag creation, assignment or removal, domain operations, or live-source
+apply. Those operations and other items can succeed even when a metadata PATCH is
+blocked; inspect the report and checkpoint after partial failures.
 
 ## Required Fabric permissions
 
@@ -233,6 +322,8 @@ resolve the mapping file or adjust `--overwrite`/`--truncate-descriptions`).
 |---|---|---|---|
 | `pvw fabric sync capabilities` | Never (no client I/O at all) | — | `--status`, `--output` |
 | `pvw fabric sync roadmap` | Never (reads public Fabric GPS API) | — | `--status planned\|shipped`, `--output table\|json` |
+| `pvw fabric sync readiness` | Never (offline) | — | `--snapshot-dir`, `--decisions-file`, `--output` |
+| `pvw fabric sync plan-waves` | Never (offline) | — | `--snapshot-dir`, `--decisions-file`, `--wave-file`, `--wave`, `--output-file` |
 | `pvw fabric sync prepare` | Never (reads Fabric catalog) | — | `--snapshot-dir`, `--output-file`, `--workspace-id` |
 | `pvw fabric sync assess` | Never | — | `--purview-domain-id`, `--workspace-id`, `--mapping-file` or `--snapshot-dir` + `--decisions-file`, `--overwrite`, `--truncate-descriptions`, `--sync-classifications` (live source only), `--report-file`, `--csv-report-file`, `--output` |
 | `pvw fabric sync apply` | Only with `--apply` | Dry run | All of the above, plus `--checkpoint-file` (required), `--apply` |
