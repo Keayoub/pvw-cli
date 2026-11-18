@@ -250,6 +250,13 @@ state hasn't changed are skipped, and only genuinely new/changed operations are 
 Independent operation failures don't stop the run — the command reports every failure and
 exits non-zero if any occurred.
 
+For reviewed snapshots, immediately before each item metadata PATCH, apply reads the
+item again and confirms its identity, approved type, and the previous values of only
+the fields being changed (`displayName` and/or `description`). Drift, a failed read,
+or a missing or invalid field blocks that PATCH even with `--overwrite`. This
+compares against the plan built by the current apply invocation, not a report from
+an earlier `assess`. Reassess and review any drift before retrying.
+
 ### `pvw fabric sync run --config <file>`
 
 A config-file-driven equivalent of `apply`, intended for schedulers/pipelines where passing a
@@ -263,9 +270,13 @@ pvw fabric sync run --config .\run_config.json
 
 ### `pvw fabric sync rollback`
 
-Reverses a completed run's item metadata, tag application, and workspace-domain assignment
-changes — derived **purely from the checkpoint file**, never by re-running matching or
-planning. This makes it safe to run long after the source Purview/Fabric state has moved on.
+Derives item metadata restores, tag removals, and workspace-domain unassignments
+from the checkpoint file without re-running matching or planning. With `--apply`,
+an item metadata restore replaces only fields that still match the checkpoint's
+recorded applied values. A later edit or an unverifiable field blocks the whole
+PATCH for that item, not unrelated rollback operations. Legacy checkpoints can
+still verify item/workspace identity and field values, but do not record the approved
+type. Preview performs no drift checks.
 
 ```powershell
 # Preview (default) — shows what would be reverted, writes nothing.
@@ -277,6 +288,12 @@ pvw fabric sync rollback --checkpoint-file .\checkpoints\run1.json --apply
 
 **Fabric domains and tag definitions created by a run are never deleted by rollback** —
 only item metadata, tag *application*, and workspace-domain *assignment* are reversed.
+
+These checks are not atomic: Fabric can still change between Get Item and PATCH,
+and an intervening edit that ends at the expected value cannot be detected. They
+do not guard tag creation, assignment or removal, domain operations, or live-source
+apply. Those operations and other items can succeed even when a metadata PATCH is
+blocked; inspect the report and checkpoint after partial failures.
 
 ## Required Fabric permissions
 

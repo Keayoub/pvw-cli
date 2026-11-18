@@ -730,6 +730,114 @@ def test_snapshot_assess_plans_from_the_verified_item_response(tmp_path, monkeyp
     )
 
 
+@pytest.mark.parametrize(
+    ("issue", "error"),
+    [
+        ("edit", "target drift detected in description"),
+        ("missing", "Get Item did not verify description"),
+        ("type", "Get Item did not confirm target identity or type"),
+        ("read_error", "simulated read failure"),
+    ],
+)
+def test_snapshot_apply_refuses_unverified_metadata_update(tmp_path, monkeypatch, issue, error):
+    from purviewcli.sync.state import CheckpointStore
+
+    snapshot, decisions = reviewed_export(tmp_path)
+    checkpoint = tmp_path / "checkpoint.json"
+    client = FakeFabric()
+    initial = client.get_item("ws1", "i1")
+    current = dict(initial)
+    if issue == "edit":
+        current["description"] = "Concurrent edit"
+    elif issue == "missing":
+        del current["description"]
+    elif issue == "type":
+        current["type"] = "Warehouse"
+    reads = []
+
+    def get_item(workspace_id, item_id):
+        reads.append((workspace_id, item_id))
+        if len(reads) == 1:
+            return initial
+        if issue == "read_error":
+            raise RuntimeError("simulated read failure")
+        return current
+
+    monkeypatch.setattr(client, "get_item", get_item)
+    monkeypatch.setattr("purviewcli.client.client_cache.get_cached_client", lambda cls, profile: client)
+    args = [
+        "sync", "apply", "--snapshot-dir", str(snapshot), "--decisions-file", str(decisions),
+        "--checkpoint-file", str(checkpoint), "--output", "json",
+    ]
+    runner = CliRunner()
+    preview = runner.invoke(fabric, args)
+    assert preview.exit_code == 0, preview.output
+    assert reads == [("ws1", "i1")]
+    assert not checkpoint.exists()
+    assert client.updated_items == client.created_tags == client.applied_tags == []
+
+    reads.clear()
+    result = runner.invoke(fabric, [*args, "--apply"])
+    assert result.exit_code == 1, result.output
+    assert reads == [("ws1", "i1"), ("ws1", "i1")]
+    operations = json.loads(result.output)["syncResult"]["results"]
+    assert any(op["status"] == "failed" and error in op["message"] for op in operations)
+    assert client.updated_items == []
+    assert all(
+        record.operation_type.value != "update_item"
+        for record in CheckpointStore(str(checkpoint)).load().records
+    )
+
+
+@pytest.mark.parametrize("later_edit", ["displayName", "description", "type"])
+def test_snapshot_rollback_checks_only_fields_written_by_apply(tmp_path, monkeypatch, later_edit):
+    class StatefulFabric(FakeFabric):
+        def __init__(self):
+            super().__init__()
+            self.item = {**super().get_item("ws1", "i1"), "displayName": "Orders"}
+
+        def get_item(self, workspace_id, item_id):
+            return dict(self.item)
+
+        def update_item(self, workspace_id, item_id, **fields):
+            self.updated_items.append(fields)
+            assert set(fields) == {"description"}
+            self.item.update(fields)
+
+        def unapply_tags(self, workspace_id, item_id, tag_ids):
+            pass
+
+    snapshot, decisions = reviewed_export(tmp_path)
+    checkpoint = tmp_path / "checkpoint.json"
+    client = StatefulFabric()
+    monkeypatch.setattr("purviewcli.client.client_cache.get_cached_client", lambda cls, profile: client)
+    monkeypatch.setattr("purviewcli.cli.fabric._get_clients", lambda ctx: (None, client, None))
+    runner = CliRunner()
+    result = runner.invoke(fabric, [
+        "sync", "apply", "--snapshot-dir", str(snapshot), "--decisions-file", str(decisions),
+        "--checkpoint-file", str(checkpoint), "--output", "json", "--apply",
+    ])
+    assert result.exit_code == 0, result.output
+    assert client.updated_items == [{"description": "Approved description"}]
+
+    changed = "Warehouse" if later_edit == "type" else "Later edit"
+    client.item[later_edit] = changed
+    args = ["sync", "rollback", "--checkpoint-file", str(checkpoint), "--output", "json"]
+    preview = runner.invoke(fabric, args)
+    assert preview.exit_code == 0, preview.output
+    assert client.updated_items == [{"description": "Approved description"}]
+
+    result = runner.invoke(fabric, [*args, "--apply"])
+    assert client.item[later_edit] == changed
+    if later_edit == "displayName":
+        assert result.exit_code == 0, result.output
+        assert client.updated_items[-1] == {"description": None}
+    else:
+        assert result.exit_code == 1, result.output
+        assert len(client.updated_items) == 1
+        assert "target drift" in result.output or "identity or type" in result.output
+
+
 def test_snapshot_import_rejects_classification_flag(tmp_path, monkeypatch):
     folder, decisions = reviewed_export(tmp_path)
     monkeypatch.setattr(

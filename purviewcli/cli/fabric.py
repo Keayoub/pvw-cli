@@ -88,6 +88,8 @@ def _run_assessment(
     :meth:`~purviewcli.sync.state.CheckpointStore.load_or_create`'s
     resume/idempotency guard. ``assess`` (which never checkpoints) leaves it
     unset and always gets a fresh run id.
+
+    Returns the plan, Fabric client, and approved target types (snapshot mode only).
     """
     from purviewcli.sync.service import (
         build_sync_plan,
@@ -126,11 +128,13 @@ def _run_assessment(
         )
     catalog_entries = fetch_fabric_catalog(fabric_client, workspace_ids=list(workspace_ids))
     verified_item_states = None
+    expected_item_types = None
     if snapshot_dir:
         from purviewcli.export.decisions import FABRIC_ITEM_TYPES
 
         entries_by_key = {(entry.workspace_id, entry.id): entry for entry in catalog_entries}
         verified_item_states = {}
+        expected_item_types = {}
         for binding in mapping.entries:
             entry = entries_by_key.get((binding.workspace_id, binding.item_id))
             if entry is None:
@@ -158,6 +162,7 @@ def _run_assessment(
             verified_item_states[(binding.workspace_id, binding.item_id)] = normalize_fabric_item_state(
                 current_item, binding.workspace_id, binding.item_id
             )
+            expected_item_types[(binding.workspace_id, binding.item_id)] = binding.expected_fabric_type
     if snapshot_dir:
         fabric_domains, workspace_current_domain = [], {}
     else:
@@ -186,7 +191,7 @@ def _run_assessment(
             raise click.ClickException(
                 f"Selected asset mappings have no current Fabric item in the catalog scope: {', '.join(unresolved)}"
             )
-    return plan, fabric_client
+    return plan, fabric_client, expected_item_types
 
 
 def _write_reports(plan, report_file: Optional[str], csv_report_file: Optional[str], sync_result=None, rollback_result=None):
@@ -446,7 +451,7 @@ def sync_prepare(ctx, snapshot_dir, output_file, workspace_ids):
 def sync_assess(ctx, purview_domain_ids, workspace_ids, mapping_file, snapshot_dir, decisions_file, overwrite, truncate_descriptions, sync_classifications, report_file, csv_report_file, output):
     """Read-only assessment: build and report a sync plan without writing anything."""
     _warn_experimental_sync(output)
-    plan, _fabric_client = _run_assessment(ctx, purview_domain_ids, workspace_ids, mapping_file, snapshot_dir, decisions_file, overwrite, truncate_descriptions, sync_classifications=sync_classifications)
+    plan, _, _ = _run_assessment(ctx, purview_domain_ids, workspace_ids, mapping_file, snapshot_dir, decisions_file, overwrite, truncate_descriptions, sync_classifications=sync_classifications)
     _write_reports(plan, report_file, csv_report_file)
     _render_plan_summary(plan, output)
     _exit_nonzero_if_needed(plan)
@@ -469,13 +474,16 @@ def sync_apply(ctx, purview_domain_ids, workspace_ids, mapping_file, snapshot_di
     existing_checkpoint = store.load()
     run_id = existing_checkpoint.run_id if existing_checkpoint is not None else None
 
-    plan, fabric_client = _run_assessment(ctx, purview_domain_ids, workspace_ids, mapping_file, snapshot_dir, decisions_file, overwrite, truncate_descriptions, sync_classifications=sync_classifications, run_id=run_id)
+    plan, fabric_client, expected_item_types = _run_assessment(ctx, purview_domain_ids, workspace_ids, mapping_file, snapshot_dir, decisions_file, overwrite, truncate_descriptions, sync_classifications=sync_classifications, run_id=run_id)
     if snapshot_dir and apply_:
         _exit_nonzero_if_needed(
             plan,
             fail_message="Reviewed snapshot has conflicts or validation errors; run assess and resolve them before --apply",
         )
-    sync_result = sync_plan(fabric_client, plan, store, plan.run_id, dry_run=not apply_)
+    sync_result = sync_plan(
+        fabric_client, plan, store, plan.run_id, dry_run=not apply_,
+        expected_item_types=expected_item_types,
+    )
 
     _write_reports(plan, report_file, csv_report_file, sync_result=sync_result)
     if output == "json":
@@ -531,9 +539,9 @@ def sync_run(ctx, config_path):
 def sync_rollback(ctx, checkpoint_file, apply_, report_file, output):
     """Reverse a completed run's item metadata, tag, and domain-assignment changes.
 
-    Rollback is derived purely from the checkpoint file -- it never re-runs
-    matching/planning -- so it is safe to run long after the source data has
-    moved on. Domains and tag definitions created by a run are never deleted.
+    Rollback is derived from the checkpoint, not a fresh plan. Item metadata
+    restores only proceed if the fields still match the recorded applied state.
+    Domains and tag definitions created by a run are never deleted.
     """
     from purviewcli.sync.models import SyncPlan
     from purviewcli.sync.service import rollback_run
