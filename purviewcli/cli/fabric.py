@@ -5,6 +5,7 @@ Commands:
   - ``pvw fabric sync capabilities``: prints the current feature-status board (no I/O).
   - ``pvw fabric sync roadmap``: reads governance roadmap announcements from Fabric GPS.
   - ``pvw fabric sync readiness``: inventories a portable snapshot offline.
+  - ``pvw fabric sync plan-waves``: validates offline wave assignments and scopes decisions.
   - ``pvw fabric sync prepare``: proposes existing Fabric item matches for review.
   - ``pvw fabric sync assess``  : always read-only; produces a plan/report.
   - ``pvw fabric sync apply``    : dry-run by default; pass --apply to write.
@@ -394,6 +395,23 @@ def sync_readiness(snapshot_dir, decisions_file, output):
         click.echo(f"Locally reviewed mappings: {report['reviewedMappingCount']} (not target verified).")
     for limitation in report["limitations"]:
         click.echo(limitation)
+
+
+@sync.command(name="plan-waves")
+@click.option("--snapshot-dir", required=True, type=click.Path(exists=True, file_okay=False, path_type=Path))
+@click.option("--decisions-file", required=True, type=click.Path(exists=True, dir_okay=False, path_type=Path), help="Reviewed decisions for the exact snapshot.")
+@click.option("--wave-file", type=click.Path(exists=True, dir_okay=False, path_type=Path), help="Reviewed wave manifest. Omit to inspect input digests and unassigned assets.")
+@click.option("--wave", "wave_name", help="Name of the wave to export; requires --wave-file and --output-file.")
+@click.option("--output-file", type=click.Path(dir_okay=False, path_type=Path), help="New wave decisions file outside the snapshot directory.")
+def sync_plan_waves(snapshot_dir, decisions_file, wave_file, wave_name, output_file):
+    """Report migration waves as JSON offline; optionally export one wave's decisions."""
+    from purviewcli.export.waves import plan_waves
+
+    try:
+        report = plan_waves(snapshot_dir, decisions_file, wave_file, wave_name, output_file)
+    except (OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    click.echo(json.dumps(report, indent=2))
 
 
 @sync.command(name="prepare")

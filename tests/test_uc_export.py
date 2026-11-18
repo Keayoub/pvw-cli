@@ -215,6 +215,170 @@ def reviewed_export(tmp_path):
     return folder, decisions
 
 
+@pytest.fixture
+def wave_inputs(tmp_path):
+    class WaveUC(FakeUC):
+        def list_data_assets(self, args):
+            return {"value": [
+                {"id": f"a{i}", "name": f"Asset {i}", "type": "Lakehouse"} for i in range(1, 5)
+            ]}
+
+    snapshot = tmp_path / "snapshot"
+    export_catalog(WaveUC(), snapshot)
+    decisions_file = tmp_path / "decisions.json"
+    decisions = json.loads((snapshot / "decisions.example.json").read_text(encoding="utf-8"))
+    decisions.update(
+        selectedAssetIds=["a1", "a2", "a3"],
+        descriptions={"a1": "Pilot edit", "a2": "Rollout edit"},
+        mappings=[
+            {
+                "purviewAssetId": f"a{i}",
+                "workspaceId": "ws1",
+                "itemId": f"item{i}",
+                "expectedFabricType": "Lakehouse",
+            }
+            for i in range(1, 4)
+        ],
+        candidates=[{"purviewAssetId": "a4"}],
+    )
+    decisions_file.write_text(json.dumps(decisions), encoding="utf-8")
+    wave_file = tmp_path / "waves.json"
+    manifest = {
+        "schemaVersion": 1,
+        "snapshotSha256": decisions["snapshotSha256"],
+        "decisionsSha256": hashlib.sha256(decisions_file.read_bytes()).hexdigest(),
+        "waves": [
+            {"name": "pilot", "assetIds": ["a1"]},
+            {"name": "rollout", "assetIds": ["a2"]},
+        ],
+    }
+    wave_file.write_text(json.dumps(manifest), encoding="utf-8")
+    return snapshot, decisions_file, wave_file, manifest
+
+
+def test_plan_waves_exports_only_one_reviewed_wave(wave_inputs, tmp_path, monkeypatch):
+    from purviewcli.cli.cli import main
+
+    def unexpected_client(*args, **kwargs):
+        pytest.fail("Wave planning and validation must not initialize a tenant client")
+
+    monkeypatch.setattr("purviewcli.client.client_cache.get_cached_client", unexpected_client)
+    snapshot, decisions_file, wave_file, manifest = wave_inputs
+    inputs = ["--snapshot-dir", str(snapshot), "--decisions-file", str(decisions_file)]
+    args = ["fabric", "sync", "plan-waves", *inputs]
+    runner = CliRunner()
+    before = {path: path.read_bytes() for path in [*snapshot.iterdir(), decisions_file, wave_file]}
+
+    bootstrap = runner.invoke(main, args)
+    assert bootstrap.exit_code == 0, bootstrap.output
+    report = json.loads(bootstrap.output)
+    assert report["snapshotSha256"] == manifest["snapshotSha256"]
+    assert report["decisionsSha256"] == manifest["decisionsSha256"]
+    assert report["assignedAssetCount"] == 0
+    assert report["unassignedAssetCount"] == 4
+
+    args += ["--wave-file", str(wave_file)]
+    result = runner.invoke(main, args)
+    assert result.exit_code == 0, result.output
+    assert json.loads(result.output)["exportedWave"] is None
+    result = runner.invoke(main, [*args, "--wave", "pilot"])
+    assert result.exit_code == 1
+    assert "--wave and --output-file must be used together" in result.output
+
+    scoped = tmp_path / "pilot.decisions.json"
+    args += ["--wave", "pilot", "--output-file", str(scoped)]
+    result = runner.invoke(main, args)
+    assert result.exit_code == 0, result.output
+    report = json.loads(result.output)
+    assert report["waves"] == manifest["waves"]
+    assert report["assignedAssetCount"] == 2
+    assert report["reviewedAssetCount"] == 3
+    assert report["exportedWave"] == "pilot"
+    assert report["targetsVerified"] is False
+    assert [(row["id"], row["disposition"]) for row in report["unassignedAssets"]] == [
+        ("a3", "reviewed_not_scheduled"), ("a4", "not_reviewed"),
+    ]
+
+    result = runner.invoke(main, [
+        "uc", "validate-export", "--snapshot-dir", str(snapshot), "--decisions-file", str(scoped),
+    ])
+    assert result.exit_code == 0, result.output
+    state, mapping = load_reviewed_snapshot(snapshot, scoped)
+    assert [(asset.id, asset.description) for asset in state["assets"]] == [("a1", "Pilot edit")]
+    assert list(mapping.by_purview_asset_id()) == ["a1"]
+    assert "candidates" not in json.loads(scoped.read_text(encoding="utf-8"))
+
+    for existing in (scoped, decisions_file, wave_file):
+        original = existing.read_bytes()
+        result = runner.invoke(main, [*args[:-1], str(existing)])
+        assert result.exit_code == 1
+        assert "destination already exists" in result.output
+        assert existing.read_bytes() == original
+    inside = snapshot / "pilot.json"
+    result = runner.invoke(main, [*args[:-1], str(inside)])
+    assert result.exit_code == 1
+    assert "outside the snapshot" in result.output
+    assert not inside.exists()
+    assert {path: path.read_bytes() for path in before} == before
+
+
+@pytest.mark.parametrize(
+    ("issue", "error"),
+    [
+        ("missing", "must contain at least one"),
+        ("unknown", "absent from the snapshot"),
+        ("unreviewed", "has no reviewed mapping"),
+        ("duplicate", "Duplicate assignment"),
+        ("duplicate_in_wave", "Duplicate assignment"),
+        ("duplicate_name", "Duplicate wave name"),
+        ("duplicate_key", "duplicate JSON key"),
+        ("version", "version 1 wave manifest"),
+        ("stale_snapshot", "Wave manifest does not match this snapshot"),
+        ("stale_decisions", "Wave manifest does not match these reviewed decisions"),
+        ("corrupt_snapshot", "snapshot checksum mismatch"),
+        ("conflicting_targets", "Duplicate Fabric target"),
+        ("unknown_wave", "Unknown wave"),
+    ],
+)
+def test_plan_waves_rejects_invalid_input_without_writing(wave_inputs, tmp_path, issue, error):
+    snapshot, decisions_file, wave_file, manifest = wave_inputs
+    if issue in {"missing", "unknown", "unreviewed", "duplicate", "duplicate_in_wave"}:
+        manifest["waves"][1]["assetIds"] = {
+            "missing": [], "unknown": ["missing-id"], "unreviewed": ["a4"],
+            "duplicate": ["a1"], "duplicate_in_wave": ["a2", "a2"],
+        }[issue]
+    elif issue == "duplicate_name":
+        manifest["waves"][1]["name"] = "pilot"
+    elif issue == "version":
+        manifest["schemaVersion"] = True
+    elif issue == "stale_snapshot":
+        manifest["snapshotSha256"] = "old-snapshot"
+    elif issue == "stale_decisions":
+        decisions_file.write_bytes(decisions_file.read_bytes() + b"\n")
+    elif issue == "corrupt_snapshot":
+        asset_file = snapshot / "assets.json"
+        asset_file.write_bytes(asset_file.read_bytes() + b"\n")
+    elif issue == "conflicting_targets":
+        decisions = json.loads(decisions_file.read_text(encoding="utf-8"))
+        decisions["mappings"][1]["itemId"] = decisions["mappings"][0]["itemId"]
+        decisions_file.write_text(json.dumps(decisions), encoding="utf-8")
+        manifest["decisionsSha256"] = hashlib.sha256(decisions_file.read_bytes()).hexdigest()
+
+    payload = json.dumps(manifest)
+    if issue == "duplicate_key":
+        payload = '{"waves": [], ' + payload[1:]
+    wave_file.write_text(payload, encoding="utf-8")
+    scoped = tmp_path / "pilot.decisions.json"
+    result = CliRunner().invoke(fabric, [
+        "sync", "plan-waves", "--snapshot-dir", str(snapshot), "--decisions-file", str(decisions_file),
+        "--wave-file", str(wave_file), "--wave", "absent" if issue == "unknown_wave" else "pilot",
+        "--output-file", str(scoped),
+    ])
+    assert result.exit_code == 1
+    assert error in result.output
+    assert not scoped.exists()
+
+
 def test_readiness_offline_report_distinguishes_evidence(tmp_path, monkeypatch):
     class MixedExport(FakeUC):
         def list_data_assets(self, args):

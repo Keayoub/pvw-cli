@@ -84,7 +84,13 @@ def validate_snapshot_decisions(
     documents: Dict[str, List[Dict[str, Any]]], digest: str, decisions_file: Path
 ) -> Tuple[Dict[str, List[Any]], SyncMapping]:
     """Validate reviewed decisions against already integrity-checked records."""
-    decisions = _object(Path(decisions_file))
+    return validate_decisions(documents, digest, _object(Path(decisions_file)))
+
+
+def validate_decisions(
+    documents: Dict[str, List[Dict[str, Any]]], digest: str, decisions: Dict[str, Any]
+) -> Tuple[Dict[str, List[Any]], SyncMapping]:
+    """Validate parsed decisions against already integrity-checked records."""
     if set(decisions) not in (
         {
             "schemaVersion",
@@ -118,7 +124,8 @@ def validate_snapshot_decisions(
         or any(not isinstance(value, str) or not value.strip() for value in selected)
     ):
         raise ValueError("selectedAssetIds must contain at least one Purview asset ID")
-    if len(set(selected)) != len(selected):
+    selected_ids = set(selected)
+    if len(selected_ids) != len(selected):
         raise ValueError("selectedAssetIds contains duplicates")
     descriptions = decisions["descriptions"]
     if not isinstance(descriptions, dict) or any(
@@ -127,7 +134,7 @@ def validate_snapshot_decisions(
     ):
         raise ValueError("descriptions must map asset IDs to strings")
     asset_ids = {row["id"] for row in documents["assets.json"]}
-    if not set(selected) <= asset_ids or not set(descriptions) <= set(selected):
+    if not selected_ids <= asset_ids or not set(descriptions) <= selected_ids:
         raise ValueError("Selected or edited asset ID is absent from the snapshot")
     mappings = decisions["mappings"]
     if not isinstance(mappings, list) or any(not isinstance(entry, dict) for entry in mappings):
@@ -151,7 +158,7 @@ def validate_snapshot_decisions(
         raise ValueError(
             "Invalid mapping: purviewAssetId, workspaceId and itemId required"
         ) from exc
-    if set(mapping.by_purview_asset_id()) != set(selected):
+    if set(mapping.by_purview_asset_id()) != selected_ids:
         raise ValueError("Every selected asset must have exactly one explicit Fabric mapping")
     mapping_by_id = mapping.by_purview_asset_id()
     domains = {row["id"]: row for row in documents["domains.json"]}
@@ -161,7 +168,7 @@ def validate_snapshot_decisions(
     }
     assets = []
     for record in documents["assets.json"]:
-        if record["id"] not in selected:
+        if record["id"] not in selected_ids:
             continue
         asset = PurviewAsset.from_dict(record)
         if not isinstance(asset.name, str) or not asset.name.strip():

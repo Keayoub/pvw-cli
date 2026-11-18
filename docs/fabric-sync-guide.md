@@ -104,6 +104,51 @@ embedded IDs, update Fabric domains, or support `--sync-classifications`;
 It remains experimental and **must not be used in production**. An export can
 be stale: re-export if Purview changes and review a new decisions file.
 
+#### Plan migration waves offline
+
+After reviewing `decisions.json`, run `plan-waves` without a manifest to see
+the exact `snapshotSha256` and `decisionsSha256` to copy, and which assets have
+reviewed mappings:
+
+```powershell
+pvw fabric sync plan-waves --snapshot-dir .\purview-snapshot --decisions-file .\decisions.json
+```
+
+In a new `waves.json`, list only reviewed Purview asset IDs. Array order is the
+intended execution order; wave names are unique and case-sensitive, and an asset
+can appear only once across the manifest. Assets can be left unassigned.
+
+```json
+{
+  "schemaVersion": 1,
+  "snapshotSha256": "<copy from plan-waves>",
+  "decisionsSha256": "<copy from plan-waves>",
+  "waves": [
+    {"name": "pilot", "assetIds": ["<reviewed asset ID>"]},
+    {"name": "rollout", "assetIds": ["<another reviewed asset ID>"]}
+  ]
+}
+```
+
+Validate the entire manifest with `--wave-file .\waves.json` before exporting a
+wave. The JSON report lists the assignments and distinguishes unassigned assets
+that are `reviewed_not_scheduled` from those that are `not_reviewed`. A new
+snapshot manifest or any change to the decisions file (including formatting)
+requires rechecking the wave assignments against the new digests.
+
+```powershell
+pvw fabric sync plan-waves --snapshot-dir .\purview-snapshot --decisions-file .\decisions.json --wave-file .\waves.json --wave pilot --output-file .\pilot.decisions.json
+pvw uc validate-export --snapshot-dir .\purview-snapshot --decisions-file .\pilot.decisions.json
+pvw fabric sync assess --snapshot-dir .\purview-snapshot --decisions-file .\pilot.decisions.json --report-file .\pilot.assessment.json
+```
+
+The export uses the existing decisions schema, keeping only the chosen wave's
+selections, description edits, and explicit mappings. It must go outside the
+snapshot directory and cannot replace an existing file. `plan-waves` makes no
+tenant calls, verifies no live Fabric targets, and does not approve, run, or
+enforce the order of waves. Use the existing assess/apply process with a
+separate checkpoint for each wave.
+
 **Future enhancement, not yet implemented:** a local mapping UI under `tools/`
 could simplify reviewing candidates and editing the same decisions file. Build
 it after tenant validation of this CLI workflow; it must reuse the CLI validation
@@ -261,6 +306,7 @@ resolve the mapping file or adjust `--overwrite`/`--truncate-descriptions`).
 | `pvw fabric sync capabilities` | Never (no client I/O at all) | — | `--status`, `--output` |
 | `pvw fabric sync roadmap` | Never (reads public Fabric GPS API) | — | `--status planned\|shipped`, `--output table\|json` |
 | `pvw fabric sync readiness` | Never (offline) | — | `--snapshot-dir`, `--decisions-file`, `--output` |
+| `pvw fabric sync plan-waves` | Never (offline) | — | `--snapshot-dir`, `--decisions-file`, `--wave-file`, `--wave`, `--output-file` |
 | `pvw fabric sync prepare` | Never (reads Fabric catalog) | — | `--snapshot-dir`, `--output-file`, `--workspace-id` |
 | `pvw fabric sync assess` | Never | — | `--purview-domain-id`, `--workspace-id`, `--mapping-file` or `--snapshot-dir` + `--decisions-file`, `--overwrite`, `--truncate-descriptions`, `--sync-classifications` (live source only), `--report-file`, `--csv-report-file`, `--output` |
 | `pvw fabric sync apply` | Only with `--apply` | Dry run | All of the above, plus `--checkpoint-file` (required), `--apply` |
