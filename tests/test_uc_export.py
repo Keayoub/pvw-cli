@@ -215,6 +215,105 @@ def reviewed_export(tmp_path):
     return folder, decisions
 
 
+def test_readiness_offline_report_distinguishes_evidence(tmp_path, monkeypatch):
+    class MixedExport(FakeUC):
+        def list_data_assets(self, args):
+            records = super().list_data_assets(args)["value"]
+            return {"value": [
+                {"id": "a2", "name": "Warehouse hints", "type": "Warehouse"},
+                *records,
+            ]}
+
+        def list_data_asset_relationships(self, args):
+            if args["--asset-id"] == "a2":
+                return {"value": (
+                    [{"entityId": "p-outside-export"}] if args["--entity-type"] == "DataProduct" else []
+                )}
+            return super().list_data_asset_relationships(args)
+
+        def get_terms(self, args):
+            return {"value": [
+                {"id": "t2", "name": "Unlinked"},
+                *super().get_terms(args)["value"],
+            ]}
+
+        def get_critical_data_elements(self, args):
+            return {"value": [
+                {"id": "c2", "name": "Missing link evidence"},
+                *super().get_critical_data_elements(args)["value"],
+            ]}
+
+    def unexpected_client(*args, **kwargs):
+        pytest.fail("Readiness must not initialize a tenant client")
+
+    monkeypatch.setattr("purviewcli.cli.fabric._get_clients", unexpected_client)
+    monkeypatch.setattr("purviewcli.client.client_cache.get_cached_client", unexpected_client)
+    snapshot = tmp_path / "snapshot"
+    export_catalog(MixedExport(), snapshot)
+    before = {path.name: path.read_bytes() for path in snapshot.iterdir()}
+    args = ["sync", "readiness", "--snapshot-dir", str(snapshot)]
+    runner = CliRunner()
+    result = runner.invoke(fabric, [*args, "--output", "json"])
+    assert result.exit_code == 0, result.output
+    assert runner.invoke(fabric, [*args, "--output", "json"]).output == result.output
+    report = json.loads(result.output)
+    assert report["snapshotSha256"] == hashlib.sha256(before["manifest.json"]).hexdigest()
+    assert report["reviewedMappingCount"] is None
+    assert report["summary"]["assets"] == {
+        "snapshotCount": 2, "outcomes": {"unknown": 1, "native_candidate": 1},
+    }
+    inventory = report["inventory"]
+    assert [row["id"] for row in inventory["assets"]] == ["a1", "a2"]
+    assert inventory["assets"][1]["candidateBasis"] == "source_type_hint"
+    assert inventory["assets"][1]["reviewedMapping"] is None
+    assert inventory["assets"][1]["relationships"]["term"]["observedIds"] == []
+    assert inventory["assets"][1]["relationships"]["cde"]["observedIds"] is None
+    assert inventory["assets"][1]["relationships"]["data_product"]["unresolvedIds"] == [
+        "p-outside-export"
+    ]
+    assert inventory["term"][0]["candidateTag"] == "purview:term:Order"
+    assert inventory["term"][1]["outcome"] == "retain_manual_redesign"
+    assert inventory["cde"][0]["outcome"] == "lossy_tag"
+    assert inventory["cde"][1]["observedLinkedAssetCount"] is None
+    assert inventory["domains"][0]["outcome"] == "retain_manual_redesign"
+    assert report["notCaptured"]["lineage"] == {"outcome": "not_captured", "count": None}
+    table = runner.invoke(fabric, args)
+    assert table.exit_code == 0, table.output
+    assert "Migration readiness (snapshot only)" in table.output
+    assert {path.name: path.read_bytes() for path in snapshot.iterdir()} == before
+
+
+def test_readiness_validates_decisions_and_snapshot(tmp_path):
+    snapshot, decisions = reviewed_export(tmp_path)
+    args = ["sync", "readiness", "--snapshot-dir", str(snapshot), "--output", "json"]
+    runner = CliRunner()
+    result = runner.invoke(fabric, [*args, "--decisions-file", str(decisions)])
+    assert result.exit_code == 0, result.output
+    report = json.loads(result.output)
+    assert report["reviewedMappingCount"] == 1
+    asset = report["inventory"]["assets"][0]
+    assert asset["candidateBasis"] == "reviewed_mapping"
+    assert asset["reviewedMapping"] == {
+        "workspaceId": "ws1", "itemId": "i1", "expectedFabricType": "Lakehouse",
+        "targetVerified": False,
+    }
+    draft = runner.invoke(fabric, [*args, "--decisions-file", str(snapshot / "decisions.example.json")])
+    assert draft.exit_code == 1
+    assert "selectedAssetIds must contain at least one" in draft.stderr
+    stale = json.loads(decisions.read_text(encoding="utf-8"))
+    stale["snapshotSha256"] = "stale"
+    decisions.write_text(json.dumps(stale), encoding="utf-8")
+    invalid = runner.invoke(fabric, [*args, "--decisions-file", str(decisions)])
+    assert invalid.exit_code == 1
+    assert "Decisions do not match this snapshot" in invalid.stderr
+    assert not invalid.stdout
+    (snapshot / "terms.json").write_text("[]", encoding="utf-8")
+    tampered = runner.invoke(fabric, args)
+    assert tampered.exit_code == 1
+    assert "snapshot checksum mismatch" in tampered.stderr
+    assert not tampered.stdout
+
+
 def test_reviewed_snapshot_uses_decisions_and_rejects_modified_export(tmp_path):
     folder, decisions = reviewed_export(tmp_path)
     checked = CliRunner().invoke(

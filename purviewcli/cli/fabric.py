@@ -4,6 +4,7 @@
 Commands:
   - ``pvw fabric sync capabilities``: prints the current feature-status board (no I/O).
   - ``pvw fabric sync roadmap``: reads governance roadmap announcements from Fabric GPS.
+  - ``pvw fabric sync readiness``: inventories a portable snapshot offline.
   - ``pvw fabric sync prepare``: proposes existing Fabric item matches for review.
   - ``pvw fabric sync assess``  : always read-only; produces a plan/report.
   - ``pvw fabric sync apply``    : dry-run by default; pass --apply to write.
@@ -18,6 +19,7 @@ from __future__ import annotations
 
 import json
 import sys
+from pathlib import Path
 from typing import List, Optional, Tuple
 
 import click
@@ -103,7 +105,6 @@ def _run_assessment(
     if snapshot_dir and sync_classifications:
         raise click.UsageError("--sync-classifications is not supported for snapshot imports")
     if snapshot_dir:
-        from pathlib import Path
         from purviewcli.export.decisions import load_reviewed_snapshot
         try:
             purview_state, mapping = load_reviewed_snapshot(Path(snapshot_dir), Path(decisions_file))
@@ -357,6 +358,44 @@ def sync_roadmap(output, status):
     console.print(f"INFO Checked: {result['checked_at']}. {result['note']}")
 
 
+@sync.command(name="readiness")
+@click.option("--snapshot-dir", required=True, type=click.Path(exists=True, file_okay=False, path_type=Path))
+@click.option("--decisions-file", type=click.Path(exists=True, dir_okay=False, path_type=Path), help="Optional reviewed decisions for this snapshot.")
+@click.option("--output", type=click.Choice(["table", "json"]), default="table", help="Output format.")
+def sync_readiness(snapshot_dir, decisions_file, output):
+    """Inventory a portable UC export offline; does not verify Fabric targets."""
+    from purviewcli.export.readiness import build_readiness_report
+
+    try:
+        report = build_readiness_report(snapshot_dir, decisions_file)
+    except (OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    if output == "json":
+        click.echo(json.dumps(report, indent=2))
+        return
+
+    from rich.table import Table
+
+    table = Table(title="Migration readiness (snapshot only)")
+    table.add_column("Inventory")
+    table.add_column("Records", justify="right")
+    table.add_column("Outcomes")
+    for kind, summary in report["summary"].items():
+        outcomes = ", ".join(
+            f"{count} {outcome.replace('_', ' ')}"
+            for outcome, count in sorted(summary["outcomes"].items())
+        )
+        table.add_row(kind.replace("_", " "), str(summary["snapshotCount"]), outcomes or "-")
+    table.add_row(
+        "Not captured", "unknown", ", ".join(kind.replace("_", " ") for kind in report["notCaptured"])
+    )
+    console.print(table)
+    if decisions_file is not None:
+        click.echo(f"Locally reviewed mappings: {report['reviewedMappingCount']} (not target verified).")
+    for limitation in report["limitations"]:
+        click.echo(limitation)
+
+
 @sync.command(name="prepare")
 @click.option("--snapshot-dir", required=True, type=click.Path(exists=True, file_okay=False))
 @click.option("--output-file", required=True, type=click.Path(dir_okay=False))
@@ -364,7 +403,6 @@ def sync_roadmap(output, status):
 @click.pass_context
 def sync_prepare(ctx, snapshot_dir, output_file, workspace_ids):
     """Suggest existing Fabric items for customer review; never approve mappings."""
-    from pathlib import Path
     from purviewcli.client.client_cache import get_cached_client
     from purviewcli.client.fabric_client import FabricClient
     from purviewcli.export.prepare import prepare_decisions

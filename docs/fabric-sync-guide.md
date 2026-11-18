@@ -32,9 +32,36 @@ Nothing is ever written back to Purview. Every command defaults to a **dry run**
 
 ### Reviewed offline export to Fabric
 
+Start with an offline migration readiness report from the
+[portable UC export](commands/unified-catalog.md#portable-catalog-export-no-fabric-dependency):
+
+```powershell
+pvw fabric sync readiness --snapshot-dir .\purview-snapshot
+pvw fabric sync readiness --snapshot-dir .\purview-snapshot --output json > .\readiness.json
+```
+
+The report validates snapshot checksums and counts and inventories all exported
+assets, domains, glossary terms, data products and critical data elements
+(CDEs). Run it again with `--decisions-file .\decisions.json` after review to
+annotate the inventory with locally validated mappings. The command does not
+authenticate, contact either tenant, change the snapshot, or produce a sync
+plan. JSON includes a report schema version and the snapshot manifest hash.
+
+| Outcome | What it means for migration planning |
+|---|---|
+| `native_candidate` | Item display name and description are candidates on an existing Fabric item. Evidence is either a source type hint or a locally reviewed mapping, not a verified target. Use `assess` to verify the target and check conflicts. |
+| `lossy_tag` | An observed asset link and a usable name give a glossary term, data product or CDE a potential name-only tag. Definitions, hierarchy and governance behavior do not transfer. The suggested name is not a tag plan. |
+| `retain_manual_redesign` | Keep or redesign domains and workspace assignment outside the reviewed path. Governance records without a usable tag or an observed asset link also need separate review. |
+| `unknown` / `not_captured` | Insufficient evidence to classify a record, or the feature is not inventoried (for example lineage, data quality, policies, classifications and sensitivity labels). An unavailable count is `null`, not zero. |
+
+Counts describe the export, not the tenant. Asset relationship entries show
+observed IDs and flag unresolved references. An empty CDE link list in schema v1
+does not establish that no links exist: the export does not independently
+enumerate them. Use the outcome groups to prioritize review; this report does
+not assign migration waves or discover native Fabric equivalents.
+
 To let a customer select assets and approve description changes before sync,
-use the standalone [Purview UC export](commands/unified-catalog.md#portable-catalog-export-no-fabric-dependency).
-Run the read-only preparation command to discover existing Fabric items by
+run the read-only preparation command to discover existing Fabric items by
 exact name. It writes a **new draft outside the export folder** with item IDs,
 workspace names, Fabric types and reasons for each suggestion. Each asset has
 a `reviewStatus` (`no_candidate`, `single_candidate`, or `multiple_candidates`);
@@ -233,6 +260,7 @@ resolve the mapping file or adjust `--overwrite`/`--truncate-descriptions`).
 |---|---|---|---|
 | `pvw fabric sync capabilities` | Never (no client I/O at all) | — | `--status`, `--output` |
 | `pvw fabric sync roadmap` | Never (reads public Fabric GPS API) | — | `--status planned\|shipped`, `--output table\|json` |
+| `pvw fabric sync readiness` | Never (offline) | — | `--snapshot-dir`, `--decisions-file`, `--output` |
 | `pvw fabric sync prepare` | Never (reads Fabric catalog) | — | `--snapshot-dir`, `--output-file`, `--workspace-id` |
 | `pvw fabric sync assess` | Never | — | `--purview-domain-id`, `--workspace-id`, `--mapping-file` or `--snapshot-dir` + `--decisions-file`, `--overwrite`, `--truncate-descriptions`, `--sync-classifications` (live source only), `--report-file`, `--csv-report-file`, `--output` |
 | `pvw fabric sync apply` | Only with `--apply` | Dry run | All of the above, plus `--checkpoint-file` (required), `--apply` |

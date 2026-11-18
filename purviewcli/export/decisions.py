@@ -31,10 +31,20 @@ def _object(path: Path) -> Dict[str, Any]:
 
 def load_snapshot(snapshot_dir: Path) -> Dict[str, List[Dict[str, Any]]]:
     """Verify the immutable exported records before they can be used."""
+    documents, _ = load_snapshot_with_digest(snapshot_dir)
+    return documents
+
+
+def load_snapshot_with_digest(
+    snapshot_dir: Path,
+) -> Tuple[Dict[str, List[Dict[str, Any]]], str]:
+    """Verify exported records and return the digest of the manifest used."""
     snapshot_dir = Path(snapshot_dir)
-    manifest = _object(snapshot_dir / "manifest.json")
+    manifest_content = (snapshot_dir / "manifest.json").read_bytes()
+    manifest = json.loads(manifest_content.decode("utf-8"))
     if (
-        not _is_int(manifest.get("schemaVersion"))
+        not isinstance(manifest, dict)
+        or not _is_int(manifest.get("schemaVersion"))
         or manifest["schemaVersion"] != SCHEMA_VERSION
         or not isinstance(manifest.get("sha256"), dict)
         or not isinstance(manifest.get("files"), dict)
@@ -59,15 +69,21 @@ def load_snapshot(snapshot_dir: Path) -> Dict[str, List[Dict[str, Any]]]:
             raise ValueError(f"{name}: duplicate Purview ID")
         documents[name] = records
 
-    return documents
+    return documents, hashlib.sha256(manifest_content).hexdigest()
 
 
 def load_reviewed_snapshot(
     snapshot_dir: Path, decisions_file: Path
 ) -> Tuple[Dict[str, List[Any]], SyncMapping]:
     """Return selected source records only after local integrity/reference checks."""
-    snapshot_dir = Path(snapshot_dir)
-    documents = load_snapshot(snapshot_dir)
+    documents, digest = load_snapshot_with_digest(snapshot_dir)
+    return validate_snapshot_decisions(documents, digest, decisions_file)
+
+
+def validate_snapshot_decisions(
+    documents: Dict[str, List[Dict[str, Any]]], digest: str, decisions_file: Path
+) -> Tuple[Dict[str, List[Any]], SyncMapping]:
+    """Validate reviewed decisions against already integrity-checked records."""
     decisions = _object(Path(decisions_file))
     if set(decisions) not in (
         {
@@ -89,7 +105,6 @@ def load_reviewed_snapshot(
         raise ValueError(
             "Decisions must contain schemaVersion, snapshotSha256, selectedAssetIds, descriptions, mappings (and optionally candidates)"
         )
-    digest = hashlib.sha256((snapshot_dir / "manifest.json").read_bytes()).hexdigest()
     if (
         not _is_int(decisions["schemaVersion"])
         or decisions["schemaVersion"] != SCHEMA_VERSION
